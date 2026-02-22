@@ -115,32 +115,36 @@ const mockImages = [
 export default function RegistrarPropiedad() {
 
  // DATOS DE PRUEBA
- // luego modificar una vez se integre con el backend
+
   const [form, setForm] = useState({
-    titulo: "Vivienda Unifamiliar de dos plantas",
-    categoria: "Venta",
-    visibilidad: "Pública",
-    direccion: "Calle X, Encarnación",
-    descripcion: "",
-    tipoPropiedad: "Casa",
-    superficieLote: "700 m²",
-    superficieConstruida: "300 m²",
-    disponibilidad: "Inmediata",
-    instalacionElectrica: "Trifásica",
-    conexionAgua: "Agua corriente",
-    instalacionSanitaria: "Red pública",
+    title: "Vivienda Unifamiliar de dos plantas",
+    category: "Venta",
+    visibility: "Pública",
+    address: "Calle X, Encarnación",
+    geolocation: { lat: -27.3369, lng: -55.8668 },
+    description: "",
+    propertyType: "Casa",
+    surfaceArea: "700 m²",
+    builtArea: "300 m²",
+    availability: "Inmediata",
+    electricityInstallation: "Trifásica",
+    waterConnection: "Agua corriente",
+    sanitaryInstallation: "Red pública",
     exteriorFeatures: ["Piscina", "Estacionamiento Techado"],
-    anioConstruccion: "2010",
-    estado: "Usada",
-    materialEstructura: "Hormigón",
-    materialParedes: "Ladrillo",
-    materialPiso: "Azulejos",
-    materialTecho: "Tejas",
-    estacionamientos: "2",
-    plantas: "2",
-    dormitorios: "2",
-    mediosBanos: "1",
-    banosCompletos: "1",
+    year: "2010",
+    construction_status: "Usada",
+    structureMaterial: "Hormigón",
+    wallsMaterial: "Ladrillo",
+    floorMaterial: "Azulejos",
+    roofMaterial: "Tejas",
+    parkingSpaces: "2",
+    floorsCount: "2",
+    bedrooms: "2",
+    halfBathrooms: "1",
+    fullBathrooms: "1",
+
+    // datos de ejemplo, cambiar mas adelante
+    // (las habitaciones deben agregarse dinamicamente segun vayan agregandose)
     dorm1Planta: "Planta baja",
     dorm1Dim: "6 x 6 mts.",
     dorm1Features: ["Vestidor", "Aire Acondicionado"],
@@ -182,8 +186,8 @@ export default function RegistrarPropiedad() {
               <Form.Group>
                 <Lbl required>Título</Lbl>
                 <Form.Control
-                  value={form.titulo}
-                  onChange={set("titulo")}
+                  value={form.title}
+                  onChange={set("title")}
                   placeholder="Vivienda Unifamiliar de dos plantas"
                 />
               </Form.Group>
@@ -191,7 +195,7 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl required>Categoría</Lbl>
-                <Form.Select value={form.categoria} onChange={set("categoria")}>
+                <Form.Select value={form.category} onChange={set("category")}>
                   {["Venta", "Alquiler"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -199,7 +203,7 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl required>Visibilidad</Lbl>
-                <Form.Select value={form.visibilidad} onChange={set("visibilidad")}>
+                <Form.Select value={form.visibility} onChange={set("visibility")}>
                   {["Pública", "Privada"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -210,8 +214,8 @@ export default function RegistrarPropiedad() {
             <Lbl required>Dirección</Lbl>
             <Stack direction="horizontal" gap={2}>
               <Form.Control
-                value={form.direccion}
-                onChange={set("direccion")}
+                value={form.address}
+                onChange={set("address")}
                 placeholder="Calle X, Encarnación"
               />
               <Button variant="primary" className="text-nowrap d-flex align-items-center gap-2">
@@ -225,8 +229,8 @@ export default function RegistrarPropiedad() {
             <Form.Control
               as="textarea"
               rows={4}
-              value={form.descripcion}
-              onChange={set("descripcion")}
+              value={form.description}
+              onChange={set("description")}
               placeholder="Describe la propiedad..."
             />
           </Form.Group>
@@ -238,7 +242,7 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl required>Tipo de Propiedad</Lbl>
-                <Form.Select value={form.tipoPropiedad} onChange={set("tipoPropiedad")}>
+                <Form.Select value={form.propertyType} onChange={set("propertyType")}>
                   {["Casa", "Departamento", "Local", "Terreno"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -246,19 +250,19 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl required>Superficie Total del Lote</Lbl>
-                <Form.Control value={form.superficieLote} onChange={set("superficieLote")} placeholder="700 m²" />
+                <Form.Control value={form.surfaceArea} onChange={set("surfaceArea")} placeholder="700 m²" />
               </Form.Group>
             </Col>
             <Col md={3}>
               <Form.Group>
                 <Lbl>Superficie Construida</Lbl>
-                <Form.Control value={form.superficieConstruida} onChange={set("superficieConstruida")} placeholder="300 m²" />
+                <Form.Control value={form.builtArea} onChange={set("builtArea")} placeholder="300 m²" />
               </Form.Group>
             </Col>
             <Col md={3}>
               <Form.Group>
                 <Lbl>Disponibilidad</Lbl>
-                <Form.Control value={form.disponibilidad} onChange={set("disponibilidad")} placeholder="Inmediata" />
+                <Form.Control value={form.availability} onChange={set("availability")} placeholder="Inmediata" />
               </Form.Group>
             </Col>
           </Row>
@@ -267,7 +271,7 @@ export default function RegistrarPropiedad() {
             <Col md={4}>
               <Form.Group>
                 <Lbl required>Instalación eléctrica</Lbl>
-                <Form.Select value={form.instalacionElectrica} onChange={set("instalacionElectrica")}>
+                <Form.Select value={form.electricityInstallation} onChange={set("electricityInstallation")}>
                   {["Trifásica", "Monofásica"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -275,7 +279,7 @@ export default function RegistrarPropiedad() {
             <Col md={4}>
               <Form.Group>
                 <Lbl required>Conexión de agua</Lbl>
-                <Form.Select value={form.conexionAgua} onChange={set("conexionAgua")}>
+                <Form.Select value={form.waterConnection} onChange={set("waterConnection")}>
                   {["Agua corriente", "Pozo", "Cisterna"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -283,7 +287,7 @@ export default function RegistrarPropiedad() {
             <Col md={4}>
               <Form.Group>
                 <Lbl required>Instalación sanitaria</Lbl>
-                <Form.Select value={form.instalacionSanitaria} onChange={set("instalacionSanitaria")}>
+                <Form.Select value={form.sanitaryInstallation} onChange={set("sanitaryInstallation")}>
                   {["Red pública", "Cámara séptica"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -363,13 +367,13 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl>Año de Construcción</Lbl>
-                <Form.Control value={form.anioConstruccion} onChange={set("anioConstruccion")} placeholder="2010" />
+                <Form.Control value={form.year} onChange={set("year")} placeholder="2010" />
               </Form.Group>
             </Col>
             <Col md={3}>
               <Form.Group>
                 <Lbl>Estado</Lbl>
-                <Form.Select value={form.estado} onChange={set("estado")}>
+                <Form.Select value={form.construction_status} onChange={set("construction_status")}>
                   {["Usada", "Nueva", "En construcción"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -377,7 +381,7 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl>Material de la Estructura</Lbl>
-                <Form.Select value={form.materialEstructura} onChange={set("materialEstructura")}>
+                <Form.Select value={form.structureMaterial} onChange={set("structureMaterial")}>
                   {["Hormigón", "Madera", "Mixto"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -385,7 +389,7 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl>Material de Paredes</Lbl>
-                <Form.Select value={form.materialParedes} onChange={set("materialParedes")}>
+                <Form.Select value={form.wallsMaterial} onChange={set("wallsMaterial")}>
                   {["Ladrillo", "Bloque", "Yeso"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -396,7 +400,7 @@ export default function RegistrarPropiedad() {
             <Col md={4}>
               <Form.Group>
                 <Lbl>Material del Piso</Lbl>
-                <Form.Select value={form.materialPiso} onChange={set("materialPiso")}>
+                <Form.Select value={form.floorMaterial} onChange={set("floorMaterial")}>
                   {["Azulejos", "Madera", "Cemento", "Porcelanato"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -404,7 +408,7 @@ export default function RegistrarPropiedad() {
             <Col md={4}>
               <Form.Group>
                 <Lbl>Material del Techo</Lbl>
-                <Form.Select value={form.materialTecho} onChange={set("materialTecho")}>
+                <Form.Select value={form.roofMaterial} onChange={set("roofMaterial")}>
                   {["Tejas", "Losa", "Chapa"].map((o) => <option key={o}>{o}</option>)}
                 </Form.Select>
               </Form.Group>
@@ -412,7 +416,7 @@ export default function RegistrarPropiedad() {
             <Col md={4}>
               <Form.Group>
                 <Lbl>Nº Espacios de Estacionamiento</Lbl>
-                <Form.Control value={form.estacionamientos} onChange={set("estacionamientos")} placeholder="2" />
+                <Form.Control value={form.parkingSpaces} onChange={set("parkingSpaces")} placeholder="2" />
               </Form.Group>
             </Col>
           </Row>
@@ -424,25 +428,25 @@ export default function RegistrarPropiedad() {
             <Col md={3}>
               <Form.Group>
                 <Lbl>Cantidad de plantas</Lbl>
-                <Form.Control value={form.plantas} onChange={set("plantas")} placeholder="2" />
+                <Form.Control value={form.floorsCount} onChange={set("floorsCount")} placeholder="2" />
               </Form.Group>
             </Col>
             <Col md={3}>
               <Form.Group>
                 <Lbl>Cantidad de dormitorios</Lbl>
-                <Form.Control value={form.dormitorios} onChange={set("dormitorios")} placeholder="2" />
+                <Form.Control value={form.bedrooms} onChange={set("bedrooms")} placeholder="2" />
               </Form.Group>
             </Col>
             <Col md={3}>
               <Form.Group>
                 <Lbl>Cantidad de medios baños</Lbl>
-                <Form.Control value={form.mediosBanos} onChange={set("mediosBanos")} placeholder="1" />
+                <Form.Control value={form.halfBathrooms} onChange={set("halfBathrooms")} placeholder="1" />
               </Form.Group>
             </Col>
             <Col md={3}>
               <Form.Group>
                 <Lbl>Cantidad de baños completos</Lbl>
-                <Form.Control value={form.banosCompletos} onChange={set("banosCompletos")} placeholder="1" />
+                <Form.Control value={form.fullBathrooms} onChange={set("fullBathrooms")} placeholder="1" />
               </Form.Group>
             </Col>
           </Row>
