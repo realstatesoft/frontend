@@ -1,16 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import CustomNavbar from "./components/Navbar";
+import HeroSection from "./components/HeroSection";
+import SearchSection from "./components/SearchSection";
+import Properties from "./components/properties";
+import ServicesSection from "./components/ServicesSection";
+import StatsSection from "./components/StatsSection";
+import AboutSection from "./components/AboutSection";
+import CtaSection from "./components/CtaSection";
+import Footer from "./components/Footer";
 
 function App() {
-  
-
   return (
     <>
-      <AppRouter />
+      <CustomNavbar />
+      <HeroSection />
+      <SearchSection />
+      <Properties />
+      <ServicesSection />
+      <StatsSection />
+      <AboutSection />
+      <CtaSection />
+      <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
