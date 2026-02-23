@@ -6,22 +6,35 @@ import {
 
 // ── Tag chip ──────────────────────────────────────────────────────────────────
 const Tag = ({ label, onRemove }) => (
-  <Badge
-    className="d-inline-flex align-items-center gap-1 me-1 mb-1 fw-normal"
-    style={{ background: "#EAF0FF", color: "#3B6BF5", fontSize: 13, padding: "5px 10px" }}
+  <span
+    className="d-inline-flex align-items-center gap-2 me-1 mb-1"
+    style={{
+      backgroundColor: "rgba(13, 110, 253, 0.1)", // primary con 10% opacity
+      color: "var(--bs-primary)",
+      fontSize: 13,
+      padding: "6px 12px",
+      borderRadius: "20px",
+      fontWeight: 500,
+    }}
   >
     {label}
     <button
       type="button"
       onClick={onRemove}
-      className="btn-close ms-1"
       style={{
-        fontSize: 8,
-        filter: "invert(37%) sepia(98%) saturate(748%) hue-rotate(206deg)",
+        background: "transparent",
+        border: "none",
+        color: "var(--bs-primary)",
+        fontSize: 14,
+        cursor: "pointer",
+        padding: 0,
+        lineHeight: 1,
       }}
       aria-label="Eliminar"
-    />
-  </Badge>
+    >
+      ×
+    </button>
+  </span>
 );
 
 // ── MultiSelect custom ────────────────────────────────────────────────────────
@@ -91,8 +104,7 @@ const MultiSelect = ({ options, selected, onChange, placeholder }) => {
 // ── Título de sección ─────────────────────────────────────────────────────────
 const SectionTitle = ({ title }) => (
   <>
-    <h5 className="fw-bold mb-0">{title}</h5>
-    <hr className="mt-2 mb-4" />
+    <h5 className="fw-bold mb-2 text-start">{title}</h5>
   </>
 );
 
@@ -112,7 +124,7 @@ const mockImages = [
 ];
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function RegistrarPropiedad() {
+export default function CreateProperty() {
 
  // DATOS DE PRUEBA
 
@@ -175,8 +187,8 @@ export default function RegistrarPropiedad() {
   return (
     <div className="bg-light min-vh-100 py-4">
       <Container style={{ maxWidth: 920 }}>
-        <Card className="border-0 shadow-sm rounded-4 p-4 p-md-5">
-          <h4 className="fw-bold mb-4">Registrar Propiedad</h4>
+        <Card className="text-start border-0 shadow-sm rounded-4 p-4 p-md-5">
+          <h3 className="fw-bold mb-4 text-start">Registrar Propiedad</h3>
 
           {/* ══ Información Básica ══════════════════════════════════════════ */}
           <SectionTitle title="Información Básica" />
