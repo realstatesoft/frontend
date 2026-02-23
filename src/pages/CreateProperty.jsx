@@ -505,6 +505,10 @@ export default function CreateProperty() {
             ))}
           </Row>
 
+          <Stack direction="horizontal" gap={2} className="justify-content-end pt-3 border-top">
+            <Button variant="outline-primary" className="px-4">Agregar Habitación</Button>
+          </Stack>
+
           {/* ══ Botones ════════════════════════════════════════════════════ */}
           <Stack direction="horizontal" gap={2} className="justify-content-end pt-3 border-top">
             <Button variant="outline-secondary" className="px-4">Cancelar</Button>
