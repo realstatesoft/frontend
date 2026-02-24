@@ -11,6 +11,7 @@ import {
   Stack,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./show-property.scss";
 
 // SAMPLE DATA borrar despues ===============================================
 const propertyImages = [
@@ -70,132 +71,7 @@ const features = [
     items: ["Nivel: Primero", "Dimensiones: 0 x 0"],
   },
 ];
-
-//  ===============================================
-
-const styles = {
-  
-  mainImage: {
-    width: "100%",
-    height: "420px",
-    objectFit: "cover",
-    borderRadius: "10px 0 0 10px",
-    display: "block",
-  },
-  thumbImage: {
-    width: "100%",
-    height: "207px",
-    objectFit: "cover",
-    display: "block",
-  },
-  price: {
-    fontSize: "2.2rem",
-    fontWeight: "800",
-    color: "#1a1a1a",
-    letterSpacing: "-0.03em",
-  },
-  statLabel: {
-    fontSize: "0.75rem",
-    color: "#888",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
-  },
-  statValue: {
-    fontSize: "1.5rem",
-    fontWeight: "700",
-    color: "#1a1a1a",
-    lineHeight: 1,
-  },
-  address: {
-    color: "#666",
-    fontSize: "0.9rem",
-    marginBottom: "12px",
-  },
-  sectionTitle: {
-    fontSize: "1.1rem",
-    fontWeight: "700",
-    color: "#1a1a1a",
-    marginBottom: "12px",
-  },
-  description: {
-    color: "#444",
-    lineHeight: "1.75",
-    fontSize: "0.95rem",
-  },
-  metaBox: {
-    backgroundColor: "#f0ede8",
-    borderRadius: "8px",
-    padding: "14px 18px",
-    fontSize: "0.83rem",
-    color: "#555",
-    lineHeight: "1.8",
-  },
-  agentCard: {
-    border: "1px solid #e0ddd8",
-    borderRadius: "12px",
-    padding: "24px",
-    backgroundColor: "#ffffff",
-    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-    position: "sticky",
-    top: "20px",
-    textAlign: "center",
-  },
-  agentAvatar: {
-    width: "80px",
-    height: "80px",
-    objectFit: "cover",
-    borderRadius: "50%",
-    border: "3px solid #1877f2",
-    marginBottom: "12px",
-  },
-  agentName: {
-    fontWeight: "700",
-    fontSize: "1rem",
-    color: "#1a1a1a",
-    margin: 0,
-  },
-  agentExp: {
-    fontSize: "0.8rem",
-    color: "#888",
-    marginBottom: "6px",
-  },
-  stars: {
-    color: "#f5a623",
-    fontSize: "0.95rem",
-  },
-  reviews: {
-    color: "#888",
-    fontSize: "0.78rem",
-  },
-  featureTitle: {
-    fontWeight: "700",
-    fontSize: "0.9rem",
-    borderBottom: "1px solid #e0ddd8",
-    paddingBottom: "6px",
-    marginBottom: "8px",
-    color: "#1a1a1a",
-  },
-  featureItem: {
-    fontSize: "0.85rem",
-    color: "#555",
-    marginBottom: "4px",
-  },
-  tourCard: {
-    border: "1px solid #e0ddd8",
-    borderRadius: "10px",
-    padding: "32px 16px",
-    textAlign: "center",
-    cursor: "pointer",
-    backgroundColor: "#fff",
-    transition: "box-shadow 0.2s",
-  },
-  tourLabel: {
-    fontWeight: "600",
-    color: "#1a1a1a",
-    margin: 0,
-    fontSize: "0.95rem",
-  },
-};
+// ===============================================
 
 const IconVideo = () => (
   <svg width="36" height="36" fill="none" stroke="#555" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -210,23 +86,23 @@ const IconDocument = () => (
 );
 
 export default function ShowProperty() {
-  const [hoverTour, setHoverTour] = useState(null);
-
   return (
-    <div>
+    <div className="property">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center">
         <h1>Vivienda Unifamiliar en Encarnación Centro</h1>
-        <Button size="sm">
-          Compartir
-        </Button>
+        <Button size="sm">Compartir</Button>
       </div>
 
       {/* Gallery */}
       <Container fluid className="px-4 pt-3 pb-2">
         <Row className="g-1">
           <Col xs={6} style={{ height: "420px" }}>
-            <img src={propertyImages[0]} alt="Fachada" style={styles.mainImage} />
+            <img
+              src={propertyImages[0]}
+              alt="Fachada"
+              className="property__main-image"
+            />
           </Col>
           <Col xs={6}>
             <Row className="g-1 h-100">
@@ -235,8 +111,8 @@ export default function ShowProperty() {
                   <img
                     src={src}
                     alt={`Interior ${i + 1}`}
+                    className="property__thumb-image"
                     style={{
-                      ...styles.thumbImage,
                       borderRadius:
                         i === 1 ? "0 10px 0 0" : i === 3 ? "0 0 10px 0" : "0",
                     }}
@@ -255,7 +131,7 @@ export default function ShowProperty() {
           <Col lg={8}>
             {/* Price & Stats */}
             <Stack direction="horizontal" gap={4} className="align-items-end flex-wrap mb-2">
-              <span style={styles.price}>$519,000</span>
+              <span className="property__price">$519,000</span>
               <Stack direction="horizontal" gap={4}>
                 {[
                   { value: "3", label: "habitaciones" },
@@ -263,15 +139,15 @@ export default function ShowProperty() {
                   { value: "600", label: "metros²" },
                 ].map((stat) => (
                   <div key={stat.label} className="text-center">
-                    <div style={styles.statValue}>{stat.value}</div>
-                    <div style={styles.statLabel}>{stat.label}</div>
+                    <div className="property__stat-value">{stat.value}</div>
+                    <div className="property__stat-label">{stat.label}</div>
                   </div>
                 ))}
               </Stack>
             </Stack>
 
             {/* Address */}
-            <p style={styles.address}>
+            <p className="property__address">
               543 Las Palmeras Entre Lorenzo Zacarías y Carlos Hrase, Encarnación, Itapúa
             </p>
 
@@ -314,8 +190,8 @@ export default function ShowProperty() {
               <Tab.Content>
                 {/* Descripcion */}
                 <Tab.Pane eventKey="descripcion">
-                  <h5 style={styles.sectionTitle}>Descripción</h5>
-                  <p style={styles.description}>
+                  <h5 className="property__section-title">Descripción</h5>
+                  <p className="property__description">
                     Hermosa casa tradicional ubicada en una zona privilegiada del centro de
                     Encarnación. La propiedad cuenta con amplios espacios, diseño contemporáneo
                     y excelente orientación. Ideal para familias que buscan comodidad en un
@@ -339,7 +215,7 @@ export default function ShowProperty() {
                   </div>
 
                   {/* Meta */}
-                  <div style={styles.metaBox} className="mt-4">
+                  <div className="property__meta-box mt-4">
                     Publicado hace <strong>10 horas</strong> &nbsp;|&nbsp; 55 vistas &nbsp;|&nbsp; 3 guardados
                     <br />
                     Revisado por última vez: Hace 4 horas
@@ -354,26 +230,18 @@ export default function ShowProperty() {
 
                 {/* Tours */}
                 <Tab.Pane eventKey="tours">
-                  <h5 style={styles.sectionTitle}>Tours y Planos</h5>
+                  <h5 className="property__section-title">Tours y Planos</h5>
                   <Row className="g-4 mt-1">
                     {[
                       { key: "tour3d", label: "Tour 3D 360°", Icon: IconVideo },
                       { key: "planos", label: "Planos de la propiedad", Icon: IconDocument },
                     ].map(({ key, label, Icon }) => (
                       <Col sm={6} key={key}>
-                        <div
-                          style={{
-                            ...styles.tourCard,
-                            boxShadow:
-                              hoverTour === key ? "0 6px 24px rgba(0,0,0,0.12)" : "none",
-                          }}
-                          onMouseEnter={() => setHoverTour(key)}
-                          onMouseLeave={() => setHoverTour(null)}
-                        >
+                        <div className="property__tour-card">
                           <div className="mb-3">
                             <Icon />
                           </div>
-                          <p style={styles.tourLabel}>{label}</p>
+                          <p className="property__tour-label">{label}</p>
                         </div>
                       </Col>
                     ))}
@@ -382,14 +250,14 @@ export default function ShowProperty() {
 
                 {/* Caracteristicas */}
                 <Tab.Pane eventKey="caracteristicas">
-                  <h5 style={styles.sectionTitle}>Datos y Características</h5>
+                  <h5 className="property__section-title">Datos y Características</h5>
                   <Row className="g-4">
                     {features.map((section, i) => (
                       <Col md={6} key={i}>
-                        <div style={styles.featureTitle}>{section.title}</div>
+                        <div className="property__feature-title">{section.title}</div>
                         <ul className="list-unstyled mb-0">
                           {section.items.map((item, j) => (
-                            <li key={j} style={styles.featureItem}>
+                            <li key={j} className="property__feature-item">
                               &bull; {item}
                             </li>
                           ))}
@@ -404,17 +272,17 @@ export default function ShowProperty() {
 
           {/* Agent Card */}
           <Col lg={4} className="mt-4 mt-lg-0">
-            <div style={styles.agentCard}>
+            <div className="property__agent-card">
               <Image
                 src="https://randomuser.me/api/portraits/women/68.jpg"
                 alt="María López"
-                style={styles.agentAvatar}
+                className="property__agent-avatar"
               />
-              <p style={styles.agentName}>María López</p>
-              <p style={styles.agentExp}>8 años de experiencia</p>
+              <p className="property__agent-name">María López</p>
+              <p className="property__agent-exp">8 años de experiencia</p>
               <div className="mb-3">
-                <span style={styles.stars}>&#9733;&#9733;&#9733;&#9733;&#9733;</span>{" "}
-                <span style={styles.reviews}>4.8 (15k reseñas)</span>
+                <span className="property__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>{" "}
+                <span className="property__reviews">4.8 (15k reseñas)</span>
               </div>
               <Button
                 variant="outline-secondary"
