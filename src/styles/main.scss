@@ -1,0 +1,11 @@
+// Variables personalizadas
+@import "./variables";
+
+// Bootstrap
+@import "bootstrap/scss/bootstrap";
+
+// Reset / overrides globales
+@import "./reset";
+
+// Utilities propias
+@import "./utilities";
