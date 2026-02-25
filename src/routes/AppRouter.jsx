@@ -1,7 +1,7 @@
 //imports
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import CreateProperty from "../pages/CreateProperty";
+import CreateProperty from "../pages/properties/CreateProperty";
 
 export default function AppRouter() {
     return (

@@ -1,10 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "baseURL: import.meta.env.VITE_API_URL,", // cambiar cuando exista backend
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
-    "Content-Type": "application/json",
-  },
+    "Content-Type": "application/json"
+  }
 });
 
 export default api;

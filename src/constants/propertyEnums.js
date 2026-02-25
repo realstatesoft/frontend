@@ -1,0 +1,66 @@
+// ── Mapeos: label del form (español) → valor del enum del backend ─────────────
+
+export const PROPERTY_TYPE = {
+  Casa: "HOUSE",
+  Departamento: "APARTMENT",
+  Terreno: "LAND",
+  Local: "OFFICE",
+  Depósito: "WAREHOUSE",
+  Campo: "FARM",
+};
+
+export const CATEGORY = {
+  Venta: "SALE",
+  Alquiler: "RENT",
+  "Venta o Alquiler": "SALE_OR_RENT",
+};
+
+export const CONSTRUCTION_STATUS = {
+  Nueva: "NEW",
+  Usada: "USED",
+  "En construcción": "UNDER_CONSTRUCTION",
+  "A refaccionar": "TO_RENOVATE",
+};
+
+export const AVAILABILITY = {
+  Inmediata: "IMMEDIATE",
+  "En 30 días": "IN_30_DAYS",
+  "En 60 días": "IN_60_DAYS",
+  "A negociar": "TO_NEGOTIATE",
+};
+
+// ── Catálogo de features (seed de la BD) → { nombre: id } ────────────────────
+// Si el backend expone GET /exterior-features, este mapa puede eliminarse.
+
+export const EXTERIOR_FEATURE_IDS = {
+  Piscina: 1,
+  Jardín: 2,
+  Garage: 3,
+  "Parrilla / Quincho": 4,
+  "Cerco eléctrico": 5,
+  "Cámara de seguridad": 6,
+  Terraza: 7,
+  "Portón automático": 8,
+  "Cancha deportiva": 9,
+  "Salón de eventos": 10,
+};
+
+export const INTERIOR_FEATURE_IDS = {
+  "Aire acondicionado": 1,
+  "Piso de porcelanato": 2,
+  "Piso de madera": 3,
+  "Closet empotrado": 4,
+  "Cocina equipada": 5,
+  Calefón: 6,
+  "Ventilador de techo": 7,
+  "Mesada de granito": 8,
+};
+
+// ── Listas de opciones para los selects/multiselects del form ─────────────────
+
+export const PROPERTY_TYPE_OPTIONS = Object.keys(PROPERTY_TYPE);
+export const CATEGORY_OPTIONS = Object.keys(CATEGORY);
+export const CONSTRUCTION_STATUS_OPTIONS = Object.keys(CONSTRUCTION_STATUS);
+export const AVAILABILITY_OPTIONS = Object.keys(AVAILABILITY);
+export const EXTERIOR_FEATURE_OPTIONS = Object.keys(EXTERIOR_FEATURE_IDS);
+export const INTERIOR_FEATURE_OPTIONS = Object.keys(INTERIOR_FEATURE_IDS);
