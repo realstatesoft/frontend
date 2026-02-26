@@ -1,27 +1,15 @@
-import "./App.css";
-import CustomNavbar from "./components/Navbar";
-import HeroSection from "./components/HeroSection";
-import SearchSection from "./components/SearchSection";
-import Properties from "./components/properties";
-import ServicesSection from "./components/ServicesSection";
-import StatsSection from "./components/StatsSection";
-import AboutSection from "./components/AboutSection";
-import CtaSection from "./components/CtaSection";
-import Footer from "./components/Footer";
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/LandingPage";
+import PropertiesPage from "./pages/PropertiesPage";
+
+
 
 function App() {
   return (
-    <>
-      <CustomNavbar />
-      <HeroSection />
-      <SearchSection />
-      <Properties />
-      <ServicesSection />
-      <StatsSection />
-      <AboutSection />
-      <CtaSection />
-      <Footer />
-    </>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/propiedades" element={<PropertiesPage />} />
+    </Routes>
   );
 }
 
