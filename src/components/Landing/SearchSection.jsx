@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import fotoSearch from "../../assets/FotoSearch.png";
+import fotoSearch from "../../assets/fotoSearch.png";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 const SearchSection = () => {
