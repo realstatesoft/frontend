@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Container,
   Row,
@@ -10,7 +9,6 @@ import {
   Image,
   Stack,
 } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./show-property.scss";
 
 // SAMPLE DATA borrar despues ===============================================
@@ -107,14 +105,14 @@ export default function ShowProperty() {
           <Col xs={6}>
             <Row className="g-1 h-100">
               {propertyImages.slice(1).map((src, i) => (
-                <Col key={i} xs={6} style={{ height: "207px" }}>
+                <Col key={src} xs={6} style={{ height: "207px" }}>
                   <img
                     src={src}
                     alt={`Interior ${i + 1}`}
                     className="property__thumb-image"
                     style={{
                       borderRadius:
-                        i === 1 ? "0 10px 0 0" : i === 3 ? "0 0 10px 0" : "0",
+                        i === 1 ? "0 $radius-lg  0 0" : i === 3 ? "0 0 $radius-lg 0" : "0",
                     }}
                   />
                 </Col>
@@ -160,7 +158,7 @@ export default function ShowProperty() {
                   bg="light"
                   text="secondary"
                   style={{
-                    border: "1px solid #ccc",
+                    border: "1px solid $border-color-soft",
                     fontWeight: "400",
                     fontSize: "0.82rem",
                     padding: "7px 14px",
@@ -173,7 +171,7 @@ export default function ShowProperty() {
 
             {/* Tabs */}
             <Tab.Container defaultActiveKey="descripcion">
-              <Nav variant="tabs" className="mb-4" style={{ borderBottom: "2px solid #e0ddd8" }}>
+              <Nav variant="tabs" className="mb-4" style={{ borderBottom: "2px solid  $border-color-soft" }}>
                 {[
                   { key: "descripcion", label: "Descripción" },
                   { key: "tours", label: "Tours y Planos" },
@@ -201,7 +199,7 @@ export default function ShowProperty() {
                   {/* Map */}
                   <div
                     className="rounded mt-4"
-                    style={{ height: "260px", overflow: "hidden", border: "1px solid #e0ddd8" }}
+                    style={{ height: "260px", overflow: "hidden", border: "1px solid $border-color-soft" }}
                   >
                     <iframe
                       title="Mapa de la propiedad"
