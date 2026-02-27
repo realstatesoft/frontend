@@ -58,12 +58,6 @@ section {
   box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.15);
   border-color: var(--primary, #1a56db);
 }
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
 
 .logo {
   height: 6em;
