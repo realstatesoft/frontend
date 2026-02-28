@@ -29,17 +29,7 @@ export default function PropertiesTrashCan() {
                 {/* Encabezado */}
                 <div className="mb-4">
                     <h2 className="fw-bold mb-1" style={{ color: "var(--dark, #1e293b)" }}>
-                        <span
-                            style={{
-                                background: "var(--warning, #f59e0b)",
-                                borderRadius: "4px",
-                                padding: "0 6px",
-                                marginRight: "4px",
-                            }}
-                        >
-                            Papeler
-                        </span>
-                        a de Propiedades
+                        Papelera de Propiedades
                     </h2>
                     <p className="text-muted mb-0" style={{ fontSize: "0.92rem" }}>
                         Las propiedades borradas se mantendrán aquí durante 10 días, en caso de que desees recuperarlas.
