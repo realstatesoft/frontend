@@ -332,8 +332,8 @@ export default function ShowProperty() {
 
                     {/* Map */}
                     <div
-                      className="rounded mt-4"
-                      style={{ height: "260px", overflow: "hidden", border: "1px solid $border-color-soft" }}
+                      className="rounded mt-4 border-soft"
+                      style={{ height: "260px", overflow: "hidden" }}
                     >
                       <iframe
                         title="Mapa de la propiedad"
