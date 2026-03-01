@@ -254,11 +254,7 @@ export default function ShowProperty() {
                     <img
                       src={src}
                       alt={`Interior ${i + 1}`}
-                      className="property__thumb-image"
-                      style={{
-                        borderRadius:
-                          i === 1 ? "0 $radius-lg  0 0" : i === 3 ? "0 0 $radius-lg 0" : "0",
-                      }}
+                      className={`property__thumb-image ${i === 1 ? "radius-top-right-lg" : i === 3 ? "radius-bottom-left-lg" : ""}`}
                     />
                   </Col>
                 ))}
@@ -302,8 +298,8 @@ export default function ShowProperty() {
                     pill
                     bg="light"
                     text="secondary"
+                    className="border-soft"
                     style={{
-                      border: "1px solid $border-color-soft",
                       fontWeight: "400",
                       fontSize: "0.82rem",
                       padding: "7px 14px",
@@ -316,7 +312,7 @@ export default function ShowProperty() {
 
               {/* Tabs */}
               <Tab.Container defaultActiveKey="descripcion">
-                <Nav variant="tabs" className="mb-4" style={{ borderBottom: "2px solid  $border-color-soft" }}>
+                <Nav variant="tabs" className="mb-4 border-bottom-soft" >
                   {[
                     { key: "descripcion", label: "Descripción" },
                     { key: "tours", label: "Tours y Planos" },
