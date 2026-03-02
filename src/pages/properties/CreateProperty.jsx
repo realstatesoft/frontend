@@ -1,5 +1,7 @@
 import { Container, Card, Form, Alert } from "react-bootstrap";
 import { useCreatePropertyForm } from "../../hooks/useCreatePropertyForm";
+import CustomNavbar from "../../components/Landing/Navbar";
+import Footer from "../../components/Landing/Footer";
 import {
   BasicInfoSection,
   PropertyFeaturesSection,
@@ -25,8 +27,10 @@ export default function CreateProperty() {
   } = useCreatePropertyForm();
 
   return (
+    <>
+    <CustomNavbar />
     <div className="bg-light min-vh-100 py-4">
-      <Container style={{ maxWidth: 920 }}>
+      <Container style={{ maxWidth: "auto" }}>
         <Card className="text-start border-0 shadow-sm rounded-4 p-4 p-md-5">
           <h3 className="fw-bold mb-4 text-start">Registrar Propiedad</h3>
 
@@ -59,5 +63,7 @@ export default function CreateProperty() {
         </Card>
       </Container>
     </div>
+    <Footer />
+    </>
   );
 }

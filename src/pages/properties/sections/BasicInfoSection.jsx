@@ -1,8 +1,25 @@
+import { useState } from "react";
 import { Row, Col, Form, Button, Stack } from "react-bootstrap";
 import { FormSectionTitle, FormLabel } from "../../../components/properties/FormComponents";
+import LocationPickerModal from "../../../components/commons/LocationPickerModal";
 import { CATEGORY_OPTIONS } from "../../../constants/propertyEnums";
 
 export function BasicInfoSection({ form, set }) {
+  const [showLocationModal, setShowLocationModal] = useState(false);
+
+  const handleOpenLocation = () => setShowLocationModal(true);
+  const handleCloseLocation = () => setShowLocationModal(false);
+
+  const handleLocationSelected = ({ lat, lng, address }) => {
+    // Actualizar geolocalización
+    set("geolocation")({ lat, lng });
+    // Actualizar dirección (respetando la editable por usuario)
+    if (address && address.trim()) {
+      set("address")({ target: { value: address } });
+    }
+    setShowLocationModal(false);
+  };
+
   return (
     <>
       <FormSectionTitle title="Información Básica" />
@@ -30,7 +47,7 @@ export function BasicInfoSection({ form, set }) {
         </Col>
         <Col md={3}>
           <Form.Group>
-            <FormLabel required>Precio (USD)</FormLabel>
+            <FormLabel required>Precio (Gs.)</FormLabel>
             <Form.Control
               type="number"
               min="0"
@@ -50,7 +67,12 @@ export function BasicInfoSection({ form, set }) {
             onChange={set("address")}
             placeholder="Calle X, Encarnación"
           />
-          <Button variant="primary" type="button" className="text-nowrap d-flex align-items-center gap-2">
+          <Button
+            variant="primary"
+            type="button"
+            className="text-nowrap d-flex align-items-center gap-2"
+            onClick={handleOpenLocation}
+          >
             <i className="bi bi-geo-alt-fill" /> Ubicar en el Mapa
           </Button>
         </Stack>
@@ -66,6 +88,14 @@ export function BasicInfoSection({ form, set }) {
           placeholder="Describe la propiedad..."
         />
       </Form.Group>
+
+      <LocationPickerModal
+        show={showLocationModal}
+        onHide={handleCloseLocation}
+        initialCoords={form.geolocation}
+        initialAddress={form.address}
+        onConfirm={handleLocationSelected}
+      />
     </>
   );
 }
