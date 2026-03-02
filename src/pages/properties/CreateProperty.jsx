@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Container, Card, Form, Alert } from "react-bootstrap";
 import { useCreatePropertyForm } from "../../hooks/useCreatePropertyForm";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
+import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import {
   BasicInfoSection,
   PropertyFeaturesSection,
@@ -11,11 +13,15 @@ import {
 } from "./sections";
 
 export default function CreateProperty() {
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const {
     form,
     loading,
     error,
     success,
+    fieldErrors,
+    validateForm,
     set,
     setArr,
     updateRoom,
@@ -25,6 +31,28 @@ export default function CreateProperty() {
     dismissError,
     dismissSuccess,
   } = useCreatePropertyForm();
+
+  const handleOpenConfirm = (e) => {
+    e.preventDefault();
+    // Validar antes de mostrar el diálogo de confirmación
+    const ok = validateForm();
+    if (!ok) {
+      // Asegurarnos de que el usuario vea el mensaje y los campos marcados
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setShowConfirm(true);
+  };
+
+  const handleConfirmCreate = () => {
+    // Ejecutar la lógica de submit (ya validado previamente)
+    handleSubmit({ preventDefault: () => {} });
+    setShowConfirm(false);
+  };
+
+  const handleCancelConfirm = () => {
+    setShowConfirm(false);
+  };
 
   return (
     <>
@@ -47,8 +75,8 @@ export default function CreateProperty() {
             </Alert>
           )}
 
-          <Form onSubmit={handleSubmit} noValidate>
-            <BasicInfoSection form={form} set={set} />
+          <Form onSubmit={handleOpenConfirm} noValidate>
+            <BasicInfoSection form={form} set={set} fieldErrors={fieldErrors} />
             <PropertyFeaturesSection form={form} set={set} setArr={setArr} />
             <ConstructionSection form={form} set={set} />
             <InteriorAndRoomsSection
@@ -60,6 +88,18 @@ export default function CreateProperty() {
             />
             <FormActionsSection loading={loading} />
           </Form>
+
+          <ConfirmDialog
+            show={showConfirm}
+            onHide={handleCancelConfirm}
+            onConfirm={handleConfirmCreate}
+            title="Confirmar creación de propiedad"
+            message="¿Estás seguro que deseas guardar esta propiedad con la información cargada?"
+            confirmText="Sí, guardar"
+            cancelText="Cancelar"
+            variant="primary"
+            loading={loading}
+          />
         </Card>
       </Container>
     </div>

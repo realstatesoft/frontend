@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Row, Col, Form, Button, Stack } from "react-bootstrap";
 import { FormSectionTitle, FormLabel } from "../../../components/properties/FormComponents";
 import LocationPickerModal from "../../../components/commons/LocationPickerModal";
+import PriceInput from "../../../components/commons/PriceInput";
 import { CATEGORY_OPTIONS } from "../../../constants/propertyEnums";
 
-export function BasicInfoSection({ form, set }) {
+export function BasicInfoSection({ form, set, fieldErrors = {} }) {
   const [showLocationModal, setShowLocationModal] = useState(false);
 
   const handleOpenLocation = () => setShowLocationModal(true);
@@ -32,29 +33,48 @@ export function BasicInfoSection({ form, set }) {
               value={form.title}
               onChange={set("title")}
               placeholder="Vivienda Unifamiliar de dos plantas"
+              isInvalid={!!fieldErrors.title}
             />
+            {fieldErrors.title && (
+              <Form.Control.Feedback type="invalid">
+                {fieldErrors.title}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
         </Col>
         <Col md={3}>
           <Form.Group>
             <FormLabel required>Categoría</FormLabel>
-            <Form.Select value={form.category} onChange={set("category")}>
+            <Form.Select
+              value={form.category}
+              onChange={set("category")}
+              isInvalid={!!fieldErrors.category}
+            >
               {CATEGORY_OPTIONS.map((o) => (
                 <option key={o}>{o}</option>
               ))}
             </Form.Select>
+            {fieldErrors.category && (
+              <Form.Control.Feedback type="invalid">
+                {fieldErrors.category}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
         </Col>
         <Col md={3}>
           <Form.Group>
             <FormLabel required>Precio (Gs.)</FormLabel>
-            <Form.Control
-              type="number"
-              min="0"
+            <PriceInput
               value={form.price}
               onChange={set("price")}
-              placeholder="350000"
+              placeholder="350.000.000"
+              isInvalid={!!fieldErrors.price}
             />
+            {fieldErrors.price && (
+              <Form.Control.Feedback type="invalid">
+                {fieldErrors.price}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
         </Col>
       </Row>
@@ -66,6 +86,7 @@ export function BasicInfoSection({ form, set }) {
             value={form.address}
             onChange={set("address")}
             placeholder="Calle X, Encarnación"
+            isInvalid={!!fieldErrors.address}
           />
           <Button
             variant="primary"
@@ -76,6 +97,11 @@ export function BasicInfoSection({ form, set }) {
             <i className="bi bi-geo-alt-fill" /> Ubicar en el Mapa
           </Button>
         </Stack>
+        {fieldErrors.address && (
+          <Form.Control.Feedback type="invalid" className="d-block">
+            {fieldErrors.address}
+          </Form.Control.Feedback>
+        )}
       </Form.Group>
 
       <Form.Group className="mb-4">

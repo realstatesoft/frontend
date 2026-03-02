@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import propertyApi from "../services/properties/propertyApi";
 import { buildCreatePropertyPayload } from "../services/properties/propertyFormMapper";
 import { getInitialRoom, DEFAULT_OWNER_ID } from "../constants/createPropertyConstants";
+import { createPropertySchema } from "../validation/createPropertySchema";
 
 const getInitialForm = () => ({
   title: "",
@@ -34,15 +35,6 @@ const getInitialForm = () => ({
   media: [],
 });
 
-const validateForm = (form) => {
-  if (!form.title?.trim()) return "El título es obligatorio.";
-  if (!form.address?.trim()) return "La dirección es obligatoria.";
-  if (form.price === "" || form.price == null) return "El precio es obligatorio.";
-  const priceNum = Number(form.price);
-  if (isNaN(priceNum) || priceNum <= 0) return "El precio debe ser un número mayor a 0.";
-  return null;
-};
-
 const getErrorMessage = (err) =>
   err.response?.data?.message ??
   err.response?.data?.errors?.[0] ??
@@ -57,9 +49,19 @@ export function useCreatePropertyForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+   // Errores por campo (ej. { title: 'El título es obligatorio' })
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const set = useCallback((key) => (e) => {
-    setForm((f) => ({ ...f, [key]: e.target ? e.target.value : e }));
+    const value = e?.target ? e.target.value : e;
+    setForm((f) => ({ ...f, [key]: value }));
+    // Si el campo tenía error, lo limpiamos al modificarlo;
+    // una nueva validación lo volverá a marcar si sigue siendo inválido.
+    setFieldErrors((prev) => {
+      if (!prev || !Object.prototype.hasOwnProperty.call(prev, key)) return prev;
+      const { [key]: _ignored, ...rest } = prev;
+      return rest;
+    });
   }, []);
 
   const setArr = useCallback((key) => (val) => {
@@ -81,16 +83,43 @@ export function useCreatePropertyForm() {
     setForm((f) => ({ ...f, rooms: f.rooms.filter((_, i) => i !== index) }));
   }, []);
 
+  const validateForm = useCallback(() => {
+    const dataToValidate = {
+      title: form.title,
+      address: form.address,
+      price: form.price,
+      propertyType: form.propertyType,
+      category: form.category,
+      geolocation: form.geolocation,
+    };
+
+    const result = createPropertySchema.safeParse(dataToValidate);
+
+    if (!result.success) {
+      // Usamos flatten() para obtener un objeto { fieldErrors, formErrors }
+      const { fieldErrors: zodFieldErrors } = result.error.flatten();
+      const nextErrors = Object.fromEntries(
+        Object.entries(zodFieldErrors).map(([key, messages]) => [
+          key,
+          messages?.[0] ?? "Campo inválido",
+        ])
+      );
+      setFieldErrors(nextErrors);
+      setError("Revisá los campos resaltados.");
+      return false;
+    }
+
+    setFieldErrors({});
+    return true;
+  }, [form]);
+
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
 
-    const validationError = validateForm(form);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+    const ok = validateForm();
+    if (!ok) return;
 
     const payload = buildCreatePropertyPayload(form, { ownerId: DEFAULT_OWNER_ID });
 
@@ -126,5 +155,7 @@ export function useCreatePropertyForm() {
     handleSubmit,
     dismissError,
     dismissSuccess,
+    fieldErrors,
+    validateForm,
   };
 }
