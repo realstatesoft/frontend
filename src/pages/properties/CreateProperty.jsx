@@ -60,7 +60,7 @@ export default function CreateProperty() {
     <div className="bg-light min-vh-100 py-4">
       <Container style={{ maxWidth: "auto" }}>
         <Card className="text-start border-0 shadow-sm rounded-4 p-4 p-md-5">
-          <h3 className="fw-bold mb-4 text-start">Registrar Propiedad</h3>
+          <h3 className="semibold mb-4 text-start text-size-[30px]">Registrar Propiedad</h3>
 
           {success && (
             <Alert variant="success" onClose={dismissSuccess} dismissible>
@@ -75,7 +75,7 @@ export default function CreateProperty() {
             </Alert>
           )}
 
-          <Form onSubmit={handleOpenConfirm} noValidate>
+          <Form onSubmit={handleOpenConfirm} noValidate className="create-property-form">
             <BasicInfoSection form={form} set={set} fieldErrors={fieldErrors} />
             <PropertyFeaturesSection form={form} set={set} setArr={setArr} />
             <ConstructionSection form={form} set={set} />

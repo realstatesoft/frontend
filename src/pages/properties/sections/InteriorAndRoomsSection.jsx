@@ -138,7 +138,7 @@ export function InteriorAndRoomsSection({ form, set, updateRoom, addRoom, remove
       </Row>
 
       <Stack direction="horizontal" gap={2} className="justify-content-end mb-4">
-        <Button variant="outline-primary" type="button" className="px-4" onClick={addRoom}>
+        <Button variant="secondary" type="button" className="px-4" onClick={addRoom}>
           <i className="bi bi-plus-lg me-1" /> Agregar Habitación
         </Button>
       </Stack>

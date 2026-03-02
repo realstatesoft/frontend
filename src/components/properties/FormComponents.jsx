@@ -11,7 +11,7 @@ export const FormTag = ({ label, onRemove }) => (
       color: "var(--bs-primary)",
       fontSize: 13,
       padding: "6px 12px",
-      borderRadius: "20px",
+      borderRadius: "8px",
       fontWeight: 500,
     }}
   >
@@ -99,14 +99,14 @@ export function FormMultiSelect({ options, selected, onChange, placeholder }) {
 // ── Título de sección ───────────────────────────────────────────────────────
 
 export const FormSectionTitle = ({ title }) => (
-  <h5 className="fw-bold mb-2 text-start">{title}</h5>
+  <h5 className="fw-medium mb-2 text-start">{title}</h5>
 );
 
 // ── Label con asterisco opcional ─────────────────────────────────────────────
 
 export const FormLabel = ({ children, required }) => (
-  <Form.Label className="fw-semibold">
+  <Form.Label className="fw-regular">
     {children}
-    {required && <span className="text-primary ms-1">*</span>}
+    {required && <span className="ms-1">*</span>}
   </Form.Label>
 );
