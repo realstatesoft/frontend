@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import LogIn from "../pages/LogIn";
 import SignUp from "../pages/SignUp";
 import ForgotPassword from "../pages/ForgotPassword";
@@ -18,8 +18,7 @@ export default function AppRouter() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/propiedades" element={<PropertiesPage />} />
-                <Route path="/show-property" element={<ShowProperty />} />
-                <Route path="/propiedades" element={<PropertiesPage />} />
+                <Route path="/show-property/:id" element={<ShowProperty />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
             </Routes>
     )
