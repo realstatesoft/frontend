@@ -129,7 +129,10 @@ export function usePropertyForm(propertyId) {
     }
     setUploadingMedia(true);
     try {
-      const { data } = await uploadImage(file, "properties");
+      // Sin Content-Type para que axios use multipart/form-data con boundary
+      const { data } = await uploadImage(file, "properties", {
+        headers: { "Content-Type": undefined },
+      });
       if (data?.success && data?.data?.url) {
         setForm((f) => {
           const media = f.media || [];
