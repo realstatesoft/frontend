@@ -5,7 +5,7 @@ import { Container, Row, Col, Button } from "react-bootstrap";
 const AGENT_IMG =
     "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80";
 
-const AgentHeroSection = () => {
+const AgentHeroSection = ({onRegisterClick}) => {
     return (
         <section style={{ minHeight: 380, overflow: "hidden" }}>
             <Row className="g-0" style={{ minHeight: 380 }}>
@@ -31,6 +31,8 @@ const AgentHeroSection = () => {
                     </p>
                     <div>
                         <Button
+                            type = "button"
+                            onClick={onRegisterClick}
                             style={{
                                 backgroundColor: "#111",
                                 border: "none",

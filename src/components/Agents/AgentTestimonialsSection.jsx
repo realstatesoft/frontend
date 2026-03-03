@@ -104,16 +104,16 @@ function TestimonialCard({ t }) {
 
 const AgentTestimonialsSection = () => {
     const trackRef = useRef(null);
-    
+
     const items = [...testimonials, ...testimonials];
 
     useEffect(() => {
         const track = trackRef.current;
         if (!track) return;
 
-        const GAP = 24; 
-        const CARD_W = 320; 
-        const SPEED = 0.5; 
+        const GAP = 24;
+        const CARD_W = 320;
+        const SPEED = 0.5;
 
         let animId;
         let pos = 0;
@@ -154,7 +154,7 @@ const AgentTestimonialsSection = () => {
                 </div>
             </Container>
 
-            
+
             <div
                 style={{
                     overflow: "hidden",
@@ -163,7 +163,7 @@ const AgentTestimonialsSection = () => {
                     cursor: "default",
                 }}
             >
-                
+
                 <div
                     style={{
                         position: "absolute",
