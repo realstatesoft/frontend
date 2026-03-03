@@ -80,6 +80,30 @@
 .m-4 { margin: 16px; }
 .m-5 { margin: 20px; }
 
+/* Formulario crear propiedad: fondo gris claro en inputs y selects */
+.create-property-form .form-control,
+.create-property-form .form-select {
+  background-color: $input-bg-light;
+}
+
+/* Botones secundarios */
+.btn-secondary {
+  background-color: rgba(13, 110, 253, 0.1);
+  color: var(--bs-primary);
+  border: none;
+  border-radius: $radius-sm;
+  font-weight: $font-weight-regular;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(13, 110, 253, 0.2);
+    color: var(--bs-primary);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
 /* Flex utilities */
 .d-flex { display: flex; }
 .justify-center { justify-content: center; }
