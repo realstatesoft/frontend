@@ -16,6 +16,7 @@ export default function LogIn() {
     const navigate = useNavigate(); // Para redirigir al usuario tras iniciar sesión
 
     const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // 1. Estado para guardar el correo y la contraseña
     const [formData, setFormData] = useState({
@@ -34,7 +35,9 @@ export default function LogIn() {
     // 3. Función que se ejecuta al enviar el formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSubmitting) return;
 
+        setIsSubmitting(true);
         try {
             // Hacemos la petición POST al backend de Spring Boot
             const response = await api.post("/api/auth/login", formData);
@@ -51,6 +54,8 @@ export default function LogIn() {
         } catch (error) {
             console.error("Error en login:", error);
             alert(error.response?.data?.message || error.message || "Correo o contraseña incorrectos");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -148,8 +153,8 @@ export default function LogIn() {
 
                         {/* Botón Principal tipo Submit */}
                         <div className="d-grid">
-                            <Button variant="primary" type="submit" style={{ borderRadius: '0.75rem', padding: '0.8rem' }} className="fw-bold">
-                                Iniciar sesión
+                            <Button variant="primary" type="submit" disabled={isSubmitting} style={{ borderRadius: '0.75rem', padding: '0.8rem' }} className="fw-bold">
+                                {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
                             </Button>
                         </div>
 

@@ -9,6 +9,7 @@ export default function SignUp() {
     const { register } = useAuth(); // Obtenemos la función de registro del contexto
 
     const [tipoUsuario, setTipoUsuario] = useState('Comprador');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         nombre: '',
         apellido: '',
@@ -29,6 +30,7 @@ export default function SignUp() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSubmitting) return;
 
         //Validaciones básicas locales
         if (formData.password !== formData.confirmPassword) {
@@ -40,6 +42,7 @@ export default function SignUp() {
             return;
         }
 
+        setIsSubmitting(true);
         try {
 
             const dataParaBackend = {
@@ -60,6 +63,8 @@ export default function SignUp() {
         } catch (error) {
             console.error("Error en el registro:", error);
             alert("Hubo un error: " + error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -196,8 +201,8 @@ export default function SignUp() {
                         </Form.Group>
 
                         <div className="d-grid">
-                            <Button variant="primary" type="submit" style={{ borderRadius: '0.75rem', padding: '0.8rem' }} className="fw-bold">
-                                Registrarse
+                            <Button variant="primary" type="submit" disabled={isSubmitting} style={{ borderRadius: '0.75rem', padding: '0.8rem' }} className="fw-bold">
+                                {isSubmitting ? 'Registrando...' : 'Registrarse'}
                             </Button>
                         </div>
                     </Form>
