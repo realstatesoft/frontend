@@ -9,7 +9,7 @@ export default function ConfirmDialog({
   confirmText = "Confirmar",
   cancelText = "Cancelar",
   variant = "danger",
-  loading = false
+  loading = false,
 }) {
   return (
     <Modal show={show} onHide={onHide} centered>
@@ -17,20 +17,14 @@ export default function ConfirmDialog({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>
-        {message}
-      </Modal.Body>
+      <Modal.Body>{message}</Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
+        <Button variant="secondary" onClick={onHide} disabled={loading}>
           {cancelText}
         </Button>
 
-        <Button
-          variant={variant}
-          onClick={onConfirm}
-          disabled={loading}
-        >
+        <Button variant={variant} onClick={onConfirm} disabled={loading}>
           {loading ? "Procesando..." : confirmText}
         </Button>
       </Modal.Footer>
