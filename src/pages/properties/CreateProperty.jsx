@@ -19,7 +19,6 @@ export default function CreateProperty() {
     form,
     loading,
     error,
-    success,
     fieldErrors,
     validateForm,
     set,
@@ -29,7 +28,6 @@ export default function CreateProperty() {
     removeRoom,
     handleSubmit,
     dismissError,
-    dismissSuccess,
   } = useCreatePropertyForm();
 
   const handleOpenConfirm = (e) => {
@@ -62,12 +60,6 @@ export default function CreateProperty() {
         <Card className="text-start border-0 shadow-sm rounded-4 p-4 p-md-5">
           <h3 className="semibold mb-4 text-start text-size-[30px]">Registrar Propiedad</h3>
 
-          {success && (
-            <Alert variant="success" onClose={dismissSuccess} dismissible>
-              <i className="bi bi-check-circle-fill me-2" />
-              Propiedad registrada exitosamente.
-            </Alert>
-          )}
           {error && (
             <Alert variant="danger" onClose={dismissError} dismissible>
               <i className="bi bi-exclamation-triangle-fill me-2" />

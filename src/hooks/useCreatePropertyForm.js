@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import Swal from "sweetalert2";
 import propertyApi from "../services/properties/propertyApi";
 import { buildCreatePropertyPayload } from "../services/properties/propertyFormMapper";
 import { getInitialRoom, DEFAULT_OWNER_ID } from "../constants/createPropertyConstants";
@@ -129,8 +130,21 @@ export function useCreatePropertyForm() {
       if (data?.success) {
         setSuccess(true);
         window.scrollTo({ top: 0, behavior: "smooth" });
+        await Swal.fire({
+          icon: "success",
+          title: "¡Propiedad registrada!",
+          text: "La propiedad fue creada exitosamente.",
+        });
+        setForm(getInitialForm());
+        setFieldErrors({});
+        setSuccess(false);
       } else {
         setError(data?.message ?? "Ocurrió un error al guardar la propiedad.");
+        await Swal.fire({
+          icon: "error",
+          title: "¡Error!",
+          text: data?.message ?? "Ocurrió un error al guardar la propiedad.",
+        });
       }
     } catch (err) {
       setError(getErrorMessage(err));
