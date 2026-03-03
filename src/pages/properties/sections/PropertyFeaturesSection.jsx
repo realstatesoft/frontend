@@ -1,4 +1,5 @@
-import { Row, Col, Form, Button, Badge, Stack } from "react-bootstrap";
+import { useRef } from "react";
+import { Row, Col, Form, Button, Badge, Stack, Spinner } from "react-bootstrap";
 import { FormSectionTitle, FormLabel, FormMultiSelect } from "../../../components/properties/FormComponents";
 import {
   PROPERTY_TYPE_OPTIONS,
@@ -9,10 +10,48 @@ import {
   ELECTRICITY_OPTIONS,
   WATER_OPTIONS,
   SANITARY_OPTIONS,
-  MOCK_IMAGES,
 } from "../../../constants/createPropertyConstants";
 
-export function PropertyFeaturesSection({ form, set, setArr }) {
+const ACCEPT_IMAGES = "image/jpeg,image/png,image/webp";
+const MAX_IMAGES = 20;
+
+export function PropertyFeaturesSection({
+  form,
+  set,
+  setArr,
+  addMedia,
+  removeMedia,
+  setPrimaryMedia,
+  uploadingMedia,
+}) {
+  const fileInputRef = useRef(null);
+
+  const media = form.media || [];
+  const canAddMore = media.length < MAX_IMAGES;
+
+  const handleFileChange = (e) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    for (let i = 0; i < files.length && media.length + i < MAX_IMAGES; i++) {
+      addMedia(files[i]);
+    }
+    e.target.value = "";
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!canAddMore || uploadingMedia) return;
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/")
+    );
+    files.slice(0, MAX_IMAGES - media.length).forEach((f) => addMedia(f));
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
   return (
     <>
       <FormSectionTitle title="Características de la Propiedad" />
@@ -102,59 +141,95 @@ export function PropertyFeaturesSection({ form, set, setArr }) {
           <Form.Group>
             <FormLabel>Contenido Multimedia</FormLabel>
             <Row className="g-2 mb-2">
-              {MOCK_IMAGES.map((src, i) => (
-                <Col xs={3} key={i}>
+              {media.map((item, i) => (
+                <Col xs={3} key={item.url || i}>
                   <div
                     className="position-relative rounded overflow-hidden"
                     style={{ aspectRatio: "1" }}
                   >
-                    <img src={src} alt="" className="w-100 h-100" style={{ objectFit: "cover" }} />
-                    {i === 0 && (
-                      <Badge
-                        className="position-absolute top-0 start-0 m-1"
-                        style={{ background: "#3B6BF5", fontSize: 9 }}
-                      >
-                        <i className="bi bi-star-fill me-1" />Portada
-                      </Badge>
-                    )}
-                    {i === 3 && (
-                      <div
-                        className="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center text-white"
-                        style={{
-                          background: "rgba(0,0,0,0.55)",
-                          cursor: "pointer",
-                          fontSize: 11,
-                        }}
-                      >
-                        <strong>+3 imágenes</strong>
-                        <small>Ver todas</small>
-                      </div>
-                    )}
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="w-100 h-100"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <Badge
+                      className="position-absolute top-0 start-0 m-1"
+                      style={{
+                        background: item.isPrimary ? "#3B6BF5" : "rgba(0,0,0,0.5)",
+                        fontSize: 9,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setPrimaryMedia(i)}
+                    >
+                      <i className={`bi bi-star${item.isPrimary ? "-fill" : ""} me-1`} />
+                      {item.isPrimary ? "Portada" : "Marcar portada"}
+                    </Badge>
+                    <button
+                      type="button"
+                      className="position-absolute top-0 end-0 m-1 rounded-circle border-0 d-flex align-items-center justify-content-center"
+                      style={{
+                        width: 24,
+                        height: 24,
+                        background: "rgba(0,0,0,0.6)",
+                        color: "white",
+                        cursor: "pointer",
+                        fontSize: 14,
+                      }}
+                      onClick={() => removeMedia(i)}
+                      aria-label="Quitar imagen"
+                    >
+                      ×
+                    </button>
                   </div>
                 </Col>
               ))}
-              <Col xs={3}>
-                <div
-                  className="d-flex align-items-center justify-content-center rounded border"
-                  style={{
-                    aspectRatio: "1",
-                    cursor: "pointer",
-                    color: "#3B6BF5",
-                    fontSize: 22,
-                    borderStyle: "dashed",
-                    borderColor: "#c0c8e0",
-                  }}
-                >
-                  <i className="bi bi-plus-lg" />
-                </div>
-              </Col>
+              {canAddMore && (
+                <Col xs={3}>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={ACCEPT_IMAGES}
+                    multiple
+                    className="d-none"
+                    onChange={handleFileChange}
+                  />
+                  <div
+                    className="d-flex flex-column align-items-center justify-content-center rounded border"
+                    style={{
+                      aspectRatio: "1",
+                      cursor: uploadingMedia ? "wait" : "pointer",
+                      color: "#3B6BF5",
+                      fontSize: 22,
+                      borderStyle: "dashed",
+                      borderColor: "#c0c8e0",
+                    }}
+                    onClick={() => !uploadingMedia && fileInputRef.current?.click()}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                  >
+                    {uploadingMedia ? (
+                      <Spinner size="sm" className="mb-1" />
+                    ) : (
+                      <i className="bi bi-plus-lg mb-1" />
+                    )}
+                    <small style={{ fontSize: 10 }}>Agregar</small>
+                  </div>
+                </Col>
+              )}
             </Row>
+            {media.length > 0 && (
+              <small className="text-muted d-block mb-2">
+                {media.length} imagen{media.length !== 1 ? "es" : ""}. Cliqueá en la estrella para marcar como portada.
+              </small>
+            )}
             <Stack direction="horizontal" gap={2}>
               <Button
                 variant="outline-secondary"
                 size="sm"
                 type="button"
                 className="d-flex align-items-center gap-1"
+                disabled
               >
                 <i className="bi bi-file-earmark" /> Subir planos
               </Button>
@@ -163,6 +238,7 @@ export function PropertyFeaturesSection({ form, set, setArr }) {
                 size="sm"
                 type="button"
                 className="d-flex align-items-center gap-1"
+                disabled
               >
                 <i className="bi bi-camera-video" /> Subir vista 3D
               </Button>

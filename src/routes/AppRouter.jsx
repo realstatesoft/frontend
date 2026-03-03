@@ -18,6 +18,7 @@ export default function AppRouter() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/propiedades" element={<PropertiesPage />} />
             <Route path="/show-property/:id" element={<ShowProperty />} />
+            <Route path="/show-property/:id/edit" element={<CreateProperty />} />
             <Route path="/trashcan" element={<PropertiesTrashCan />} />
         </Routes>
     );
