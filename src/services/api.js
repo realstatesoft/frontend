@@ -1,5 +1,5 @@
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getAccessToken } from "../utils/authToken";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -10,7 +10,7 @@ const api = axios.create({
 
 // Adjunta el accessToken de la cookie en cada request automáticamente
 api.interceptors.request.use((config) => {
-  const token = Cookies.get("accessToken");
+  const token = getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

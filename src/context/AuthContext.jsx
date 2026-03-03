@@ -1,18 +1,10 @@
 import { createContext, useState } from "react";
-import Cookies from "js-cookie";
-
-const COOKIE_NAME = "accessToken";
-
-const COOKIE_OPTIONS = {
-  expires: 1,        // 1 día 
-  secure: import.meta.env.PROD, // HTTPS solo en producción, funciona en local también
-  sameSite: "Strict",
-};
+import { getAccessToken, setAccessToken, removeAccessToken } from "../utils/authToken";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => Cookies.get(COOKIE_NAME) ?? null);
+  const [token, setToken] = useState(() => getAccessToken());
 
   /**
    * Llamar con el response del login.
@@ -20,13 +12,16 @@ export function AuthProvider({ children }) {
    * Espera que el objeto tenga { accessToken: "..." }
    */
   function login(responseData) {
-    const { accessToken } = responseData;
-    Cookies.set(COOKIE_NAME, accessToken, COOKIE_OPTIONS);
+    const accessToken = responseData?.accessToken;
+    if (!accessToken || typeof accessToken !== "string") {
+      throw new Error("login(): accessToken inválido o ausente en el response");
+    }
+    setAccessToken(accessToken);
     setToken(accessToken);
   }
 
   function logout() {
-    Cookies.remove(COOKIE_NAME);
+    removeAccessToken();
     setToken(null);
   }
 
