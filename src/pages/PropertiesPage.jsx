@@ -12,6 +12,9 @@ const PAGE_SIZE = 12;
 /**
  * PropertiesPage
  * Gestiona filtros y paginación de propiedades conectada a la API.
+ *
+ * Cuando hay filtros de tipo/estado activos, se traen todas las propiedades
+ * para filtrar client-side. Sin filtros, se usa paginación server-side.
  */
 export default function PropertiesPage() {
     const [search, setSearch] = useState("");
@@ -19,10 +22,12 @@ export default function PropertiesPage() {
     const [tagFilter, setTagFilter] = useState("Todos");
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Traer propiedades del backend con paginación real
-    const { properties, loading, error, totalPages, refetch } = useProperties({
-        page: currentPage,
-        size: PAGE_SIZE,
+    const hasClientFilters = typeFilter !== "Todos" || tagFilter !== "Todos";
+
+    // Si hay filtros client-side, traemos todo; sino paginamos en el servidor
+    const { properties, loading, error, totalPages: serverTotalPages, refetch } = useProperties({
+        page: hasClientFilters ? 1 : currentPage,
+        size: hasClientFilters ? 500 : PAGE_SIZE,
         search,
     });
 
@@ -38,8 +43,10 @@ export default function PropertiesPage() {
         setCurrentPage(1);
     };
 
-    // Filtrado client-side sobre los datos del API
+    // Filtrado client-side (solo tiene efecto cuando hay filtros activos)
     const filtered = useMemo(() => {
+        if (!hasClientFilters) return properties;
+
         return properties.filter((p) => {
             const pType = PROPERTY_TYPE_LABELS[p.propertyType] ?? p.propertyType ?? "";
             const pTag = STATUS_LABELS[p.status] ?? p.status ?? "";
@@ -48,7 +55,15 @@ export default function PropertiesPage() {
             const matchTag = tagFilter === "Todos" || pTag === tagFilter;
             return matchType && matchTag;
         });
-    }, [properties, typeFilter, tagFilter]);
+    }, [properties, typeFilter, tagFilter, hasClientFilters]);
+
+    // Paginación client-side sobre los resultados filtrados
+    const clientTotalPages = Math.ceil(filtered.length / PAGE_SIZE);
+    const paginatedFiltered = hasClientFilters
+        ? filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+        : filtered;
+
+    const displayTotalPages = hasClientFilters ? clientTotalPages : serverTotalPages;
 
     return (
         <>
@@ -67,10 +82,11 @@ export default function PropertiesPage() {
 
             <div style={{ backgroundColor: "#f8f9fa", minHeight: "60vh" }}>
                 <PropertiesGrid
-                    properties={filtered}
+                    properties={paginatedFiltered}
                     onClear={handleClear}
                     onRetry={refetch}
                     currentPage={currentPage}
+                    totalPages={displayTotalPages}
                     loading={loading}
                     error={error}
                     onPageChange={(page) => {
