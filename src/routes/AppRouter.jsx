@@ -12,6 +12,7 @@ export default function AppRouter() {
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/create-property" element={<CreateProperty />} />
+                <Route path="/show-property/:id/edit" element={<CreateProperty />} />
                 <Route path="/show-property/:id" element={<ShowProperty />} />
                 <Route path="/propiedades" element={<PropertiesPage />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />

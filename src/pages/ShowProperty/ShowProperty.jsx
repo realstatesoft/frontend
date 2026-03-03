@@ -13,6 +13,7 @@ import {
   Spinner,
   Alert,
 } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { CameraVideo, FileText } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
@@ -120,7 +121,13 @@ export default function ShowProperty() {
                   </Dropdown.Menu>
                 </Dropdown>
 
-                <Button size="sm" variant="outline-primary" className="d-flex align-items-center">
+                <Button
+                  size="sm"
+                  variant="outline-primary"
+                  className="d-flex align-items-center"
+                  as={Link}
+                  to={`/show-property/${property.id}/edit`}
+                >
                   <i className="bi bi-pencil me-1"></i>
                   Editar
                 </Button>

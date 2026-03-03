@@ -1,7 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import propertyApi from "../services/properties/propertyApi";
-import { buildCreatePropertyPayload } from "../services/properties/propertyFormMapper";
+import {
+  buildCreatePropertyPayload,
+  buildUpdatePropertyPayload,
+  propertyToForm,
+} from "../services/properties/propertyFormMapper";
 import { getInitialRoom, DEFAULT_OWNER_ID } from "../constants/createPropertyConstants";
 import { createPropertySchema } from "../validation/createPropertySchema";
 
@@ -42,22 +47,46 @@ const getErrorMessage = (err) =>
   "No se pudo conectar con el servidor. Verificá que el backend esté activo.";
 
 /**
- * Hook con toda la lógica del formulario de crear propiedad:
- * estado del form, actualizadores, validación y envío al backend.
+ * Hook para crear o editar una propiedad.
+ * @param {string|undefined} propertyId - Si se proporciona, modo edición (carga propiedad y actualiza)
  */
-export function useCreatePropertyForm() {
+export function usePropertyForm(propertyId) {
+  const navigate = useNavigate();
+  const isEditMode = Boolean(propertyId);
+
   const [form, setForm] = useState(getInitialForm);
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(isEditMode);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-   // Errores por campo (ej. { title: 'El título es obligatorio' })
   const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    if (!propertyId) return;
+    setFetchLoading(true);
+    setError(null);
+    propertyApi
+      .getById(propertyId)
+      .then(({ data }) => {
+        if (data?.success && data?.data) {
+          const formData = propertyToForm(data.data);
+          if (formData) setForm(formData);
+        } else {
+          setError("No se pudo cargar la propiedad.");
+        }
+      })
+      .catch((err) => {
+        setError(
+          err.response?.status === 404
+            ? "Propiedad no encontrada."
+            : getErrorMessage(err)
+        );
+      })
+      .finally(() => setFetchLoading(false));
+  }, [propertyId]);
 
   const set = useCallback((key) => (e) => {
     const value = e?.target ? e.target.value : e;
     setForm((f) => ({ ...f, [key]: value }));
-    // Si el campo tenía error, lo limpiamos al modificarlo;
-    // una nueva validación lo volverá a marcar si sigue siendo inválido.
     setFieldErrors((prev) => {
       if (!prev || !Object.prototype.hasOwnProperty.call(prev, key)) return prev;
       const { [key]: _ignored, ...rest } = prev;
@@ -97,7 +126,6 @@ export function useCreatePropertyForm() {
     const result = createPropertySchema.safeParse(dataToValidate);
 
     if (!result.success) {
-      // Usamos flatten() para obtener un objeto { fieldErrors, formErrors }
       const { fieldErrors: zodFieldErrors } = result.error.flatten();
       const nextErrors = Object.fromEntries(
         Object.entries(zodFieldErrors).map(([key, messages]) => [
@@ -114,53 +142,73 @@ export function useCreatePropertyForm() {
     return true;
   }, [form]);
 
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(false);
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setError(null);
 
-    const ok = validateForm();
-    if (!ok) return;
+      const ok = validateForm();
+      if (!ok) return;
 
-    const payload = buildCreatePropertyPayload(form, { ownerId: DEFAULT_OWNER_ID });
-
-    try {
-      setLoading(true);
-      const { data } = await propertyApi.create(payload);
-      if (data?.success) {
-        setSuccess(true);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        await Swal.fire({
-          icon: "success",
-          title: "¡Propiedad registrada!",
-          text: "La propiedad fue creada exitosamente.",
-        });
-        setForm(getInitialForm());
-        setFieldErrors({});
-        setSuccess(false);
-      } else {
-        setError(data?.message ?? "Ocurrió un error al guardar la propiedad.");
-        await Swal.fire({
-          icon: "error",
-          title: "¡Error!",
-          text: data?.message ?? "Ocurrió un error al guardar la propiedad.",
-        });
+      try {
+        setLoading(true);
+        if (isEditMode) {
+          const payload = buildUpdatePropertyPayload(form);
+          const { data } = await propertyApi.update(propertyId, payload);
+          if (data?.success) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            await Swal.fire({
+              icon: "success",
+              title: "¡Propiedad actualizada!",
+              text: "Los cambios se guardaron correctamente.",
+            });
+            navigate(`/show-property/${propertyId}`);
+          } else {
+            setError(data?.message ?? "Ocurrió un error al actualizar.");
+            await Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: data?.message ?? "Ocurrió un error al actualizar.",
+            });
+          }
+        } else {
+          const payload = buildCreatePropertyPayload(form, { ownerId: DEFAULT_OWNER_ID });
+          const { data } = await propertyApi.create(payload);
+          if (data?.success) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            await Swal.fire({
+              icon: "success",
+              title: "¡Propiedad registrada!",
+              text: "La propiedad fue creada exitosamente.",
+            });
+            setForm(getInitialForm());
+            setFieldErrors({});
+          } else {
+            setError(data?.message ?? "Ocurrió un error al guardar la propiedad.");
+            await Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: data?.message ?? "Ocurrió un error al guardar la propiedad.",
+            });
+          }
+        }
+      } catch (err) {
+        setError(getErrorMessage(err));
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(getErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
-  }, [form]);
+    },
+    [form, isEditMode, propertyId, navigate]
+  );
 
   const dismissError = useCallback(() => setError(null), []);
-  const dismissSuccess = useCallback(() => setSuccess(false), []);
 
   return {
     form,
     loading,
+    fetchLoading,
     error,
-    success,
+    isEditMode,
     set,
     setArr,
     updateRoom,
@@ -168,7 +216,6 @@ export function useCreatePropertyForm() {
     removeRoom,
     handleSubmit,
     dismissError,
-    dismissSuccess,
     fieldErrors,
     validateForm,
   };
