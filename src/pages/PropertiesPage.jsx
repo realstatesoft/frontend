@@ -71,7 +71,6 @@ export default function PropertiesPage() {
                     onClear={handleClear}
                     onRetry={refetch}
                     currentPage={currentPage}
-                    totalPages={totalPages}
                     loading={loading}
                     error={error}
                     onPageChange={(page) => {
