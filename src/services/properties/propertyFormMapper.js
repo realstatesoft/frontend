@@ -121,7 +121,7 @@ export const buildCreatePropertyPayload = (form, { ownerId, agentId } = {}) => {
 
     // ── Colecciones ──────────────────────────────────────────────────
     rooms: rooms.length > 0 ? rooms : undefined,
-    media: form.media?.length > 0 ? form.media : undefined,
+    media: form.media?.length > 0 ? normalizeMediaForPayload(form.media) : undefined,
     exteriorFeatureIds: toFeatureIds(form.exteriorFeatures ?? [], EXTERIOR_FEATURE_IDS),
   };
 
@@ -130,6 +130,19 @@ export const buildCreatePropertyPayload = (form, { ownerId, agentId } = {}) => {
     Object.entries(payload).filter(([, v]) => v !== undefined)
   );
 };
+
+/** Normaliza form.media a PropertyMediaDto: type, url, isPrimary, orderIndex */
+function normalizeMediaForPayload(media) {
+  const hasPrimary = media.some((m) => m.isPrimary);
+  return media.map((m, i) => ({
+    type: m.type || "PHOTO",
+    url: m.url,
+    thumbnailUrl: m.thumbnailUrl ?? undefined,
+    isPrimary: hasPrimary ? m.isPrimary : i === 0,
+    orderIndex: i,
+    title: m.title ?? undefined,
+  }));
+}
 
 /** Encuentra el string de dimensiones que corresponde a un área numérica */
 function findDimensionsByArea(area) {
@@ -242,7 +255,7 @@ export const buildUpdatePropertyPayload = (form, { agentId } = {}) => {
     electricityInstallation: form.electricityInstallation || undefined,
     availability: AVAILABILITY[form.availability],
     rooms: rooms.length > 0 ? rooms : undefined,
-    media: form.media?.length > 0 ? form.media : undefined,
+    media: form.media?.length > 0 ? normalizeMediaForPayload(form.media) : undefined,
     exteriorFeatureIds: toFeatureIds(form.exteriorFeatures ?? [], EXTERIOR_FEATURE_IDS),
   };
 

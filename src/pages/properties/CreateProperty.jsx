@@ -30,6 +30,10 @@ export default function CreateProperty() {
     updateRoom,
     addRoom,
     removeRoom,
+    addMedia,
+    removeMedia,
+    setPrimaryMedia,
+    uploadingMedia,
     handleSubmit,
     dismissError,
   } = usePropertyForm(id);
@@ -84,7 +88,15 @@ export default function CreateProperty() {
 
           <Form onSubmit={handleOpenConfirm} noValidate className="create-property-form">
             <BasicInfoSection form={form} set={set} fieldErrors={fieldErrors} />
-            <PropertyFeaturesSection form={form} set={set} setArr={setArr} />
+            <PropertyFeaturesSection
+              form={form}
+              set={set}
+              setArr={setArr}
+              addMedia={addMedia}
+              removeMedia={removeMedia}
+              setPrimaryMedia={setPrimaryMedia}
+              uploadingMedia={uploadingMedia}
+            />
             <ConstructionSection form={form} set={set} />
             <InteriorAndRoomsSection
               form={form}

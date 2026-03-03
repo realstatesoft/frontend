@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import propertyApi from "../services/properties/propertyApi";
+import { uploadImage } from "../services/images/imageApi";
 import {
   buildCreatePropertyPayload,
   buildUpdatePropertyPayload,
@@ -113,6 +114,71 @@ export function usePropertyForm(propertyId) {
     setForm((f) => ({ ...f, rooms: f.rooms.filter((_, i) => i !== index) }));
   }, []);
 
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+
+  const addMedia = useCallback(async (file) => {
+    if (!file || !file.type?.startsWith("image/")) return;
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Formato no permitido",
+        text: "Solo se permiten imágenes JPG, PNG o WebP.",
+      });
+      return;
+    }
+    setUploadingMedia(true);
+    try {
+      const { data } = await uploadImage(file, "properties");
+      if (data?.success && data?.data?.url) {
+        setForm((f) => {
+          const media = f.media || [];
+          const isFirst = media.length === 0;
+          const newItem = {
+            type: "PHOTO",
+            url: data.data.url,
+            isPrimary: isFirst,
+            orderIndex: media.length,
+            title: data.data.filename || file.name,
+          };
+          return { ...f, media: [...media, newItem] };
+        });
+      } else {
+        throw new Error(data?.message ?? "Error al subir");
+      }
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error al subir imagen",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setUploadingMedia(false);
+    }
+  }, []);
+
+  const removeMedia = useCallback((index) => {
+    setForm((f) => {
+      const next = (f.media || []).filter((_, i) => i !== index);
+      const removedWasPrimary = f.media?.[index]?.isPrimary;
+      const updated = next.map((m, i) => ({
+        ...m,
+        isPrimary: removedWasPrimary ? i === 0 : m.isPrimary,
+      }));
+      if (updated.length > 0 && !updated.some((m) => m.isPrimary)) {
+        updated[0].isPrimary = true;
+      }
+      return { ...f, media: updated };
+    });
+  }, []);
+
+  const setPrimaryMedia = useCallback((index) => {
+    setForm((f) => ({
+      ...f,
+      media: (f.media || []).map((m, i) => ({ ...m, isPrimary: i === index })),
+    }));
+  }, []);
+
   const validateForm = useCallback(() => {
     const dataToValidate = {
       title: form.title,
@@ -214,6 +280,10 @@ export function usePropertyForm(propertyId) {
     updateRoom,
     addRoom,
     removeRoom,
+    addMedia,
+    removeMedia,
+    setPrimaryMedia,
+    uploadingMedia,
     handleSubmit,
     dismissError,
     fieldErrors,
