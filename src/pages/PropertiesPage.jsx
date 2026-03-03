@@ -25,7 +25,7 @@ export default function PropertiesPage() {
     const hasClientFilters = typeFilter !== "Todos" || tagFilter !== "Todos";
 
     // Si hay filtros client-side, traemos todo; sino paginamos en el servidor
-    const { properties, loading, error, totalPages: serverTotalPages, refetch } = useProperties({
+    const { properties, loading, error, totalPages: serverTotalPages, totalElements, refetch } = useProperties({
         page: hasClientFilters ? 1 : currentPage,
         size: hasClientFilters ? 500 : PAGE_SIZE,
         search,
@@ -73,7 +73,7 @@ export default function PropertiesPage() {
                 search={search}
                 typeFilter={typeFilter}
                 tagFilter={tagFilter}
-                totalResults={filtered.length}
+                totalResults={hasClientFilters ? filtered.length : totalElements}
                 onSearch={handleSearch}
                 onTypeChange={handleType}
                 onTagChange={handleTag}
