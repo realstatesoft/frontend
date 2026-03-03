@@ -19,10 +19,10 @@ export default function PropertiesPage() {
     const [tagFilter, setTagFilter] = useState("Todos");
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Traer propiedades del backend (usa search para el endpoint /search)
+    // Traer propiedades del backend con paginación real
     const { properties, loading, error, totalPages, refetch } = useProperties({
-        page: 1,
-        size: 200, // Traemos un batch grande para filtrar client-side
+        page: currentPage,
+        size: PAGE_SIZE,
         search,
     });
 
@@ -69,7 +69,9 @@ export default function PropertiesPage() {
                 <PropertiesGrid
                     properties={filtered}
                     onClear={handleClear}
+                    onRetry={refetch}
                     currentPage={currentPage}
+                    totalPages={totalPages}
                     loading={loading}
                     error={error}
                     onPageChange={(page) => {

@@ -15,6 +15,10 @@ export default function PropertyCard({ property }) {
     // Normalizar campos del API a los que usa el componente
     const tag = STATUS_LABELS[property.status] ?? property.tag ?? "—";
     const price = property.price;
+    const numericPrice = Number(price);
+    const formattedPrice = Number.isFinite(numericPrice)
+        ? `Gs ${numericPrice.toLocaleString()}`
+        : "—";
     const type =
         PROPERTY_TYPE_LABELS[property.propertyType] ?? property.type ?? "";
     const location = property.address || property.locationName || property.location || "";
@@ -60,7 +64,7 @@ export default function PropertyCard({ property }) {
             {/* Información principal */}
             <Card.Body className="px-3 py-3">
                 <h5 className="fw-bold mb-1" style={{ color: "var(--dark, #1e293b)", fontSize: "1.05rem" }}>
-                    Gs {Number(price).toLocaleString()}
+                    {formattedPrice}
                 </h5>
                 <Badge
                     bg="light"

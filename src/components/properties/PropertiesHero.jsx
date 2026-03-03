@@ -15,9 +15,9 @@ export default function PropertiesHero({
     onClear,
 }) {
     return (
-        <div style={{ backgroundColor: "var(--ligth, #f8fafc)    " }}>
+        <div style={{ backgroundColor: "var(--light, #f8fafc)" }}>
             <Container>
-                <div style={{ backgroundColor: "var(--secundary, #64748b)    ", padding: "20px", borderRadius: "20px" }}>
+                <div style={{ backgroundColor: "var(--secondary, #64748b)", padding: "20px", borderRadius: "20px" }}>
                     <Row className="g-2">
                         {/* Búsqueda libre */}
                         <Col md={5}>
@@ -60,6 +60,7 @@ export default function PropertiesHero({
                                 <option>Todos</option>
                                 <option>Pendiente</option>
                                 <option>Aprobado</option>
+                                <option>Rechazado</option>
                                 <option>Publicado</option>
                                 <option>Vendido</option>
                                 <option>Alquilado</option>

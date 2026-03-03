@@ -7,6 +7,7 @@ const ITEMS_PER_PAGE = 8;
 export default function PropertiesGrid({
     properties,
     onClear,
+    onRetry,
     currentPage,
     onPageChange,
     loading = false,
@@ -42,7 +43,7 @@ export default function PropertiesGrid({
             <Container className="py-5">
                 <Alert variant="danger" className="text-center">
                     <p className="mb-2">{error}</p>
-                    <Button variant="outline-danger" size="sm" onClick={onClear}>
+                    <Button variant="outline-danger" size="sm" onClick={onRetry ?? onClear}>
                         Reintentar
                     </Button>
                 </Alert>
@@ -64,8 +65,6 @@ export default function PropertiesGrid({
         );
     }
 
-    const start = externalTotalPages != null ? 0 : (currentPage - 1) * ITEMS_PER_PAGE;
-    const totalCount = externalTotalPages != null ? properties.length : properties.length;
 
     return (
         <Container className="pt-4 pb-2">
