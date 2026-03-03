@@ -5,6 +5,7 @@ import logo from '../assets/Logotipo.png';
 // Importamos el hook de autenticación y el hook de navegación
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 export default function LogIn() {
     const primaryColor = '#2563eb';
@@ -15,7 +16,7 @@ export default function LogIn() {
     const navigate = useNavigate(); // Para redirigir al usuario tras iniciar sesión
 
     const [showPassword, setShowPassword] = useState(false);
-    
+
     // 1. Estado para guardar el correo y la contraseña
     const [formData, setFormData] = useState({
         email: '',
@@ -36,29 +37,20 @@ export default function LogIn() {
 
         try {
             // Hacemos la petición POST al backend de Spring Boot
-            const response = await fetch("http://localhost:8080/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            });
+            const response = await api.post("/api/auth/login", formData);
 
-            const result = await response.json();
-
-            // Si las credenciales son incorrectas, lanzamos error
-            if (!response.ok) {
-                throw new Error(result.message || "Correo o contraseña incorrectos");
-            }
+            const result = response.data;
 
             // Si el backend responde bien, pasamos los datos a la función login de tu compañero
             // Esto guardará el AccessToken en las cookies
             if (result.data) {
-                login(result.data); 
+                login(result.data);
                 navigate('/propiedades'); // Redirigimos a la pantalla principal de tu app
             }
 
         } catch (error) {
             console.error("Error en login:", error);
-            alert(error.message);
+            alert(error.response?.data?.message || error.message || "Correo o contraseña incorrectos");
         }
     };
 
@@ -92,7 +84,7 @@ export default function LogIn() {
 
                     {/* Conectamos el formulario con handleSubmit */}
                     <Form onSubmit={handleSubmit}>
-                        
+
                         {/* Correo Electrónico */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-bold text-dark" style={{ fontSize: '0.85rem' }}>
@@ -132,7 +124,7 @@ export default function LogIn() {
                                     style={{ backgroundColor: inputBgColor, border: 'none', padding: '0.7rem 0.7rem 0.7rem 10px', boxShadow: 'none' }}
                                     required
                                 />
-                                <InputGroup.Text 
+                                <InputGroup.Text
                                     style={{ backgroundColor: inputBgColor, border: 'none', borderRadius: '0 0.5rem 0.5rem 0', cursor: 'pointer' }}
                                     onClick={() => setShowPassword(!showPassword)}
                                 >

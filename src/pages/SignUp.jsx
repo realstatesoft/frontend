@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 export default function SignUp() {
     const navigate = useNavigate();
     const { register } = useAuth(); // Obtenemos la función de registro del contexto
-    
+
     const [tipoUsuario, setTipoUsuario] = useState('Comprador');
     const [formData, setFormData] = useState({
         nombre: '',
@@ -41,7 +41,7 @@ export default function SignUp() {
         }
 
         try {
-            
+
             const dataParaBackend = {
                 name: `${formData.nombre} ${formData.apellido}`.trim(),
                 email: formData.email,
@@ -52,10 +52,10 @@ export default function SignUp() {
 
             //Enviamos al backend
             await register(dataParaBackend);
-            
+
             alert("¡Registro exitoso!");
             navigate('/'); //Redirigimos a la página principal
-            console.log("Usuario registrado:", dataParaBackend);
+            console.log("Usuario registrado:", dataParaBackend.email);
 
         } catch (error) {
             console.error("Error en el registro:", error);
@@ -64,8 +64,8 @@ export default function SignUp() {
     };
 
     return (
-        <div 
-            className="bg-light min-vh-100 d-flex align-items-center justify-content-center py-4" 
+        <div
+            className="bg-light min-vh-100 d-flex align-items-center justify-content-center py-4"
             style={{ fontFamily: '"Poppins", sans-serif' }}
         >
             <Container style={{ maxWidth: 500 }}>
@@ -133,18 +133,18 @@ export default function SignUp() {
                             <Col xs={6}>
                                 <Form.Group>
                                     <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Nombre</Form.Label>
-                                    <Form.Control 
+                                    <Form.Control
                                         type="text" name="nombre" value={formData.nombre} onChange={handleChange}
-                                        placeholder="Ej: Ayumu" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                                        placeholder="Ej: Ayumu" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required
                                     />
                                 </Form.Group>
                             </Col>
                             <Col xs={6}>
                                 <Form.Group>
                                     <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Apellido</Form.Label>
-                                    <Form.Control 
+                                    <Form.Control
                                         type="text" name="apellido" value={formData.apellido} onChange={handleChange}
-                                        placeholder="Apellido" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                                        placeholder="Apellido" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required
                                     />
                                 </Form.Group>
                             </Col>
@@ -153,40 +153,40 @@ export default function SignUp() {
                         {/* Correo */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Correo Electrónico</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                                 type="email" name="email" value={formData.email} onChange={handleChange}
-                                placeholder="tu@email.com" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                                placeholder="tu@email.com" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required
                             />
                         </Form.Group>
 
                         {/* Teléfono */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Teléfono</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                                 type="tel" name="phone" value={formData.phone} onChange={handleChange}
-                                placeholder="+595 9..." style={{ padding: '0.6rem', borderRadius: '0.75rem' }} 
+                                placeholder="+595 9..." style={{ padding: '0.6rem', borderRadius: '0.75rem' }}
                             />
                         </Form.Group>
 
                         {/* Contraseña */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Contraseña</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                                 type="password" name="password" value={formData.password} onChange={handleChange}
-                                placeholder="Min. 8 caracteres" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                                placeholder="Min. 8 caracteres" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required
                             />
                         </Form.Group>
 
                         <Form.Group className="mb-4">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Confirmar contraseña</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                                 type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-                                placeholder="Repite tu contraseña" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                                placeholder="Repite tu contraseña" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required
                             />
                         </Form.Group>
 
                         <Form.Group className="mb-4 d-flex align-items-center">
-                            <Form.Check 
+                            <Form.Check
                                 type="checkbox" id="terminos" name="terminos" checked={formData.terminos} onChange={handleChange}
                                 className="me-2 mt-0" required
                             />

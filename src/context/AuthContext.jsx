@@ -1,5 +1,6 @@
 import { createContext, useState } from "react";
 import { getAccessToken, setAccessToken, removeAccessToken } from "../utils/authToken";
+import api from "../services/api";
 
 export const AuthContext = createContext(null);
 
@@ -24,20 +25,9 @@ export function AuthProvider({ children }) {
   async function register(userData) {
     try {
       // Hacemos la petición POST al endpoint de Spring Boot
-      const response = await fetch("http://localhost:8080/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
+      const response = await api.post("/api/auth/register", userData);
 
-      const result = await response.json();
-
-      // Si el backend responde con un error
-      if (!response.ok) {
-        throw new Error(result.message || "Error al registrar el usuario");
-      }
+      const result = response.data;
 
       // Asumiendo que el backend devuelve un ApiResponse con { data: { accessToken: "..." } }
       // Iniciamos sesión automáticamente usando la función login que ya tienes
@@ -47,6 +37,10 @@ export function AuthProvider({ children }) {
 
       return result;
     } catch (error) {
+      // Si axios recibió una respuesta con error, extraemos el mensaje del backend
+      if (error.response) {
+        throw new Error(error.response.data?.message || "Error al registrar el usuario");
+      }
       throw error; // Lanzamos el error para que el SignUp.jsx lo atrape y muestre un alert
     }
   }
