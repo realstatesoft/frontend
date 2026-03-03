@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
   async function register(userData) {
     try {
       // Hacemos la petición POST al endpoint de Spring Boot
-      const response = await api.post("/api/auth/register", userData);
+      const response = await api.post("/auth/register", userData);
 
       const result = response.data;
 

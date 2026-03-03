@@ -40,7 +40,7 @@ export default function LogIn() {
         setIsSubmitting(true);
         try {
             // Hacemos la petición POST al backend de Spring Boot
-            const response = await api.post("/api/auth/login", formData);
+            const response = await api.post("/auth/login", formData);
 
             const result = response.data;
 
