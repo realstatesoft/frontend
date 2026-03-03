@@ -1,4 +1,5 @@
 import { Card, Badge, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { tagColors } from "../../data/propertiesData";
 
 /**
@@ -68,6 +69,8 @@ export default function PropertyCard({ property }) {
             {/* Botón de acción */}
             <Card.Footer className="bg-white border-0 pb-3 px-3">
                 <Button
+                    as={Link}
+                    to={`/show-property/${property.id}`}
                     className="w-100 rounded-pill"
                     style={{
                         background: "var(--primary, #2563eb)",
