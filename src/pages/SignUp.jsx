@@ -1,10 +1,67 @@
 import React, { useState } from 'react';
 import { Container, Card, Row, Col, Form, Button, Stack } from 'react-bootstrap';
 import logo from '../assets/Logotipo.png';
-import BotonRegistrar from '../components/loginButton';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
+    const navigate = useNavigate();
+    const { register } = useAuth(); // Obtenemos la función de registro del contexto
+    
     const [tipoUsuario, setTipoUsuario] = useState('Comprador');
+    const [formData, setFormData] = useState({
+        nombre: '',
+        apellido: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: '',
+        terminos: false
+    });
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData({
+            ...formData,
+            [name]: type === 'checkbox' ? checked : value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        //Validaciones básicas locales
+        if (formData.password !== formData.confirmPassword) {
+            alert("Las contraseñas no coinciden");
+            return;
+        }
+        if (!formData.terminos) {
+            alert("Debes aceptar los términos y condiciones");
+            return;
+        }
+
+        try {
+            
+            const dataParaBackend = {
+                name: `${formData.nombre} ${formData.apellido}`.trim(),
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone,
+                role: tipoUsuario === 'Comprador' ? 'BUYER' : 'SELLER'
+            };
+
+            //Enviamos al backend
+            await register(dataParaBackend);
+            
+            alert("¡Registro exitoso!");
+            navigate('/'); //Redirigimos a la página principal
+            console.log("Usuario registrado:", dataParaBackend);
+
+        } catch (error) {
+            console.error("Error en el registro:", error);
+            alert("Hubo un error: " + error.message);
+        }
+    };
 
     return (
         <div 
@@ -14,11 +71,14 @@ export default function SignUp() {
             <Container style={{ maxWidth: 500 }}>
                 <Card className="border-0 shadow-sm p-4 p-md-5" style={{ borderRadius: '0.75rem' }}>
                     <div className="text-center mb-2">
-                        <img
-                            src={logo}
-                            alt="Logo"
-                            style={{ width: '120px', height: 'auto', objectFit: 'contain' }}
-                        />
+                        <div className="mb-4">
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                className="mx-auto d-block img-fluid"
+                                style={{ width: '100%', maxWidth: '120px', objectFit: 'contain' }}
+                            />
+                        </div>
                     </div>
 
                     <h3 className="text-center fw-bold mb-1" style={{ marginTop: '-10px' }}>
@@ -27,17 +87,13 @@ export default function SignUp() {
 
                     <p className="text-center text-muted mb-4" style={{ fontSize: '0.9rem' }}>
                         ¿Ya tienes una cuenta?{' '}
-                        <a 
-                            href="/login" 
-                            className="text-decoration-none fw-medium" 
-                            style={{ color: 'var(--bs-primary)' }}
-                        >
+                        <a href="/login" className="text-decoration-none fw-medium" style={{ color: 'var(--bs-primary)' }}>
                             Inicia sesión aquí
                         </a>
                     </p>
 
-                    <Form>
-                        {/* Botones de Tipo de Usuario */}
+                    <Form onSubmit={handleSubmit}>
+                        {/* Tipo de Usuario */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold mb-2" style={{ fontSize: '0.9rem' }}>
                                 ¿Qué tipo de usuario eres?
@@ -77,88 +133,89 @@ export default function SignUp() {
                             <Col xs={6}>
                                 <Form.Group>
                                     <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Nombre</Form.Label>
-                                    <Form.Control type="text" placeholder="******" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} />
+                                    <Form.Control 
+                                        type="text" name="nombre" value={formData.nombre} onChange={handleChange}
+                                        placeholder="Ej: Ayumu" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                                    />
                                 </Form.Group>
                             </Col>
                             <Col xs={6}>
                                 <Form.Group>
                                     <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Apellido</Form.Label>
-                                    <Form.Control type="text" placeholder="******" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} />
+                                    <Form.Control 
+                                        type="text" name="apellido" value={formData.apellido} onChange={handleChange}
+                                        placeholder="Apellido" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                                    />
                                 </Form.Group>
                             </Col>
                         </Row>
 
-                        {/* Correo Electrónico */}
+                        {/* Correo */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Correo Electrónico</Form.Label>
-                            <Form.Control type="email" placeholder="tu@email.com" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} />
+                            <Form.Control 
+                                type="email" name="email" value={formData.email} onChange={handleChange}
+                                placeholder="tu@email.com" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                            />
                         </Form.Group>
 
                         {/* Teléfono */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Teléfono</Form.Label>
-                            <Form.Control type="tel" placeholder="+595 995 789 456" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} />
+                            <Form.Control 
+                                type="tel" name="phone" value={formData.phone} onChange={handleChange}
+                                placeholder="+595 9..." style={{ padding: '0.6rem', borderRadius: '0.75rem' }} 
+                            />
                         </Form.Group>
 
                         {/* Contraseña */}
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Contraseña</Form.Label>
-                            <Form.Control type="password" placeholder="******" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} />
+                            <Form.Control 
+                                type="password" name="password" value={formData.password} onChange={handleChange}
+                                placeholder="Min. 8 caracteres" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                            />
                         </Form.Group>
 
-                        {/* Confirmar Contraseña */}
                         <Form.Group className="mb-4">
                             <Form.Label className="fw-semibold" style={{ fontSize: '0.9rem' }}>Confirmar contraseña</Form.Label>
-                            <Form.Control type="password" placeholder="******" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} />
+                            <Form.Control 
+                                type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
+                                placeholder="Repite tu contraseña" style={{ padding: '0.6rem', borderRadius: '0.75rem' }} required 
+                            />
                         </Form.Group>
 
-                        {/* Checkbox de Términos */}
                         <Form.Group className="mb-4 d-flex align-items-center">
                             <Form.Check 
-                                type="checkbox" 
-                                id="terminos" 
-                                className="me-2 mt-0"
+                                type="checkbox" id="terminos" name="terminos" checked={formData.terminos} onChange={handleChange}
+                                className="me-2 mt-0" required
                             />
                             <Form.Label htmlFor="terminos" className="text-dark mb-0" style={{ fontSize: '0.85rem' }}>
-                                Acepto los{' '}
-                                <a href="#" className="text-decoration-none fw-medium" style={{ color: 'var(--bs-primary)' }}>términos y condiciones</a> 
-                                {' '}y la{' '}
-                                <a href="#" className="text-decoration-none fw-medium" style={{ color: 'var(--bs-primary)' }}>política de privacidad</a>
+                                Acepto los <a href="#" className="text-decoration-none fw-medium">términos y condiciones</a>
                             </Form.Label>
                         </Form.Group>
 
-                        {/* Botón Principal */}
-                        <BotonRegistrar texto="Registrarse"/>
+                        <div className="d-grid">
+                            <Button variant="primary" type="submit" style={{ borderRadius: '0.75rem', padding: '0.8rem' }} className="fw-bold">
+                                Registrarse
+                            </Button>
+                        </div>
                     </Form>
 
-                    {/* Divisor */}
                     <div className="d-flex align-items-center my-4">
                         <hr className="flex-grow-1 m-0" style={{ borderColor: '#ddd' }} />
                         <span className="mx-3 text-muted" style={{ fontSize: '0.85rem' }}>O regístrate con</span>
                         <hr className="flex-grow-1 m-0" style={{ borderColor: '#ddd' }} />
                     </div>
 
-                    {/* Botones Sociales */}
                     <Stack direction="horizontal" gap={3} className="justify-content-center">
-                        <Button 
-                            variant="outline-secondary" 
-                            className="d-flex align-items-center px-4" 
-                            style={{ borderRadius: '0.75rem', color: '#555', borderColor: '#ddd' }}
-                        >
-                            <i className="bi bi-google me-2" style={{ fontSize: '1.1rem' }}></i>
-                            <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>Google</span>
+                        <Button variant="outline-secondary" className="d-flex align-items-center px-4" style={{ borderRadius: '0.75rem' }}>
+                            <i className="bi bi-google me-2"></i> Google
                         </Button>
-
-                        <Button 
-                            variant="outline-secondary" 
-                            className="d-flex align-items-center px-4" 
-                            style={{ borderRadius: '0.75rem', color: '#555', borderColor: '#ddd' }}
-                        >
-                            <i className="bi bi-facebook me-2" style={{ fontSize: '1.1rem' }}></i>
-                            <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>Facebook</span>
+                        <Button variant="outline-secondary" className="d-flex align-items-center px-4" style={{ borderRadius: '0.75rem' }}>
+                            <i className="bi bi-facebook me-2"></i> Facebook
                         </Button>
                     </Stack>
-
                 </Card>
             </Container>
         </div>

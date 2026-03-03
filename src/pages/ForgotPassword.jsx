@@ -12,7 +12,7 @@ const ForgotPassword = () => {
 
     return (
         // Contenedor principal centrado y con fondo claro
-        <div 
+        <div
             className="bg-light min-vh-100 d-flex flex-column align-items-center justify-content-center py-4"
             style={{ fontFamily: '"Poppins", sans-serif', overflow: 'hidden' }}
         >
@@ -20,11 +20,15 @@ const ForgotPassword = () => {
                 <Card className="border-0 shadow-sm p-4" style={{ borderRadius: '1rem' }}>
 
                     <div className="text-center mb-3">
-                        <img
-                            src={logo}
-                            alt="Logo"
-                            style={{ width: '20vh', height: 'auto', objectFit: 'contain' }}
-                        />
+                        {/* Logo */}
+                        <div className="mb-4">
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                className="mx-auto d-block img-fluid"
+                                style={{ width: '100%', maxWidth: '120px', objectFit: 'contain' }}
+                            />
+                        </div>
                     </div>
 
                     {/* Encabezados */}
@@ -45,24 +49,24 @@ const ForgotPassword = () => {
                                 <InputGroup.Text className="bg-light border-end-0" style={{ borderRadius: '0.5rem 0 0 0.5rem' }}>
                                     <Envelope color="#6c757d" />
                                 </InputGroup.Text>
-                                <Form.Control 
-                                    type="email" 
+                                <Form.Control
+                                    type="email"
                                     placeholder="tu@email.com"
                                     className="bg-light border-start-0 ps-0"
-                                    style={{ padding: '0.7rem', borderRadius: '0 0.5rem 0.5rem 0' }} 
+                                    style={{ padding: '0.7rem', borderRadius: '0 0.5rem 0.5rem 0' }}
                                 />
                             </InputGroup>
                         </Form.Group>
 
                         {/* Botón Principal (tu componente con tu color azul) */}
-                        <BotonLogin texto="Recuperar Contraseña"/>
+                        <BotonLogin texto="Recuperar Contraseña" />
                     </Form>
 
                     {/* Enlace para volver */}
                     <div className="text-center mt-4">
-                        <a 
-                            href="/" 
-                            className="text-decoration-none fw-bold text-dark d-inline-flex align-items-center" 
+                        <a
+                            href="/"
+                            className="text-decoration-none fw-bold text-dark d-inline-flex align-items-center"
                             style={{ fontSize: '0.9rem' }}
                         >
                             <ArrowLeft className="me-2" /> Volver al inicio de sesión
@@ -82,7 +86,7 @@ const ForgotPassword = () => {
 
                 </Card>
             </Container>
-            
+
         </div>
     );
 };
