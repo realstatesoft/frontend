@@ -28,8 +28,4 @@ function LoginPage() {
 }
 ```
 
-### Valores disponibles desde `useAuth`
-
-```js
-const { token, isAuthenticated, login, logout } = useAuth();
-```
+#que?
