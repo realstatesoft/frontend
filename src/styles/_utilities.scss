@@ -1,87 +1,258 @@
 /* ===========================
    COLORES DE FONDO
 =========================== */
-.bg-primary { background-color: $primary; }
-.bg-secondary { background-color: $secondary; }
-.bg-success { background-color: $success; }
-.bg-danger { background-color: $danger; }
-.bg-warning { background-color: $warning; }
-.bg-info { background-color: $info; }
-.bg-light { background-color: $light; }
-.bg-dark { background-color: $dark; }
+.bg-primary {
+   background-color: $primary;
+}
 
-.bg-neutral-soft { background-color: $neutral-soft; }
+.bg-secondary {
+   background-color: $secondary;
+}
+
+.bg-success {
+   background-color: $success;
+}
+
+.bg-danger {
+   background-color: $danger;
+}
+
+.bg-warning {
+   background-color: $warning;
+}
+
+.bg-info {
+   background-color: $info;
+}
+
+.bg-light {
+   background-color: $light;
+}
+
+.bg-dark {
+   background-color: $dark;
+}
+
+.bg-neutral-soft {
+   background-color: $neutral-soft;
+}
 
 /* ===========================
    COLORES DE TEXTO
 =========================== */
-.text-dark { color: $text-dark; }
-.text-muted { color: $text-muted; }
-.text-light-muted { color: $text-light-muted; }
-.text-primary { color: $primary; }
-.text-secondary { color: $secondary; }
-.text-success { color: $success; }
-.text-danger { color: $danger; }
-.text-warning { color: $warning; }
-.text-info { color: $info; }
-.text-light { color: $light; }
+.text-dark {
+   color: $text-dark;
+}
+
+.text-muted {
+   color: $text-muted;
+}
+
+.text-light-muted {
+   color: $text-light-muted;
+}
+
+.text-primary {
+   color: $primary;
+}
+
+.text-secondary {
+   color: $secondary;
+}
+
+.text-success {
+   color: $success;
+}
+
+.text-danger {
+   color: $danger;
+}
+
+.text-warning {
+   color: $warning;
+}
+
+.text-info {
+   color: $info;
+}
+
+.text-light {
+   color: $light;
+}
 
 /* ===========================
    BORDES Y SOMBRAS
 =========================== */
-.border-soft { border: 1px solid $border-color-soft; }
-.border-bottom-soft { border-bottom: 1px solid $border-color-soft; }
-.shadow-soft { box-shadow: $shadow-soft; }
+.border-soft {
+   border: 1px solid $border-color-soft;
+}
+
+.border-bottom-soft {
+   border-bottom: 1px solid $border-color-soft;
+}
+
+.shadow-soft {
+   box-shadow: $shadow-soft;
+}
 
 /* ===========================
    RADIOS DE BORDE
 =========================== */
-.radius-sm { border-radius: $radius-sm; }
-.radius-md { border-radius: $radius-md; }
-.radius-lg { border-radius: $radius-lg; }
+.radius-sm {
+   border-radius: $radius-sm;
+}
+
+.radius-md {
+   border-radius: $radius-md;
+}
+
+.radius-lg {
+   border-radius: $radius-lg;
+}
 
 /* Radios por esquina */
-.radius-top-left-lg { border-radius: $radius-lg 0 0 0; }
-.radius-top-right-lg { border-radius: 0 $radius-lg 0 0; }
-.radius-bottom-left-lg { border-radius: 0 0 0 $radius-lg; }
-.radius-bottom-right-lg { border-radius: 0 0 $radius-lg 0; }
+.radius-top-left-lg {
+   border-radius: $radius-lg 0 0 0;
+}
+
+.radius-top-right-lg {
+   border-radius: 0 $radius-lg 0 0;
+}
+
+.radius-bottom-left-lg {
+   border-radius: 0 0 0 $radius-lg;
+}
+
+.radius-bottom-right-lg {
+   border-radius: 0 0 $radius-lg 0;
+}
 
 /* ===========================
    TIPOGRAFÍA
 =========================== */
-.font-sans { font-family: $font-family-sans-serif; }
-.fw-regular { font-weight: $font-weight-regular; }
-.fw-medium { font-weight: $font-weight-medium; }
-.fw-semibold { font-weight: $font-weight-semibold; }
-.fw-bold { font-weight: $font-weight-bold; }
+.font-sans {
+   font-family: $font-family-sans-serif;
+}
+
+.fw-regular {
+   font-weight: $font-weight-regular;
+}
+
+.fw-medium {
+   font-weight: $font-weight-medium;
+}
+
+.fw-semibold {
+   font-weight: $font-weight-semibold;
+}
+
+.fw-bold {
+   font-weight: $font-weight-bold;
+}
 
 /* Headings */
-.h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: $font-family-sans-serif;
-  font-weight: $headings-font-weight;
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+   font-family: $font-family-sans-serif;
+   font-weight: $headings-font-weight;
 }
 
 /* ===========================
    UTILIDADES ADICIONALES
 =========================== */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
+.text-center {
+   text-align: center;
+}
 
-.p-1 { padding: 4px; }
-.p-2 { padding: 8px; }
-.p-3 { padding: 12px; }
-.p-4 { padding: 16px; }
-.p-5 { padding: 20px; }
+.text-left {
+   text-align: left;
+}
 
-.m-1 { margin: 4px; }
-.m-2 { margin: 8px; }
-.m-3 { margin: 12px; }
-.m-4 { margin: 16px; }
-.m-5 { margin: 20px; }
+.text-right {
+   text-align: right;
+}
+
+.p-1 {
+   padding: 4px;
+}
+
+.p-2 {
+   padding: 8px;
+}
+
+.p-3 {
+   padding: 12px;
+}
+
+.p-4 {
+   padding: 16px;
+}
+
+.p-5 {
+   padding: 20px;
+}
+
+.m-1 {
+   margin: 4px;
+}
+
+.m-2 {
+   margin: 8px;
+}
+
+.m-3 {
+   margin: 12px;
+}
+
+.m-4 {
+   margin: 16px;
+}
+
+.m-5 {
+   margin: 20px;
+}
+
+/* Formulario crear propiedad: fondo gris claro en inputs y selects */
+.create-property-form .form-control,
+.create-property-form .form-select {
+   background-color: $input-bg-light;
+}
+
+/* Botones secundarios */
+.btn-secondary {
+   background-color: rgba(13, 110, 253, 0.1);
+   color: var(--bs-primary);
+   border: none;
+   border-radius: $radius-sm;
+   font-weight: $font-weight-regular;
+
+   &:hover:not(:disabled) {
+      background-color: rgba(13, 110, 253, 0.2);
+      color: var(--bs-primary);
+   }
+
+   &:disabled {
+      opacity: 0.6;
+   }
+}
 
 /* Flex utilities */
-.d-flex { display: flex; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.items-center { align-items: center; }
+.d-flex {
+   display: flex;
+}
+
+.justify-center {
+   justify-content: center;
+}
+
+.justify-between {
+   justify-content: space-between;
+}
+
+.items-center {
+   align-items: center;
+}
