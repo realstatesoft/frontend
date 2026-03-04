@@ -1,0 +1,23 @@
+// Bootstrap
+@use "bootstrap/scss/bootstrap";
+
+// Variables personalizadas
+@import "./variables";
+
+// Reset / overrides globales
+@import "./reset";
+
+// Utilities propias
+@import "./utilities";
+
+// Navbar
+@import "./navbar";
+
+// Carousel & property cards
+@import "./carousel";
+
+
+
+body {
+  text-align: left;
+}

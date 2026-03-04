@@ -1,0 +1,9 @@
+// Nav link hover
+.nav-link {
+    transition: color 0.2s ease;
+    font-size: 0.9rem;
+
+    &:hover {
+        color: var(--primary, #1a56db) !important;
+    }
+}
