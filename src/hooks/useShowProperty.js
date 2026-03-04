@@ -148,7 +148,7 @@ export function useShowProperty() {
         title: "Propiedad eliminada",
         text: "La propiedad fue eliminada correctamente.",
       });
-      navigate("/propiedades");
+      navigate("/properties");
     } catch (err) {
       await Swal.fire({
         icon: "error",
