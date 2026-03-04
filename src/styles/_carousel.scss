@@ -1,0 +1,21 @@
+// Property card animations
+.property-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+}
+
+// Carousel controls (Swiper)
+.swiper-button-next,
+.swiper-button-prev {
+    color: #111;
+}
+
+.swiper-pagination-bullet-active {
+    background: #111;
+}
