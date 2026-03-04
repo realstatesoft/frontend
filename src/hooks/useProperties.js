@@ -5,12 +5,14 @@ import propertyApi from "../services/properties/propertyApi";
  * Hook que obtiene propiedades paginadas desde la API.
  *
  * @param {object} opts
- * @param {number} opts.page     - Página actual (1-indexed, se convierte a 0-indexed para Spring)
- * @param {number} opts.size     - Cantidad por página
- * @param {string} opts.search   - Texto de búsqueda libre
+ * @param {number} opts.page         - Página actual (1-indexed, se convierte a 0-indexed para Spring)
+ * @param {number} opts.size         - Cantidad por página
+ * @param {string} opts.search       - Texto de búsqueda libre
+ * @param {string} opts.propertyType - Tipo de propiedad (enum del backend, ej: HOUSE, APARTMENT)
+ * @param {string} opts.status       - Estado de la propiedad (enum del backend, ej: PUBLISHED, SOLD)
  * @returns {{ properties, loading, error, totalPages, totalElements, refetch }}
  */
-export default function useProperties({ page = 1, size = 12, search = "" } = {}) {
+export default function useProperties({ page = 1, size = 12, search = "", propertyType, status } = {}) {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -27,12 +29,17 @@ export default function useProperties({ page = 1, size = 12, search = "" } = {})
         setError(null);
         try {
             const springPage = Math.max(page - 1, 0); // Spring usa 0-indexed
-            let res;
+            const params = { page: springPage, size };
 
+            // Agregar filtros opcionales
+            if (propertyType) params.propertyType = propertyType;
+            if (status) params.status = status;
+
+            let res;
             if (search.trim()) {
-                res = await propertyApi.search(search.trim(), { page: springPage, size });
+                res = await propertyApi.search(search.trim(), params);
             } else {
-                res = await propertyApi.getAll({ page: springPage, size });
+                res = await propertyApi.getAll(params);
             }
 
             // Descartar si ya se lanzó una request más nueva
@@ -60,7 +67,7 @@ export default function useProperties({ page = 1, size = 12, search = "" } = {})
                 setLoading(false);
             }
         }
-    }, [page, size, search]);
+    }, [page, size, search, propertyType, status]);
 
     useEffect(() => {
         fetchProperties();

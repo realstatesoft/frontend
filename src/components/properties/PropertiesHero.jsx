@@ -2,16 +2,14 @@ import { Container, Row, Col, Button, Form, InputGroup } from "react-bootstrap";
 
 /**
  * PropertiesHero
- * Banner con controles de filtro.
+ * Banner con controles de filtro (búsqueda por ubicación + tipo de propiedad).
  */
 export default function PropertiesHero({
     search,
     typeFilter,
-    tagFilter,
     totalResults,
     onSearch,
     onTypeChange,
-    onTagChange,
     onClear,
 }) {
     return (
@@ -19,22 +17,22 @@ export default function PropertiesHero({
             <Container>
                 <div style={{ backgroundColor: "var(--secondary, #64748b)", padding: "20px", borderRadius: "20px" }}>
                     <Row className="g-2">
-                        {/* Búsqueda libre */}
-                        <Col md={5}>
+                        {/* Búsqueda por ubicación */}
+                        <Col md={6}>
                             <InputGroup>
                                 <InputGroup.Text className="bg-white border-0"></InputGroup.Text>
                                 <Form.Control
-                                    placeholder="Buscar por ubicación o tipo..."
+                                    placeholder="Buscar por ubicación..."
                                     value={search}
                                     onChange={(e) => onSearch(e.target.value)}
                                     className="border-0"
-                                    style={{ boxShadow: "none", }}
+                                    style={{ boxShadow: "none" }}
                                 />
                             </InputGroup>
                         </Col>
 
                         {/* Tipo de propiedad */}
-                        <Col md={3}>
+                        <Col md={4}>
                             <Form.Select
                                 value={typeFilter}
                                 onChange={(e) => onTypeChange(e.target.value)}
@@ -50,26 +48,8 @@ export default function PropertiesHero({
                             </Form.Select>
                         </Col>
 
-                        {/* Estado */}
-                        <Col md={3}>
-                            <Form.Select
-                                value={tagFilter}
-                                onChange={(e) => onTagChange(e.target.value)}
-                                className="border-0"
-                            >
-                                <option>Todos</option>
-                                <option>Pendiente</option>
-                                <option>Aprobado</option>
-                                <option>Rechazado</option>
-                                <option>Publicado</option>
-                                <option>Vendido</option>
-                                <option>Alquilado</option>
-                                <option>Archivado</option>
-                            </Form.Select>
-                        </Col>
-
                         {/* Limpiar filtros */}
-                        <Col md={1} className="d-flex align-items-center">
+                        <Col md={2} className="d-flex align-items-center">
                             <Button
                                 variant="outline-light"
                                 onClick={onClear}
