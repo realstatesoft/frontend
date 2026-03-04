@@ -3,38 +3,40 @@ import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
 import PropertiesGrid from "../components/properties/PropertiesGrid";
-import { allProperties } from "../data/propertiesData";
+import useProperties from "../hooks/useProperties";
+import { PROPERTY_TYPE } from "../constants/propertyEnums";
+
+const PAGE_SIZE = 12;
 
 /**
  * PropertiesPage
- * Gestiona filtros y paginación de propiedades.
+ * Gestiona filtros y paginación de propiedades con filtros server-side.
  */
 export default function PropertiesPage() {
     const [search, setSearch] = useState("");
     const [typeFilter, setTypeFilter] = useState("Todos");
-    const [tagFilter, setTagFilter] = useState("Todos");
     const [currentPage, setCurrentPage] = useState(1);
+
+    // Convertir label del filtro de tipo a valor de enum del backend
+    const backendType = typeFilter !== "Todos" ? PROPERTY_TYPE[typeFilter] : undefined;
+
+    // Filtros server-side: type, search y paginación real
+    const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
+        page: currentPage,
+        size: PAGE_SIZE,
+        search,
+        propertyType: backendType,
+    });
 
     // Al cambiar cualquier filtro volvemos a la página 1
     const handleSearch = (val) => { setSearch(val); setCurrentPage(1); };
     const handleType = (val) => { setTypeFilter(val); setCurrentPage(1); };
-    const handleTag = (val) => { setTagFilter(val); setCurrentPage(1); };
 
     const handleClear = () => {
         setSearch("");
         setTypeFilter("Todos");
-        setTagFilter("Todos");
         setCurrentPage(1);
     };
-
-    const filtered = allProperties.filter((p) => {
-        const matchSearch =
-            p.location.toLowerCase().includes(search.toLowerCase()) ||
-            p.type.toLowerCase().includes(search.toLowerCase());
-        const matchType = typeFilter === "Todos" || p.type === typeFilter;
-        const matchTag = tagFilter === "Todos" || p.tag === tagFilter;
-        return matchSearch && matchType && matchTag;
-    });
 
     return (
         <>
@@ -43,19 +45,21 @@ export default function PropertiesPage() {
             <PropertiesHero
                 search={search}
                 typeFilter={typeFilter}
-                tagFilter={tagFilter}
-                totalResults={filtered.length}
+                totalResults={totalElements}
                 onSearch={handleSearch}
                 onTypeChange={handleType}
-                onTagChange={handleTag}
                 onClear={handleClear}
             />
 
             <div style={{ backgroundColor: "#f8f9fa", minHeight: "60vh" }}>
                 <PropertiesGrid
-                    properties={filtered}
+                    properties={properties}
                     onClear={handleClear}
+                    onRetry={refetch}
                     currentPage={currentPage}
+                    totalPages={totalPages}
+                    loading={loading}
+                    error={error}
                     onPageChange={(page) => {
                         setCurrentPage(page);
                         window.scrollTo({ top: 0, behavior: "smooth" });

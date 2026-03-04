@@ -1,14 +1,55 @@
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
 import PropertyCard from "./PropertyCard";
 import Pagination from "./Pagination";
 
-const ITEMS_PER_PAGE = 8    ;
+const ITEMS_PER_PAGE = 8;
 
+export default function PropertiesGrid({
+    properties,
+    onClear,
+    onRetry,
+    currentPage,
+    onPageChange,
+    loading = false,
+    error = null,
+    totalPages: externalTotalPages,
+}) {
+    // Si se pasa totalPages externo (del backend), usarlo; sino calcular client-side
+    const totalPages =
+        externalTotalPages != null
+            ? externalTotalPages
+            : Math.ceil(properties.length / ITEMS_PER_PAGE);
 
-export default function PropertiesGrid({ properties, onClear, currentPage, onPageChange }) {
-    const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const paginated = properties.slice(start, start + ITEMS_PER_PAGE);
+    // Si la paginación es client-side, paginar acá; sino mostrar todo (ya viene paginado)
+    const paginated =
+        externalTotalPages != null
+            ? properties
+            : properties.slice(
+                (currentPage - 1) * ITEMS_PER_PAGE,
+                (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+            );
+
+    if (loading) {
+        return (
+            <Container className="py-5 text-center">
+                <Spinner animation="border" variant="primary" />
+                <p className="text-muted mt-3">Cargando propiedades...</p>
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container className="py-5">
+                <Alert variant="danger" className="text-center">
+                    <p className="mb-2">{error}</p>
+                    <Button variant="outline-danger" size="sm" onClick={onRetry ?? onClear}>
+                        Reintentar
+                    </Button>
+                </Alert>
+            </Container>
+        );
+    }
 
     if (properties.length === 0) {
         return (
@@ -24,13 +65,12 @@ export default function PropertiesGrid({ properties, onClear, currentPage, onPag
         );
     }
 
+
     return (
         <Container className="pt-4 pb-2">
-            
             <p className="text-muted mb-3" style={{ fontSize: "0.875rem" }}>
                 Mostrando{" "}
-                <strong>{start + 1}–{Math.min(start + ITEMS_PER_PAGE, properties.length)}</strong>{" "}
-                de <strong>{properties.length}</strong> propiedades
+                <strong>{paginated.length}</strong> propiedades
             </p>
 
             <Row className="g-4">
