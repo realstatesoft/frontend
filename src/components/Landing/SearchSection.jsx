@@ -150,7 +150,7 @@ const SearchSection = () => {
                     cursor: "pointer",
                   }}
                 >
-                  🔍 Buscar
+                  Buscar
                 </button>
               </div>
             </div>

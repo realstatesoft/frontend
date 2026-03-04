@@ -49,30 +49,6 @@ const HeroSection = () => {
                     Miles de propiedades te esperan. Encuentra tu hogar ideal con la
                     tecnología más avanzada del mercado.
                 </p>
-
-                {/* Search bar */}
-                <div
-                    className="mx-auto d-flex align-items-center bg-white rounded-pill shadow-lg px-4 py-2"
-                    style={{ maxWidth: 520 }}
-                >
-                    <Search size={18} className="text-muted me-2" />
-                    <input
-                        type="text"
-                        placeholder="Empieza tu búsqueda ahora..."
-                        className="border-0 flex-grow-1"
-                        style={{
-                            outline: "none",
-                            fontSize: "0.95rem",
-                            background: "transparent",
-                        }}
-                    />
-                    <button
-                        className="btn btn-primary rounded-pill px-4 py-2"
-                        style={{ backgroundColor: "black", border: "none", fontSize: "0.9rem" }}
-                    >
-                        Buscar
-                    </button>
-                </div>
             </Container>
         </section>
     );

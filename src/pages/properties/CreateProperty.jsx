@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Container, Card, Form, Alert } from "react-bootstrap";
-import { useCreatePropertyForm } from "../../hooks/useCreatePropertyForm";
+import { Container, Card, Form, Alert, Spinner } from "react-bootstrap";
+import { useParams } from "react-router-dom";
+import { usePropertyForm } from "../../hooks/usePropertyForm";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
@@ -13,12 +14,15 @@ import {
 } from "./sections";
 
 export default function CreateProperty() {
+  const { id } = useParams();
   const [showConfirm, setShowConfirm] = useState(false);
 
   const {
     form,
     loading,
+    fetchLoading,
     error,
+    isEditMode,
     fieldErrors,
     validateForm,
     set,
@@ -26,24 +30,25 @@ export default function CreateProperty() {
     updateRoom,
     addRoom,
     removeRoom,
+    addMedia,
+    removeMedia,
+    setPrimaryMedia,
+    uploadingMedia,
     handleSubmit,
     dismissError,
-  } = useCreatePropertyForm();
+  } = usePropertyForm(id);
 
   const handleOpenConfirm = (e) => {
     e.preventDefault();
-    // Validar antes de mostrar el diálogo de confirmación
     const ok = validateForm();
     if (!ok) {
-      // Asegurarnos de que el usuario vea el mensaje y los campos marcados
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     setShowConfirm(true);
   };
 
-  const handleConfirmCreate = () => {
-    // Ejecutar la lógica de submit (ya validado previamente)
+  const handleConfirmSubmit = () => {
     handleSubmit({ preventDefault: () => {} });
     setShowConfirm(false);
   };
@@ -52,13 +57,27 @@ export default function CreateProperty() {
     setShowConfirm(false);
   };
 
+  if (fetchLoading) {
+    return (
+      <>
+        <CustomNavbar />
+        <div className="bg-light min-vh-100 py-5 d-flex justify-content-center align-items-center">
+          <Spinner animation="border" variant="primary" />
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
     <CustomNavbar />
     <div className="bg-light min-vh-100 py-4">
       <Container style={{ maxWidth: "auto" }}>
         <Card className="text-start border-0 shadow-sm rounded-4 p-4 p-md-5">
-          <h3 className="semibold mb-4 text-start text-size-[30px]">Registrar Propiedad</h3>
+          <h3 className="semibold mb-4 text-start text-size-[30px]">
+            {isEditMode ? "Editar Propiedad" : "Registrar Propiedad"}
+          </h3>
 
           {error && (
             <Alert variant="danger" onClose={dismissError} dismissible>
@@ -69,7 +88,15 @@ export default function CreateProperty() {
 
           <Form onSubmit={handleOpenConfirm} noValidate className="create-property-form">
             <BasicInfoSection form={form} set={set} fieldErrors={fieldErrors} />
-            <PropertyFeaturesSection form={form} set={set} setArr={setArr} />
+            <PropertyFeaturesSection
+              form={form}
+              set={set}
+              setArr={setArr}
+              addMedia={addMedia}
+              removeMedia={removeMedia}
+              setPrimaryMedia={setPrimaryMedia}
+              uploadingMedia={uploadingMedia}
+            />
             <ConstructionSection form={form} set={set} />
             <InteriorAndRoomsSection
               form={form}
@@ -84,10 +111,10 @@ export default function CreateProperty() {
           <ConfirmDialog
             show={showConfirm}
             onHide={handleCancelConfirm}
-            onConfirm={handleConfirmCreate}
-            title="Confirmar creación de propiedad"
-            message="¿Estás seguro que deseas guardar esta propiedad con la información cargada?"
-            confirmText="Sí, guardar"
+            onConfirm={handleConfirmSubmit}
+            title={isEditMode ? "Confirmar actualización" : "Confirmar creación de propiedad"}
+            message={isEditMode ? "¿Estás seguro que deseas guardar los cambios?" : "¿Estás seguro que deseas guardar esta propiedad con la información cargada?"}
+            confirmText={isEditMode ? "Sí, guardar cambios" : "Sí, guardar"}
             cancelText="Cancelar"
             variant="primary"
             loading={loading}

@@ -13,9 +13,11 @@ import {
   Spinner,
   Alert,
 } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { CameraVideo, FileText } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
+import Footer from "../../components/Landing/Footer";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { formatPrice } from "../../utils/priceFormat";
@@ -64,6 +66,7 @@ export default function ShowProperty() {
         <Container className="py-5">
           <Alert variant="danger">{error}</Alert>
         </Container>
+        <Footer />
       </>
     );
   }
@@ -82,8 +85,9 @@ export default function ShowProperty() {
           {...confirmData}
         />
 
-        {/* Header */}
-        <div className="d-flex justify-content-between align-items-center">
+        <Container>
+          {/* Header */}
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h1>{property.title}</h1>
           <div className="d-flex gap-2 align-items-center mt-2">
             {isOwner && (
@@ -120,7 +124,13 @@ export default function ShowProperty() {
                   </Dropdown.Menu>
                 </Dropdown>
 
-                <Button size="sm" variant="outline-primary" className="d-flex align-items-center">
+                <Button
+                  size="sm"
+                  variant="outline-primary"
+                  className="d-flex align-items-center"
+                  as={Link}
+                  to={`/show-property/${property.id}/edit`}
+                >
                   <i className="bi bi-pencil me-1"></i>
                   Editar
                 </Button>
@@ -147,9 +157,10 @@ export default function ShowProperty() {
             </Button>
           </div>
         </div>
+        </Container>
 
         {/* Gallery */}
-        <Container fluid className="px-4 pt-3 pb-2">
+        <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
               <img src={images[0]} alt="Fachada" className="property__main-image" />
@@ -171,7 +182,7 @@ export default function ShowProperty() {
         </Container>
 
         {/* Main Content */}
-        <Container fluid className="px-4 py-3">
+        <Container className="py-3">
           <Row>
             <Col lg={8}>
               <Stack direction="horizontal" gap={4} className="align-items-end flex-wrap mb-2">
@@ -366,6 +377,8 @@ export default function ShowProperty() {
           </Row>
         </Container>
       </div>
+
+      <Footer />
     </>
   );
 }

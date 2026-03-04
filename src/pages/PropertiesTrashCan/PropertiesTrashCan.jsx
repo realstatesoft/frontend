@@ -2,14 +2,44 @@ import { Col, Container, Row } from "react-bootstrap";
 import TrashPropertyCard from "../../components/properties/TrashPropertyCard"; 
 import Navbar from "../../components/Landing/Navbar";
 
-// saple data replace later
-const deletedProperties = [
-    { id: 1, title: "Vivienda Unifamiliar",            image: "/assets/house1.jpg", daysLeft: 10 },
-    { id: 2, title: "Terreno de 1 Ha. en Cambyretá",  image: "/assets/house2.jpg", daysLeft: 8  },
-    { id: 3, title: "Departamento Zona Costanera",     image: "/assets/house3.jpg", daysLeft: 7  },
-    { id: 4, title: "Dúplex Zona Centro",              image: "/assets/house4.jpg", daysLeft: 5  },
-    { id: 5, title: "Campo de 10 Has. en Alto Verá",   image: "/assets/house5.jpg", daysLeft: 3  },
-    { id: 6, title: "Lote en el Centro de Encarnación",image: "/assets/house6.jpg", daysLeft: 1  },
+// sample data, replace later
+    const deletedProperties = [
+    { 
+        id: 1, 
+        title: "Vivienda Unifamiliar",
+        image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+        daysLeft: 10 
+    },
+    { 
+        id: 2, 
+        title: "Terreno de 1 Ha. en Cambyretá",
+        image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef",
+        daysLeft: 8  
+    },
+    { 
+        id: 3, 
+        title: "Departamento Zona Costanera",
+        image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+        daysLeft: 7  
+    },
+    { 
+        id: 4, 
+        title: "Dúplex Zona Centro",
+        image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+        daysLeft: 5  
+    },
+    { 
+        id: 5, 
+        title: "Campo de 10 Has. en Alto Verá",
+        image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+        daysLeft: 3  
+    },
+    { 
+        id: 6, 
+        title: "Lote en el Centro de Encarnación",
+        image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+        daysLeft: 1  
+    },
 ];
 
 export default function PropertiesTrashCan() {
