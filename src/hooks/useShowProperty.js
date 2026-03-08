@@ -141,12 +141,12 @@ export function useShowProperty() {
     if (!id) return;
     setActionLoading(true);
     try {
-      await propertyApi.delete(id);
+      await propertyApi.trash(id);
       hideConfirm();
       await Swal.fire({
         icon: "success",
         title: "Propiedad eliminada",
-        text: "La propiedad fue eliminada correctamente.",
+        text: "La propiedad fue eliminada correctamente",
       });
       navigate("/properties");
     } catch (err) {
@@ -187,7 +187,7 @@ export function useShowProperty() {
   const openDeleteConfirm = useCallback(() => {
     setConfirmData({
       title: "Eliminar propiedad",
-      message: "¿Estás seguro que deseas eliminar esta propiedad?",
+      message: "¿Estás seguro que deseas eliminar esta propiedad? Estará disponible en la papelera de reciclaje por 10 días",
       confirmText: "Eliminar",
       cancelText: "Cancelar",
       variant: "danger",

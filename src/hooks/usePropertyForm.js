@@ -231,7 +231,7 @@ export function usePropertyForm(propertyId) {
               title: "¡Propiedad actualizada!",
               text: "Los cambios se guardaron correctamente.",
             });
-            navigate(`/show-property/${propertyId}`);
+            navigate(`/properties/${propertyId}`);
           } else {
             setError(data?.message ?? "Ocurrió un error al actualizar.");
             await Swal.fire({

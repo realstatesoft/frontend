@@ -18,8 +18,8 @@ export default function AppRouter() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/properties" element={<PropertiesPage />} />
-            <Route path="/show-property/:id" element={<ShowProperty />} />
-            <Route path="/show-property/:id/edit" element={<CreateProperty />} />
+            <Route path="/properties/:id" element={<ShowProperty />} />
+            <Route path="/properties/:id/edit" element={<CreateProperty />} />
             <Route path="/trashcan" element={<PropertiesTrashCan />} />
             <Route path="/agents" element={<AgentsPage />} />
         </Routes>

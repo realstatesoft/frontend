@@ -47,6 +47,7 @@ export default function LogIn() {
             // guardar el AccessToken en las cookies
             if (result.data) {
                 login(result.data);
+
                 navigate('/properties'); // Redirige al usuario a la página de propiedades después de iniciar sesión
             }
 
