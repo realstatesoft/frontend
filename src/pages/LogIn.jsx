@@ -48,7 +48,7 @@ export default function LogIn() {
             // Esto guardará el AccessToken en las cookies
             if (result.data) {
                 login(result.data);
-                navigate('/propiedades'); // Redirigimos a la pantalla principal de tu app
+                navigate('/properties'); // Redirigimos a la pantalla principal de tu app
             }
 
         } catch (error) {

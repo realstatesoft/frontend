@@ -1,5 +1,6 @@
 import { Card, Button } from "react-bootstrap";
 import { Eye, ArrowCounterclockwise, Trash3 } from "react-bootstrap-icons";
+import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 
 /**
  * TrashPropertyCard
@@ -8,7 +9,13 @@ import { Eye, ArrowCounterclockwise, Trash3 } from "react-bootstrap-icons";
  *        onRestore(id), onDelete(id)
  */
 export default function TrashPropertyCard({ property, onRestore, onDelete }) {
-    const isUrgent = property.daysLeft <= 3;
+    const TRASH_DAYS = 10;
+    const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
+
+    const trashedDate = new Date(property.trashedAt);
+    const diffDays = (new Date() - trashedDate) / (1000 * 60 * 60 * 24);
+    const daysLeft = Math.ceil(TRASH_DAYS - diffDays);
+    const isUrgent = daysLeft <= 3;
 
     return (
         <Card
@@ -27,12 +34,8 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
             <div className="position-relative">
                 <Card.Img
                     variant="top"
-                    src={property.image}
-                    style={{
-                        height: "160px",
-                        objectFit: "cover",
-                        filter: "grayscale(30%) brightness(0.9)",
-                    }}
+                    src={image}
+                    style={{ height: "195px", objectFit: "cover" }}
                     loading="lazy"
                 />
                
@@ -54,7 +57,7 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
                 {/* Link ver ficha */}
                 <div className="text-center mb-3">
                     <a
-                        href={property.link ?? "#"}
+                        href={`properties/${property.id}` ?? "#"}
                         className="text-muted d-inline-flex align-items-center gap-1"
                         style={{ fontSize: "0.78rem", textDecoration: "none" }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary, #2563eb)")}
@@ -72,7 +75,7 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
                         variant="outline-primary"
                         className="flex-fill rounded-pill d-flex align-items-center justify-content-center gap-1"
                         style={{ fontSize: "0.8rem", borderColor: "var(--primary, #2563eb)", color: "var(--primary, #2563eb)" }}
-                        onClick={() => onRestore?.(property.id)}
+                        onClick={() => onRestore?.(property)}
                     >
                         <ArrowCounterclockwise size={13} />
                         Restaurar
@@ -85,7 +88,7 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
                             background: "var(--danger, #ef4444)",
                             border: "none",
                         }}
-                        onClick={() => onDelete?.(property.id)}
+                        onClick={() => onDelete?.(property)}
                     >
                         <Trash3 size={13} />
                         Eliminar
@@ -101,7 +104,7 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
                         fontWeight: isUrgent ? 600 : 400,
                     }}
                 >
-                    Se eliminará en {property.daysLeft} {property.daysLeft === 1 ? "día" : "días"}
+                    Se eliminará en {daysLeft} {daysLeft === 1 ? "día" : "días"}
                 </p>
             </Card.Body>
         </Card>

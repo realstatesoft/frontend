@@ -2,9 +2,7 @@ import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { tagColors, STATUS_LABELS } from "../../data/propertiesData";
 import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
-
-const PLACEHOLDER_IMAGE =
-    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600";
+import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 
 /**
  * PropertyCard
@@ -89,7 +87,7 @@ export default function PropertyCard({ property }) {
             <Card.Footer className="bg-white border-0 pb-3 px-3">
                 <Button
                     as={Link}
-                    to={`/show-property/${property.id}`}
+                    to={`/properties/${property.id}`}
                     className="w-100 rounded-pill"
                     style={{
                         background: "var(--primary, #2563eb)",
