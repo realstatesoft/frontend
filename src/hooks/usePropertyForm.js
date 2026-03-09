@@ -8,7 +8,16 @@ import {
   buildUpdatePropertyPayload,
   propertyToForm,
 } from "../services/properties/propertyFormMapper";
-import { getInitialRoom, DEFAULT_OWNER_ID } from "../constants/createPropertyConstants";
+import {
+  getInitialBedroom,
+  getInitialHalfBathroom,
+  getInitialFullBathroom,
+  getInitialExtraRoom,
+  buildRoomsFromCounts,
+  DEFAULT_OWNER_ID,
+  getFloorOptionsForCount,
+  getFloorIndex,
+} from "../constants/createPropertyConstants";
 import { createPropertySchema } from "../validation/createPropertySchema";
 
 const getInitialForm = () => ({
@@ -38,7 +47,7 @@ const getInitialForm = () => ({
   bedrooms: "",
   halfBathrooms: "",
   fullBathrooms: "",
-  rooms: [getInitialRoom(0), getInitialRoom(1)],
+  rooms: [],
   media: [],
 });
 
@@ -106,12 +115,100 @@ export function usePropertyForm(propertyId) {
     }));
   }, []);
 
-  const addRoom = useCallback(() => {
-    setForm((f) => ({ ...f, rooms: [...f.rooms, getInitialRoom(f.rooms.length)] }));
+  const setFloorsCount = useCallback((e) => {
+    const raw = e?.target ? e.target.value : e;
+    const value = String(raw ?? "");
+    if (value === "") {
+      setForm((f) => ({ ...f, floorsCount: "" }));
+      return;
+    }
+    const num = Math.min(Math.max(parseInt(value, 10) || 1, 1), 10);
+    setForm((f) => {
+      const allowedFloors = getFloorOptionsForCount(num);
+      const lastValid = allowedFloors[allowedFloors.length - 1] ?? "Planta baja";
+      const rooms = (f.rooms || []).map((r) => {
+        const idx = getFloorIndex(r.floor);
+        return idx >= num ? { ...r, floor: lastValid } : r;
+      });
+      return { ...f, floorsCount: String(num), rooms };
+    });
+    setFieldErrors((prev) => {
+      if (!prev?.floorsCount) return prev;
+      const { floorsCount: _, ...rest } = prev;
+      return rest;
+    });
   }, []);
 
-  const removeRoom = useCallback((index) => {
-    setForm((f) => ({ ...f, rooms: f.rooms.filter((_, i) => i !== index) }));
+  const syncRoomsForCounts = useCallback((f, newBedrooms, newHalfBathrooms, newFullBathrooms) => {
+    const bNew = Math.max(0, parseInt(newBedrooms, 10) || 0);
+    const hNew = Math.max(0, parseInt(newHalfBathrooms, 10) || 0);
+    const fullNew = Math.max(0, parseInt(newFullBathrooms, 10) || 0);
+    const bOld = Math.max(0, parseInt(f.bedrooms, 10) || 0);
+    const hOld = Math.max(0, parseInt(f.halfBathrooms, 10) || 0);
+    const fullOld = Math.max(0, parseInt(f.fullBathrooms, 10) || 0);
+    const rooms = f.rooms || [];
+    const oldBedrooms = rooms.slice(0, bOld);
+    const oldHalfBaths = rooms.slice(bOld, bOld + hOld);
+    const oldFullBaths = rooms.slice(bOld + hOld, bOld + hOld + fullOld);
+    const extraRooms = rooms.slice(bOld + hOld + fullOld);
+    const bedroomRooms = [...oldBedrooms.slice(0, bNew)];
+    while (bedroomRooms.length < bNew) bedroomRooms.push(getInitialBedroom(bedroomRooms.length));
+    const halfBathRooms = [...oldHalfBaths.slice(0, hNew)];
+    while (halfBathRooms.length < hNew) halfBathRooms.push(getInitialHalfBathroom(halfBathRooms.length));
+    const fullBathRooms = [...oldFullBaths.slice(0, fullNew)];
+    while (fullBathRooms.length < fullNew) fullBathRooms.push(getInitialFullBathroom(fullBathRooms.length));
+    return [...bedroomRooms, ...halfBathRooms, ...fullBathRooms, ...extraRooms];
+  }, []);
+
+  const setBedrooms = useCallback((e) => {
+    const raw = e?.target ? e.target.value : e;
+    const value = String(raw ?? "");
+    setForm((f) => {
+      const rooms = syncRoomsForCounts(f, value, f.halfBathrooms, f.fullBathrooms);
+      return { ...f, bedrooms: value, rooms };
+    });
+    setFieldErrors((prev) => (prev?.bedrooms ? { ...prev, bedrooms: undefined } : prev));
+  }, [syncRoomsForCounts]);
+
+  const setHalfBathrooms = useCallback((e) => {
+    const raw = e?.target ? e.target.value : e;
+    const value = String(raw ?? "");
+    setForm((f) => {
+      const rooms = syncRoomsForCounts(f, f.bedrooms, value, f.fullBathrooms);
+      return { ...f, halfBathrooms: value, rooms };
+    });
+    setFieldErrors((prev) => (prev?.halfBathrooms ? { ...prev, halfBathrooms: undefined } : prev));
+  }, [syncRoomsForCounts]);
+
+  const setFullBathrooms = useCallback((e) => {
+    const raw = e?.target ? e.target.value : e;
+    const value = String(raw ?? "");
+    setForm((f) => {
+      const rooms = syncRoomsForCounts(f, f.bedrooms, f.halfBathrooms, value);
+      return { ...f, fullBathrooms: value, rooms };
+    });
+    setFieldErrors((prev) => (prev?.fullBathrooms ? { ...prev, fullBathrooms: undefined } : prev));
+  }, [syncRoomsForCounts]);
+
+  const addExtraRoom = useCallback(() => {
+    setForm((f) => {
+      const b = Math.max(0, parseInt(f.bedrooms, 10) || 0);
+      const h = Math.max(0, parseInt(f.halfBathrooms, 10) || 0);
+      const full = Math.max(0, parseInt(f.fullBathrooms, 10) || 0);
+      const extraCount = (f.rooms?.length ?? 0) - b - h - full;
+      return { ...f, rooms: [...(f.rooms || []), getInitialExtraRoom(extraCount)] };
+    });
+  }, []);
+
+  const removeExtraRoom = useCallback((index) => {
+    setForm((f) => {
+      const b = Math.max(0, parseInt(f.bedrooms, 10) || 0);
+      const h = Math.max(0, parseInt(f.halfBathrooms, 10) || 0);
+      const full = Math.max(0, parseInt(f.fullBathrooms, 10) || 0);
+      const extraStart = b + h + full;
+      if (index < extraStart) return f;
+      return { ...f, rooms: f.rooms.filter((_, i) => i !== index) };
+    });
   }, []);
 
   const [uploadingMedia, setUploadingMedia] = useState(false);
@@ -207,6 +304,25 @@ export function usePropertyForm(propertyId) {
       return false;
     }
 
+    const floorsNum = Math.min(Math.max(parseInt(form.floorsCount, 10) || 1, 1), 10);
+    const invalidRoom = (form.rooms || []).find((r) => getFloorIndex(r.floor) >= floorsNum);
+    if (invalidRoom) {
+      setFieldErrors({ floorsCount: "Una habitación está en una planta que no existe. Revisá el detalle de habitaciones." });
+      setError("La planta asignada a alguna habitación supera la cantidad de plantas declarada.");
+      return false;
+    }
+
+    const b = Math.max(0, parseInt(form.bedrooms, 10) || 0);
+    const h = Math.max(0, parseInt(form.halfBathrooms, 10) || 0);
+    const full = Math.max(0, parseInt(form.fullBathrooms, 10) || 0);
+    const mandatoryCount = b + h + full;
+    const roomWithoutName = (form.rooms || []).slice(0, mandatoryCount).find((r) => !r.name?.trim());
+    if (roomWithoutName) {
+      setFieldErrors({ bedrooms: "Completá el nombre de todas las habitaciones obligatorias (dormitorios, baños)." });
+      setError("Faltan datos en las habitaciones obligatorias.");
+      return false;
+    }
+
     setFieldErrors({});
     return true;
   }, [form]);
@@ -280,9 +396,13 @@ export function usePropertyForm(propertyId) {
     isEditMode,
     set,
     setArr,
+    setFloorsCount,
+    setBedrooms,
+    setHalfBathrooms,
+    setFullBathrooms,
     updateRoom,
-    addRoom,
-    removeRoom,
+    addExtraRoom,
+    removeExtraRoom,
     addMedia,
     removeMedia,
     setPrimaryMedia,

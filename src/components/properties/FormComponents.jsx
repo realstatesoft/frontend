@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Form } from "react-bootstrap";
 
 // ── Tag (chip removible) ─────────────────────────────────────────────────────
@@ -39,12 +39,24 @@ export const FormTag = ({ label, onRemove }) => (
 
 export function FormMultiSelect({ options, selected, onChange, placeholder }) {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   const toggle = (val) =>
     onChange(selected.includes(val) ? selected.filter((s) => s !== val) : [...selected, val]);
 
   return (
-    <div className="position-relative">
+    <div ref={containerRef} className="position-relative">
       <div
         className="form-control d-flex justify-content-between align-items-center"
         style={{ cursor: "pointer", color: "#888" }}
