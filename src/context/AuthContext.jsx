@@ -7,7 +7,7 @@ import {
   getUserInfo,
   setUserInfo,
   clearSession,
-  removeAccessToken, // si lo necesitas, lo puedes mantener
+  removeAccessToken, 
 } from "../utils/authToken";
 import api from "../services/api";
 
@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
    * Espera: { accessToken, refreshToken, email, role }
    */
   function login(responseData) {
-    const { accessToken, refreshToken, email, role } = responseData ?? {};
+    const { accessToken, refreshToken, email, role, id } = responseData ?? {};
 
     if (!accessToken || typeof accessToken !== "string") {
       throw new Error("login(): accessToken inválido o ausente en el response");
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
       throw new Error("login(): refreshToken inválido o ausente en el response");
     }
 
-    const userInfo = { email, role };
+    const userInfo = { email, role, userId: id };
 
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAuth } from "./useAuth";
 import propertyApi from "../services/properties/propertyApi";
 import { uploadImage } from "../services/images/imageApi";
 import {
@@ -8,7 +9,7 @@ import {
   buildUpdatePropertyPayload,
   propertyToForm,
 } from "../services/properties/propertyFormMapper";
-import { getInitialRoom, DEFAULT_OWNER_ID } from "../constants/createPropertyConstants";
+import { getInitialRoom } from "../constants/createPropertyConstants";
 import { createPropertySchema } from "../validation/createPropertySchema";
 
 const getInitialForm = () => ({
@@ -54,6 +55,8 @@ const getErrorMessage = (err) =>
 export function usePropertyForm(propertyId) {
   const navigate = useNavigate();
   const isEditMode = Boolean(propertyId);
+  const { user } = useAuth();
+  const userId = user?.userId;
 
   const [form, setForm] = useState(getInitialForm);
   const [loading, setLoading] = useState(false);
@@ -241,7 +244,7 @@ export function usePropertyForm(propertyId) {
             });
           }
         } else {
-          const payload = buildCreatePropertyPayload(form, { ownerId: DEFAULT_OWNER_ID });
+          const payload = buildCreatePropertyPayload(form, { ownerId: userId });
           const { data } = await propertyApi.create(payload);
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });
