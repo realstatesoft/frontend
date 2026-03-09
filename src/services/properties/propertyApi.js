@@ -18,6 +18,15 @@ const propertyApi = {
   delete: (id) => api.delete(`${BASE}/${id}`),
 
   changeStatus: (id, newStatus) => api.patch(`${BASE}/${id}/status`, { newStatus }),
+
+  trash: (id) => api.patch(`${BASE}/${id}/trash`),
+
+  restore: (id) => api.patch(`${BASE}/${id}/restore`),
+
+  getTrashcan: (params) => api.get(`${BASE}/trashcan`, { params }),
+  
+  clearTrashcan: (id) => api.post(`${BASE}/clear-trashcan`),
+
 };
 
 export default propertyApi;

@@ -60,15 +60,6 @@ export default function PropertiesPage() {
         setCurrentPage(1);
     };
 
-    const filtered = allProperties.filter((p) => {
-        const matchSearch =
-            p.location.toLowerCase().includes(search.toLowerCase()) ||
-            p.type.toLowerCase().includes(search.toLowerCase());
-        const matchType = typeFilter === "Todos" || p.type === typeFilter;
-        const matchTag = tagFilter === "Todos" || p.tag === tagFilter;
-        return matchSearch && matchType && matchTag;
-    });
-
     return (
         <>
             <CustomNavbar />
@@ -94,9 +85,13 @@ export default function PropertiesPage() {
 
             <div style={{ backgroundColor: "#f8f9fa", minHeight: "60vh" }}>
                 <PropertiesGrid
-                    properties={filtered}
+                    properties={properties}
                     onClear={handleClear}
+                    onRetry={refetch}
                     currentPage={currentPage}
+                    totalPages={totalPages}
+                    loading={loading}
+                    error={error}
                     onPageChange={(page) => {
                         setCurrentPage(page);
                         window.scrollTo({ top: 0, behavior: "smooth" });

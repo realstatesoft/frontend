@@ -1,15 +1,12 @@
-import { useState } from 'react'
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import AppRouter from './routes/AppRouter';
+import AppRouter from './routes/AppRouter'
+import './App.css'
 
 function App() {
   return (
     <>
       <AppRouter />
     </>
-  );
+  )
 }
 
-export default App;
+export default App

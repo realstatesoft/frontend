@@ -24,7 +24,7 @@ function CustomNavbar() {
             <Nav.Link href="#services">Services</Nav.Link>
             <Nav.Link
               as={Link}
-              to="/propiedades"
+              to="/properties"
             >
               Propiedades
             </Nav.Link>
@@ -34,7 +34,7 @@ function CustomNavbar() {
         <Button
           variant="outline-dark"
           className="rounded-pill px-4"
-          onClick={() => navigate("/propiedades")}
+          onClick={() => navigate("/properties")}
         >
           Contactanos
         </Button>

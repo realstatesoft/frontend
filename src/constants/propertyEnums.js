@@ -29,6 +29,12 @@ export const AVAILABILITY = {
   "A negociar": "TO_NEGOTIATE",
 };
 
+export const VISIBILITY = {
+  Pública: "PUBLIC",
+  Privada: "PRIVATE",
+  Oculto: "HIDDEN",
+};
+
 // ── Catálogo de features (seed de la BD) → { nombre: id } ────────────────────
 // Si el backend expone GET /exterior-features, este mapa puede eliminarse.
 
@@ -66,6 +72,12 @@ export const CATEGORY_LABELS = Object.fromEntries(
 export const CONSTRUCTION_STATUS_LABELS = Object.fromEntries(
   Object.entries(CONSTRUCTION_STATUS).map(([k, v]) => [v, k])
 );
+export const AVAILABILITY_LABELS = Object.fromEntries(
+  Object.entries(AVAILABILITY).map(([k, v]) => [v, k])
+);
+export const VISIBILITY_LABELS = Object.fromEntries(
+  Object.entries(VISIBILITY).map(([k, v]) => [v, k])
+);
 export const ID_TO_EXTERIOR_FEATURE = Object.fromEntries(
   Object.entries(EXTERIOR_FEATURE_IDS).map(([k, v]) => [v, k])
 );
@@ -79,6 +91,7 @@ export const PROPERTY_TYPE_OPTIONS = Object.keys(PROPERTY_TYPE);
 export const CATEGORY_OPTIONS = Object.keys(CATEGORY);
 export const CONSTRUCTION_STATUS_OPTIONS = Object.keys(CONSTRUCTION_STATUS);
 export const AVAILABILITY_OPTIONS = Object.keys(AVAILABILITY);
+export const VISIBILITY_OPTIONS = Object.keys(VISIBILITY);
 export const EXTERIOR_FEATURE_OPTIONS = Object.keys(EXTERIOR_FEATURE_IDS);
 export const INTERIOR_FEATURE_OPTIONS = Object.keys(INTERIOR_FEATURE_IDS);
 

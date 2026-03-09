@@ -82,24 +82,43 @@ const Properties = () => {
         <Container className="py-5">
 
           <style>{`
+        /* Transición suave del slide */
+        .custom-carousel .carousel-item {
+          transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
         .custom-carousel .carousel-control-prev,
         .custom-carousel .carousel-control-next {
           width: 45px;
           height: 45px;
           top: 40%;
-          background-color: rgba(122, 106, 106, 0.6);
+          background-color: rgba(60, 60, 60, 0.5);
           border-radius: 50%;
           opacity: 1;
+          transition: background-color 0.25s ease, transform 0.2s ease;
         }
         .custom-carousel .carousel-control-prev { left: -45px; }
         .custom-carousel .carousel-control-next { right: -45px; }
         .custom-carousel .carousel-control-prev:hover,
         .custom-carousel .carousel-control-next:hover {
-          background-color: rgba(0,0,0,0.8);
+          background-color: rgba(0,0,0,0.85);
+          transform: scale(1.1);
+        }
+        /* Indicadores más sutiles */
+        .custom-carousel .carousel-indicators [data-bs-target] {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #999;
+          border: none;
+          transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .custom-carousel .carousel-indicators .active {
+          background-color: #333;
+          transform: scale(1.3);
         }
       `}</style>
           <div className="custom-carousel position-relative px-5">
-            <Carousel indicators={true} variant="dark" controls={true} interval={null}>
+            <Carousel indicators={true} variant="dark" controls={true} interval={5000} pause="hover">
               {propertyGroups.map((group, index) => (
                 <Carousel.Item key={index} className="px-3">
                   <Row className="mb-5 flex-nowrap overflow-hidden g-3">
