@@ -10,11 +10,15 @@
 // Utilities propias
 @import "./utilities";
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-}
+// Navbar
+@import "./navbar";
+
+// Carousel & property cards
+@import "./carousel";
+
+// PropertiesHero filter bar
+@import "./properties-hero";
+
 
 body {
   text-align: left;

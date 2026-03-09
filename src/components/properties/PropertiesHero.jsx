@@ -1,97 +1,195 @@
-import { Container, Row, Col, Button, Form, InputGroup } from "react-bootstrap";
+import { useState } from "react";
+import { Container, Collapse, Row, Col, Form } from "react-bootstrap";
+import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 
 /**
- * PropertiesHero
- * Banner oscuro con título y controles de filtro.
+ * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
  *
- * Props:
- *  - search        : string
- *  - typeFilter    : string
- *  - tagFilter     : string
- *  - totalResults  : number
- *  - onSearch      : (value: string) => void
- *  - onTypeChange  : (value: string) => void
- *  - onTagChange   : (value: string) => void
- *  - onClear       : () => void
+ * Filtros básicos en la barra: Tipo · Precio · Dormitorios · Más (avanzados)
+ * Panel avanzado: disponibilidad, precio min/max, dormitorios mín., baños mín.
  */
 export default function PropertiesHero({
     search,
     typeFilter,
-    tagFilter,
+    availability,
+    minPrice,
+    maxPrice,
+    minBedrooms,
+    minBathrooms,
     totalResults,
     onSearch,
     onTypeChange,
-    onTagChange,
+    onAvailabilityChange,
+    onMinPriceChange,
+    onMaxPriceChange,
+    onMinBedroomsChange,
+    onMinBathroomsChange,
     onClear,
 }) {
+    const [showAdvanced, setShowAdvanced] = useState(false);
+
+    const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
+    const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
+
     return (
-        <div style={{backgroundColor: "var(--ligth, #f8fafc)    " }}>
+        <div className="bg-light py-4">
             <Container>
-                <div style={{backgroundColor: "var(--secundary, #64748b)    ",padding: "20px", borderRadius: "20px" }}>
-                <Row className="g-2">
-                    {/* Búsqueda libre */}
-                    <Col md={5}>
-                        <InputGroup>
-                            <InputGroup.Text className="bg-white border-0"></InputGroup.Text>
-                            <Form.Control
-                                placeholder="Buscar por ubicación o tipo..."
-                                value={search}
-                                onChange={(e) => onSearch(e.target.value)}
-                                className="border-0"
-                                style={{ boxShadow: "none",  }}
-                            />
-                        </InputGroup>
-                    </Col>
+                <div className="filter-bar">
 
-                    {/* Tipo de propiedad */}
-                    <Col md={3}>
-                        <Form.Select
-                            value={typeFilter}
-                            onChange={(e) => onTypeChange(e.target.value)}
-                            className="border-0"
-                        >
-                            <option>Todos</option>
-                            <option>Casa</option>
-                            <option>Departamento</option>
-                        </Form.Select>
-                    </Col>
+                    {/* Búsqueda */}
+                    <div className="filter-bar__search">
+                        <span className="filter-bar__search-icon"></span>
+                        <input
+                            type="text"
+                            placeholder="Buscar por ubicación..."
+                            value={search}
+                            onChange={(e) => onSearch(e.target.value)}
+                        />
+                    </div>
 
-                    {/* Estado */}
-                    <Col md={3}>
-                        <Form.Select
-                            value={tagFilter}
-                            onChange={(e) => onTagChange(e.target.value)}
-                            className="border-0"
-                        >
-                            <option>Todos</option>
-                            <option>Disponible</option>
-                            <option>Reservado</option>
-                            <option>En oferta</option>
-                            <option>Vendido</option>
-                        </Form.Select>
-                    </Col>
+                    <div className="filter-bar__divider" />
 
-                    {/* Limpiar filtros */}
-                    <Col md={1} className="d-flex align-items-center">
-                        <Button
-                            variant="outline-light"
-                            onClick={onClear}
-                            className="w-100"
-                            title="Limpiar filtros"
-                            style={{backgroundColor: "var(--light, #f8fafc)", color: "var(--dark, #1e293b)"}}
-                        >
-                            ✕
-                        </Button>
-                    </Col>
-                </Row>
+                    {/* Pill: Tipo */}
+                    <PillSelect
+                        label="Tipo"
+                        value={typeFilter}
+                        onChange={onTypeChange}
+                        active={!!typeFilter}
+                    >
+                        <option value="">Todos</option>
+                        {PROPERTY_TYPE_OPTIONS.map((l) => (
+                            <option key={l} value={l}>{l}</option>
+                        ))}
+                    </PillSelect>
+
+                    <div className="filter-bar__divider" />
+
+                    {/* Pill: Dormitorios */}
+                    <PillSelect
+                        label="Dormitorios"
+                        value={minBedrooms}
+                        onChange={onMinBedroomsChange}
+                        active={!!minBedrooms}
+                    >
+                        <option value="">Cualquiera</option>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                            <option key={n} value={n}>{n}+</option>
+                        ))}
+                    </PillSelect>
+
+                    <div className="filter-bar__divider" />
+
+                    {/* Pill: Más (abre panel avanzado) */}
+                    <button
+                        className={`filter-pill${showAdvanced || advancedActiveCount > 0 ? " filter-pill--active" : ""}`}
+                        onClick={() => setShowAdvanced((v) => !v)}
+                        type="button"
+                    >
+                        Más filtros
+                        {advancedActiveCount > 0
+                            ? <span className="filter-pill__badge">{advancedActiveCount}</span>
+                            : <span className={`filter-pill__chevron${showAdvanced ? " filter-pill__chevron--open" : ""}`} />
+                        }
+                    </button>
+
+                    {/* Limpiar — solo aparece cuando hay algo activo */}
+                    {hasAnyFilter && (
+                        <>
+                            <div className="filter-bar__divider" />
+                            <button className="filter-bar__clear" onClick={onClear} title="Limpiar filtros" type="button">
+                                ✕
+                            </button>
+                        </>
+                    )}
                 </div>
 
+                {/* ── Panel de filtros avanzados ─────────────────────────── */}
+                <Collapse in={showAdvanced}>
+                    <div>
+                        <div className="filter-bar__advanced-panel">
+                            <Row className="g-3">
+                                <Col md={3}>
+                                    <span className="filter-bar__panel-label">Disponibilidad</span>
+                                    <Form.Select
+                                        value={availability}
+                                        onChange={(e) => onAvailabilityChange(e.target.value)}
+                                        size="sm"
+                                    >
+                                        <option value="">Cualquiera</option>
+                                        {AVAILABILITY_OPTIONS.map((l) => (
+                                            <option key={l} value={l}>{l}</option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
+
+                                <Col md={2}>
+                                    <span className="filter-bar__panel-label">Precio mín. ($)</span>
+                                    <Form.Control
+                                        type="number" size="sm" placeholder="0" min={0}
+                                        value={minPrice}
+                                        onChange={(e) => onMinPriceChange(e.target.value)}
+                                    />
+                                </Col>
+
+                                <Col md={2}>
+                                    <span className="filter-bar__panel-label">Precio máx. ($)</span>
+                                    <Form.Control
+                                        type="number" size="sm" placeholder="Sin límite" min={0}
+                                        value={maxPrice}
+                                        onChange={(e) => onMaxPriceChange(e.target.value)}
+                                    />
+                                </Col>
+
+                                <Col md={2}>
+                                    <span className="filter-bar__panel-label">Baños mín.</span>
+                                    <Form.Select
+                                        value={minBathrooms}
+                                        onChange={(e) => onMinBathroomsChange(e.target.value)}
+                                        size="sm"
+                                    >
+                                        <option value="">Cualquiera</option>
+                                        {[1, 2, 3, 4].map((n) => (
+                                            <option key={n} value={n}>{n}+</option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
+                            </Row>
+                        </div>
+                    </div>
+                </Collapse>
+
                 {/* Contador de resultados */}
-                <p className="text-white-50 mt-3 mb-0" style={{ fontSize: "0.9rem" }}>
-                    {totalResults} propiedad{totalResults !== 1 ? "es" : ""} encontrada
-                    {totalResults !== 1 ? "s" : ""}
+                <p className="filter-bar__results">
+                    {totalResults} propiedad{totalResults !== 1 ? "es" : ""} encontrada{totalResults !== 1 ? "s" : ""}
                 </p>
             </Container>
+        </div>
+    );
+}
+
+/* ── Componente interno: pill que envuelve un <select> nativo invisible ── */
+function PillSelect({ label, value, onChange, active, children }) {
+    return (
+        <div style={{ position: "relative" }}>
+            <div className={`filter-pill${active ? " filter-pill--active" : ""}`} style={{ pointerEvents: "none" }}>
+                {value ? value : label}
+                <span className="filter-pill__chevron" />
+            </div>
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                style={{
+                    position: "absolute",
+                    inset: 0,
+                    opacity: 0,
+                    cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
+                }}
+                aria-label={label}
+            >
+                {children}
+            </select>
         </div>
     );
 }

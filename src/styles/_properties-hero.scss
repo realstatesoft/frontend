@@ -1,0 +1,191 @@
+// ── PropertiesHero — Barra de filtros estilo pill ──────────────────────────
+@use "sass:color";
+@import "./variables";
+
+.filter-bar {
+    background-color: #fff;
+    border: 1px solid $border-color-soft;
+    border-radius: 999px; // píldora completa
+    box-shadow: $shadow-soft;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+
+    // Ocultar scrollbar en mobile
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    scrollbar-width: none;
+}
+
+// Buscador de texto (zona izquierda)
+.filter-bar__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 220px;
+    min-width: 0;
+    padding-right: 12px;
+    border-right: 1px solid $border-color-soft;
+
+    input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: $font-family-sans-serif;
+        font-size: 0.95rem;
+        color: $text-dark;
+        width: 100%;
+
+        &::placeholder {
+            color: $text-muted;
+        }
+    }
+
+    .filter-bar__search-icon {
+        color: $text-muted;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+}
+
+// Separador vertical entre pills
+.filter-bar__divider {
+    width: 1px;
+    height: 24px;
+    background-color: $border-color-soft;
+    flex-shrink: 0;
+    margin: 0 4px;
+}
+
+// Cada pill-botón de filtro
+.filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    font-family: $font-family-sans-serif;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    color: $text-dark;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+    &:hover {
+        background-color: $neutral-soft;
+        border-color: $border-color-soft;
+    }
+
+    // Estado activo (filtro seleccionado)
+    &--active {
+        background-color: color.adjust($primary, $lightness: 42%);
+        border-color: $primary;
+        color: $primary;
+    }
+
+    // Chevron CSS
+    .filter-pill__chevron {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-right: 1.5px solid currentColor;
+        border-bottom: 1.5px solid currentColor;
+        transform: rotate(45deg) translateY(-2px);
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+
+        &--open {
+            transform: rotate(-135deg) translateY(2px);
+        }
+    }
+
+    // Badge de cantidad
+    .filter-pill__badge {
+        background-color: $primary;
+        color: #fff;
+        border-radius: 50%;
+        width: 17px;
+        height: 17px;
+        font-size: 0.68rem;
+        font-weight: $font-weight-bold;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+}
+
+// Botón limpiar (solo ícono)
+.filter-bar__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid $border-color-soft;
+    background: transparent;
+    color: $text-muted;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+    margin-left: 4px;
+
+    &:hover {
+        background-color: $neutral-soft;
+        color: $text-dark;
+    }
+}
+
+// Dropdown panel avanzado
+.filter-bar__advanced-panel {
+    background: #fff;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-md;
+    box-shadow: $shadow-soft;
+    padding: 20px 24px;
+    margin-top: 8px;
+
+    .filter-bar__panel-label {
+        font-family: $font-family-sans-serif;
+        font-size: 0.75rem;
+        font-weight: $font-weight-semibold;
+        color: $text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1.5px solid $border-color-soft;
+        border-radius: $radius-sm;
+        font-family: $font-family-sans-serif;
+        font-size: 0.875rem;
+        color: $text-dark;
+        background-color: $input-bg-light;
+
+        &:focus {
+            border-color: $primary;
+            box-shadow: 0 0 0 3px rgba($primary, 0.12);
+        }
+    }
+}
+
+// Contador de resultados
+.filter-bar__results {
+    font-family: $font-family-sans-serif;
+    font-size: 0.875rem;
+    color: $text-muted;
+    margin-top: 10px;
+}

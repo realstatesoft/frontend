@@ -4,6 +4,13 @@
   box-sizing: border-box;
 }
 
+:root {
+  // Fuerza la variable CSS de Bootstrap a usar Poppins,
+  // así todos sus componentes (inputs, selects, botones, etc.) heredan la misma fuente.
+  --bs-body-font-family: #{$font-family-sans-serif};
+  --bs-font-sans-serif: #{$font-family-sans-serif};
+}
+
 body {
   margin: 0;
   font-family: $font-family-sans-serif;
@@ -16,6 +23,7 @@ body {
   color: #1e293b;
   text-align: left;
 }
+
 
 h1,
 h2,
