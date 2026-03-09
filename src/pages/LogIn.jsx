@@ -44,11 +44,11 @@ export default function LogIn() {
 
             const result = response.data;
 
-            // Si el backend responde bien, pasamos los datos a la función login de tu compañero
-            // Esto guardará el AccessToken en las cookies
+            // guardar el AccessToken en las cookies
             if (result.data) {
                 login(result.data);
-                navigate('/propiedades'); // Redirigimos a la pantalla principal de tu app
+
+                navigate('/properties'); // Redirige al usuario a la página de propiedades después de iniciar sesión
             }
 
         } catch (error) {
