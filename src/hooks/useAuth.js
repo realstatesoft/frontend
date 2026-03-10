@@ -11,8 +11,8 @@ export function useAuth() {
     throw new Error("useAuth debe usarse dentro de <AuthProvider>");
   }
  
-  const { token, isAuthenticated, user, login, logout } = context;
+  const { token, isAuthenticated, user, register, login, logout } = context;
 
-  return { token, isAuthenticated, user, login, logout };
+  return { token, isAuthenticated, user, register, login, logout };
 
 }

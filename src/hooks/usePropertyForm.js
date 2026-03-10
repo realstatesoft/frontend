@@ -222,6 +222,17 @@ export function usePropertyForm(propertyId) {
       const ok = validateForm();
       if (!ok) return;
 
+      // if no current user, return
+      if(!userId){
+        setError(data?.message ?? "Debes iniciar sesión para registrar una propiedad.");
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data?.message ?? "Debes iniciar sesión para registrar una propiedad.",
+        });
+        return;
+      }
+
       try {
         setLoading(true);
         if (isEditMode) {
