@@ -224,11 +224,11 @@ export function usePropertyForm(propertyId) {
 
       // if no current user, return
       if(!userId){
-        setError(data?.message ?? "Debes iniciar sesión para registrar una propiedad.");
+        setError("Debes iniciar sesión para registrar una propiedad.");
         await Swal.fire({
           icon: "error",
           title: "Error",
-          text: data?.message ?? "Debes iniciar sesión para registrar una propiedad.",
+          text: "Debes iniciar sesión para registrar una propiedad.",
         });
         return;
       }
