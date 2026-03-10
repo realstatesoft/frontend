@@ -7,7 +7,7 @@ import {
   getUserInfo,
   setUserInfo,
   clearSession,
-  removeAccessToken, 
+  removeAccessToken,
 } from "../utils/authToken";
 import api from "../services/api";
 
@@ -55,20 +55,15 @@ export function AuthProvider({ children }) {
   // --- FUNCIÓN DE REGISTRO ---
   async function register(userData) {
     try {
-      // Hacemos la petición POST al endpoint de Spring Boot
       const response = await api.post("/auth/register", userData);
 
       const result = response.data;
-
-      // Asumiendo que el backend devuelve un ApiResponse con { data: { accessToken: "..." } }
-      // Iniciamos sesión automáticamente usando la función login que ya tienes
       if (result.data && result.data.accessToken) {
         login(result.data);
       }
 
       return result;
     } catch (error) {
-      // Si axios recibió una respuesta con error, extraemos el mensaje del backend
       if (error.response) {
         throw new Error(error.response.data?.message || "Error al registrar el usuario");
       }
