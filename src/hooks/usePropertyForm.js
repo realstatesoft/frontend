@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAuth } from "./useAuth";
 import propertyApi from "../services/properties/propertyApi";
 import { uploadImage } from "../services/images/imageApi";
 import {
@@ -8,6 +9,7 @@ import {
   buildUpdatePropertyPayload,
   propertyToForm,
 } from "../services/properties/propertyFormMapper";
+<<<<<<< HEAD
 import {
   getInitialBedroom,
   getInitialHalfBathroom,
@@ -18,6 +20,9 @@ import {
   getFloorOptionsForCount,
   getFloorIndex,
 } from "../constants/createPropertyConstants";
+=======
+import { getInitialRoom } from "../constants/createPropertyConstants";
+>>>>>>> dev
 import { createPropertySchema } from "../validation/createPropertySchema";
 
 const getInitialForm = () => ({
@@ -63,6 +68,8 @@ const getErrorMessage = (err) =>
 export function usePropertyForm(propertyId) {
   const navigate = useNavigate();
   const isEditMode = Boolean(propertyId);
+  const { user } = useAuth();
+  const userId = user?.userId;
 
   const [form, setForm] = useState(getInitialForm);
   const [loading, setLoading] = useState(false);
@@ -335,6 +342,17 @@ export function usePropertyForm(propertyId) {
       const ok = validateForm();
       if (!ok) return;
 
+      // if no current user, return
+      if(!userId){
+        setError("Debes iniciar sesión para registrar una propiedad.");
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Debes iniciar sesión para registrar una propiedad.",
+        });
+        return;
+      }
+
       try {
         setLoading(true);
         if (isEditMode) {
@@ -357,7 +375,7 @@ export function usePropertyForm(propertyId) {
             });
           }
         } else {
-          const payload = buildCreatePropertyPayload(form, { ownerId: DEFAULT_OWNER_ID });
+          const payload = buildCreatePropertyPayload(form, { ownerId: userId });
           const { data } = await propertyApi.create(payload);
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });

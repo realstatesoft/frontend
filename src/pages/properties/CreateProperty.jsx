@@ -15,6 +15,8 @@ import {
 
 export default function CreateProperty() {
   const { id } = useParams();
+
+
   const [showConfirm, setShowConfirm] = useState(false);
 
   const {

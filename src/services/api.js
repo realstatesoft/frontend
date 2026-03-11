@@ -43,6 +43,11 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // No interferir con endpoints de autenticación (login, register)
+    if (originalRequest.url?.includes("/auth/login") || originalRequest.url?.includes("/auth/register")) {
+      return Promise.reject(error);
+    }
+
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
       // No hay refresh token → cerrar sesión y redirigir
