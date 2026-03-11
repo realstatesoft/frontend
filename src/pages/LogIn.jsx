@@ -48,7 +48,7 @@ export default function LogIn() {
             if (result.data) {
                 login(result.data);
 
-                navigate('/properties'); // Redirige al usuario a la página de propiedades después de iniciar sesión
+                navigate('/'); // Redirige al usuario al home después de iniciar sesión
             }
 
         } catch (error) {
