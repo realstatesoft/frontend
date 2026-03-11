@@ -54,7 +54,7 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
         await Swal.fire({
           icon: "success",
           title: "¡Solicitud enviada!",
-          html: `<p>Tu solicitud de contacto ha sido enviada a <strong>${selectedAgent?.userName || "el agente"}</strong>.</p><p>Se comunicará contigo pronto para ayudarte con tu propiedad.</p>`,
+          text: `Tu solicitud de contacto ha sido enviada a ${selectedAgent?.userName || "el agente"}. Se comunicará contigo pronto para ayudarte con tu propiedad.`,
           confirmButtonColor: "#2563eb",
         });
       } else {
@@ -71,7 +71,7 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
         onFinish(form);
       } else if (!form.selectedAgentId) {
         // Solo redirigir a create-property si no seleccionó agente
-        navigate("/create-property", { state: { sellWizardData: form } });
+        navigate("/create-property");
       } else {
         // Si seleccionó agente, ir al inicio
         navigate("/");

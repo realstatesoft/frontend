@@ -108,7 +108,7 @@ export default function CreateProperty() {
               addRoom={addRoom}
               removeRoom={removeRoom}
             />
-            <AgentSelectionSection form={form} set={set} />
+            {!isEditMode && <AgentSelectionSection form={form} set={set} />}
             <FormActionsSection loading={loading} />
           </Form>
 

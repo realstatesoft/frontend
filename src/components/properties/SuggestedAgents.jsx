@@ -43,12 +43,8 @@ export default function SuggestedAgents({
         params.city = city;
       }
 
-      const response = await getSuggestedAgents(params);
-      if (response?.success && Array.isArray(response.data)) {
-        setAgents(response.data);
-      } else {
-        setAgents([]);
-      }
+      const data = await getSuggestedAgents(params);
+      setAgents(Array.isArray(data) ? data : []);
     } catch (err) {
         console.log(err);
       setError("No se pudieron cargar los agentes sugeridos.");
@@ -65,10 +61,13 @@ export default function SuggestedAgents({
   }, [showSelector, fetchAgents]);
 
   const handleToggleSelector = () => {
-    setShowSelector((prev) => !prev);
-    if (!showSelector) {
-      onSelectAgent(null);
-    }
+    setShowSelector((prev) => {
+      const next = !prev;
+      if (!next) {
+        onSelectAgent(null);
+      }
+      return next;
+    });
   };
 
   const handleSelectAgent = (agent) => {

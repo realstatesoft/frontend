@@ -26,9 +26,8 @@ export default function SellWizardPage() {
     prevStep,
   } = useSellWizard();
 
-  const handleFinish = (finalForm) => {
-    // Redirigir a crear propiedad con los datos precargados
-    navigate("/create-property", { state: { sellWizardData: finalForm } });
+  const handleFinish = () => {
+    navigate("/create-property");
   };
 
   const renderStep = () => {

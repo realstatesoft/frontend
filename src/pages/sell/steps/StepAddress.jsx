@@ -13,21 +13,7 @@ import {
 } from "react-bootstrap-icons";
 import { Spinner } from "react-bootstrap";
 import PropertyMap from "../../../components/commons/PropertyMap";
-
-// Reverse geocoding usando Nominatim (OpenStreetMap)
-async function reverseGeocode(lat, lng) {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-  const res = await fetch(url, {
-    headers: {
-      "Accept": "application/json",
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-  const data = await res.json();
-  return data.display_name || "";
-}
+import { reverseGeocode } from "../../../utils/geocoding";
 
 const PROPERTY_TYPES = [
   { value: "HOUSE", label: "Casa", Icon: HouseDoor },
