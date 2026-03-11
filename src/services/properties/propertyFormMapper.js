@@ -83,6 +83,7 @@ export const buildCreatePropertyPayload = (form, { ownerId, agentId } = {}) => {
     // ── Ubicación ────────────────────────────────────────────────────
     lat: form.geolocation?.lat ?? null,
     lng: form.geolocation?.lng ?? null,
+    locationId: toInt(form.locationId),
 
     // ── Precio ───────────────────────────────────────────────────────
     price: toFloat(form.price),
@@ -181,6 +182,7 @@ export const propertyToForm = (property) => {
       lat: property.lat ?? null,
       lng: property.lng ?? null,
     },
+    locationId: property.locationId ?? null,
     description: property.description || "",
     propertyType: PROPERTY_TYPE_LABELS[property.propertyType] ?? "Casa",
     price: property.price != null ? String(property.price).replace(/\D/g, "") : "",
@@ -234,6 +236,7 @@ export const buildUpdatePropertyPayload = (form, { agentId } = {}) => {
     address: form.address?.trim() || undefined,
     lat: form.geolocation?.lat ?? null,
     lng: form.geolocation?.lng ?? null,
+    locationId: toInt(form.locationId),
     price: toFloat(form.price),
     surfaceArea: parseArea(form.surfaceArea),
     builtArea: parseArea(form.builtArea),

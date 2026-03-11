@@ -25,4 +25,4 @@ export const MOCK_IMAGES = [
 ];
 
 /** ownerId temporal hasta tener autenticación */
-export const DEFAULT_OWNER_ID = 4;
+export const DEFAULT_OWNER_ID = 34  ;

@@ -50,7 +50,7 @@ export default function SignUp() {
                 email: formData.email,
                 password: formData.password,
                 phone: formData.phone,
-                role: tipoUsuario === 'Comprador' ? 'BUYER' : 'SELLER'
+                role: tipoUsuario === 'Comprador' ? 'USER' : 'AGENT'
             };
 
             //Enviamos al backend

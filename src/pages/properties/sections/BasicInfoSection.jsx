@@ -11,13 +11,15 @@ export function BasicInfoSection({ form, set, fieldErrors = {} }) {
   const handleOpenLocation = () => setShowLocationModal(true);
   const handleCloseLocation = () => setShowLocationModal(false);
 
-  const handleLocationSelected = ({ lat, lng, address }) => {
+  const handleLocationSelected = ({ lat, lng, address, locationId }) => {
     // Actualizar geolocalización
     set("geolocation")({ lat, lng });
     // Actualizar dirección (respetando la editable por usuario)
     if (address && address.trim()) {
       set("address")({ target: { value: address } });
     }
+    // Actualizar zona (auto-detectada desde Nominatim)
+    set("locationId")(locationId);
     setShowLocationModal(false);
   };
 
@@ -120,6 +122,7 @@ export function BasicInfoSection({ form, set, fieldErrors = {} }) {
         onHide={handleCloseLocation}
         initialCoords={form.geolocation}
         initialAddress={form.address}
+        initialLocationId={form.locationId}
         onConfirm={handleLocationSelected}
       />
     </>
