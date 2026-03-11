@@ -18,6 +18,7 @@ const getInitialForm = () => ({
   visibility: "Pública",
   address: "",
   geolocation: { lat: null, lng: null },
+  locationId: null,
   description: "",
   propertyType: "Casa",
   price: "",
