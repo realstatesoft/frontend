@@ -23,6 +23,3 @@ export const MOCK_IMAGES = [
   "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200&q=70",
   "https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=200&q=70",
 ];
-
-/** ownerId temporal hasta tener autenticación */
-export const DEFAULT_OWNER_ID = 34  ;
