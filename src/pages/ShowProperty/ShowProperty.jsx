@@ -129,7 +129,7 @@ export default function ShowProperty() {
                   variant="outline-primary"
                   className="d-flex align-items-center"
                   as={Link}
-                  to={`/show-property/${property.id}/edit`}
+                  to={`/properties/${property.id}/edit`}
                 >
                   <i className="bi bi-pencil me-1"></i>
                   Editar

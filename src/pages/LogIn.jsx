@@ -12,7 +12,7 @@ export default function LogIn() {
     const inputBgColor = '#f8f9fa';
     const iconColor = '#6c757d';
 
-    const { login } = useAuth(); // Traemos la función de tu contexto para guardar el token
+    const { login } = useAuth(); 
     const navigate = useNavigate(); // Para redirigir al usuario tras iniciar sesión
 
     const [showPassword, setShowPassword] = useState(false);
@@ -47,7 +47,8 @@ export default function LogIn() {
             // guardar el AccessToken en las cookies
             if (result.data) {
                 login(result.data);
-                navigate('/properties'); // Redirige al usuario a la página de propiedades después de iniciar sesión
+
+                navigate('/'); // Redirige al usuario al home después de iniciar sesión
             }
 
         } catch (error) {
