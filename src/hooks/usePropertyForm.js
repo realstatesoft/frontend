@@ -40,6 +40,7 @@ const getInitialForm = () => ({
   fullBathrooms: "",
   rooms: [getInitialRoom(0), getInitialRoom(1)],
   media: [],
+  agentId: null,
 });
 
 const getErrorMessage = (err) =>
@@ -241,7 +242,10 @@ export function usePropertyForm(propertyId) {
             });
           }
         } else {
-          const payload = buildCreatePropertyPayload(form, { ownerId: DEFAULT_OWNER_ID });
+          const payload = buildCreatePropertyPayload(form, {
+            ownerId: DEFAULT_OWNER_ID,
+            agentId: form.agentId ?? undefined,
+          });
           const { data } = await propertyApi.create(payload);
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });
