@@ -19,7 +19,7 @@ const CONDITIONS = [
   {
     value: "dated",
     Icon: CalendarDate,
-    label: "Antigueda",
+    label: "Antigüedad",
     desc: "No actualizada recientemente",
   },
   {

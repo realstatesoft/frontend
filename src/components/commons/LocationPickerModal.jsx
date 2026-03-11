@@ -1,22 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
 import PropertyMap from "./PropertyMap";
-
-// Reverse geocoding usando Nominatim (OpenStreetMap)
-async function reverseGeocode(lat, lng) {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-  const res = await fetch(url, {
-    headers: {
-      "Accept": "application/json",
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-  const data = await res.json();
-  // Usar display_name completa; el usuario siempre puede ajustarla
-  return data.display_name || "";
-}
+import { reverseGeocode } from "../../utils/geocoding";
 
 /**
  * Modal reutilizable para seleccionar ubicación en el mapa.

@@ -57,7 +57,7 @@ export async function createLeadFromWizard(wizardData) {
     timeline: wizardData.timeline,
   };
   
-  const response = await api.post("/api/leads/wizard", payload);
+  const response = await api.post("/leads/wizard", payload);
   return response.data;
 }
 
