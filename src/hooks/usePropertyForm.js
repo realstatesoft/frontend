@@ -31,6 +31,7 @@ const getInitialForm = () => ({
   visibility: "Pública",
   address: "",
   geolocation: { lat: null, lng: null },
+  locationId: null,
   description: "",
   propertyType: "Casa",
   price: "",
@@ -54,6 +55,7 @@ const getInitialForm = () => ({
   fullBathrooms: "",
   rooms: [],
   media: [],
+  agentId: null,
 });
 
 const getErrorMessage = (err) =>

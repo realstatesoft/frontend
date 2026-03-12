@@ -28,6 +28,13 @@ function CustomNavbar() {
             >
               Propiedades
             </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to="/sell"
+              className="fw-semibold text-primary"
+            >
+              Vender / Alquilar
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
 

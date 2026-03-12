@@ -4,37 +4,59 @@ import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
 import PropertiesGrid from "../components/properties/PropertiesGrid";
 import useProperties from "../hooks/useProperties";
-import { PROPERTY_TYPE } from "../constants/propertyEnums";
+import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
 
 const PAGE_SIZE = 12;
 
 /**
  * PropertiesPage
- * Gestiona filtros y paginación de propiedades con filtros server-side.
+ * Gestiona filtros avanzados y paginación de propiedades con filtros server-side.
  */
 export default function PropertiesPage() {
     const [search, setSearch] = useState("");
-    const [typeFilter, setTypeFilter] = useState("Todos");
+    const [typeFilter, setTypeFilter] = useState("");
+    const [availability, setAvailability] = useState("");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+    const [minBedrooms, setMinBedrooms] = useState("");
+    const [minBathrooms, setMinBathrooms] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Convertir label del filtro de tipo a valor de enum del backend
-    const backendType = typeFilter !== "Todos" ? PROPERTY_TYPE[typeFilter] : undefined;
+    // Convertir labels a valores enum del backend
+    const backendType = typeFilter ? PROPERTY_TYPE[typeFilter] : undefined;
+    const backendAvailability = availability ? AVAILABILITY[availability] : undefined;
 
-    // Filtros server-side: type, search y paginación real
     const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
         page: currentPage,
         size: PAGE_SIZE,
         search,
         propertyType: backendType,
+        availability: backendAvailability,
+        minPrice: minPrice ? Number(minPrice) : undefined,
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        minBedrooms: minBedrooms ? Number(minBedrooms) : undefined,
+        minBathrooms: minBathrooms ? Number(minBathrooms) : undefined,
     });
 
     // Al cambiar cualquier filtro volvemos a la página 1
-    const handleSearch = (val) => { setSearch(val); setCurrentPage(1); };
-    const handleType = (val) => { setTypeFilter(val); setCurrentPage(1); };
+    const resetPage = () => setCurrentPage(1);
+
+    const handleSearch = (val) => { setSearch(val); resetPage(); };
+    const handleType = (val) => { setTypeFilter(val); resetPage(); };
+    const handleAvailability = (val) => { setAvailability(val); resetPage(); };
+    const handleMinPrice = (val) => { setMinPrice(val); resetPage(); };
+    const handleMaxPrice = (val) => { setMaxPrice(val); resetPage(); };
+    const handleMinBedrooms = (val) => { setMinBedrooms(val); resetPage(); };
+    const handleMinBathrooms = (val) => { setMinBathrooms(val); resetPage(); };
 
     const handleClear = () => {
         setSearch("");
-        setTypeFilter("Todos");
+        setTypeFilter("");
+        setAvailability("");
+        setMinPrice("");
+        setMaxPrice("");
+        setMinBedrooms("");
+        setMinBathrooms("");
         setCurrentPage(1);
     };
 
@@ -45,9 +67,19 @@ export default function PropertiesPage() {
             <PropertiesHero
                 search={search}
                 typeFilter={typeFilter}
+                availability={availability}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                minBedrooms={minBedrooms}
+                minBathrooms={minBathrooms}
                 totalResults={totalElements}
                 onSearch={handleSearch}
                 onTypeChange={handleType}
+                onAvailabilityChange={handleAvailability}
+                onMinPriceChange={handleMinPrice}
+                onMaxPriceChange={handleMaxPrice}
+                onMinBedroomsChange={handleMinBedrooms}
+                onMinBathroomsChange={handleMinBathrooms}
                 onClear={handleClear}
             />
 
