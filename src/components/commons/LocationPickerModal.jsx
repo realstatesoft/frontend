@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Button, Form, Spinner, Alert, Badge } from "react-bootstrap";
 import PropertyMap from "./PropertyMap";
-<<<<<<< feature/OR-28_ver-agentes-sugeridos
-import { reverseGeocode } from "../../utils/geocoding";
-=======
 import locationApi from "../../services/locations/locationApi";
 
 // Reverse geocoding usando Nominatim (OpenStreetMap)
@@ -26,7 +23,6 @@ async function reverseGeocode(lat, lng) {
     country: data.address?.country || "",
   };
 }
->>>>>>> dev
 
 /**
  * Modal reutilizable para seleccionar ubicación en el mapa.
@@ -118,7 +114,7 @@ export default function LocationPickerModal({
           setMatchedLocations([]);
         }
       }
-    } catch (e) {
+    } catch {
       setError(
         "No se pudo obtener la dirección automáticamente. Podés editarla manualmente."
       );
