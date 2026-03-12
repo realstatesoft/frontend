@@ -42,6 +42,7 @@ const getInitialForm = () => ({
   fullBathrooms: "",
   rooms: [getInitialRoom(0), getInitialRoom(1)],
   media: [],
+  agentId: null,
 });
 
 const getErrorMessage = (err) =>

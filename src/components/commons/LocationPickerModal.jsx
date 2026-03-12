@@ -114,7 +114,7 @@ export default function LocationPickerModal({
           setMatchedLocations([]);
         }
       }
-    } catch (e) {
+    } catch {
       setError(
         "No se pudo obtener la dirección automáticamente. Podés editarla manualmente."
       );

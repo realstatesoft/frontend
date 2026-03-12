@@ -10,6 +10,7 @@ import {
   PropertyFeaturesSection,
   ConstructionSection,
   InteriorAndRoomsSection,
+  AgentSelectionSection,
   FormActionsSection,
 } from "./sections";
 
@@ -107,6 +108,7 @@ export default function CreateProperty() {
               addRoom={addRoom}
               removeRoom={removeRoom}
             />
+            {!isEditMode && <AgentSelectionSection form={form} set={set} />}
             <FormActionsSection loading={loading} />
           </Form>
 
