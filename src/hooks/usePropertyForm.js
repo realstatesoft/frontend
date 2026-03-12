@@ -9,20 +9,14 @@ import {
   buildUpdatePropertyPayload,
   propertyToForm,
 } from "../services/properties/propertyFormMapper";
-<<<<<<< HEAD
 import {
   getInitialBedroom,
   getInitialHalfBathroom,
   getInitialFullBathroom,
   getInitialExtraRoom,
-  buildRoomsFromCounts,
-  DEFAULT_OWNER_ID,
   getFloorOptionsForCount,
   getFloorIndex,
 } from "../constants/createPropertyConstants";
-=======
-import { getInitialRoom } from "../constants/createPropertyConstants";
->>>>>>> dev
 import { createPropertySchema } from "../validation/createPropertySchema";
 
 const getInitialForm = () => ({
