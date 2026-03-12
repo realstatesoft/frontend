@@ -21,6 +21,7 @@ import Footer from "../../components/Landing/Footer";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { formatPrice } from "../../utils/priceFormat";
+import PropertyCard from "../../components/properties/PropertyCard"
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -46,6 +47,8 @@ export default function ShowProperty() {
     openDeleteConfirm,
     PROPERTY_STATUS_OPTIONS,
     PROPERTY_VISIBILITY_OPTIONS,
+    similarProperties,
+    loadingSimilar
   } = useShowProperty();
 
   if (loading) {
@@ -88,82 +91,94 @@ export default function ShowProperty() {
         <Container>
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <h1>{property.title}</h1>
-          <div className="d-flex gap-2 align-items-center mt-2">
-            {isOwner && (
-              <>
-                <Dropdown as={ButtonGroup}>
-                  <Dropdown.Toggle size="sm" variant="success">
-                    {status.label}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {PROPERTY_STATUS_OPTIONS.map((option) => (
-                      <Dropdown.Item
-                        key={option.value}
-                        onClick={() => openChangeStatusConfirm(option)}
-                      >
-                        {option.label}
-                      </Dropdown.Item>
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown>
+            <h1>{property.title}</h1>
+            <div className="d-flex gap-2 align-items-center mt-2">
+              {isOwner && (
+                <>
+                  <Dropdown as={ButtonGroup}>
+                    <Dropdown.Toggle size="sm" variant="success">
+                      {status.label}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {PROPERTY_STATUS_OPTIONS.map((option) => (
+                        <Dropdown.Item
+                          key={option.value}
+                          onClick={() => openChangeStatusConfirm(option)}
+                        >
+                          {option.label}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
 
-                <Dropdown as={ButtonGroup}>
-                  <Dropdown.Toggle size="sm" variant="secondary">
-                    {visibility.label}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {PROPERTY_VISIBILITY_OPTIONS.map((option) => (
-                      <Dropdown.Item
-                        key={option.value}
-                        onClick={() => openChangeVisibilityConfirm(option)}
-                      >
-                        {option.label}
-                      </Dropdown.Item>
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown>
+                  <Dropdown as={ButtonGroup}>
+                    <Dropdown.Toggle size="sm" variant="secondary">
+                      {visibility.label}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {PROPERTY_VISIBILITY_OPTIONS.map((option) => (
+                        <Dropdown.Item
+                          key={option.value}
+                          onClick={() => openChangeVisibilityConfirm(option)}
+                        >
+                          {option.label}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
 
-                <Button
-                  size="sm"
-                  variant="outline-primary"
-                  className="d-flex align-items-center"
-                  as={Link}
-                  to={`/properties/${property.id}/edit`}
-                >
-                  <i className="bi bi-pencil me-1"></i>
-                  Editar
-                </Button>
+                  <Button
+                    size="sm"
+                    variant="outline-primary"
+                    className="d-flex align-items-center"
+                    as={Link}
+                    to={`/properties/${property.id}/edit`}
+                  >
+                    <i className="bi bi-pencil me-1"></i>
+                    Editar
+                  </Button>
 
-                <Button size="sm" variant="warning" className="d-flex align-items-center">
-                  <i className="bi bi-star-fill me-1"></i>
-                  Destacar
-                </Button>
+                  <Button
+                    size="sm"
+                    variant="warning"
+                    className="d-flex align-items-center"
+                  >
+                    <i className="bi bi-star-fill me-1"></i>
+                    Destacar
+                  </Button>
 
-                <Button
-                  size="sm"
-                  variant="danger"
-                  className="d-flex align-items-center"
-                  onClick={openDeleteConfirm}
-                >
-                  <i className="bi bi-trash me-1"></i>
-                  Eliminar
-                </Button>
-              </>
-            )}
-            <Button size="sm" variant="primary" className="d-flex align-items-center">
-              <i className="bi bi-share me-1"></i>
-              Compartir
-            </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    className="d-flex align-items-center"
+                    onClick={openDeleteConfirm}
+                  >
+                    <i className="bi bi-trash me-1"></i>
+                    Eliminar
+                  </Button>
+                </>
+              )}
+              <Button
+                size="sm"
+                variant="primary"
+                className="d-flex align-items-center"
+              >
+                <i className="bi bi-share me-1"></i>
+                Compartir
+              </Button>
+            </div>
           </div>
-        </div>
         </Container>
 
         {/* Gallery */}
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <img src={images[0]} alt="Fachada" className="property__main-image" />
+              <img
+                src={images[0]}
+                alt="Fachada"
+                className="property__main-image"
+              />
             </Col>
             <Col xs={6}>
               <Row className="g-1 h-100">
@@ -172,7 +187,13 @@ export default function ShowProperty() {
                     <img
                       src={src}
                       alt={`Interior ${i + 1}`}
-                      className={`property__thumb-image ${i === 1 ? "radius-top-right-lg" : i === 3 ? "radius-bottom-left-lg" : ""}`}
+                      className={`property__thumb-image ${
+                        i === 1
+                          ? "radius-top-right-lg"
+                          : i === 3
+                          ? "radius-bottom-left-lg"
+                          : ""
+                      }`}
                     />
                   </Col>
                 ))}
@@ -185,14 +206,26 @@ export default function ShowProperty() {
         <Container className="py-3">
           <Row>
             <Col lg={8}>
-              <Stack direction="horizontal" gap={4} className="align-items-end flex-wrap mb-2">
+              <Stack
+                direction="horizontal"
+                gap={4}
+                className="align-items-end flex-wrap mb-2"
+              >
                 <span className="property__price">{priceFormatted}</span>
                 <Stack direction="horizontal" gap={4}>
                   {[
-                    { value: String(property.bedrooms ?? "-"), label: "habitaciones" },
-                    { value: String(property.bathrooms ?? "-"), label: "baños" },
                     {
-                      value: String(property.surfaceArea ?? property.builtArea ?? "-"),
+                      value: String(property.bedrooms ?? "-"),
+                      label: "habitaciones",
+                    },
+                    {
+                      value: String(property.bathrooms ?? "-"),
+                      label: "baños",
+                    },
+                    {
+                      value: String(
+                        property.surfaceArea ?? property.builtArea ?? "-",
+                      ),
                       label: "metros²",
                     },
                   ].map((stat) => (
@@ -209,10 +242,13 @@ export default function ShowProperty() {
               <Stack direction="horizontal" gap={2} className="flex-wrap mb-4">
                 {[
                   propertyTypeLabel,
-                  property.constructionYear && `Construido en ${property.constructionYear}`,
+                  property.constructionYear &&
+                    `Construido en ${property.constructionYear}`,
                   property.surfaceArea &&
                     property.price &&
-                    `₲ ${formatPrice(String(Math.round(property.price / property.surfaceArea)))}/m²`,
+                    `₲ ${formatPrice(
+                      String(Math.round(property.price / property.surfaceArea)),
+                    )}/m²`,
                 ]
                   .filter(Boolean)
                   .map((label) => (
@@ -222,7 +258,11 @@ export default function ShowProperty() {
                       bg="light"
                       text="secondary"
                       className="border-soft"
-                      style={{ fontWeight: "400", fontSize: "0.82rem", padding: "7px 14px" }}
+                      style={{
+                        fontWeight: "400",
+                        fontSize: "0.82rem",
+                        padding: "7px 14px",
+                      }}
                     >
                       {label}
                     </Badge>
@@ -234,10 +274,16 @@ export default function ShowProperty() {
                   {[
                     { key: "descripcion", label: "Descripción" },
                     { key: "tours", label: "Tours y Planos" },
-                    { key: "caracteristicas", label: "Datos y Características" },
+                    {
+                      key: "caracteristicas",
+                      label: "Datos y Características",
+                    },
                   ].map((tab) => (
                     <Nav.Item key={tab.key}>
-                      <Nav.Link eventKey={tab.key} style={{ fontSize: "0.9rem", color: "#555" }}>
+                      <Nav.Link
+                        eventKey={tab.key}
+                        style={{ fontSize: "0.9rem", color: "#555" }}
+                      >
                         {tab.label}
                       </Nav.Link>
                     </Nav.Item>
@@ -273,21 +319,28 @@ export default function ShowProperty() {
                         <>
                           {property.createdAt && (
                             <>
-                              Publicado <strong>{formatTimeAgo(property.createdAt)}</strong>
+                              Publicado{" "}
+                              <strong>
+                                {formatTimeAgo(property.createdAt)}
+                              </strong>
                             </>
                           )}
                           {property.viewCount != null && (
                             <> &nbsp;|&nbsp; {property.viewCount} vistas</>
                           )}
                           {property.favoriteCount != null && (
-                            <> &nbsp;|&nbsp; {property.favoriteCount} guardados</>
+                            <>
+                              {" "}
+                              &nbsp;|&nbsp; {property.favoriteCount} guardados
+                            </>
                           )}
                           <br />
                         </>
                       )}
                       {property.updatedAt && (
                         <>
-                          Revisado por última vez: {formatTimeAgo(property.updatedAt)}
+                          Revisado por última vez:{" "}
+                          {formatTimeAgo(property.updatedAt)}
                           <br />
                           Actualizado hace: {formatTimeAgo(property.updatedAt)}
                           <br />
@@ -307,8 +360,16 @@ export default function ShowProperty() {
                     <h5 className="property__section-title">Tours y Planos</h5>
                     <Row className="g-4 mt-1">
                       {[
-                        { key: "tour3d", label: "Tour 3D 360°", Icon: CameraVideo },
-                        { key: "planos", label: "Planos de la propiedad", Icon: FileText },
+                        {
+                          key: "tour3d",
+                          label: "Tour 3D 360°",
+                          Icon: CameraVideo,
+                        },
+                        {
+                          key: "planos",
+                          label: "Planos de la propiedad",
+                          Icon: FileText,
+                        },
                       ].map(({ key, label, Icon }) => (
                         <Col sm={6} key={key}>
                           <div className="property__tour-card">
@@ -323,12 +384,16 @@ export default function ShowProperty() {
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="caracteristicas">
-                    <h5 className="property__section-title">Datos y Características</h5>
+                    <h5 className="property__section-title">
+                      Datos y Características
+                    </h5>
                     <Row className="g-4">
                       {features.length ? (
                         features.map((section, i) => (
                           <Col md={6} key={i}>
-                            <div className="property__feature-title">{section.title}</div>
+                            <div className="property__feature-title">
+                              {section.title}
+                            </div>
                             <ul className="list-unstyled mb-0">
                               {section.items.map((item, j) => (
                                 <li key={j} className="property__feature-item">
@@ -340,7 +405,9 @@ export default function ShowProperty() {
                         ))
                       ) : (
                         <Col>
-                          <p className="text-muted">No hay características cargadas.</p>
+                          <p className="text-muted">
+                            No hay características cargadas.
+                          </p>
                         </Col>
                       )}
                     </Row>
@@ -356,10 +423,14 @@ export default function ShowProperty() {
                   alt="Propietario"
                   className="property__agent-avatar"
                 />
-                <p className="property__agent-name">{property.ownerName || "Propietario"}</p>
+                <p className="property__agent-name">
+                  {property.ownerName || "Propietario"}
+                </p>
                 <p className="property__agent-exp">8 años de experiencia</p>
                 <div className="mb-3">
-                  <span className="property__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>{" "}
+                  <span className="property__stars">
+                    &#9733;&#9733;&#9733;&#9733;&#9733;
+                  </span>{" "}
                   <span className="property__reviews">4.8 (15k reseñas)</span>
                 </div>
                 <Button
@@ -369,12 +440,26 @@ export default function ShowProperty() {
                 >
                   Contactar Agente
                 </Button>
-                <Button variant="dark" className="w-100" style={{ borderRadius: "8px" }}>
+                <Button
+                  variant="dark"
+                  className="w-100"
+                  style={{ borderRadius: "8px" }}
+                >
                   Agendar Visita
                 </Button>
               </div>
             </Col>
           </Row>
+
+          {!loadingSimilar && similarProperties?.length > 0 && (
+            <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+              {similarProperties.map((similar) => (
+                <Col key={similar.id}>
+                  <PropertyCard property={similar}/>
+                </Col>
+              ))}
+            </Row>
+          )}
         </Container>
       </div>
 

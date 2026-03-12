@@ -27,6 +27,8 @@ const propertyApi = {
   
   clearTrashcan: (id) => api.post(`${BASE}/clear-trashcan`),
 
+  getSimilar: (id, limit) => api.get(`${BASE}/${id}/similar?size=${limit}`),
+
 };
 
 export default propertyApi;

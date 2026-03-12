@@ -17,6 +17,7 @@ const getErrorMessage = (err) =>
   err.response?.data?.errors?.[0] ??
   "No se pudo conectar con el servidor. Verificá que el backend esté activo.";
 
+const SIMILAR_LIMIT = 6
 /**
  * Hook con toda la lógica de la página ShowProperty:
  * fetch de propiedad, estado, visibilidad, changeStatus, changeVisibility, delete.
@@ -26,7 +27,9 @@ export function useShowProperty() {
   const navigate = useNavigate();
 
   const [property, setProperty] = useState(null);
+  const [similarProperties, setSimilarProperties] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingSimilar, setLoadingSimilar] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -66,9 +69,35 @@ export function useShowProperty() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const fetchSimilar = useCallback(() => {
+    if (!id) return;
+    setLoadingSimilar(true);
+    setError(null);
+    propertyApi
+      .getSimilar(id, SIMILAR_LIMIT)
+      .then(({ data }) => {
+        if (data?.success && data?.data) {
+          const p = data.data;
+          setSimilarProperties(p);
+          const statusOpt = PROPERTY_STATUS_OPTIONS.find((o) => o.value === p.status) ?? PROPERTY_STATUS_OPTIONS[0];
+        } else {
+          setError("No se pudieron obtener propiedades similares");
+        }
+      })
+      .catch((err) => {
+        setError(
+          err.response?.status === 404
+            ? "No se pudieron obtener propiedades similares."
+            : getErrorMessage(err)
+        );
+      })
+      .finally(() => setLoadingSimilar(false));
+  }, [id]);
+
   useEffect(() => {
     fetchProperty();
-  }, [fetchProperty]);
+    fetchSimilar();
+  }, [fetchProperty, fetchSimilar]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -233,5 +262,7 @@ export function useShowProperty() {
     openDeleteConfirm,
     PROPERTY_STATUS_OPTIONS,
     PROPERTY_VISIBILITY_OPTIONS,
+    fetchSimilar,
+    loadingSimilar
   };
 }
