@@ -4,6 +4,10 @@
   overflow-x: hidden;
   background-color: rgb(var(--bs-light-rgb));
 
+  &__icon-button {
+    margin-right: 0.5rem;
+  }
+
   /* ===== Gallery ===== */
 
   &__main-image {
