@@ -196,6 +196,10 @@ export function useShowProperty() {
     setShowConfirm(true);
   }, [handleConfirmDelete]);
 
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+  };
+
   // Valores derivados para la UI
   const images = property?.media?.length
     ? property.media
@@ -233,5 +237,6 @@ export function useShowProperty() {
     openDeleteConfirm,
     PROPERTY_STATUS_OPTIONS,
     PROPERTY_VISIBILITY_OPTIONS,
+    copyLink
   };
 }
