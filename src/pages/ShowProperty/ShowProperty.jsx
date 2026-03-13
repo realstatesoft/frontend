@@ -24,7 +24,7 @@ import { formatPrice } from "../../utils/priceFormat";
 import "./show-property.scss";
 
 export default function ShowProperty() {
-  const BASE_URL = import.meta.env.DEPLOY_URL
+  const BASE_URL = import.meta.env.VITE_DEPLOY_URL
 
   const {
     property,
