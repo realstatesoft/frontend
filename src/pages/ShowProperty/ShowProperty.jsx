@@ -24,7 +24,7 @@ import { formatPrice } from "../../utils/priceFormat";
 import "./show-property.scss";
 
 export default function ShowProperty() {
-  const BASE_URL = "https://frontend-mwqds62n3-manuayalags-projects.vercel.app";
+  const BASE_URL = import.meta.env.DEPLOY_URL
 
   const {
     property,
@@ -212,7 +212,7 @@ export default function ShowProperty() {
                         i === 1
                           ? "radius-top-right-lg"
                           : i === 3
-                          ? "radius-bottom-left-lg"
+                          ? "radius-bottom-right-lg"
                           : ""
                       }`}
                     />

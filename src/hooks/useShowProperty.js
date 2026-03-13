@@ -198,6 +198,22 @@ export function useShowProperty() {
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      await Swal.fire({
+        icon: "success",
+        title: "Enlace copiado",
+        text: "El enlace fue copiado al portapapeles.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo copiar el enlace al portapapeles.",
+      });
+    }
   };
 
   // Valores derivados para la UI
