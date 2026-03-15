@@ -10,6 +10,7 @@ import {
   PropertyFeaturesSection,
   ConstructionSection,
   InteriorAndRoomsSection,
+  AgentSelectionSection,
   FormActionsSection,
 } from "./sections";
 
@@ -29,9 +30,13 @@ export default function CreateProperty() {
     validateForm,
     set,
     setArr,
+    setFloorsCount,
+    setBedrooms,
+    setHalfBathrooms,
+    setFullBathrooms,
     updateRoom,
-    addRoom,
-    removeRoom,
+    addExtraRoom,
+    removeExtraRoom,
     addMedia,
     removeMedia,
     setPrimaryMedia,
@@ -102,11 +107,16 @@ export default function CreateProperty() {
             <ConstructionSection form={form} set={set} />
             <InteriorAndRoomsSection
               form={form}
-              set={set}
+              setFloorsCount={setFloorsCount}
+              setBedrooms={setBedrooms}
+              setHalfBathrooms={setHalfBathrooms}
+              setFullBathrooms={setFullBathrooms}
               updateRoom={updateRoom}
-              addRoom={addRoom}
-              removeRoom={removeRoom}
+              addExtraRoom={addExtraRoom}
+              removeExtraRoom={removeExtraRoom}
+              fieldErrors={fieldErrors}
             />
+            {!isEditMode && <AgentSelectionSection form={form} set={set} />}
             <FormActionsSection loading={loading} />
           </Form>
 

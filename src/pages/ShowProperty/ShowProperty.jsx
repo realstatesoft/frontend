@@ -14,7 +14,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -25,6 +25,8 @@ import PropertyCard from "../../components/properties/PropertyCard"
 import "./show-property.scss";
 
 export default function ShowProperty() {
+  const BASE_URL = import.meta.env.VITE_DEPLOY_URL
+
   const {
     property,
     loading,
@@ -49,6 +51,7 @@ export default function ShowProperty() {
     PROPERTY_VISIBILITY_OPTIONS,
     similarProperties,
     loadingSimilar
+    copyLink
   } = useShowProperty();
 
   if (loading) {
@@ -134,8 +137,7 @@ export default function ShowProperty() {
                     as={Link}
                     to={`/properties/${property.id}/edit`}
                   >
-                    <i className="bi bi-pencil me-1"></i>
-                    Editar
+                    <Pencil size={16} className="property__icon-button"/> Editar
                   </Button>
 
                   <Button
@@ -143,8 +145,7 @@ export default function ShowProperty() {
                     variant="warning"
                     className="d-flex align-items-center"
                   >
-                    <i className="bi bi-star-fill me-1"></i>
-                    Destacar
+                    <Star size={16} className="property__icon-button"/> Destacar
                   </Button>
 
                   <Button
@@ -153,19 +154,42 @@ export default function ShowProperty() {
                     className="d-flex align-items-center"
                     onClick={openDeleteConfirm}
                   >
-                    <i className="bi bi-trash me-1"></i>
-                    Eliminar
+                    <Trash size={16} className="property__icon-button"/> Eliminar
                   </Button>
                 </>
               )}
-              <Button
-                size="sm"
-                variant="primary"
-                className="d-flex align-items-center"
-              >
-                <i className="bi bi-share me-1"></i>
-                Compartir
-              </Button>
+              <Dropdown as={ButtonGroup}>
+                <Dropdown.Toggle size="sm" variant="primary">
+                  <Share size={16} className="property__icon-button"/> Compartir
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                 <Dropdown.Item onClick={copyLink}>
+                    <Link45deg size={16} className="property__icon-button"/> Copiar enlace
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    as="a"
+                    href={`https://wa.me/?text=${encodeURIComponent(
+                      `Encontré esta propiedad: ${BASE_URL}/properties/${property.id}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Whatsapp size={16} className="property__icon-button"/> Compartir por WhatsApp
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    as="a"
+                    href={`mailto:?subject=${encodeURIComponent(
+                      "Mira esta propiedad"
+                    )}&body=${encodeURIComponent(
+                      `Te comparto esta propiedad:\n${BASE_URL}/properties/${property.id}`
+                    )}`}
+                  >
+                    <Envelope size={16} className="property__icon-button"/> Compartir por Email
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </Container>
@@ -174,6 +198,11 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
+              <img
+                src={images[0]}
+                alt="Fachada"
+                className="property__main-image"
+              />
               <img
                 src={images[0]}
                 alt="Fachada"
@@ -191,7 +220,7 @@ export default function ShowProperty() {
                         i === 1
                           ? "radius-top-right-lg"
                           : i === 3
-                          ? "radius-bottom-left-lg"
+                          ? "radius-bottom-right-lg"
                           : ""
                       }`}
                     />

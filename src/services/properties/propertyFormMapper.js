@@ -14,7 +14,13 @@ import {
   ID_TO_EXTERIOR_FEATURE,
   ID_TO_INTERIOR_FEATURE,
 } from "../../constants/propertyEnums";
-import { getInitialRoom, DIMENSION_OPTIONS } from "../../constants/createPropertyConstants";
+import {
+  getInitialBedroom,
+  getInitialHalfBathroom,
+  getInitialFullBathroom,
+  buildRoomsFromCounts,
+  DIMENSION_OPTIONS,
+} from "../../constants/createPropertyConstants";
 
 // ── Helpers de conversión ─────────────────────────────────────────────────────
 
@@ -159,20 +165,43 @@ function findDimensionsByArea(area) {
  * @param {object} property - Datos de la propiedad del API
  * @returns {object} - Estado del formulario listo para setForm
  */
+const mapApiRoomToForm = (room, index, fallbackName) => ({
+  name: room.name || fallbackName,
+  floor: "Planta baja",
+  dimensions: findDimensionsByArea(room.area) || "4 x 4 mts.",
+  features: (room.interiorFeatureIds || [])
+    .map((id) => ID_TO_INTERIOR_FEATURE[id])
+    .filter(Boolean),
+});
+
 export const propertyToForm = (property) => {
   if (!property) return null;
   const roomsFromApi = property.rooms || [];
+  const b = Math.max(0, property.bedrooms ?? 0);
+  const h = Math.max(0, property.halfBathrooms ?? 0);
+  const full = Math.max(0, property.fullBathrooms ?? 0);
+  const mandatoryCount = b + h + full;
   const rooms =
     roomsFromApi.length > 0
-      ? roomsFromApi.map((room, index) => ({
-          name: room.name || `Habitación ${index + 1}`,
-          floor: "Planta baja",
-          dimensions: findDimensionsByArea(room.area),
-          features: (room.interiorFeatureIds || [])
-            .map((id) => ID_TO_INTERIOR_FEATURE[id])
-            .filter(Boolean),
-        }))
-      : [getInitialRoom(0), getInitialRoom(1)];
+      ? (() => {
+          const mapped = roomsFromApi.map((room, i) => {
+            const fallback =
+              i < b
+                ? `Dormitorio ${i + 1}`
+                : i < b + h
+                  ? `Medio baño ${i - b + 1}`
+                  : i < mandatoryCount
+                    ? `Baño completo ${i - b - h + 1}`
+                    : `Habitación ${i - mandatoryCount + 1}`;
+            return mapApiRoomToForm(room, i, fallback);
+          });
+          const base = buildRoomsFromCounts(b, h, full, []);
+          const merged = base.map((defaultRoom, i) =>
+            mapped[i] ? { ...defaultRoom, ...mapped[i] } : defaultRoom
+          );
+          return [...merged, ...mapped.slice(mandatoryCount)];
+        })()
+      : buildRoomsFromCounts(b, h, full);
   return {
     title: property.title || "",
     category: CATEGORY_LABELS[property.category] ?? "Venta",

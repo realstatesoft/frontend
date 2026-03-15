@@ -1,0 +1,1146 @@
+.sell-wizard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+.sell-wizard__header {
+  background: #fff;
+  padding: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.sell-wizard__progress-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.sell-wizard__progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.sell-wizard__progress-bar {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sell-wizard__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.sell-wizard__content {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.sell-wizard__content--wide {
+  max-width: 950px;
+}
+
+.sell-wizard__step {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sell-wizard__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.sell-wizard__subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.sell-wizard__options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sell-wizard__option {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.sell-wizard__option:hover {
+  border-color: #3b82f6;
+  background: #f8faff;
+}
+
+.sell-wizard__option--selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.sell-wizard__option-radio {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.sell-wizard__option--selected .sell-wizard__option-radio {
+  border-color: #2563eb;
+  background: #2563eb;
+}
+
+.sell-wizard__option--selected .sell-wizard__option-radio::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.sell-wizard__option-text {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.sell-wizard__option-desc {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.sell-wizard__option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #eff6ff;
+  border-radius: 10px;
+  margin-right: 1rem;
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.sell-wizard__option-content {
+  flex: 1;
+}
+
+.sell-wizard__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 576px) {
+  .sell-wizard__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sell-wizard__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fff;
+  text-align: center;
+  min-height: 120px;
+}
+
+.sell-wizard__card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.sell-wizard__card--selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.sell-wizard__card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.sell-wizard__card-label {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.sell-wizard__form-group {
+  margin-bottom: 1.5rem;
+}
+
+.sell-wizard__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+
+  svg {
+    flex-shrink: 0;
+    color: #2563eb;
+  }
+}
+
+.sell-wizard__input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.sell-wizard__input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.sell-wizard__counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.sell-wizard__counter-label {
+  font-size: 1rem;
+  color: #333;
+}
+
+.sell-wizard__counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sell-wizard__counter-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.sell-wizard__counter-btn:hover:not(:disabled) {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.sell-wizard__counter-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sell-wizard__counter-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  min-width: 30px;
+  text-align: center;
+}
+
+.sell-wizard__yes-no {
+  display: flex;
+  gap: 1rem;
+}
+
+.sell-wizard__yes-no-btn {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.sell-wizard__yes-no-btn:hover {
+  border-color: #3b82f6;
+}
+
+.sell-wizard__yes-no-btn--selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.sell-wizard__checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sell-wizard__checkbox {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sell-wizard__checkbox:hover {
+  border-color: #3b82f6;
+}
+
+.sell-wizard__checkbox--selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.sell-wizard__checkbox-box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.sell-wizard__checkbox--selected .sell-wizard__checkbox-box {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+
+  svg {
+    display: block;
+  }
+}
+
+.sell-wizard__checkbox-box svg {
+  display: none;
+}
+
+.sell-wizard__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.sell-wizard__btn {
+  padding: 0.875rem 2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.sell-wizard__btn--back {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.sell-wizard__btn--back:hover {
+  background: #e8e8e8;
+}
+
+.sell-wizard__btn--next {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  color: #fff;
+  margin-left: auto;
+}
+
+.sell-wizard__btn--next:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.sell-wizard__btn--next:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sell-wizard__map-container {
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+  border: 2px solid #e0e0e0;
+}
+
+.sell-wizard__hint {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+.sell-wizard__address-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.sell-wizard__address-error {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #dc3545;
+  background: #fff3f4;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.sell-wizard__coords-display {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+  font-family: monospace;
+  background: #f5f5f5;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.sell-wizard__category-toggle {
+  display: flex;
+  background: #f0f0f0;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 2rem;
+}
+
+.sell-wizard__category-btn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: #666;
+}
+
+.sell-wizard__category-btn--active {
+  background: #fff;
+  color: #2563eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sell-wizard__condition-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .sell-wizard__condition-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.sell-wizard__condition-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fff;
+  text-align: center;
+}
+
+.sell-wizard__condition-card:hover {
+  border-color: #3b82f6;
+}
+
+.sell-wizard__condition-card--selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.sell-wizard__condition-emoji {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.sell-wizard__condition-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.sell-wizard__condition-desc {
+  font-size: 0.7rem;
+  color: #888;
+  line-height: 1.3;
+}
+
+/* Agent selection in wizard */
+.sell-wizard__agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.sell-wizard__agent-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.sell-wizard__agent-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sell-wizard__agent-card--selected {
+  border-color: #2563eb;
+  background: #f8faff;
+}
+
+.sell-wizard__agent-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sell-wizard__agent-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sell-wizard__agent-info h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 0.25rem 0;
+}
+
+.sell-wizard__agent-company {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.sell-wizard__agent-stats {
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: space-around;
+}
+
+.sell-wizard__agent-stat {
+  text-align: center;
+}
+
+.sell-wizard__agent-stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.sell-wizard__agent-stat-label {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.1rem;
+}
+
+.sell-wizard__agent-specialties {
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sell-wizard__specialty-tag {
+  padding: 0.25rem 0.75rem;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.sell-wizard__solo-option {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sell-wizard__solo-option:hover {
+  border-color: #3b82f6;
+  background: #f8faff;
+}
+
+.sell-wizard__solo-option--selected {
+  border-color: #2563eb;
+  border-style: solid;
+  background: #eff6ff;
+}
+
+.sell-wizard__solo-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sell-wizard__solo-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.sell-wizard__solo-desc {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+// =====================================================
+// SUGGESTED AGENTS - New Redesigned Cards
+// =====================================================
+.suggested-agents {
+  margin-top: 1.5rem;
+}
+
+.suggested-agents__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.suggested-agents__card {
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.suggested-agents__card:hover {
+  border-color: #93c5fd;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+}
+
+.suggested-agents__card--selected {
+  border-color: #2563eb;
+  border-width: 3px;
+  background: #f0f7ff;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
+}
+
+.suggested-agents__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.suggested-agents__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  span {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+  }
+}
+
+.suggested-agents__rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.suggested-agents__rating-score {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.suggested-agents__rating-star {
+  color: #f59e0b;
+  font-size: 1rem;
+}
+
+.suggested-agents__rating-reviews {
+  color: #666;
+  font-weight: 400;
+}
+
+.suggested-agents__sales {
+  font-size: 0.85rem;
+  color: #16a34a;
+  font-weight: 500;
+  margin: 0;
+}
+
+.suggested-agents__details {
+  font-size: 0.85rem;
+  color: #555;
+  text-align: center;
+
+  p {
+    margin: 0.25rem 0;
+  }
+
+  strong {
+    color: #333;
+  }
+}
+
+.suggested-agents__contact-btn {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.suggested-agents__fallback {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.suggested-agents__fallback-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.suggested-agents__fallback-text {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 1.25rem;
+}
+
+.suggested-agents__fallback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.suggested-agents__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid #2563eb;
+  background: #fff;
+  color: #2563eb;
+
+  &:hover {
+    background: #eff6ff;
+  }
+
+  svg {
+    font-size: 1rem;
+  }
+}
+
+.suggested-agents__action-btn--outline {
+  background: #fff;
+  color: #2563eb;
+  border-color: #2563eb;
+
+  &:hover {
+    background: #eff6ff;
+  }
+}
+
+.suggested-agents__action-btn--primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.suggested-agents__action-btn--active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.suggested-agents__empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+
+  svg {
+    color: #94a3b8;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.sell-wizard__loading {
+  text-align: center;
+  padding: 3rem;
+
+  p {
+    margin-top: 1rem;
+    color: #666;
+  }
+}
+
+.sell-wizard__step--agents {
+  max-width: 100%;
+}
+
+// =====================================================
+// AGENT CARD - Grid Layout (Zillow-style)
+// =====================================================
+.suggested-agents__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.agent-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.agent-card:hover {
+  border-color: #93c5fd;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+}
+
+.agent-card--selected {
+  border-color: #2563eb;
+  border-width: 3px;
+  background: #f0f7ff;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
+}
+
+.agent-card__avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  span {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #fff;
+  }
+}
+
+.agent-card__rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.agent-card__rating-score {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.agent-card__rating-star {
+  color: #f59e0b;
+  font-size: 1rem;
+}
+
+.agent-card__rating-reviews {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.agent-card__name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.agent-card__company {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.agent-card__stats {
+  margin-bottom: 0.75rem;
+  width: 100%;
+
+  p {
+    margin: 0.2rem 0;
+    font-size: 0.85rem;
+    color: #374151;
+
+    strong {
+      color: #2563eb;
+      font-weight: 600;
+    }
+  }
+}
+
+.agent-card__specialties {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.agent-card__specialties-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.agent-card__specialties-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.agent-card__specialty-tag {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.agent-card__contact-btn {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: auto;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.agent-card__contact-btn--selected {
+  background: #16a34a;
+
+  &:hover {
+    background: #15803d;
+  }
+}
+
+@media (max-width: 768px) {
+  .suggested-agents__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .suggested-agents__fallback-actions {
+    flex-direction: column;
+  }
+
+  .suggested-agents__action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
