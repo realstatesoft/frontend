@@ -50,7 +50,7 @@ export default function ShowProperty() {
     PROPERTY_STATUS_OPTIONS,
     PROPERTY_VISIBILITY_OPTIONS,
     similarProperties,
-    loadingSimilar
+    loadingSimilar,
     copyLink
   } = useShowProperty();
 

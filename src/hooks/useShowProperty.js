@@ -283,7 +283,7 @@ export function useShowProperty() {
     PROPERTY_STATUS_OPTIONS,
     PROPERTY_VISIBILITY_OPTIONS,
     fetchSimilar,
-    loadingSimilar
+    loadingSimilar,
     copyLink
   };
 }

@@ -103,6 +103,7 @@ export default function LocationPickerModal({
               geo.country
             );
             if (createData?.success && createData?.data) {
+              console.log("se creo la location")
               const created = createData.data;
               setAutoCreatedLocation(created);
               setSelectedLocationId(created.id);
