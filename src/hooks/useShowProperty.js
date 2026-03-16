@@ -27,7 +27,7 @@ export function useShowProperty() {
   const navigate = useNavigate();
 
   const [property, setProperty] = useState(null);
-  const [similarProperties, setSimilarProperties] = useState(null);
+  const [similarProperties, setSimilarProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingSimilar, setLoadingSimilar] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -287,6 +287,7 @@ export function useShowProperty() {
     fetchSimilar,
     loadingSimilar,
     similarProperties,
+    similarError,
     copyLink
   };
 }

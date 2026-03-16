@@ -28,7 +28,7 @@ export default function PropertySummaryCard({ property }) {
 
                 <Card.Body className="summary-card__body">
                     <p className="summary-card__price">{formattedPrice}</p>
-                    <p className="summary-card__title">{property.title}</p>
+                    <p className="summary-card__title">{property.title || "Imagen de propiedad"}</p>
                 </Card.Body>
             </Card>
         </Link>
