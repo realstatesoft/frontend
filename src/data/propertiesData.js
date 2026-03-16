@@ -4,8 +4,9 @@
  */
 export const tagColors = {
     Publicado: "#2e7d32",
-    Vendido: "#b71c1c",
-    Alquilado: "#e65100",
+    Disponible: "#2e7d32",
+    Vendido: "#7b1fa2",
+    Alquilado: "#b39ddb",
     Pendiente: "#757575",
     Aprobado: "#1565c0",
     Rechazado: "#c62828",
@@ -23,4 +24,10 @@ export const STATUS_LABELS = {
     SOLD: "Vendido",
     RENTED: "Alquilado",
     ARCHIVED: "Archivado",
+};
+
+/** Para "Mis Propiedades": mostrar "Disponible" en vez de "Publicado" */
+export const STATUS_DISPLAY_LABELS = {
+    ...STATUS_LABELS,
+    PUBLISHED: "Disponible",
 };

@@ -8,6 +8,7 @@ import LogIn from "../pages/LogIn";
 import SignUp from "../pages/SignUp";
 import ForgotPassword from "../pages/ForgotPassword";
 import CreateProperty from "../pages/properties/CreateProperty";
+import MyProperties from "../pages/ShowProperty/MyProperties";
 
 export default function AppRouter() {
     return (
@@ -20,6 +21,7 @@ export default function AppRouter() {
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/properties/:id/edit" element={<CreateProperty />} />
+            <Route path="/properties/me" element={<MyProperties />} />
             <Route path="/trashcan" element={<PropertiesTrashCan />} />
             <Route path="/agents" element={<AgentsPage />} />
         </Routes>
