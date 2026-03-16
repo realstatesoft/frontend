@@ -18,20 +18,34 @@ export default function PropertyContactCard({ property }) {
   const hasAgent = Boolean(property?.agentId);
 
   useEffect(() => {
-    if (!hasAgent || !property.agentId) {
-      setAgent(null);
-      return;
-    }
-    setLoadingAgent(true);
+    if (!hasAgent || !property.agentId) return;
+
+    let cancelled = false;
+    const id = setTimeout(() => {
+      if (!cancelled) setLoadingAgent(true);
+    }, 0);
+
     agentApi
       .getAgentById(property.agentId)
       .then((res) => {
+        if (cancelled) return;
         const payload = res?.data ?? res;
         const agentData = payload?.data ?? payload;
         setAgent(agentData);
       })
-      .catch(() => setAgent(null))
-      .finally(() => setLoadingAgent(false));
+      .catch(() => {
+        if (!cancelled) setAgent(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingAgent(false);
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(id);
+      setAgent(null);
+      setLoadingAgent(false);
+    };
   }, [hasAgent, property?.agentId]);
 
   const name = agent?.userName ?? property?.ownerName ?? "Propietario";
