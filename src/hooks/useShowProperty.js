@@ -32,6 +32,7 @@ export function useShowProperty() {
   const [loadingSimilar, setLoadingSimilar] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [similarError, setSimilarError] = useState(null);
 
   const [status, setStatus] = useState(PROPERTY_STATUS_OPTIONS[0]);
   const [visibility, setVisibility] = useState(PROPERTY_VISIBILITY_OPTIONS[0]);
@@ -72,7 +73,7 @@ export function useShowProperty() {
   const fetchSimilar = useCallback(() => {
     if (!id) return;
     setLoadingSimilar(true);
-    setError(null);
+    setSimilarError(null);
     propertyApi
       .getSimilar(id, SIMILAR_LIMIT)
       .then(({ data }) => {
@@ -80,11 +81,13 @@ export function useShowProperty() {
           const p = data.data;
           setSimilarProperties(p);
         } else {
-          setError("No se pudieron obtener propiedades similares");
+          setSimilarProperties([]);
+          setSimilarError("No se pudieron obtener propiedades similares");
         }
       })
       .catch((err) => {
-        setError(
+        setSimilarProperties([]);
+        setSimilarError(
           err.response?.status === 404
             ? "No se pudieron obtener propiedades similares."
             : getErrorMessage(err)

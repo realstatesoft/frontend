@@ -11,7 +11,6 @@ export default function PropertySummaryCard({ property }) {
     const formattedPrice = Number.isFinite(numericPrice)
         ? `Gs ${numericPrice.toLocaleString()}`
         : "—";
-    const location = property.address || property.locationName || property.location || "";
     const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
 
     return (
@@ -22,13 +21,14 @@ export default function PropertySummaryCard({ property }) {
                         variant="top"
                         src={image}
                         className="summary-card__image"
+                        alt={property.title}
                         loading="lazy"
                     />
                 </div>
 
                 <Card.Body className="summary-card__body">
                     <p className="summary-card__price">{formattedPrice}</p>
-                    <p className="summary-card__location">{location}</p>
+                    <p className="summary-card__title">{property.title}</p>
                 </Card.Body>
             </Card>
         </Link>

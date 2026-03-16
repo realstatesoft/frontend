@@ -12,7 +12,7 @@
   }
 
   &__image {
-    height: 130px;       // reducido para que la card sea más compacta
+    height: 130px;       
     object-fit: cover;
   }
 
@@ -34,7 +34,7 @@
     margin-bottom: 0.15rem;
   }
 
-  &__location {
+  &__title {
     font-size: 0.6rem;      
     color: #6c757d;
     margin-bottom: 0;
@@ -69,5 +69,11 @@
   
   &:hover {
     text-decoration: none;
+  }
+
+  &:focus-visible .summary-card {
+   outline: 2px solid var(--primary, #2563eb);
+   outline-offset: 2px;
+   transform: translateY(-2px);
   }
 }
