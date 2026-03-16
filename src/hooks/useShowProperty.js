@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import propertyApi from "../services/properties/propertyApi";
@@ -17,6 +17,7 @@ const getErrorMessage = (err) =>
   err.response?.data?.errors?.[0] ??
   "No se pudo conectar con el servidor. Verificá que el backend esté activo.";
 
+const SIMILAR_LIMIT = 6
 /**
  * Hook con toda la lógica de la página ShowProperty:
  * fetch de propiedad, estado, visibilidad, changeStatus, changeVisibility, delete.
@@ -25,10 +26,15 @@ export function useShowProperty() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const similarRequestRef = useRef(0);
+
   const [property, setProperty] = useState(null);
+  const [similarProperties, setSimilarProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingSimilar, setLoadingSimilar] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [similarError, setSimilarError] = useState(null);
 
   const [status, setStatus] = useState(PROPERTY_STATUS_OPTIONS[0]);
   const [visibility, setVisibility] = useState(PROPERTY_VISIBILITY_OPTIONS[0]);
@@ -66,9 +72,48 @@ export function useShowProperty() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const fetchSimilar = useCallback(() => {
+    if (!id) {
+      setSimilarProperties([]);
+      setSimilarError(null);
+      setLoadingSimilar(false);
+      return;
+    }
+    const requestId = ++similarRequestRef.current;
+    setLoadingSimilar(true);
+    setSimilarError(null);
+    propertyApi
+      .getSimilar(id, SIMILAR_LIMIT)
+      .then(({ data }) => {
+        if (requestId !== similarRequestRef.current) return;
+        if (data?.success && data?.data) {
+          const p = data.data;
+          setSimilarProperties(p);
+        } else {
+          setSimilarProperties([]);
+          setSimilarError("No se pudieron obtener propiedades similares");
+        }
+      })
+      .catch((err) => {
+        if (requestId !== similarRequestRef.current) return;
+        setSimilarProperties([]);
+        setSimilarError(
+          err.response?.status === 404
+            ? "No se pudieron obtener propiedades similares."
+            : getErrorMessage(err)
+        );
+      })
+      .finally(() => {
+        if (requestId === similarRequestRef.current) {
+          setLoadingSimilar(false);
+        }
+      });
+  }, [id]);
+
   useEffect(() => {
     fetchProperty();
-  }, [fetchProperty]);
+    fetchSimilar();
+  }, [fetchProperty, fetchSimilar]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -253,6 +298,10 @@ export function useShowProperty() {
     openDeleteConfirm,
     PROPERTY_STATUS_OPTIONS,
     PROPERTY_VISIBILITY_OPTIONS,
+    fetchSimilar,
+    loadingSimilar,
+    similarProperties,
+    similarError,
     copyLink
   };
 }
