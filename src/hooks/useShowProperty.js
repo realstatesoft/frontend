@@ -79,7 +79,6 @@ export function useShowProperty() {
         if (data?.success && data?.data) {
           const p = data.data;
           setSimilarProperties(p);
-          const statusOpt = PROPERTY_STATUS_OPTIONS.find((o) => o.value === p.status) ?? PROPERTY_STATUS_OPTIONS[0];
         } else {
           setError("No se pudieron obtener propiedades similares");
         }
@@ -284,6 +283,7 @@ export function useShowProperty() {
     PROPERTY_VISIBILITY_OPTIONS,
     fetchSimilar,
     loadingSimilar,
+    similarProperties,
     copyLink
   };
 }

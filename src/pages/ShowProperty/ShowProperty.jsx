@@ -21,7 +21,7 @@ import Footer from "../../components/Landing/Footer";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { formatPrice } from "../../utils/priceFormat";
-import PropertyCard from "../../components/properties/PropertyCard"
+import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -198,11 +198,6 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <img
-                src={images[0]}
-                alt="Fachada"
-                className="property__main-image"
-              />
               <img
                 src={images[0]}
                 alt="Fachada"
@@ -479,16 +474,27 @@ export default function ShowProperty() {
               </div>
             </Col>
           </Row>
+          
+          <h5 className="property__section-title mt-5 mb-3">
+            Propiedades similares
+          </h5>
 
-          {!loadingSimilar && similarProperties?.length > 0 && (
-            <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+          {loadingSimilar ? (
+            <div className="d-flex justify-content-center py-4">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : similarProperties?.length > 0 ? (
+            <Row className="g-3 mx-0">
               {similarProperties.map((similar) => (
-                <Col key={similar.id}>
-                  <PropertyCard property={similar}/>
+                <Col key={similar.id} xs={6} sm={4} lg={2}>
+                  <PropertySummaryCard property={similar} />
                 </Col>
               ))}
             </Row>
+          ) : (
+            <p className="text-muted">No se encontraron propiedades similares.</p>
           )}
+          
         </Container>
       </div>
 
