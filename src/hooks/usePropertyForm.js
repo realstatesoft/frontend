@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuth } from "./useAuth";
+import { getUserInfo } from "../utils/authToken";
 import propertyApi from "../services/properties/propertyApi";
 import { uploadImage } from "../services/images/imageApi";
 import {
@@ -65,7 +66,8 @@ export function usePropertyForm(propertyId) {
   const navigate = useNavigate();
   const isEditMode = Boolean(propertyId);
   const { user } = useAuth();
-  const userId = user?.userId;
+  // userId desde userInfo en localStorage (guardado al iniciar sesión)
+  const userId = user?.userId ?? getUserInfo()?.userId;
 
   const [form, setForm] = useState(getInitialForm);
   const [loading, setLoading] = useState(false);
