@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, Image, Spinner } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
 import agentApi from "../../services/agents/agentApi";
+import { getWhatsAppLink } from "../../utils/whatsapp";
 
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
 
@@ -35,9 +36,12 @@ export default function PropertyContactCard({ property }) {
 
   const name = agent?.userName ?? property?.ownerName ?? "Propietario";
   const avatarUrl = agent?.userAvatarUrl ?? DEFAULT_AVATAR;
+  const phone = agent?.userPhone ?? property?.ownerPhone ?? null;
   const experienceYears = agent?.experienceYears ?? null;
   const rating = agent?.avgRating != null ? Number(agent.avgRating).toFixed(1) : null;
   const totalReviews = agent?.totalReviews ?? 0;
+
+  const whatsappUrl = getWhatsAppLink(phone);
 
   if (loadingAgent) {
     return (
@@ -129,6 +133,11 @@ export default function PropertyContactCard({ property }) {
         variant="outline-dark"
         className="w-100 mb-2"
         style={{ borderRadius: "8px", borderWidth: 2 }}
+        as={whatsappUrl ? "a" : "button"}
+        href={whatsappUrl || undefined}
+        target={whatsappUrl ? "_blank" : undefined}
+        rel={whatsappUrl ? "noopener noreferrer" : undefined}
+        disabled={!whatsappUrl}
       >
         Contactar {hasAgent ? "Agente" : "Propietario"}
       </Button>
