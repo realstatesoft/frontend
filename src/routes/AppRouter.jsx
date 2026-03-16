@@ -10,12 +10,14 @@ import ForgotPassword from "../pages/ForgotPassword";
 import CreateProperty from "../pages/properties/CreateProperty";
 import MyProperties from "../pages/ShowProperty/MyProperties";
 import SellWizardPage from "../pages/sell/SellWizardPage";
+import ClientProfilePage from "../pages/ClientProfilePage";
 
 export default function AppRouter() {
     return (
         <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/sell" element={<SellWizardPage />} />
+            <Route path="/clients/:id" element={<ClientProfilePage />} />
             <Route path="/create-property" element={<CreateProperty />} />
             <Route path="/login" element={<LogIn />} />
             <Route path="/signup" element={<SignUp />} />
