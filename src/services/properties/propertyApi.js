@@ -11,6 +11,8 @@ const propertyApi = {
 
   getByOwner: (ownerId, params) => api.get(`${BASE}/owner/${ownerId}`, { params }),
 
+  getMe: (params) => api.get(`${BASE}/me`, { params }),
+
   search: (keyword, params) => api.get(`${BASE}/search`, { params: { q: keyword, ...params } }),
 
   update: (id, payload) => api.put(`${BASE}/${id}`, payload),

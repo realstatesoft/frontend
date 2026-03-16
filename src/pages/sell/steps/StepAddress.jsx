@@ -14,6 +14,7 @@ import {
 import { Spinner } from "react-bootstrap";
 import PropertyMap from "../../../components/commons/PropertyMap";
 import { reverseGeocode } from "../../../utils/geocoding";
+import locationApi from "../../../services/locations/locationApi";
 
 const PROPERTY_TYPES = [
   { value: "HOUSE", label: "Casa", Icon: HouseDoor },
@@ -42,9 +43,33 @@ export default function StepAddress({ form, set, nextStep }) {
     setAddressError(null);
     
     try {
-      const addr = await reverseGeocode(coords.lat, coords.lng);
-      if (addr) {
-        set("address", addr);
+      const geo = await reverseGeocode(coords.lat, coords.lng);
+      if (geo) {
+        set("address", geo.displayName || "");
+
+        if (geo.city) {
+          try {
+            const { data: matchData } = await locationApi.matchByCity(geo.city);
+            if (matchData?.success && matchData?.data?.length > 0) {
+              const matched = matchData.data[0];
+              set("locationId", matched.id);
+            } else {
+              const { data: createData } = await locationApi.findOrCreate(
+                geo.city,
+                geo.department,
+                geo.country,
+                coords.lat,
+                coords.lng
+              );
+              if (createData?.success && createData?.data) {
+                const created = createData.data;
+                set("locationId", created.id);
+              }
+            }
+          } catch (e) {
+            console.error("No se pudo autocompletar la zona: ", e);
+          }
+        }
       }
     } catch {
       setAddressError("No se pudo obtener la dirección automáticamente. Podés editarla manualmente.");
