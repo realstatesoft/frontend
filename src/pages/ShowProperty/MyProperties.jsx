@@ -64,10 +64,6 @@ export default function MyProperties() {
                             Agregar
                         </Button>
                     </div>
-
-                    <p className="text-muted mb-0" style={{ fontSize: "0.92rem" }}>
-                        Propiedades que publicaste o que tenés asignadas como agente.
-                    </p>
                 </div>
 
                 {/* Loading */}
