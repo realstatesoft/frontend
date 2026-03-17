@@ -32,6 +32,8 @@ export default function LogIn() {
         if (isSubmitting) return;
 
         setIsSubmitting(true);
+        setErrorMessage('');
+
         try {
             const response = await api.post("/auth/login", formData);
             const result = response.data;
@@ -39,6 +41,8 @@ export default function LogIn() {
             if (result.data) {
                 login(result.data);
                 navigate('/');
+            } else {
+            setErrorMessage("Respuesta inesperada del servidor");
             }
 
         } catch (error) {
@@ -109,6 +113,10 @@ export default function LogIn() {
                                 />
                                 <InputGroup.Text
                                     onClick={() => setShowPassword(!showPassword)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowPassword(!showPassword); }}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                                 >
                                     {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
                                 </InputGroup.Text>

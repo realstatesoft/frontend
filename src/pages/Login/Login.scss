@@ -1,5 +1,6 @@
 // Login.scss
-@import '../../styles/main.scss';
+@use 'sass:color';
+@import '../../styles/main';
 
 .login-container {
   font-family: $font-family-sans-serif;
@@ -90,7 +91,6 @@
         &:focus {
           background-color: $input-bg-light;
           box-shadow: none;
-          border-color: none;
         }
 
         &::placeholder {
@@ -170,8 +170,8 @@
       transition: all 0.3s ease;
 
       &:hover {
-        background-color: darken($primary, 10%);
-        border-color: darken($primary, 10%);
+        background-color: color.adjust($primary, $lightness: -10%);
+        border-color: color.adjust($primary, $lightness: -10%);
         transform: translateY(-2px);
         box-shadow: $shadow-soft;
       }
@@ -225,8 +225,8 @@
         transition: all 0.3s ease;
 
         &:hover {
-          background-color: darken(white, 3%);
-          border-color: darken($border-color-soft, 10%);
+          background-color: color.adjust(white, $lightness: -3%);
+          border-color: color.adjust($border-color-soft, $lightness: -10%);
           transform: translateY(-2px);
           box-shadow: $shadow-soft;
         }
@@ -250,7 +250,9 @@
 }
 
 // Asegurar que el contenedor de Bootstrap no interfiera
-.container {
-  padding-right: 0;
-  padding-left: 0;
+.login-container {
+  .container {
+    padding-right: 0;
+    padding-left: 0;
+  }
 }
