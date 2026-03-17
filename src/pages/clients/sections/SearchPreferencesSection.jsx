@@ -25,7 +25,7 @@ const CHARACTERISTIC_OPTIONS = [
   "Seguridad 24/7",
 ];
 
-export function SearchPreferencesSection({ form, set, setArr }) {
+export function SearchPreferencesSection({ form, set, setArr, fieldErrors = {} }) {
   const [zoneInput, setZoneInput] = useState("");
 
   const addZone = (e) => {
@@ -90,6 +90,11 @@ export function SearchPreferencesSection({ form, set, setArr }) {
               onChange={setArr("propertyTypes")}
               placeholder="Seleccionar..."
             />
+            {fieldErrors.propertyTypes && (
+              <Form.Text className="text-danger">
+                {fieldErrors.propertyTypes}
+              </Form.Text>
+            )}
           </Form.Group>
         </Col>
         <Col md={6}>
@@ -104,7 +109,7 @@ export function SearchPreferencesSection({ form, set, setArr }) {
             {(form.preferredZones || []).length > 0 && (
               <div className="mt-2">
                 <small className="text-muted d-block mb-1">
-                  Tipos de Propiedad seleccionados
+                  Zonas Preferidas seleccionadas
                 </small>
                 <div className="d-flex flex-wrap">
                   {form.preferredZones.map((zone) => (
