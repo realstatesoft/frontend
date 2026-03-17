@@ -103,7 +103,7 @@ const ProfileHeader = ({ client }) => {
               </span>
               <span className="d-flex align-items-center">
                 <TelephoneFill className="me-2" style={{ color: FIGMA_COLORS.deepDark, opacity: 0.7 }} />
-                {client.phone || 'No especificado'}
+                {client.userPhone || 'No especificado'}
               </span>
               <span className="d-flex align-items-center">
                 <BriefcaseFill className="me-2" style={{ color: FIGMA_COLORS.deepDark, opacity: 0.7 }} />
