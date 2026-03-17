@@ -6,7 +6,6 @@ import {
   Button,
   Tab,
   Nav,
-  Image,
   Stack,
   ButtonGroup,
   Dropdown,
@@ -19,6 +18,7 @@ import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, St
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
+import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { formatPrice } from "../../utils/priceFormat";
 import "./show-property.scss";
@@ -438,37 +438,7 @@ export default function ShowProperty() {
             </Col>
 
             <Col lg={4} className="mt-4 mt-lg-0">
-              <div className="property__agent-card">
-                <Image
-                  src="https://randomuser.me/api/portraits/women/68.jpg"
-                  alt="Propietario"
-                  className="property__agent-avatar"
-                />
-                <p className="property__agent-name">
-                  {property.ownerName || "Propietario"}
-                </p>
-                <p className="property__agent-exp">8 años de experiencia</p>
-                <div className="mb-3">
-                  <span className="property__stars">
-                    &#9733;&#9733;&#9733;&#9733;&#9733;
-                  </span>{" "}
-                  <span className="property__reviews">4.8 (15k reseñas)</span>
-                </div>
-                <Button
-                  variant="outline-secondary"
-                  className="w-100 mb-2"
-                  style={{ borderRadius: "8px" }}
-                >
-                  Contactar Agente
-                </Button>
-                <Button
-                  variant="dark"
-                  className="w-100"
-                  style={{ borderRadius: "8px" }}
-                >
-                  Agendar Visita
-                </Button>
-              </div>
+              <PropertyContactCard property={property} />
             </Col>
           </Row>
         </Container>
