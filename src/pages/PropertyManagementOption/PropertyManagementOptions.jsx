@@ -21,7 +21,6 @@ export default function PropertyManagementOptions() {
                     <div className="property-management-page__grid">
                         <Card className="property-management-card">
                             <Card.Body className="property-management-card__body">
-                                {/* 1. El título ahora va arriba */}
                                 <Card.Title className="property-management-card__title">
                                     Publicar con un agente
                                 </Card.Title>
@@ -30,11 +29,9 @@ export default function PropertyManagementOptions() {
                                     <img src={agentImage} alt="Publicar con un agente" />
                                 </div>
 
-                                {/* 2. Se agrega la sección de Beneficios */}
                                 <div className="property-management-card__benefits">
                                     <p className="mb-2 text-start">Beneficios:</p>
                                     
-                                    {/* 3. Se quitaron los íconos 'bi' para usar viñetas normales */}
                                     <ul className="property-management-card__list">
                                         <li>Mayor visibilidad y confianza para los compradores</li>
                                         <li>Ahorro de tiempo en la gestión de propiedades</li>
@@ -46,7 +43,7 @@ export default function PropertyManagementOptions() {
                                 <Button
                                     variant="primary"
                                     className="property-management-card__button"
-                                    onClick={() => navigate("")}
+                                    onClick={() => navigate("/sell")}
                                 >
                                     Buscar un agente
                                 </Button>
