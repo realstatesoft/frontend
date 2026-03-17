@@ -12,6 +12,7 @@ import MyProperties from "../pages/ShowProperty/MyProperties";
 import SellWizardPage from "../pages/sell/SellWizardPage";
 import ClientProfilePage from "../pages/ClientProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
+import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 
 export default function AppRouter() {
     return (
@@ -27,6 +28,7 @@ export default function AppRouter() {
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/properties/:id/edit" element={<CreateProperty />} />
             <Route path="/properties/me" element={<MyProperties />} />
+            <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
             <Route path="/trashcan" element={<PropertiesTrashCan />} />
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/404" element={<NotFoundPage />} />
