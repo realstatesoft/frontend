@@ -6,6 +6,37 @@ import agentImage from "../../assets/PublishWithAgentCard.png";
 import selfImage from "../../assets/SelfPublish.png";
 import "./PropertyManagementOptions.scss";
 
+const options = [
+    {
+        key: "agent",
+        title: "Publicar con un agente",
+        image: agentImage,
+        alt: "Publicar con un agente",
+        benefits: [
+            "Mayor visibilidad y confianza para los compradores",
+            "Ahorro de tiempo en la gestión de propiedades",
+            "Mayor conocimiento del mercado inmobiliario",
+            "Experiencia en negociación y cierre",
+        ],
+        buttonText: "Buscar un agente",
+        route: "/sell",
+    },
+    {
+        key: "self",
+        title: "Publicar por mi cuenta",
+        image: selfImage,
+        alt: "Publicar por mi cuenta",
+        benefits: [
+            "Control total sobre la publicación",
+            "Sin intermediarios",
+            "Sin costos de comisión",
+            "Ideal si prefieres manejar la negociación directamente",
+        ],
+        buttonText: "Publicar directamente",
+        route: "/create-property",
+    },
+];
+
 export default function PropertyManagementOptions() {
     const navigate = useNavigate();
 
@@ -19,67 +50,37 @@ export default function PropertyManagementOptions() {
                     </h1>
 
                     <div className="property-management-page__grid">
-                        <Card className="property-management-card">
-                            <Card.Body className="property-management-card__body">
-                                <Card.Title className="property-management-card__title">
-                                    Publicar con un agente
-                                </Card.Title>
+                        {options.map((option) => (
+                            <Card key={option.key} className="property-management-card">
+                                <Card.Body className="property-management-card__body">
+                                    <Card.Title className="property-management-card__title">
+                                        {option.title}
+                                    </Card.Title>
 
-                                <div className="property-management-card__image">
-                                    <img src={agentImage} alt="Publicar con un agente" />
-                                </div>
+                                    <div className="property-management-card__image">
+                                        <img src={option.image} alt={option.alt} />
+                                    </div>
 
-                                <div className="property-management-card__benefits">
-                                    <p className="mb-2 text-start">Beneficios:</p>
+                                    <div className="property-management-card__benefits">
+                                        <p className="mb-2 text-start">Beneficios:</p>
 
-                                    <ul className="property-management-card__list">
-                                        <li>Mayor visibilidad y confianza para los compradores</li>
-                                        <li>Ahorro de tiempo en la gestión de propiedades</li>
-                                        <li>Mayor conocimiento del mercado inmobiliario</li>
-                                        <li>Experiencia en negociación y cierre</li>
-                                    </ul>
-                                </div>
+                                        <ul className="property-management-card__list">
+                                            {option.benefits.map((benefit) => (
+                                                <li key={benefit}>{benefit}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
 
-                                <Button
-                                    variant="primary"
-                                    className="property-management-card__button"
-                                    onClick={() => navigate("/sell")}
-                                >
-                                    Buscar un agente
-                                </Button>
-                            </Card.Body>
-                        </Card>
-
-                        <Card className="property-management-card">
-                            <Card.Body className="property-management-card__body">
-                                <Card.Title className="property-management-card__title">
-                                    Publicar por mi cuenta
-                                </Card.Title>
-
-                                <div className="property-management-card__image">
-                                    <img src={selfImage} alt="Publicar por mi cuenta" />
-                                </div>
-
-                                <div className="property-management-card__benefits">
-                                    <p className="mb-2 text-start">Beneficios:</p>
-
-                                    <ul className="property-management-card__list">
-                                        <li>Control total sobre la publicación</li>
-                                        <li>Sin intermediarios</li>
-                                        <li>Sin costos de comisión</li>
-                                        <li>Ideal si prefieres manejar la negociación directamente</li>
-                                    </ul>
-                                </div>
-
-                                <Button
-                                    variant="primary"
-                                    className="property-management-card__button"
-                                    onClick={() => navigate("/create-property")}
-                                >
-                                    Publicar directamente
-                                </Button>
-                            </Card.Body>
-                        </Card>
+                                    <Button
+                                        variant="primary"
+                                        className="property-management-card__button"
+                                        onClick={() => navigate(option.route)}
+                                    >
+                                        {option.buttonText}
+                                    </Button>
+                                </Card.Body>
+                            </Card>
+                        ))}
                     </div>
                 </Container>
             </div>
