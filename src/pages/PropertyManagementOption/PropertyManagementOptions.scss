@@ -1,0 +1,131 @@
+.property-management-page {
+    min-height: 100vh;
+    background: #f8f9fb;
+    padding: 4rem 1rem; /* Padding lateral añadido para móviles */
+}
+
+.property-management-page__title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #101828;
+    margin-bottom: 3rem;
+    text-align: center; /* Centramos el título principal */
+}
+
+.property-management-page__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem;
+    justify-items: center;
+    max-width: 1000px; /* Evita que las tarjetas se alejen mucho en PC */
+    margin: 0 auto;
+}
+
+/* Breakpoint ajustado para tablets y celulares */
+@media (max-width: 768px) {
+    .property-management-page__grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .property-management-page__title {
+        font-size: 1.8rem; /* Título un poco más pequeño en celular */
+    }
+}
+
+.property-management-card {
+    width: 100%;
+    max-width: 450px; /* Ligeramente más angosta para estilizarla */
+    background: #ffffff;
+    border-radius: 12px; /* Menos redondeado, fiel al diseño */
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05); /* Sombra más sutil */
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.property-management-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+}
+
+.property-management-card__body {
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+.property-management-card__title {
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    color: #101828;
+}
+
+.property-management-card__image {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    overflow: hidden; /* Esto asegura que la foto se corte en círculo */
+    margin-bottom: 2rem;
+    background: #f0f0f0; /* Color de fondo por si la imagen tarda en cargar */
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.property-management-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Llena el círculo sin deformar a la persona */
+}
+
+/* Nueva clase para el contenedor de la lista */
+.property-management-card__benefits {
+    width: 100%;
+    max-width: 320px;
+    text-align: left;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+}
+
+.property-management-card__benefits p {
+    font-weight: 500;
+    color: #101828;
+    margin-bottom: 0.8rem;
+}
+
+.property-management-card__list {
+    padding-left: 1.2rem; /* Espacio para que entren los puntos */
+    margin: 0;
+    list-style-type: disc; /* Puntos clásicos */
+}
+
+.property-management-card__list li {
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+    color: #475467;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.property-management-card__list li:last-child {
+    margin-bottom: 0;
+}
+
+.property-management-card__button {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 6px; /* Rectangular con bordes suaves */
+    padding: 0.6rem 1rem;
+    font-weight: 500;
+    background-color: #2563eb; /* Color azul del diseño */
+    border: none;
+    color: white;
+}
+
+.property-management-card__button:hover {
+    background-color: #1d4ed8;
+}

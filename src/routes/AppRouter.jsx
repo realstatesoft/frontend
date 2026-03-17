@@ -13,11 +13,13 @@ import SellWizardPage from "../pages/sell/SellWizardPage";
 import ClientProfilePage from "../pages/ClientProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
+import PropertyManagementOptions from "../pages/PropertyManagementOption/PropertyManagementOptions";
 
 export default function AppRouter() {
     return (
         <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/property-management" element={<PropertyManagementOptions />} />
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/clients/:id" element={<ClientProfilePage />} />
             <Route path="/create-property" element={<CreateProperty />} />
