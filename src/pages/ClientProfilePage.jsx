@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { Container, Spinner, Alert } from 'react-bootstrap';
 import { useAuth } from '../hooks/useAuth';
 import CustomNavbar from '../components/Landing/Navbar';
@@ -11,6 +11,7 @@ import clientApi from '../services/clients/clientApi';
 
 const ClientProfilePage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,9 +28,12 @@ const ClientProfilePage = () => {
           setClient(data);
         }
       } catch (err) {
-        console.error('Error fetching client profile:', err);
         if (!isCancelled) {
-          setError('No se pudo cargar el perfil del cliente.');
+          if (err.response?.status === 404 || err.response?.status === 403) {
+            navigate('/404', { replace: true });
+          } else {
+            setError('No se pudo cargar el perfil del cliente.');
+          }
         }
       } finally {
         if (!isCancelled) {
