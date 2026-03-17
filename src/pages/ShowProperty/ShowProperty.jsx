@@ -21,6 +21,7 @@ import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { formatPrice } from "../../utils/priceFormat";
+import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -48,6 +49,8 @@ export default function ShowProperty() {
     openDeleteConfirm,
     PROPERTY_STATUS_OPTIONS,
     PROPERTY_VISIBILITY_OPTIONS,
+    similarProperties,
+    loadingSimilar,
     copyLink
   } = useShowProperty();
 
@@ -441,6 +444,27 @@ export default function ShowProperty() {
               <PropertyContactCard property={property} />
             </Col>
           </Row>
+          
+          <h5 className="property__section-title mt-5 mb-3">
+            Propiedades similares
+          </h5>
+
+          {loadingSimilar ? (
+            <div className="d-flex justify-content-center py-4">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : similarProperties?.length > 0 ? (
+            <Row className="g-3 mx-0">
+              {similarProperties.map((similar) => (
+                <Col key={similar.id} xs={6} sm={4} lg={2}>
+                  <PropertySummaryCard property={similar} />
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <p className="text-muted">No se encontraron propiedades similares.</p>
+          )}
+          
         </Container>
       </div>
 
