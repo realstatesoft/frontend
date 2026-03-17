@@ -18,6 +18,8 @@ export default function LogIn() {
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [errorMessage, setErrorMessage] = useState('');
+
     // 1. Estado para guardar el correo y la contraseña
     const [formData, setFormData] = useState({
         email: '',
@@ -53,7 +55,7 @@ export default function LogIn() {
 
         } catch (error) {
             console.error("Error en login:", error);
-            alert(error.response?.data?.message || error.message || "Correo o contraseña incorrectos");
+            setErrorMessage(error.response?.data?.message || "Error conectando al servidor");
         } finally {
             setIsSubmitting(false);
         }
@@ -150,6 +152,12 @@ export default function LogIn() {
                                 ¿Olvidaste tu contraseña?
                             </a>
                         </div>
+
+                        {errorMessage && (
+                            <div className="text-danger fw-medium mb-3" style={{ fontSize: '0.85rem' }}>
+                                {errorMessage}
+                            </div>
+                        )}
 
                         {/* Botón Principal tipo Submit */}
                         <div className="d-grid">
