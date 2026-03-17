@@ -85,9 +85,11 @@ export default function PropertiesPage() {
             />
 
             <div style={{ backgroundColor: "#f8f9fa", minHeight: "60vh" }}>
-                <div className="properties-page__map-wrap">
-                    <PropertiesMap properties={properties} />
-                </div>
+                {!loading && !error && properties?.length > 0 && (
+                    <div className="properties-page__map-wrap">
+                        <PropertiesMap properties={properties} />
+                    </div>
+                )}
 
                 <PropertiesGrid
                     properties={properties}

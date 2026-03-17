@@ -1,11 +1,11 @@
-import { useEffect, useMemo } from "react";
-import { Alert } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
+import { useEffect, useMemo } from "react";
+import { Alert } from "react-bootstrap";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { Link } from "react-router-dom";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
+import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 
 const DEFAULT_CENTER = [-27.3369, -55.8668];
 const DEFAULT_ZOOM = 12;
@@ -43,6 +43,8 @@ function MapBoundsController({ points }) {
 }
 
 function formatPrice(price) {
+  if (price == null || price === "") return "Precio no disponible";
+
   const numericPrice = Number(price);
   return Number.isFinite(numericPrice) ? `Gs ${numericPrice.toLocaleString()}` : "Precio no disponible";
 }
