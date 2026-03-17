@@ -31,7 +31,6 @@ function CustomNavbar() {
             <Nav.Link
               as={Link}
               to="/property-management"
-              className="fw-semibold text-primary"
             >
               Vender / Alquilar
             </Nav.Link>
