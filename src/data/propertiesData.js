@@ -31,3 +31,25 @@ export const STATUS_DISPLAY_LABELS = {
     ...STATUS_LABELS,
     PUBLISHED: "Disponible",
 };
+
+/** Labels para badges en cards de favoritos (ej. "Vendida" en vez de "Vendido") */
+export const FAVORITE_STATUS_LABELS = {
+    ...STATUS_DISPLAY_LABELS,
+    SOLD: "Vendida",
+};
+
+/**
+ * Estilos de badges para cards de favoritos.
+ * Fondo pastel claro + texto oscuro (estilo pill).
+ */
+export const FAVORITE_BADGE_STYLES = {
+    Disponible: { bg: "#e8f5e9", text: "#2e7d32" },
+    Vendido: { bg: "#ffebee", text: "#c62828" },
+    Vendida: { bg: "#ffebee", text: "#c62828" },
+    Alquilado: { bg: "#f3e5f5", text: "#7b1fa2" },
+    Pendiente: { bg: "#eceff1", text: "#455a64" },
+    Aprobado: { bg: "#e3f2fd", text: "#1565c0" },
+    Rechazado: { bg: "#ffebee", text: "#c62828" },
+    Archivado: { bg: "#eceff1", text: "#455a64" },
+    Publicado: { bg: "#e8f5e9", text: "#2e7d32" },
+};

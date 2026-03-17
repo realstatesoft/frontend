@@ -1,5 +1,6 @@
 import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { Heart } from "react-bootstrap-icons";
 import { tagColors, STATUS_LABELS } from "../../data/propertiesData";
 import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
@@ -38,7 +39,7 @@ export default function PropertyCard({ property }) {
                 e.currentTarget.style.boxShadow = "";
             }}
         >
-            {/* Imagen con badge de estado */}
+            {/* Imagen con badge de estado y botón favorito */}
             <div className="position-relative">
                 <Badge
                     className="position-absolute top-0 start-0 m-2 px-3 py-2"
@@ -51,6 +52,24 @@ export default function PropertyCard({ property }) {
                 >
                     {tag}
                 </Badge>
+                <button
+                    type="button"
+                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center rounded-circle border border-1 border-dark bg-white"
+                    style={{
+                        width: 36,
+                        height: 36,
+                        zIndex: 2,
+                        cursor: "pointer",
+                    }}
+                    aria-label="Agregar a favoritos"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // TODO: integrar con API de favoritos
+                    }}
+                >
+                    <Heart size={18} style={{ color: "#333" }} />
+                </button>
                 <Card.Img
                     variant="top"
                     src={image}
