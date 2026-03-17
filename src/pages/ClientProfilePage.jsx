@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { Container, Spinner, Alert } from 'react-bootstrap';
+import { useAuth } from '../hooks/useAuth';
 import CustomNavbar from '../components/Landing/Navbar';
 import Footer from '../components/Landing/Footer';
 import ProfileHeader from '../components/Clients/ProfileHeader';
@@ -10,26 +11,43 @@ import clientApi from '../services/clients/clientApi';
 
 const ClientProfilePage = () => {
   const { id } = useParams();
+  const { isAuthenticated } = useAuth();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isCancelled = false;
     const fetchClient = async () => {
       try {
+        setError(null);
         setLoading(true);
         const data = await clientApi.getClientProfile(id);
-        setClient(data);
+        if (!isCancelled) {
+          setClient(data);
+        }
       } catch (err) {
         console.error('Error fetching client profile:', err);
-        setError('No se pudo cargar el perfil del cliente.');
+        if (!isCancelled) {
+          setError('No se pudo cargar el perfil del cliente.');
+        }
       } finally {
-        setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchClient();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [id]);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   if (loading) {
     return (

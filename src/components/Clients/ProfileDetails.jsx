@@ -11,7 +11,7 @@ const ProfileDetails = ({ client }) => {
     { label: 'Fecha de Nacimiento', value: client.birthDate || '-' },
     { label: 'Estado Civil', value: MARITAL_STATUS_LABELS[client.maritalStatus] || client.maritalStatus || '-' },
     { label: 'Ocupación', value: client.occupation || 'No especificada' },
-    { label: 'Ingresos Anuales', value: `$ ${client.annualIncome?.toLocaleString() || '-'}` },
+    { label: 'Ingresos Anuales', value: typeof client.annualIncome === 'number' ? `$ ${client.annualIncome.toLocaleString()}` : '-' },
     { label: 'Dirección', value: client.address || '-' },
     { label: 'Canal de Origen', value: client.sourceChannel || '-' },
   ];
@@ -48,7 +48,7 @@ const ProfileDetails = ({ client }) => {
             <div className="mb-4">
               <div className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Rango de Presupuesto</div>
               <div style={{ color: FIGMA_COLORS.deepDark, fontSize: '1rem', fontWeight: '400' }}>
-                $ {client.minBudget?.toLocaleString()} - $ {client.maxBudget?.toLocaleString()}
+                {typeof client.minBudget === 'number' ? `$ ${client.minBudget.toLocaleString()}` : '-'} - {typeof client.maxBudget === 'number' ? `$ ${client.maxBudget.toLocaleString()}` : '-'}
               </div>
             </div>
 
@@ -56,13 +56,13 @@ const ProfileDetails = ({ client }) => {
               <Col xs={6}>
                 <div className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Habitaciones</div>
                 <div style={{ color: FIGMA_COLORS.deepDark, fontSize: '1rem', fontWeight: '400' }}>
-                  {client.minBedrooms} - {client.maxBedrooms}
+                  {client.minBedrooms ?? '-'} - {client.maxBedrooms ?? '-'}
                 </div>
               </Col>
               <Col xs={6}>
                 <div className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Baños</div>
                 <div style={{ color: FIGMA_COLORS.deepDark, fontSize: '1rem', fontWeight: '400' }}>
-                  {client.minBathrooms} - {client.maxBathrooms}
+                  {client.minBathrooms ?? '-'} - {client.maxBathrooms ?? '-'}
                 </div>
               </Col>
             </Row>
@@ -70,36 +70,52 @@ const ProfileDetails = ({ client }) => {
             <div className="mb-4">
               <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Tipos de propiedad</div>
               <div className="d-flex flex-wrap gap-2">
-                {client.preferredPropertyTypes?.map((tag, i) => (
-                  <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.paleGreenBg, FIGMA_COLORS.paleGreenText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
-                )) || <span className="text-muted">-</span>}
+                {client.preferredPropertyTypes && client.preferredPropertyTypes.length > 0 ? (
+                  client.preferredPropertyTypes.map((tag, i) => (
+                    <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.paleGreenBg, FIGMA_COLORS.paleGreenText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
+                  ))
+                ) : (
+                  <span className="text-muted">-</span>
+                )}
               </div>
             </div>
 
             <div className="mb-4">
               <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Áreas preferidas</div>
               <div className="d-flex flex-wrap gap-2">
-                {client.preferredAreas?.map((tag, i) => (
-                  <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.palePurpleBg, FIGMA_COLORS.palePurpleText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
-                )) || <span className="text-muted">-</span>}
+                {client.preferredAreas && client.preferredAreas.length > 0 ? (
+                  client.preferredAreas.map((tag, i) => (
+                    <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.palePurpleBg, FIGMA_COLORS.palePurpleText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
+                  ))
+                ) : (
+                  <span className="text-muted">-</span>
+                )}
               </div>
             </div>
 
             <div className="mb-4">
               <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Características deseadas</div>
               <div className="d-flex flex-wrap gap-2">
-                {client.desiredFeatures?.map((tag, i) => (
-                  <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.palePinkBg, FIGMA_COLORS.palePinkText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
-                )) || <span className="text-muted">-</span>}
+                {client.desiredFeatures && client.desiredFeatures.length > 0 ? (
+                  client.desiredFeatures.map((tag, i) => (
+                    <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.palePinkBg, FIGMA_COLORS.palePinkText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
+                  ))
+                ) : (
+                  <span className="text-muted">-</span>
+                )}
               </div>
             </div>
 
             <div>
               <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Etiquetas</div>
               <div className="d-flex flex-wrap gap-2">
-                {client.tags?.map((tag, i) => (
-                  <Badge key={i} bg="none" style={{ backgroundColor: '#F5F5F5', color: '#616161', fontWeight: '500' }} className="px-3 py-2 rounded-pill border fw-normal">{tag}</Badge>
-                )) || <span className="text-muted">-</span>}
+                {client.tags && client.tags.length > 0 ? (
+                  client.tags.map((tag, i) => (
+                    <Badge key={i} bg="none" style={{ backgroundColor: '#F5F5F5', color: '#616161', fontWeight: '500' }} className="px-3 py-2 rounded-pill border fw-normal">{tag}</Badge>
+                  ))
+                ) : (
+                  <span className="text-muted">-</span>
+                )}
               </div>
             </div>
           </Col>

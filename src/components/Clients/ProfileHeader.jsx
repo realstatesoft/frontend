@@ -103,7 +103,7 @@ const ProfileHeader = ({ client }) => {
               </span>
               <span className="d-flex align-items-center">
                 <TelephoneFill className="me-2" style={{ color: FIGMA_COLORS.deepDark, opacity: 0.7 }} />
-                {client.phone || '+595 985 873142'}
+                {client.phone || 'No especificado'}
               </span>
               <span className="d-flex align-items-center">
                 <BriefcaseFill className="me-2" style={{ color: FIGMA_COLORS.deepDark, opacity: 0.7 }} />
@@ -113,10 +113,10 @@ const ProfileHeader = ({ client }) => {
           </Col>
           <Col xs="auto" className="d-flex gap-3 align-self-start mt-3 mt-md-0">
              <button style={buttonActionStyle} className="btn shadow-none">
-               Activo <ChevronDown className="ms-2" size={14} />
+               {statusLabel || 'Desconocido'} <ChevronDown className="ms-2" size={14} />
              </button>
              <button style={buttonActionStyle} className="btn shadow-none">
-               Alta Prioridad <ChevronDown className="ms-2" size={14} />
+               {priorityLabel || 'Desconocida'} <ChevronDown className="ms-2" size={14} />
              </button>
              <Button 
                 variant="primary" 
