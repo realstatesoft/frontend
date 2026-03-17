@@ -1,0 +1,13 @@
+.animated-btn {
+    transition: all 0.4s ease-in-out;
+}
+
+.animated-btn:hover {
+    transform: scale(1.01);
+    box-shadow: rgba(133, 189, 215, 0.878) 0px 23px 10px -20px;
+}
+
+.animated-btn:active {
+    transform: scale(0.99);
+    box-shadow: rgba(133, 189, 215, 0.878) 0px 15px 10px -10px;
+}
