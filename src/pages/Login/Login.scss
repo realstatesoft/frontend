@@ -1,0 +1,258 @@
+// Login.scss
+@use 'sass:color';
+@import '../../styles/main';
+
+.login-container {
+  font-family: $font-family-sans-serif;
+  background-color: $light;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+
+  .login-card {
+    width: 100%;
+    max-width: 500px; 
+    margin: 0 auto;
+    border: none;
+    border-radius: $radius-md;
+    box-shadow: $shadow-soft;
+    padding: 2rem;
+
+    @media (min-width: 768px) {
+      padding: 3rem;
+    }
+
+    .logo-container {
+      margin-bottom: 1.5rem;
+      text-align: center; // Asegura centrado del logo
+
+      .logo-img {
+        max-width: 120px;
+        height: auto;
+        display: inline-block; // Cambiado de block a inline-block para mejor centrado
+      }
+    }
+
+    .login-title {
+      text-align: center;
+      font-weight: $font-weight-bold;
+      margin-bottom: 0.5rem;
+      color: $text-dark;
+      font-size: 1.5rem; // Añadido tamaño explícito
+    }
+
+    .login-subtitle {
+      text-align: center;
+      color: $text-muted;
+      font-size: 0.9rem; // Aumentado ligeramente
+      margin-bottom: 2rem; // Aumentado margen
+
+      a {
+        color: $primary;
+        text-decoration: none;
+        font-weight: $font-weight-bold;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    // Form styles
+    .form-label {
+      font-weight: $font-weight-bold;
+      color: $text-dark;
+      font-size: 0.9rem; // Aumentado ligeramente
+      margin-bottom: 0.5rem;
+    }
+
+    .input-group-custom {
+      .input-group-text {
+        background-color: $input-bg-light;
+        border: none;
+        border-radius: $radius-sm 0 0 $radius-sm;
+        padding: 0.75rem 1rem; // Ajustado padding
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .form-control {
+        background-color: $input-bg-light;
+        border: none;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        box-shadow: none;
+
+        &:focus {
+          background-color: $input-bg-light;
+          box-shadow: none;
+        }
+
+        &::placeholder {
+          color: $text-light-muted;
+        }
+      }
+
+      .input-group-text:last-child {
+        border-radius: 0 $radius-sm $radius-sm 0;
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+      }
+    }
+
+    // Password field specific
+    .password-group {
+      .input-group-text:last-child {
+        background-color: $input-bg-light;
+        border: none;
+        border-radius: 0 $radius-sm $radius-sm 0;
+        cursor: pointer;
+      }
+    }
+
+    // Remember me and forgot password row
+    .remember-forgot-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1.5rem 0; // Unificado el margen
+
+      .form-check {
+        .form-check-input {
+          margin-right: 0.5rem;
+        }
+
+        .form-check-label {
+          color: $text-muted;
+          font-weight: $font-weight-medium;
+          font-size: 0.9rem;
+        }
+      }
+
+      .forgot-link {
+        color: $primary;
+        text-decoration: none;
+        font-weight: $font-weight-bold;
+        font-size: 0.9rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    // Error message
+    .error-message {
+      color: $danger;
+      font-weight: $font-weight-medium;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      padding: 0.5rem;
+      background-color: rgba($danger, 0.1);
+      border-radius: $radius-sm;
+    }
+
+    // Submit button
+    .submit-button {
+      border-radius: $radius-md;
+      padding: 0.75rem 1rem;
+      font-weight: $font-weight-bold;
+      font-size: 1rem;
+      width: 100%;
+      background-color: $primary;
+      border-color: $primary;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: color.adjust($primary, $lightness: -10%);
+        border-color: color.adjust($primary, $lightness: -10%);
+        transform: translateY(-2px);
+        box-shadow: $shadow-soft;
+      }
+
+      &:disabled {
+        opacity: 0.65;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    // Divider
+    .divider-container {
+      display: flex;
+      align-items: center;
+      margin: 2rem 0;
+
+      hr {
+        flex-grow: 1;
+        margin: 0;
+        border: none;
+        border-top: 1px solid $border-color-soft;
+      }
+
+      span {
+        margin: 0 1rem;
+        color: $text-muted;
+        font-size: 0.9rem;
+        font-weight: $font-weight-medium;
+      }
+    }
+
+    // Social buttons
+    .social-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+
+      .social-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+        padding: 0.75rem;
+        border-radius: $radius-sm;
+        background-color: white;
+        color: $text-dark;
+        border: 1px solid $border-color-soft;
+        font-size: 0.95rem;
+        font-weight: $font-weight-medium;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: color.adjust(white, $lightness: -3%);
+          border-color: color.adjust($border-color-soft, $lightness: -10%);
+          transform: translateY(-2px);
+          box-shadow: $shadow-soft;
+        }
+
+        svg {
+          margin-right: 0.5rem;
+          width: 18px;
+          height: 18px;
+        }
+
+        .google-icon {
+          color: $danger;
+        }
+
+        .facebook-icon {
+          color: $primary;
+        }
+      }
+    }
+  }
+}
+
+// Asegurar que el contenedor de Bootstrap no interfiera
+.login-container {
+  .container {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}

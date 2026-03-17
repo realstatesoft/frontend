@@ -4,7 +4,7 @@ import PropertiesPage from "../pages/PropertiesPage";
 import AgentsPage from "../pages/AgentsPage";
 import PropertiesTrashCan from "../pages/PropertiesTrashCan/PropertiesTrashCan";
 import ShowProperty from "../pages/ShowProperty/ShowProperty";
-import LogIn from "../pages/LogIn";
+import LogIn from "../pages/Login/LogIn";
 import SignUp from "../pages/SignUp";
 import ForgotPassword from "../pages/ForgotPassword";
 import CreateProperty from "../pages/properties/CreateProperty";
