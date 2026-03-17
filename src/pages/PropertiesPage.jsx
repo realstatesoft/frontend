@@ -3,6 +3,7 @@ import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
 import PropertiesGrid from "../components/properties/PropertiesGrid";
+import PropertiesMap from "../components/properties/PropertiesMap";
 import useProperties from "../hooks/useProperties";
 import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
 
@@ -84,6 +85,12 @@ export default function PropertiesPage() {
             />
 
             <div style={{ backgroundColor: "#f8f9fa", minHeight: "60vh" }}>
+                {!loading && !error && properties?.length > 0 && (
+                    <div className="properties-page__map-wrap">
+                        <PropertiesMap properties={properties} />
+                    </div>
+                )}
+
                 <PropertiesGrid
                     properties={properties}
                     onClear={handleClear}
