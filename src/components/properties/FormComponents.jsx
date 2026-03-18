@@ -52,8 +52,15 @@ export function FormMultiSelect({ options, selected, onChange, placeholder }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
+  // Case-insensitive helpers so API values (e.g. "Comprador Serio") match
+  // option labels (e.g. "Comprador serio") without duplicates.
+  const isSelected = (val) =>
+    selected.some((s) => s.toLowerCase() === val.toLowerCase());
+
   const toggle = (val) =>
-    onChange(selected.includes(val) ? selected.filter((s) => s !== val) : [...selected, val]);
+    isSelected(val)
+      ? onChange(selected.filter((s) => s.toLowerCase() !== val.toLowerCase()))
+      : onChange([...selected, val]);
 
   return (
     <div ref={containerRef} className="position-relative">
@@ -78,12 +85,12 @@ export function FormMultiSelect({ options, selected, onChange, placeholder }) {
               style={{
                 cursor: "pointer",
                 fontSize: 14,
-                background: selected.includes(opt) ? "#EAF0FF" : "#fff",
-                color: selected.includes(opt) ? "#3B6BF5" : "#333",
+                background: isSelected(opt) ? "#EAF0FF" : "#fff",
+                color: isSelected(opt) ? "#3B6BF5" : "#333",
               }}
               onClick={() => toggle(opt)}
             >
-              {selected.includes(opt) && <i className="bi bi-check2 me-2" />}
+              {isSelected(opt) && <i className="bi bi-check2 me-2" />}
               {opt}
             </div>
           ))}
