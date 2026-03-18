@@ -85,30 +85,24 @@ export default function LocationPickerModal({
 
       if (geo.city) {
         try {
-          // Primero buscar si ya existen locations para esta ciudad
-          const { data: matchData } = await locationApi.matchByCity(geo.city);
-
-          if (matchData?.success && matchData?.data?.length > 0) {
-            // Ya existen → mostrar opciones
-            const locations = matchData.data;
-            setMatchedLocations(locations);
-            if (locations.length === 1) {
-              setSelectedLocationId(locations[0].id);
+          // Usar directamente findOrCreate para asegurar que se detecte/cree 
+          // la zona y se sincronicen las coordenadas si faltan.
+          const { data: createData } = await locationApi.findOrCreate(
+            geo.city,
+            geo.department,
+            geo.country,
+            nextCoords.lat,
+            nextCoords.lng
+          );
+          if (createData?.success && createData?.data) {
+            const result = createData.data;
+            if (result.isNew) {
+              setAutoCreatedLocation(result);
+            } else {
+              setAutoCreatedLocation(null);
             }
-          } else {
-            // No existe → crear automáticamente
-            const { data: createData } = await locationApi.findOrCreate(
-              geo.city,
-              geo.department,
-              geo.country
-            );
-            if (createData?.success && createData?.data) {
-              console.log("se creo la location")
-              const created = createData.data;
-              setAutoCreatedLocation(created);
-              setSelectedLocationId(created.id);
-              setMatchedLocations([created]);
-            }
+            setSelectedLocationId(result.id);
+            setMatchedLocations([result]);
           }
         } catch {
           // Si falla, no es crítico

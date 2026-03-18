@@ -1,0 +1,28 @@
+// Visit Requests Screen Styles
+
+.visit-requests-page {
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.visit-requests-header {
+  background: linear-gradient(135deg, #fff5f5 0%, #fffbeb 50%, #eff6ff 100%);
+  border: 1px solid rgba(254, 202, 202, 0.3);
+  padding: 4rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 3rem;
+  
+  h1 {
+    font-size: 2.5rem;
+    color: #111827;
+    letter-spacing: -0.025em;
+  }
+  
+  p {
+    font-size: 1.125rem;
+    color: #4b5563;
+  }
+}
+
