@@ -1,0 +1,38 @@
+import { Routes, Route } from "react-router-dom";
+import LandingPage from "../pages/LandingPage";
+import PropertiesPage from "../pages/PropertiesPage";
+import AgentsPage from "../pages/AgentsPage";
+import PropertiesTrashCan from "../pages/PropertiesTrashCan/PropertiesTrashCan";
+import ShowProperty from "../pages/ShowProperty/ShowProperty";
+import LogIn from "../pages/LogIn";
+import SignUp from "../pages/SignUp";
+import ForgotPassword from "../pages/ForgotPassword";
+import CreateProperty from "../pages/properties/CreateProperty";
+import MyProperties from "../pages/ShowProperty/MyProperties";
+import SellWizardPage from "../pages/sell/SellWizardPage";
+import AgentSearch from "../pages/AgentSearchStatic/AgentSearch";
+import AgentProfile from "../pages/AgentProfileStatic/Agentprofile";
+import AgentEdit from "../pages/AgentEditStatic/AgentEdit";
+
+export default function AppRouter() {
+    return (
+        <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/sell" element={<SellWizardPage />} />
+            <Route path="/create-property" element={<CreateProperty />} />
+            <Route path="/login" element={<LogIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/properties" element={<PropertiesPage />} />
+            <Route path="/properties/:id" element={<ShowProperty />} />
+            <Route path="/properties/:id/edit" element={<CreateProperty />} />
+            <Route path="/properties/me" element={<MyProperties />} />
+            <Route path="/trashcan" element={<PropertiesTrashCan />} />
+            <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/AgentSearch" element={<AgentSearch />} />
+            <Route path="/AgentProfile" element={<AgentProfile />} />
+            <Route path="/AgentProfile/:id" element={<AgentProfile />} />
+            <Route path="/AgentEdit/:id" element={<AgentEdit />} />
+        </Routes>
+    );
+}
