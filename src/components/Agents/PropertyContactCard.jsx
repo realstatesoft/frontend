@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Image, Spinner, Modal } from "react-bootstrap";
+import { Button, Image, Spinner } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
 import agentApi from "../../services/agents/agentApi";
 import { getWhatsAppLink } from "../../utils/whatsapp";

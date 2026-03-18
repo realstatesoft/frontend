@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import './visits.scss';
 
@@ -7,6 +7,11 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
     counterProposedAt: '',
     counterProposeMessage: '',
   });
+  useEffect(() => {
+    if (show) {
+      setFormData({ counterProposedAt: '', counterProposeMessage: '' });
+    }
+  }, [show, visit?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +33,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!visit?.id) return;
     onSave(visit.id, {
       counterProposedAt: formData.counterProposedAt,
       counterProposeMessage: formData.counterProposeMessage || null,

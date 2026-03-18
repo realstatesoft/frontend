@@ -20,12 +20,13 @@ const CreateVisitModal = ({ show, onHide, property, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!property?.id) return;
     setLoading(true);
     setError(null);
 
     try {
       const payload = {
-        propertyId: property.id,
+        propertyId: property?.id,
         proposedAt: formData.proposedAt,
         message: formData.message,
         buyerName: formData.buyerName || null,

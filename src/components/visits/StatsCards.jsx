@@ -3,29 +3,29 @@ import { Row, Col, Card } from 'react-bootstrap';
 import { Clock, Check2Circle, XCircle, ListUl } from 'react-bootstrap-icons';
 import './visits.scss';
 
-const StatsCards = ({ stats }) => {
+const StatsCards = ({ stats = {} }) => {
   const cards = [
     {
       label: 'Pendientes',
-      value: stats.pending,
+      value: stats.pending ?? 0,
       icon: <Clock size={24} />,
       variant: 'pending'
     },
     {
       label: 'Aceptadas',
-      value: stats.accepted,
+      value: stats.accepted ?? 0,
       icon: <Check2Circle size={24} />,
       variant: 'approved'
     },
     {
       label: 'Rechazadas',
-      value: stats.rejected,
+      value: stats.rejected ?? 0,
       icon: <XCircle size={24} />,
       variant: 'rejected'
     },
     {
       label: 'Total',
-      value: stats.total,
+      value: stats.total ?? 0,
       icon: <ListUl size={24} />,
       variant: 'total'
     }
