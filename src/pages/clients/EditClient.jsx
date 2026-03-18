@@ -122,10 +122,15 @@ const MARITAL_TO_ENUM = {
     "Unión libre": "FREE_UNION",
 };
 
+function normalizeNumberString(str) {
+    if (!str) return "";
+    const normalize = (s) => s.replace(/\.(\d{3})(?=[^\d]|$)/g, "$1");
+    return normalize(String(str).replace(/[^\d.]/g, ""));
+}
+
 function parseRange(str) {
     if (!str || !String(str).trim()) return { min: null, max: null };
-    const normalize = (s) => s.replace(/\.(\d{3})(?=[^\d]|$)/g, "$1");
-    const parts = String(str).split("-").map((p) => parseFloat(normalize(p.replace(/[^\d.]/g, ""))));
+    const parts = String(str).split("-").map((p) => parseFloat(normalizeNumberString(p)));
     if (parts.length >= 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
         return { min: parts[0], max: parts[1] };
     }
@@ -138,7 +143,7 @@ function formToPayload(form) {
     const budgetParts = parseRange(form.budgetRange);
     const bedroomParts = parseRange(form.bedrooms);
     const bathroomParts = parseRange(form.bathrooms);
-    const annualIncome = form.annualIncome ? parseFloat(String(form.annualIncome).replace(/[^\d.]/g, "")) : null;
+    const annualIncome = form.annualIncome ? parseFloat(normalizeNumberString(form.annualIncome)) : null;
 
     return {
         firstName: form.firstName || null,
