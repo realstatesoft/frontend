@@ -323,7 +323,7 @@ export default function ShowProperty() {
 
                     <div
                       className="rounded mt-4 border-soft"
-                      style={{ height: "260px", overflow: "hidden" }}
+                      style={{ height: "260px", overflow: "hidden" }} //no usar inlines a noser q haya buenas razones
                     >
                       <iframe
                         title="Mapa de la propiedad"
@@ -350,7 +350,7 @@ export default function ShowProperty() {
                             </>
                           )}
                           {property.viewCount != null && (
-                            <> &nbsp;|&nbsp; {property.viewCount} vistas</>
+                            <> &nbsp;|&nbsp; {property.viewCount} vistas</> //componente que diga el padding que vas a usar etc
                           )}
                           {property.favoriteCount != null && (
                             <>
@@ -471,4 +471,4 @@ export default function ShowProperty() {
       <Footer />
     </>
   );
-}
+} 

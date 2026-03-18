@@ -47,33 +47,24 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
   const handleFinish = async () => {
     setSubmitting(true);
     try {
-      // Solo crear lead si seleccionó un agente
-      if (form.selectedAgentId) {
-        await createLeadFromWizard(form);
-        const selectedAgent = agents.find(a => a.id === form.selectedAgentId);
-        await Swal.fire({
-          icon: "success",
-          title: "¡Solicitud enviada!",
-          text: `Tu solicitud de contacto ha sido enviada a ${selectedAgent?.userName || "el agente"}. Se comunicará contigo pronto para ayudarte con tu propiedad.`,
-          confirmButtonColor: "#2563eb",
-        });
-      } else {
-        // Usuario eligió publicar sin agente
-        await Swal.fire({
-          icon: "info",
-          title: "Publicar sin agente",
-          text: "Serás redirigido para crear tu publicación de propiedad.",
-          confirmButtonColor: "#2563eb",
-        });
-      }
+      // Crear siempre el Lead en la BD con los datos del wizard
+      await createLeadFromWizard(form);
+
+      const selectedAgent = agents.find((a) => a.id === form.selectedAgentId);
+      await Swal.fire({
+        icon: "success",
+        title: "¡Solicitud enviada!",
+        text: form.selectedAgentId
+          ? `Tu solicitud de contacto ha sido enviada a ${selectedAgent?.userName || "el agente"}. Se comunicará contigo pronto.`
+          : "Gracias, hemos registrado tu solicitud. Un agente se pondrá en contacto si corresponde.",
+        confirmButtonColor: "#2563eb",
+      });
 
       if (onFinish) {
         onFinish(form);
-      } else if (!form.selectedAgentId) {
-        // Solo redirigir a create-property si no seleccionó agente
-        navigate("/create-property");
       } else {
-        // Si seleccionó agente, ir al inicio
+        // Redirigir al inicio tras crear el lead
+        window.scrollTo(0, 0);
         navigate("/");
       }
     } catch (error) {
