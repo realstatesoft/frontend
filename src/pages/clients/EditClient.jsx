@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Container, Card, Form, Alert, Spinner, Stack, Button } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Navigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import {
@@ -172,6 +173,11 @@ function formToPayload(form) {
 export default function EditClient() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
     const [form, setForm] = useState(EMPTY_FORM);
     const [fetchLoading, setFetchLoading] = useState(true);
