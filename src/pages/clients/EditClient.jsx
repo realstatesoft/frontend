@@ -175,6 +175,7 @@ function formToPayload(form) {
         desiredFeatures: form.preferredCharacteristics ?? [],
 
         notes: form.comments || null,
+        isSearchingProperty: form.isSearchingProperty ?? false,
     };
 }
 
