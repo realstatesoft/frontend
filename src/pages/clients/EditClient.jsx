@@ -141,6 +141,10 @@ function formToPayload(form) {
     const annualIncome = form.annualIncome ? parseFloat(String(form.annualIncome).replace(/[^\d.]/g, "")) : null;
 
     return {
+        firstName: form.firstName || null,
+        lastName: form.lastName || null,
+        phone: form.phone || null,
+        email: form.email || null,
         status: STATUS_TO_ENUM[form.status] ?? form.status ?? null,
         priority: PRIORITY_TO_ENUM[form.priority] ?? form.priority ?? null,
         tags: form.tags ?? [],
@@ -174,10 +178,6 @@ export default function EditClient() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
-    }
 
     const [form, setForm] = useState(EMPTY_FORM);
     const [fetchLoading, setFetchLoading] = useState(true);
@@ -214,6 +214,10 @@ export default function EditClient() {
         };
     }, [id, navigate]);
 
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
     // ── Setters (same pattern as RegisterClient / usePropertyForm) ─────────────
     const set = (field) => (e) => {
         const value = e?.target !== undefined ? e.target.value : e;
@@ -231,6 +235,11 @@ export default function EditClient() {
         } else {
             setForm((prev) => ({ ...prev, [field]: value }));
         }
+        setFieldErrors(prev => {
+            const copy = { ...prev };
+            delete copy[field];
+            return copy;
+        });
     };
 
     // ── Validation ──────────────────────────────────────────────────────────────
