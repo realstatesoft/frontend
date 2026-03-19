@@ -3,13 +3,18 @@ import { Container, Card, Form, Button, Stack, InputGroup } from 'react-bootstra
 import { Envelope, Lock, Eye, EyeSlash, Google, Facebook } from 'react-bootstrap-icons';
 import logo from '../../assets/Logotipo.png';
 import { useAuth } from '../../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
 import './Login.scss'; 
 
 export default function LogIn() {
     const { login } = useAuth(); 
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
+
+    // Prioridad: 1. location.state.from (SPA) 2. query param "redirect" (Interceptor) 3. "/"
+    const from = location.state?.from?.pathname || searchParams.get("redirect") || "/";
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,7 +45,8 @@ export default function LogIn() {
 
             if (result.data) {
                 login(result.data);
-                navigate('/');
+                // Redirigir al destino original o al home
+                navigate(from, { replace: true });
             } else {
             setErrorMessage("Respuesta inesperada del servidor");
             }

@@ -50,9 +50,10 @@ api.interceptors.response.use(
 
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
-      // No hay refresh token → cerrar sesión y redirigir
+      // No hay refresh token → cerrar sesión y redirigir al login preservando la ruta actual
       clearSession();
-      window.location.href = "/";
+      const currentPath = window.location.pathname + window.location.search;
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       return Promise.reject(error);
     }
 
@@ -92,7 +93,8 @@ api.interceptors.response.use(
       // El refresh falló (refresh token expirado / inválido) → logout forzado
       processQueue(refreshError, null);
       clearSession();
-      window.location.href = "/";
+      const currentPath = window.location.pathname + window.location.search;
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

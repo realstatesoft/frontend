@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import propertyApi from "../services/properties/propertyApi";
+import { useAuth } from "./useAuth";
 
 /**
  * Hook que obtiene las propiedades del usuario actual (owner o agente).
@@ -11,6 +12,7 @@ import propertyApi from "../services/properties/propertyApi";
  * @returns {{ properties, loading, error, totalPages, totalElements, refetch }}
  */
 export default function useMyProperties({ page = 1, size = 12 } = {}) {
+    const { isAuthenticated } = useAuth();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,6 +22,11 @@ export default function useMyProperties({ page = 1, size = 12 } = {}) {
     const latestRequestIdRef = useRef(0);
 
     const fetchProperties = useCallback(async () => {
+        if (!isAuthenticated) {
+            setLoading(false);
+            return;
+        }
+
         const requestId = ++latestRequestIdRef.current;
 
         setLoading(true);

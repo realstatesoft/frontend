@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Container, Card, Form, Alert, Spinner, Stack, Button } from "react-bootstrap";
-import { useNavigate, useParams, Navigate } from "react-router-dom";
+import { useNavigate, useParams, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -183,6 +183,7 @@ function formToPayload(form) {
 export default function EditClient() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const { isAuthenticated } = useAuth();
 
     const [form, setForm] = useState(EMPTY_FORM);
@@ -194,8 +195,7 @@ export default function EditClient() {
     // ── Fetch existing client data ──────────────────────────────────────────────
     useEffect(() => {
         let cancelled = false;
-        setFetchLoading(true);
-        setError(null);
+        if (!isAuthenticated) return;
 
         clientApi
             .getClientProfile(id)
@@ -204,9 +204,9 @@ export default function EditClient() {
             })
             .catch((err) => {
                 if (!cancelled) {
-                    if (err.response?.status === 404) {
+                    if (err.response?.status === 404 || err.response?.status === 403) {
                         navigate("/404", { replace: true });
-                    } else {
+                    } else if (err.response?.status !== 401) {
                         setError("No se pudo cargar la información del cliente.");
                     }
                 }
@@ -221,7 +221,7 @@ export default function EditClient() {
     }, [id, navigate]);
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     // ── Setters (same pattern as RegisterClient / usePropertyForm) ─────────────
