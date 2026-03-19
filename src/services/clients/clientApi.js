@@ -53,10 +53,22 @@ export async function exportClients(params) {
   return response.data;
 }
 
+/**
+ * Actualiza el estado de un cliente
+ * @param {number} id - ID del AgentClient
+ * @param {string} status - Nuevo estado (ACTIVE / INACTIVE)
+ * @returns {Promise<Object>}
+ */
+export async function updateClientStatus(id, status) {
+  const response = await api.put(`/agent-clients/${id}`, { status });
+  return response.data?.data ?? response.data;
+}
+
 export default {
   getClientProfile,
   updateClientProfile,
   searchClients,
   deleteClient,
   exportClients,
+  updateClientStatus,
 };
