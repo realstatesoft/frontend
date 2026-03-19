@@ -12,7 +12,7 @@ const locationApi = {
   /** Busca o crea una ubicación a partir de datos de Nominatim */
   findOrCreate: (city, department, country = "Paraguay", lat, lng) =>
     api.post(`${BASE}/find-or-create`, null, {
-      params: { city, department, country, ...(lat && lng && { lat, lng }) },
+      params: { city, department, country, ...(lat != null && lng != null && { lat, lng }) },
     }),
 };
 

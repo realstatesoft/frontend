@@ -1,0 +1,168 @@
+@import "../../styles/variables";
+
+// Stats Cards
+.stats-card {
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  border-radius: $radius-md !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #fff !important;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-soft;
+  }
+  
+  &--pending {
+    border-left: 4px solid $warning !important;
+    .stats-icon { background-color: rgba($warning, 0.1); color: $warning; }
+  }
+  
+  &--approved {
+    border-left: 4px solid $success !important;
+    .stats-icon { background-color: rgba($success, 0.1); color: $success; }
+  }
+  
+  &--rejected {
+    border-left: 4px solid $danger !important;
+    .stats-icon { background-color: rgba($danger, 0.1); color: $danger; }
+  }
+  
+  &--total {
+    border-left: 4px solid $primary !important;
+    .stats-icon { background-color: rgba($primary, 0.1); color: $primary; }
+  }
+
+  .stats-icon {
+    padding: 0.75rem;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+
+  .stats-value {
+    color: $dark;
+    font-size: 1.5rem;
+  }
+
+  .stats-label {
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    font-size: 0.7rem;
+  }
+}
+
+// Visit Card
+.visit-card {
+  transition: all 0.3s ease;
+  border-radius: $radius-md !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background-color: #fff !important;
+  
+  &:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.visit-card-image-wrapper {
+  height: 100%;
+  min-height: 220px;
+  overflow: hidden;
+  border-top-left-radius: $radius-md;
+  border-bottom-left-radius: $radius-md;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.visit-card:hover .visit-card-image-wrapper img {
+  transform: scale(1.08);
+}
+
+.visit-conflict-alert {
+  background-color: rgba($danger, 0.03);
+  border-left: 3px solid $danger;
+  padding: 0.75rem 1rem;
+  border-radius: $radius-sm;
+  margin-bottom: 1.5rem;
+}
+
+// Custom Buttons & Actions
+.btn-suggest-time {
+  background-color: transparent !important;
+  border: 1px solid $warning !important;
+  color: $warning !important;
+  border-radius: 50rem !important;
+  font-weight: 500 !important;
+  
+  &:hover {
+    background-color: $warning !important;
+    color: #fff !important;
+  }
+}
+
+.btn-confirm {
+  background-color: $success !important;
+  border: none !important;
+  border-radius: 50rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba($success, 0.2);
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba($success, 0.3);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-reject {
+  background-color: transparent !important;
+  border: 1px solid $danger !important;
+  color: $danger !important;
+  border-radius: 50rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  font-weight: 500 !important;
+
+  &:hover {
+    background-color: $danger !important;
+    color: #fff !important;
+  }
+}
+
+.visit-status-badge {
+  padding: 0.4rem 0.8rem !important;
+  border-radius: 50rem !important;
+  font-weight: 500 !important;
+  font-size: 0.7rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Modals
+.btn-cancel-modal {
+  background-color: $light !important;
+  border: none !important;
+  color: $secondary !important;
+  border-radius: 50rem !important;
+  font-weight: 500 !important;
+  
+  &:hover {
+    background-color: darken($light, 5%) !important;
+  }
+}
+
+// Comments section
+.visit-comment-box {
+  background-color: $light;
+  padding: 1rem;
+  border-radius: $radius-sm;
+  border-left: 3px solid $primary;
+}

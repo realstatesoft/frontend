@@ -29,7 +29,7 @@ export default function StepAddress({ form, set, nextStep }) {
   const [mapCoords, setMapCoords] = useState(form.geolocation || null);
   const [loadingAddress, setLoadingAddress] = useState(false);
   const [addressError, setAddressError] = useState(null);
-  
+
   const canContinue = form.address.trim().length > 5 && mapCoords !== null;
 
   const handleMapChange = async (coords) => {
@@ -37,11 +37,11 @@ export default function StepAddress({ form, set, nextStep }) {
     set("geolocation", coords);
     set("latitude", coords.lat);
     set("longitude", coords.lng);
-    
+
     // Reverse geocode to get address
     setLoadingAddress(true);
     setAddressError(null);
-    
+
     try {
       const geo = await reverseGeocode(coords.lat, coords.lng);
       if (geo) {
@@ -49,22 +49,16 @@ export default function StepAddress({ form, set, nextStep }) {
 
         if (geo.city) {
           try {
-            const { data: matchData } = await locationApi.matchByCity(geo.city);
-            if (matchData?.success && matchData?.data?.length > 0) {
-              const matched = matchData.data[0];
-              set("locationId", matched.id);
-            } else {
-              const { data: createData } = await locationApi.findOrCreate(
-                geo.city,
-                geo.department,
-                geo.country,
-                coords.lat,
-                coords.lng
-              );
-              if (createData?.success && createData?.data) {
-                const created = createData.data;
-                set("locationId", created.id);
-              }
+            const { data: createData } = await locationApi.findOrCreate(
+              geo.city,
+              geo.department,
+              geo.country,
+              coords.lat,
+              coords.lng
+            );
+            if (createData?.success && createData?.data) {
+              const created = createData.data;
+              set("locationId", created.id);
             }
           } catch (e) {
             console.error("No se pudo autocompletar la zona: ", e);

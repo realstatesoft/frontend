@@ -10,7 +10,6 @@ import {
   PropertyFeaturesSection,
   ConstructionSection,
   InteriorAndRoomsSection,
-  AgentSelectionSection,
   FormActionsSection,
 } from "./sections";
 
@@ -116,7 +115,7 @@ export default function CreateProperty() {
               removeExtraRoom={removeExtraRoom}
               fieldErrors={fieldErrors}
             />
-            {!isEditMode && <AgentSelectionSection form={form} set={set} />}
+            {/* Agentes sugeridos eliminado: no mostrar sección en CreateProperty */}
             <FormActionsSection loading={loading} />
           </Form>
 

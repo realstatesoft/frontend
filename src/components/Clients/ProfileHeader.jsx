@@ -1,19 +1,22 @@
 import React from 'react';
 import { Card, Row, Col, Badge, Button, Stack } from 'react-bootstrap';
-import { 
-  EnvelopeFill, 
-  TelephoneFill, 
-  BriefcaseFill, 
-  ChevronDown, 
-  SendFill 
+import { useNavigate } from 'react-router-dom';
+import {
+  EnvelopeFill,
+  TelephoneFill,
+  BriefcaseFill,
+  ChevronDown,
+  SendFill
 } from 'react-bootstrap-icons';
-import { 
-  CLIENT_PRIORITY_LABELS, 
-  CLIENT_STATUS_LABELS, 
-  FIGMA_COLORS 
+import {
+  CLIENT_PRIORITY_LABELS,
+  CLIENT_STATUS_LABELS,
+  FIGMA_COLORS
 } from '../../constants/clientConstants';
 
 const ProfileHeader = ({ client }) => {
+  const navigate = useNavigate();
+
   if (!client) return null;
 
   const priorityLabel = CLIENT_PRIORITY_LABELS[client.priority] || client.priority;
@@ -39,11 +42,11 @@ const ProfileHeader = ({ client }) => {
         <Row className="align-items-center">
           <Col xs="auto">
             {/* Avatar - Silueta Default */}
-            <div 
-              style={{ 
-                width: '120px', 
-                height: '120px', 
-                borderRadius: '50%', 
+            <div
+              style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
                 backgroundColor: FIGMA_COLORS.deepDark,
                 display: 'flex',
                 alignItems: 'center',
@@ -51,12 +54,12 @@ const ProfileHeader = ({ client }) => {
                 overflow: 'hidden'
               }}
             >
-              <svg 
-                viewBox="0 0 24 24" 
-                fill="white" 
+              <svg
+                viewBox="0 0 24 24"
+                fill="white"
                 style={{ width: '80%', height: '80%', marginTop: 'auto' }}
               >
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
             </div>
           </Col>
@@ -64,32 +67,32 @@ const ProfileHeader = ({ client }) => {
             <Stack direction="horizontal" gap={3} className="align-items-baseline mb-2">
               <h1 className="fw-bold mb-0" style={{ color: FIGMA_COLORS.deepDark }}>{client.userName}</h1>
               {client.isExternal && (
-                <Badge 
-                  bg="none" 
-                  style={{ 
-                    backgroundColor: FIGMA_COLORS.paleBlueBg, 
-                    color: FIGMA_COLORS.paleBlueText, 
+                <Badge
+                  bg="none"
+                  style={{
+                    backgroundColor: FIGMA_COLORS.paleBlueBg,
+                    color: FIGMA_COLORS.paleBlueText,
                     fontWeight: '600',
                     fontSize: '0.85rem'
-                  }} 
+                  }}
                   className="px-3 py-2 rounded-pill border-0"
                 >
                   Externo
                 </Badge>
               )}
             </Stack>
-            
+
             <Stack direction="horizontal" gap={2} className="mb-4">
-              <Badge 
-                bg="none" 
-                style={{ backgroundColor: FIGMA_COLORS.paleGreenBg, color: FIGMA_COLORS.paleGreenText }} 
+              <Badge
+                bg="none"
+                style={{ backgroundColor: FIGMA_COLORS.paleGreenBg, color: FIGMA_COLORS.paleGreenText }}
                 className="px-3 py-2 rounded-pill border-0 fw-bold"
               >
                 {statusLabel}
               </Badge>
-              <Badge 
-                bg="none" 
-                style={{ backgroundColor: FIGMA_COLORS.paleRedBg, color: FIGMA_COLORS.paleRedText }} 
+              <Badge
+                bg="none"
+                style={{ backgroundColor: FIGMA_COLORS.paleRedBg, color: FIGMA_COLORS.paleRedText }}
                 className="px-3 py-2 rounded-pill border-0 fw-bold"
               >
                 Prioridad: {priorityLabel}
@@ -112,20 +115,21 @@ const ProfileHeader = ({ client }) => {
             </div>
           </Col>
           <Col xs="auto" className="d-flex gap-3 align-self-start mt-3 mt-md-0">
-             <button style={buttonActionStyle} className="btn shadow-none">
-               {statusLabel || 'Desconocido'} <ChevronDown className="ms-2" size={14} />
-             </button>
-             <button style={buttonActionStyle} className="btn shadow-none">
-               {priorityLabel || 'Desconocida'} <ChevronDown className="ms-2" size={14} />
-             </button>
-             <Button 
-                variant="primary" 
-                className="rounded-pill px-4 d-flex align-items-center border-0"
-                style={{ backgroundColor: '#0D6EFD' }}
-             >
-               <SendFill className="me-2" style={{ transform: 'rotate(45deg)', fontSize: '0.8rem' }} />
-               Editar
-             </Button>
+            <button style={buttonActionStyle} className="btn shadow-none">
+              {statusLabel || 'Desconocido'} <ChevronDown className="ms-2" size={14} />
+            </button>
+            <button style={buttonActionStyle} className="btn shadow-none">
+              {priorityLabel || 'Desconocida'} <ChevronDown className="ms-2" size={14} />
+            </button>
+            <Button
+              variant="primary"
+              className="rounded-pill px-4 d-flex align-items-center border-0"
+              style={{ backgroundColor: '#0D6EFD' }}
+              onClick={() => navigate(`/clients/${client.id}/edit`)}
+            >
+              <SendFill className="me-2" style={{ transform: 'rotate(45deg)', fontSize: '0.8rem' }} />
+              Editar
+            </Button>
           </Col>
         </Row>
       </Card.Body>

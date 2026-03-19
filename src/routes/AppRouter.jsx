@@ -10,10 +10,12 @@ import ForgotPassword from "../pages/ForgotPassword";
 import CreateProperty from "../pages/properties/CreateProperty";
 import MyProperties from "../pages/ShowProperty/MyProperties";
 import SellWizardPage from "../pages/sell/SellWizardPage";
+import VisitRequests from "../pages/VisitRequests";
 import ClientProfilePage from "../pages/ClientProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 import RegisterClient from "../pages/clients/RegisterClient";
+import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 
 export default function AppRouter() {
@@ -22,6 +24,7 @@ export default function AppRouter() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/clients/register" element={<RegisterClient />} />
+            <Route path="/clients/:id/edit" element={<EditClient />} />
             <Route path="/clients/:id" element={<ClientProfilePage />} />
             <Route path="/create-property" element={<CreateProperty />} />
             <Route path="/login" element={<LogIn />} />
@@ -34,6 +37,7 @@ export default function AppRouter() {
             <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
             <Route path="/trashcan" element={<PropertiesTrashCan />} />
             <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/visit-requests" element={<VisitRequests />} />
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/property-management" element={<PropertyManagementOptions />} />

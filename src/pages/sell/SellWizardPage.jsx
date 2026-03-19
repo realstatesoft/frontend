@@ -26,8 +26,14 @@ export default function SellWizardPage() {
     prevStep,
   } = useSellWizard();
 
-  const handleFinish = () => {
-    navigate("/create-property");
+  const handleFinish = (formData) => {
+    // Si el formulario indica que se seleccionó un agente, redirigir a landing;
+    // si no se seleccionó agente (publicar sin agente) redirigir a crear propiedad.
+    if (formData && formData.selectedAgentId) {
+      navigate("/");
+    } else {
+      navigate("/create-property");
+    }
   };
 
   const renderStep = () => {
