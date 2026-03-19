@@ -118,7 +118,6 @@ const MARITAL_TO_ENUM = {
     "Casado/a": "MARRIED",
     "Divorciado/a": "DIVORCED",
     "Viudo/a": "WIDOWED",
-    "Unión libre": "FREE_UNION",
 };
 
 function normalizeNumberString(str) {
