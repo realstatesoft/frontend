@@ -17,6 +17,7 @@ import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
+import ClientList from "../pages/ClientList/ClientList";
 
 export default function AppRouter() {
     return (
@@ -41,6 +42,7 @@ export default function AppRouter() {
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/property-management" element={<PropertyManagementOptions />} />
+            <Route path="/clients" element={<ClientList />} />
         </Routes>
     );
 }
