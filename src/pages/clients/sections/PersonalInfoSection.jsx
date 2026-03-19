@@ -9,7 +9,6 @@ const ESTADO_CIVIL_OPTIONS = [
   "Casado/a",
   "Divorciado/a",
   "Viudo/a",
-  "Unión libre",
 ];
 
 export function PersonalInfoSection({ form, set, fieldErrors = {} }) {
