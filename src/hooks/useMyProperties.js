@@ -59,7 +59,7 @@ export default function useMyProperties({ page = 1, size = 12 } = {}) {
                 setLoading(false);
             }
         }
-    }, [page, size]);
+    }, [page, size, isAuthenticated]);
 
     useEffect(() => {
         fetchProperties();

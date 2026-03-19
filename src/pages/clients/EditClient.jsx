@@ -148,8 +148,8 @@ function formToPayload(form) {
     return {
         firstName: form.firstName || null,
         lastName: form.lastName || null,
-        phone: form.phone || null,
-        email: form.email || null,
+        userPhone: form.phone || null,
+        userEmail: form.email || null,
         status: STATUS_TO_ENUM[form.status] ?? form.status ?? null,
         priority: PRIORITY_TO_ENUM[form.priority] ?? form.priority ?? null,
         tags: form.tags ?? [],
@@ -218,7 +218,7 @@ export default function EditClient() {
         return () => {
             cancelled = true;
         };
-    }, [id, navigate]);
+    }, [id, navigate, isAuthenticated]);
 
     if (!isAuthenticated) {
         return <Navigate to="/login" state={{ from: location }} replace />;

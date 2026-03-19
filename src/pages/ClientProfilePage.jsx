@@ -52,7 +52,7 @@ const ClientProfilePage = () => {
     return () => {
       isCancelled = true;
     };
-  }, [id]);
+  }, [id, isAuthenticated, navigate]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;

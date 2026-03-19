@@ -14,7 +14,11 @@ export default function LogIn() {
     const [searchParams] = useSearchParams();
 
     // Prioridad: 1. location.state.from (SPA) 2. query param "redirect" (Interceptor) 3. "/"
-    const from = location.state?.from?.pathname || searchParams.get("redirect") || "/";
+    let redirectParam = searchParams.get("redirect");
+    if (redirectParam && (!redirectParam.startsWith("/") || redirectParam.startsWith("//") || redirectParam.includes("://"))) {
+        redirectParam = null;
+    }
+    const from = location.state?.from?.pathname || redirectParam || "/";
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
