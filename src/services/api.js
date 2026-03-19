@@ -32,6 +32,15 @@ function processQueue(error, token = null) {
   failedQueue = [];
 }
 
+function redirectToLogin(error = null) {
+  if (error) {
+    processQueue(error, null);
+  }
+  clearSession();
+  const currentPath = window.location.pathname + window.location.search;
+  window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+}
+
 // ─── Response interceptor: refresca el token en caso de 401 ──────────────────
 api.interceptors.response.use(
   (response) => response,
@@ -50,9 +59,8 @@ api.interceptors.response.use(
 
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
-      // No hay refresh token → cerrar sesión y redirigir
-      clearSession();
-      window.location.href = "/";
+      // No hay refresh token → cerrar sesión y redirigir al login preservando la ruta actual
+      redirectToLogin();
       return Promise.reject(error);
     }
 
@@ -90,9 +98,7 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (refreshError) {
       // El refresh falló (refresh token expirado / inválido) → logout forzado
-      processQueue(refreshError, null);
-      clearSession();
-      window.location.href = "/";
+      redirectToLogin(refreshError);
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

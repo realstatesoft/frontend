@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Container, Spinner, Alert } from 'react-bootstrap';
 import { useAuth } from '../hooks/useAuth';
 import CustomNavbar from '../components/Landing/Navbar';
@@ -12,6 +12,7 @@ import clientApi from '../services/clients/clientApi';
 const ClientProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,9 +30,11 @@ const ClientProfilePage = () => {
         }
       } catch (err) {
         if (!isCancelled) {
+          // Si es 404 o 403, redirigir a Not Found (seguridad por oscuridad)
           if (err.response?.status === 404 || err.response?.status === 403) {
             navigate('/404', { replace: true });
-          } else {
+          } else if (err.response?.status !== 401) {
+            // Si no es 401 (que maneja el interceptor global), mostrar error genérico
             setError('No se pudo cargar el perfil del cliente.');
           }
         }
@@ -42,15 +45,17 @@ const ClientProfilePage = () => {
       }
     };
 
-    fetchClient();
+    if (isAuthenticated) {
+      fetchClient();
+    }
 
     return () => {
       isCancelled = true;
     };
-  }, [id]);
+  }, [id, isAuthenticated, navigate]);
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (loading) {

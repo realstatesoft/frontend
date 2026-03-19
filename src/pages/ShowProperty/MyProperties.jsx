@@ -1,5 +1,5 @@
 import { Col, Container, Row, Spinner, Button, Alert } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation, Navigate } from "react-router-dom";
 import { Plus } from "react-bootstrap-icons";
 import useMyProperties from "../../hooks/useMyProperties";
 import { useAuth } from "../../hooks/useAuth";
@@ -10,6 +10,7 @@ const PAGE_SIZE = 12;
 
 export default function MyProperties() {
     const { isAuthenticated } = useAuth();
+    const location = useLocation();
     const { properties, loading, error, refetch } = useMyProperties({
         page: 1,
         size: PAGE_SIZE,
@@ -17,19 +18,7 @@ export default function MyProperties() {
 
     // Usuario no autenticado
     if (!isAuthenticated) {
-        return (
-            <>
-                <Navbar />
-                <Container className="py-5">
-                    <Alert variant="info" className="text-center">
-                        <p className="mb-3">Debes iniciar sesión para ver tus propiedades.</p>
-                        <Button as={Link} to="/login" variant="primary">
-                            Iniciar sesión
-                        </Button>
-                    </Alert>
-                </Container>
-            </>
-        );
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     return (
