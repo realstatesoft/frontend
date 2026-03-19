@@ -399,7 +399,7 @@ export function usePropertyForm(propertyId) {
         setLoading(false);
       }
     },
-    [form, isEditMode, propertyId, navigate]  //justificar pq el falta 1, lint se queja
+    [form, isEditMode, propertyId, navigate, userId, validateForm]
   );
 
   const dismissError = useCallback(() => setError(null), []);

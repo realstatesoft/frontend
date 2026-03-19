@@ -323,7 +323,7 @@ export default function ShowProperty() {
 
                     <div
                       className="rounded mt-4 border-soft"
-                      style={{ height: "260px", overflow: "hidden" }} //no usar inlines a noser q haya buenas razones
+                      style={{ height: "260px", overflow: "hidden" }}
                     >
                       <iframe
                         title="Mapa de la propiedad"
