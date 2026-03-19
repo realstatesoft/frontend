@@ -17,6 +17,8 @@ import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
+import AcceptAssignment from "../pages/assignments/AcceptAssignment";
+import MyAssignments from "../pages/assignments/MyAssignments";
 
 export default function AppRouter() {
     return (
@@ -38,9 +40,11 @@ export default function AppRouter() {
             <Route path="/trashcan" element={<PropertiesTrashCan />} />
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/visit-requests" element={<VisitRequests />} />
+            <Route path="/assignments/:id/accept" element={<AcceptAssignment />} />
+            <Route path="/assignments/me" element={<MyAssignments />} />
             <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
             <Route path="/property-management" element={<PropertyManagementOptions />} />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 }
