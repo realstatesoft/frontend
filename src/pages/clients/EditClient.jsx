@@ -44,7 +44,6 @@ const MARITAL_STATUS_MAP = {
     MARRIED: "Casado/a",
     DIVORCED: "Divorciado/a",
     WIDOWED: "Viudo/a",
-    FREE_UNION: "Unión libre",
 };
 
 const PRIORITY_MAP = {
