@@ -4,7 +4,13 @@ import favoriteApi from "../services/favorites/favoriteApi";
 /**
  * Carga propiedades favoritas del usuario autenticado.
  */
-export default function useMyFavoriteProperties({ page = 1, size = 20 } = {}) {
+export default function useMyFavoriteProperties({
+  page = 1,
+  size = 20,
+  status = "",
+  addedFrom = "",
+  addedTo = "",
+} = {}) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,6 +26,9 @@ export default function useMyFavoriteProperties({ page = 1, size = 20 } = {}) {
         page: Math.max(page - 1, 0),
         size,
       };
+      if (status) params.status = status;
+      if (addedFrom) params.addedFrom = addedFrom;
+      if (addedTo) params.addedTo = addedTo;
       const res = await favoriteApi.getMy(params);
       const pageData = res?.data?.data ?? {};
       setProperties(pageData.content ?? []);
@@ -34,7 +43,7 @@ export default function useMyFavoriteProperties({ page = 1, size = 20 } = {}) {
     } finally {
       setLoading(false);
     }
-  }, [page, size]);
+  }, [page, size, status, addedFrom, addedTo]);
 
   useEffect(() => {
     fetchFavorites();

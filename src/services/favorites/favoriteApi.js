@@ -5,7 +5,6 @@ const BASE = "/favorites";
 const favoriteApi = {
   add: (propertyId) => api.post(`${BASE}/${propertyId}`),
   remove: (propertyId) => api.delete(`${BASE}/${propertyId}`),
-  getMyIds: () => api.get(`${BASE}/me/ids`),
   getMy: (params) => api.get(`${BASE}/me`, { params }),
 };
 

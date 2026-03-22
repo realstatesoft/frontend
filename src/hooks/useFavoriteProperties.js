@@ -21,9 +21,11 @@ export default function useFavoriteProperties() {
 
     setLoadingIds(true);
     try {
-      const res = await favoriteApi.getMyIds();
-      const ids = res?.data?.data ?? res?.data ?? [];
-      setFavoriteIds(Array.isArray(ids) ? ids : []);
+      const res = await favoriteApi.getMy({ page: 0, size: 200 });
+      const pageData = res?.data?.data ?? {};
+      const content = Array.isArray(pageData.content) ? pageData.content : [];
+      const ids = content.map((item) => item.id).filter(Boolean);
+      setFavoriteIds(ids);
     } catch (error) {
       console.error("Error al cargar favoritos:", error);
       setFavoriteIds([]);

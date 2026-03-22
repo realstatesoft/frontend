@@ -1,13 +1,16 @@
-import { Container, Row, Col, Spinner, Alert, Button } from "react-bootstrap";
+import { useState } from "react";
+import { Container, Row, Col, Spinner, Alert, Button, Form } from "react-bootstrap";
 import { ChevronDown } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import CustomNavbar from "../../components/Landing/Navbar";
 import FavoritePropertyCard from "../../components/properties/FavoritePropertyCard";
 import useMyFavoriteProperties from "../../hooks/useMyFavoriteProperties";
 import { useAuth } from "../../hooks/useAuth";
+import { PROPERTY_STATUS_OPTIONS } from "../../constants/propertyEnums";
 
 export default function MyFavoriteProperties() {
   const { isAuthenticated } = useAuth();
+  const [status, setStatus] = useState("");
   const {
     properties: favorites,
     loading,
@@ -16,7 +19,11 @@ export default function MyFavoriteProperties() {
     removingIds,
     removeFavorite,
     refetch,
-  } = useMyFavoriteProperties({ page: 1, size: 40 });
+  } = useMyFavoriteProperties({
+    page: 1,
+    size: 40,
+    status,
+  });
   const total = totalElements;
 
   if (!isAuthenticated) {
@@ -53,7 +60,7 @@ export default function MyFavoriteProperties() {
           </p>
         </div>
 
-        {/* Barra de filtros y ordenamiento */}
+        {/* Barra de filtros */}
         <div
           className="d-flex flex-wrap align-items-center gap-3 mb-4 py-2"
           style={{ borderBottom: "1px solid #eee" }}
@@ -62,14 +69,19 @@ export default function MyFavoriteProperties() {
             <span className="text-muted" style={{ fontSize: "0.875rem" }}>
               Filtrar por estado
             </span>
-            <button
-              type="button"
-              className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
-              style={{ borderRadius: "8px" }}
+            <Form.Select
+              size="sm"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              style={{ minWidth: 180, borderRadius: "8px" }}
             >
-              Todas
-              <ChevronDown size={14} />
-            </button>
+              <option value="">Todos los estados</option>
+              {PROPERTY_STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Form.Select>
           </div>
           <div className="d-flex align-items-center gap-2">
             <span className="text-muted" style={{ fontSize: "0.875rem" }}>
