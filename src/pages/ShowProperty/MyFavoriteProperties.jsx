@@ -1,78 +1,39 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Spinner, Alert, Button } from "react-bootstrap";
 import { ChevronDown } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
 import CustomNavbar from "../../components/Landing/Navbar";
 import FavoritePropertyCard from "../../components/properties/FavoritePropertyCard";
-
-/**
- * Datos hardcodeados para la pantalla de favoritos.
- * En el futuro se obtendrán del API de favoritos.
- */
-const HARDCODED_FAVORITES = [
-  {
-    id: 1,
-    title: "Casa moderna en Palermo",
-    price: 850000,
-    status: "PUBLISHED",
-    propertyType: "HOUSE",
-    address: "Thames 1234, Palermo, CABA",
-    bedrooms: 3,
-    bathrooms: 2,
-    surfaceArea: 150,
-    primaryImageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
-    agentName: "María González",
-    agentPhone: "+54 11 1234-5678",
-    dateAdded: "14 de enero de 2024",
-  },
-  {
-    id: 2,
-    title: "Casa familiar en San Isidro",
-    price: 1200000,
-    status: "SOLD",
-    propertyType: "HOUSE",
-    address: "Av. Libertador 4500, San Isidro",
-    bedrooms: 4,
-    bathrooms: 3,
-    surfaceArea: 220,
-    primaryImageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
-    agentName: "Carlos Rodríguez",
-    agentPhone: "+54 11 9876-5432",
-    dateAdded: "10 de enero de 2024",
-  },
-  {
-    id: 3,
-    title: "Departamento luminoso en Recoleta",
-    price: 650000,
-    status: "PUBLISHED",
-    propertyType: "APARTMENT",
-    address: "Av. Santa Fe 2800, Recoleta",
-    bedrooms: 2,
-    bathrooms: 2,
-    surfaceArea: 95,
-    primaryImageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600",
-    agentName: "Ana Martínez",
-    agentPhone: "+54 11 5555-1234",
-    dateAdded: "8 de enero de 2024",
-  },
-  {
-    id: 4,
-    title: "Casa con jardín en Belgrano",
-    price: 980000,
-    status: "PUBLISHED",
-    propertyType: "HOUSE",
-    address: "Cabildo 3200, Belgrano",
-    bedrooms: 3,
-    bathrooms: 2,
-    surfaceArea: 180,
-    primaryImageUrl: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600",
-    agentName: "María González",
-    agentPhone: "+54 11 1234-5678",
-    dateAdded: "5 de enero de 2024",
-  },
-];
+import useMyFavoriteProperties from "../../hooks/useMyFavoriteProperties";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function MyFavoriteProperties() {
-  const favorites = HARDCODED_FAVORITES;
-  const total = favorites.length;
+  const { isAuthenticated } = useAuth();
+  const {
+    properties: favorites,
+    loading,
+    error,
+    totalElements,
+    removingIds,
+    removeFavorite,
+    refetch,
+  } = useMyFavoriteProperties({ page: 1, size: 40 });
+  const total = totalElements;
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <CustomNavbar />
+        <Container className="py-5">
+          <Alert variant="info" className="text-center">
+            <p className="mb-3">Debes iniciar sesión para ver tus favoritos.</p>
+            <Button as={Link} to="/login" variant="primary">
+              Iniciar sesión
+            </Button>
+          </Alert>
+        </Container>
+      </>
+    );
+  }
 
   return (
     <>
@@ -128,14 +89,44 @@ export default function MyFavoriteProperties() {
           </div>
         </div>
 
-        {/* Grid de propiedades favoritas */}
-        <Row xs={1} sm={2} lg={2} className="g-4">
-          {favorites.map((property) => (
-            <Col key={property.id}>
-              <FavoritePropertyCard property={property} />
-            </Col>
-          ))}
-        </Row>
+        {loading && (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="primary" />
+            <p className="text-muted mt-3">Cargando favoritos...</p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <Alert variant="danger" className="text-center">
+            <p className="mb-2">{error}</p>
+            <Button variant="outline-danger" size="sm" onClick={refetch}>
+              Reintentar
+            </Button>
+          </Alert>
+        )}
+
+        {!loading && !error && favorites.length === 0 && (
+          <div className="text-center text-muted py-5">
+            <p className="mb-2">Aún no tienes propiedades favoritas.</p>
+            <Button as={Link} to="/properties" variant="outline-primary">
+              Explorar propiedades
+            </Button>
+          </div>
+        )}
+
+        {!loading && !error && favorites.length > 0 && (
+          <Row xs={1} sm={2} lg={2} className="g-4">
+            {favorites.map((property) => (
+              <Col key={property.id}>
+                <FavoritePropertyCard
+                  property={property}
+                  removing={removingIds.includes(property.id)}
+                  onRemoveFavorite={removeFavorite}
+                />
+              </Col>
+            ))}
+          </Row>
+        )}
       </Container>
     </>
   );

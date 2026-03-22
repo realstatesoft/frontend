@@ -13,6 +13,10 @@ export default function PropertiesGrid({
     loading = false,
     error = null,
     totalPages: externalTotalPages,
+    favoriteIds = [],
+    togglingIds = [],
+    canToggleFavorite = false,
+    onToggleFavorite,
 }) {
     // Si se pasa totalPages externo (del backend), usarlo; sino calcular client-side
     const totalPages =
@@ -76,7 +80,13 @@ export default function PropertiesGrid({
             <Row className="g-4">
                 {paginated.map((property) => (
                     <Col key={property.id} xs={12} sm={6} md={4} lg={3}>
-                        <PropertyCard property={property} />
+                        <PropertyCard
+                            property={property}
+                            isFavorite={favoriteIds.includes(property.id)}
+                            isFavoriteLoading={togglingIds.includes(property.id)}
+                            canToggleFavorite={canToggleFavorite}
+                            onToggleFavorite={onToggleFavorite}
+                        />
                     </Col>
                 ))}
             </Row>
