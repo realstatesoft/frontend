@@ -1,0 +1,211 @@
+// ─── User Profile Page ───────────────────────────────────────────────────────
+// Usa las variables globales del proyecto definidas en _variables.scss
+
+.uprofile-page {
+    background: $light;
+}
+
+.uprofile-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+    overflow: hidden;
+}
+
+// Banner usando el color primario global con degradado sutil
+.uprofile-banner {
+    height: 110px;
+    background: linear-gradient(135deg, $primary 0%, lighten($primary, 18%) 60%, $warning 100%);
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.uprofile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2.5rem 2.5rem 2rem;
+    margin-top: -56px;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.uprofile-avatar-group {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+// Avatar circular con borde blanco grueso
+.uprofile-avatar {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+    object-fit: cover;
+    background: #fff;
+}
+
+.uprofile-avatar--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $neutral-soft;
+    color: $secondary;
+}
+
+.uprofile-identity {
+    padding-bottom: 0.4rem;
+}
+
+.uprofile-name {
+    font-size: 1.6rem;
+    font-weight: $font-weight-bold;
+    color: $text-dark;
+    margin-bottom: 0.2rem;
+    line-height: 1.25;
+}
+
+.uprofile-email {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: $text-muted;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.uprofile-email-icon {
+    flex-shrink: 0;
+}
+
+// Boton Editar Perfil con icono de lapiz
+.uprofile-edit-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: $primary;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.55rem 1.4rem;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    align-self: center;
+    margin-top: 56px;
+
+    &:hover {
+        background: darken($primary, 8%);
+        box-shadow: 0 3px 10px rgba($primary, 0.40);
+    }
+
+    &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 2px;
+    }
+}
+
+// ── Seccion de campos ─────────────────────────────────────────────────────────
+
+.uprofile-section {
+    padding: 2rem 2.5rem 2.5rem;
+    border-top: 1px solid $border-color-soft;
+}
+
+.uprofile-section-title {
+    font-weight: $font-weight-semibold;
+    font-size: 1.05rem;
+    color: $dark;
+    margin-bottom: 1.5rem;
+}
+
+.uprofile-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2.5rem;
+}
+
+.uprofile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+// Label con icono de react-icons a la izquierda
+.uprofile-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: $font-weight-medium;
+    color: $text-muted;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+// Inputs de solo lectura usando los tokens globales de fondo y borde
+.uprofile-input {
+    background: $input-bg-light;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-sm;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    color: $text-dark;
+    cursor: default;
+    transition: none;
+
+    &:disabled {
+        opacity: 1;
+        background: $input-bg-light;
+        color: $text-dark;
+    }
+}
+
+// Badge del campo Role usando el color primario global
+.uprofile-role-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba($primary, 0.10);
+    color: $primary;
+    border: 1px solid rgba($primary, 0.25);
+    border-radius: 50px;
+    padding: 0.3rem 1rem;
+    font-size: 0.82rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+// ── Responsive: 1 columna en pantallas pequeñas ───────────────────────────────
+
+@media (max-width: 576px) {
+    .uprofile-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .uprofile-header {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 1.25rem 1.5rem;
+    }
+
+    .uprofile-avatar-group {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .uprofile-edit-btn {
+        margin-top: 0;
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .uprofile-section {
+        padding: 1.5rem 1.25rem 2rem;
+    }
+}
