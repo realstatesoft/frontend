@@ -112,6 +112,7 @@ export default function ShowProperty() {
               {(canChangeStatus || (isPropertyOwner && !isAdmin)) && (
                 <OverlayTrigger
                   placement="bottom"
+                  trigger={['hover', 'focus']}
                   overlay={
                     !canChangeStatus ? (
                       <Tooltip id="tooltip-status">
@@ -119,8 +120,12 @@ export default function ShowProperty() {
                       </Tooltip>
                     ) : <span />}
                 >
-                  {/* span wrapper needed for disabled Dropdown to receive mouse events for tooltip */}
-                  <span>
+                  {/* span wrapper needed for disabled Dropdown to receive mouse events/focus for tooltip */}
+                  <span
+                    tabIndex={0}
+                    role="group"
+                    aria-describedby={!canChangeStatus ? "tooltip-status" : undefined}
+                  >
                     <Dropdown as={ButtonGroup}>
                       <Dropdown.Toggle
                         size="sm"

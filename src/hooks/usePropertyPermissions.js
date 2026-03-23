@@ -16,7 +16,7 @@ import { useAuth } from "./useAuth";
  *   isAdmin: boolean,
  * }}
  */
-export function usePropertyPermissions(property) {
+export function usePropertyPermissions(property, propertyAssignments = null) {
   const { user, isAuthenticated } = useAuth();
 
   // Si el token expiró o el usuario no está cargado, tratar como visitante.
@@ -39,21 +39,29 @@ export function usePropertyPermissions(property) {
   const propertyOwnerId = property?.ownerId ?? property?.userId ?? null;
   const isOwner = propertyOwnerId !== null && propertyOwnerId === user.userId;
 
+  // Usa las asignaciones que se pasen por parámetro o que vengan en el objeto property
+  const assignments = propertyAssignments || property?.propertyAssignments || [];
+  const hasAssignment = assignments.some(
+    a => a.userId === user.userId && a.propertyId === property?.id
+  );
+
+  const canAct = isOwner || isAdmin || hasAssignment;
+
   return {
     /** Solo ADMIN puede cambiar el estado de revisión (Pendiente/Aprobado/etc.). */
     canChangeStatus: isAdmin,
 
-    /** El propietario o ADMIN pueden cambiar la visibilidad (Público/Privado/Oculto). */
-    canChangeVisibility: isOwner || isAdmin,
+    /** El propietario, ADMIN o asignado pueden cambiar la visibilidad (Público/Privado/Oculto). */
+    canChangeVisibility: canAct,
 
-    /** El propietario o ADMIN pueden editar la propiedad. */
-    canEdit: isOwner || isAdmin,
+    /** El propietario, ADMIN o asignado pueden editar la propiedad. */
+    canEdit: canAct,
 
-    /** El propietario o ADMIN pueden eliminar la propiedad. */
+    /** El propietario o ADMIN pueden eliminar la propiedad (NO los asignados). */
     canDelete: isOwner || isAdmin,
 
     /** Cualquier usuario autenticado puede destacar. */
-    canFeature: true,
+    canFeature: !!user,
 
     /** Compartir está disponible para todos, incluso visitantes. */
     canShare: true,
