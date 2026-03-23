@@ -6,24 +6,160 @@ import api from "../services/api";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import { CiUser, CiMail, CiPhone } from "react-icons/ci";
-import { IoPencilOutline } from "react-icons/io5";
+import { IoPencilOutline, IoCloseOutline, IoCheckmarkOutline } from "react-icons/io5";
 import { LuTag } from "react-icons/lu";
 
+// ─── Modal de edición ─────────────────────────────────────────────────────────
+
+function EditProfileModal({ profile, onClose, onSaved }) {
+  const [form, setForm] = useState({
+    name:      profile?.name      || "",
+    phone:     profile?.phone     || "",
+    avatarUrl: profile?.avatarUrl || "",
+  });
+  const [saving, setSaving]   = useState(false);
+  const [error,  setError]    = useState(null);
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      const { data: res } = await api.put("/users/me", {
+        name:      form.name,
+        phone:     form.phone,
+        avatarUrl: form.avatarUrl,
+      });
+      onSaved(res.data);
+    } catch (err) {
+      setError("No se pudo guardar los cambios. Intenta de nuevo.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // Cerrar con Escape
+  useEffect(() => {
+    function onKey(e) { if (e.key === "Escape") onClose(); }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="uedit-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="uedit-modal" role="dialog" aria-modal="true" aria-labelledby="uedit-title">
+
+        {/* Header */}
+        <div className="uedit-header">
+          <h5 className="uedit-title" id="uedit-title">
+            <IoPencilOutline size={18} />
+            Editar Perfil
+          </h5>
+          <button className="uedit-close-btn" onClick={onClose} aria-label="Cerrar">
+            <IoCloseOutline size={22} />
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="uedit-form">
+          {error && <div className="uedit-error">{error}</div>}
+
+          <div className="uedit-field">
+            <label className="uedit-label" htmlFor="uedit-name">
+              <CiUser size={15} /> Nombre completo
+            </label>
+            <input
+              id="uedit-name"
+              name="name"
+              type="text"
+              className="uedit-input"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Tu nombre completo"
+              maxLength={100}
+            />
+          </div>
+
+          <div className="uedit-field">
+            <label className="uedit-label" htmlFor="uedit-phone">
+              <CiPhone size={15} /> Teléfono
+            </label>
+            <input
+              id="uedit-phone"
+              name="phone"
+              type="tel"
+              className="uedit-input"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="+595 991 000 000"
+              maxLength={30}
+            />
+          </div>
+
+          <div className="uedit-field">
+            <label className="uedit-label" htmlFor="uedit-avatar">
+              <CiUser size={15} /> URL de foto de perfil
+            </label>
+            <input
+              id="uedit-avatar"
+              name="avatarUrl"
+              type="url"
+              className="uedit-input"
+              value={form.avatarUrl}
+              onChange={handleChange}
+              placeholder="https://ejemplo.com/foto.jpg"
+            />
+            {/* Preview de la imagen si se ingresa URL */}
+            {form.avatarUrl && (
+              <div className="uedit-avatar-preview">
+                <img
+                  src={form.avatarUrl}
+                  alt="Preview"
+                  onError={(e) => { e.target.style.display = "none"; }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="uedit-footer">
+            <button type="button" className="uedit-btn-cancel" onClick={onClose} disabled={saving}>
+              Cancelar
+            </button>
+            <button type="submit" className="uedit-btn-save" disabled={saving}>
+              {saving ? (
+                <span className="uedit-spinner" />
+              ) : (
+                <IoCheckmarkOutline size={16} />
+              )}
+              {saving ? "Guardando…" : "Guardar cambios"}
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  );
+}
+
+// ─── Página principal ─────────────────────────────────────────────────────────
+
 const UserProfilePage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate    = useNavigate();
+  const location    = useLocation();
   const { isAuthenticated, token } = useAuth();
 
-  // Datos del usuario devueltos por GET /users/me
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [profile,     setProfile]     = useState(null);
+  const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState(null);
+  const [editOpen,    setEditOpen]    = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
-  /**
-   * Al montar el componente, obtiene los datos del usuario autenticado
-   * desde el endpoint GET /users/me. Si el token no es valido,
-   * el interceptor global redirige a /login automaticamente.
-   */
   useEffect(() => {
     let isCancelled = false;
 
@@ -32,37 +168,30 @@ const UserProfilePage = () => {
         setError(null);
         setLoading(true);
         const { data: res } = await api.get("/users/me");
-        if (!isCancelled) {
-          setProfile(res.data);
-        }
+        if (!isCancelled) setProfile(res.data);
       } catch (err) {
-        if (!isCancelled) {
-          if (err.response?.status === 401) {
-            navigate("/login", { replace: true });
-          } else {
-            setError("No se pudo cargar el perfil. Intenta de nuevo.");
-          }
-        }
+        if (!isCancelled) setError("No se pudo cargar el perfil. Intenta de nuevo.");
       } finally {
-        if (!isCancelled) {
-          setLoading(false);
-        }
+        if (!isCancelled) setLoading(false);
       }
     };
 
-    if (isAuthenticated) {
-      fetchProfile();
-    }
-
+    if (isAuthenticated) fetchProfile();
     return () => { isCancelled = true; };
-  }, [isAuthenticated, token, navigate]);
+  }, [isAuthenticated, token]);
 
-  // Si no esta autenticado, redirigir a login preservando la ruta actual
+  // Callback cuando el modal guarda exitosamente
+  function handleSaved(updatedProfile) {
+    setProfile(updatedProfile);
+    setEditOpen(false);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Loader centrado mientras se obtienen los datos
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
@@ -71,7 +200,6 @@ const UserProfilePage = () => {
     );
   }
 
-  // Error generico
   if (error) {
     return (
       <>
@@ -84,12 +212,11 @@ const UserProfilePage = () => {
     );
   }
 
-  // Campos de informacion personal con sus iconos
   const fields = [
-    { label: "Full Name",  value: profile?.name,  icon: <CiUser size={16} /> },
-    { label: "Email",      value: profile?.email, icon: <CiMail size={16} /> },
-    { label: "Phone",      value: profile?.phone, icon: <CiPhone size={16} /> },
-    { label: "Role",       value: profile?.role,  icon: <LuTag size={14} />, isRole: true },
+    { label: "Full Name", value: profile?.name,  icon: <CiUser  size={16} /> },
+    { label: "Email",     value: profile?.email, icon: <CiMail  size={16} /> },
+    { label: "Phone",     value: profile?.phone, icon: <CiPhone size={16} /> },
+    { label: "Role",      value: profile?.role,  icon: <LuTag   size={14} />, isRole: true },
   ];
 
   return (
@@ -99,13 +226,20 @@ const UserProfilePage = () => {
       <Container className="py-5">
         <div className="uprofile-card">
 
-          {/* ── Banner ────────────────────────────────────── */}
+          {/* Banner */}
           <div className="uprofile-banner" />
 
-          {/* ── Header: avatar + datos + boton ───────────── */}
+          {/* Toast de éxito */}
+          {saveSuccess && (
+            <div className="uprofile-toast">
+              <IoCheckmarkOutline size={16} />
+              Perfil actualizado correctamente
+            </div>
+          )}
+
+          {/* Header */}
           <div className="uprofile-header">
             <div className="uprofile-avatar-group">
-              {/* Avatar: foto de perfil o placeholder */}
               {profile?.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
@@ -117,7 +251,6 @@ const UserProfilePage = () => {
                   <CiUser size={54} />
                 </div>
               )}
-
               <div className="uprofile-identity">
                 <h2 className="uprofile-name">{profile?.name || "Sin nombre"}</h2>
                 <p className="uprofile-email">
@@ -127,30 +260,23 @@ const UserProfilePage = () => {
               </div>
             </div>
 
-            {/* Boton Editar Perfil */}
-            <button className="uprofile-edit-btn">
+            <button className="uprofile-edit-btn" onClick={() => setEditOpen(true)}>
               <IoPencilOutline size={15} />
               Editar Perfil
             </button>
           </div>
 
-          {/* ── Seccion: Informacion Personal ────────────── */}
+          {/* Información Personal */}
           <div className="uprofile-section">
             <h5 className="uprofile-section-title">Información Personal</h5>
-
             <div className="uprofile-fields">
               {fields.map(({ label, value, icon, isRole }) => (
                 <div className="uprofile-field" key={label}>
                   <label className="uprofile-label">
-                    {icon}
-                    {label}
+                    {icon}{label}
                   </label>
-
-                  {/* El campo Role se muestra como badge */}
                   {isRole ? (
-                    <div>
-                      <span className="uprofile-role-badge">{value || "—"}</span>
-                    </div>
+                    <div><span className="uprofile-role-badge">{value || "—"}</span></div>
                   ) : (
                     <input
                       type="text"
@@ -168,6 +294,15 @@ const UserProfilePage = () => {
       </Container>
 
       <Footer />
+
+      {/* Modal de edición */}
+      {editOpen && (
+        <EditProfileModal
+          profile={profile}
+          onClose={() => setEditOpen(false)}
+          onSaved={handleSaved}
+        />
+      )}
     </div>
   );
 };
