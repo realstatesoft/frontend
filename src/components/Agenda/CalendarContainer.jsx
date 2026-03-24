@@ -61,14 +61,24 @@ export default function CalendarContainer() {
     };
 
     const handleEventClick = (event) => {
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        };
+
         Swal.fire({
-            title: event.title,
+            title: escapeHtml(event.title),
             html: `
-                <p><b>Tipo:</b> ${event.eventType}</p>
-                <p><b>Hora:</b> ${new Date(event.startsAt).toLocaleString()}</p>
-                <p><b>Ubicación:</b> ${event.location || 'N/A'}</p>
-                ${event.description ? `<p>${event.description}</p>` : ''}
-                ${event.notes ? `<p><i>Notas:</i> ${event.notes}</p>` : ''}
+                <p><b>Tipo:</b> ${escapeHtml(event.eventType)}</p>
+                <p><b>Hora:</b> ${new Date(event.startsAt).toUTCString()}</p>
+                <p><b>Ubicación:</b> ${escapeHtml(event.location) || 'N/A'}</p>
+                ${event.description ? `<p>${escapeHtml(event.description)}</p>` : ''}
+                ${event.notes ? `<p><i>Notas:</i> ${escapeHtml(event.notes)}</p>` : ''}
             `,
             icon: 'info'
         });

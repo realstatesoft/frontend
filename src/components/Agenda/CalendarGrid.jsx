@@ -39,9 +39,10 @@ export default function CalendarGrid({ currentDate, events, onDayClick, onEventC
     const getEventsForDay = (dateObj) => {
         return events.filter(e => {
             const evDate = new Date(e.startsAt);
-            return evDate.getDate() === dateObj.getDate() &&
-                   evDate.getMonth() === dateObj.getMonth() &&
-                   evDate.getFullYear() === dateObj.getFullYear();
+            // Comparison using UTC to avoid timezone differences shifting days
+            return evDate.getUTCDate() === dateObj.getDate() &&
+                   evDate.getUTCMonth() === dateObj.getMonth() &&
+                   evDate.getUTCFullYear() === dateObj.getFullYear();
         });
     };
 
