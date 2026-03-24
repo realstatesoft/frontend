@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useAuth } from "./useAuth";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import propertyApi from "../services/properties/propertyApi";
@@ -42,7 +43,9 @@ export function useShowProperty() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmData, setConfirmData] = useState({});
 
-  const isOwner = true; // TODO: verificar cuando esté el manejo de usuarios
+  const { user, isAuthenticated } = useAuth();
+  const propertyOwnerId = property?.ownerId ?? property?.userId ?? null;
+  const isOwner = isAuthenticated && propertyOwnerId !== null && propertyOwnerId === user?.userId;
 
   const fetchProperty = useCallback(() => {
     if (!id) return;
