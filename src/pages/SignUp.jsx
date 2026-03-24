@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Card, Row, Col, Form, Button, Stack } from 'react-bootstrap';
+import { Container, Card, Row, Col, Form, Button, Stack, Alert } from 'react-bootstrap';
 import logo from '../assets/Logotipo.png';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +8,8 @@ export default function SignUp() {
     const navigate = useNavigate();
     const { register } = useAuth(); // Obtenemos la función de registro del contexto
 
-    const [tipoUsuario, setTipoUsuario] = useState('Comprador');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [formData, setFormData] = useState({
         nombre: '',
         apellido: '',
@@ -32,37 +32,36 @@ export default function SignUp() {
         e.preventDefault();
         if (isSubmitting) return;
 
-        //Validaciones básicas locales
+        setErrorMessage('');
+
+        // Validaciones básicas locales
         if (formData.password !== formData.confirmPassword) {
-            alert("Las contraseñas no coinciden");
+            setErrorMessage('Las contraseñas no coinciden');
             return;
         }
         if (!formData.terminos) {
-            alert("Debes aceptar los términos y condiciones");
+            setErrorMessage('Debes aceptar los términos y condiciones');
             return;
         }
 
         setIsSubmitting(true);
         try {
-
             const dataParaBackend = {
                 name: `${formData.nombre} ${formData.apellido}`.trim(),
                 email: formData.email,
                 password: formData.password,
                 phone: formData.phone,
-                role: tipoUsuario === 'Comprador' ? 'USER' : 'AGENT'
+                role: 'USER'
             };
 
-            //Enviamos al backend
+            // Enviamos al backend
             await register(dataParaBackend);
 
-            alert("¡Registro exitoso!");
-            navigate('/'); //Redirigimos a la página principal
-            console.log("Usuario registrado:", dataParaBackend.email);
+            navigate('/'); // Redirigimos a la página principal
 
         } catch (error) {
-            console.error("Error en el registro:", error);
-            alert("Hubo un error: " + error.message);
+            console.error('Error en el registro:', error);
+            setErrorMessage(error.response?.data?.message || error.message || 'Error al registrar usuario');
         } finally {
             setIsSubmitting(false);
         }
@@ -98,40 +97,6 @@ export default function SignUp() {
                     </p>
 
                     <Form onSubmit={handleSubmit}>
-                        {/* Tipo de Usuario */}
-                        <Form.Group className="mb-3">
-                            <Form.Label className="fw-semibold mb-2" style={{ fontSize: '0.9rem' }}>
-                                ¿Qué tipo de usuario eres?
-                            </Form.Label>
-                            <Stack direction="horizontal" gap={3}>
-                                <Button
-                                    variant="light"
-                                    className="w-50 fw-medium"
-                                    onClick={() => setTipoUsuario('Comprador')}
-                                    style={{
-                                        backgroundColor: tipoUsuario === 'Comprador' ? 'rgba(37, 99, 235, 0.1)' : '#fff',
-                                        color: tipoUsuario === 'Comprador' ? 'var(--bs-primary)' : 'var(--bs-secondary)',
-                                        borderColor: tipoUsuario === 'Comprador' ? 'var(--bs-primary)' : '#ced4da',
-                                        borderRadius: '0.75rem'
-                                    }}
-                                >
-                                    Comprador
-                                </Button>
-                                <Button
-                                    variant="light"
-                                    className="w-50 fw-medium"
-                                    onClick={() => setTipoUsuario('Vendedor')}
-                                    style={{
-                                        backgroundColor: tipoUsuario === 'Vendedor' ? 'rgba(37, 99, 235, 0.1)' : '#fff',
-                                        color: tipoUsuario === 'Vendedor' ? 'var(--bs-primary)' : 'var(--bs-secondary)',
-                                        borderColor: tipoUsuario === 'Vendedor' ? 'var(--bs-primary)' : '#ced4da',
-                                        borderRadius: '0.75rem'
-                                    }}
-                                >
-                                    Vendedor
-                                </Button>
-                            </Stack>
-                        </Form.Group>
 
                         {/* Nombre y Apellido */}
                         <Row className="g-3 mb-3">
@@ -199,6 +164,12 @@ export default function SignUp() {
                                 Acepto los <a href="#" className="text-decoration-none fw-medium">términos y condiciones</a>
                             </Form.Label>
                         </Form.Group>
+
+                        {errorMessage && (
+                            <Alert variant="danger" className="py-2 mb-3 text-center" style={{ fontSize: '0.85rem', borderRadius: '0.75rem' }}>
+                                {errorMessage}
+                            </Alert>
+                        )}
 
                         <div className="d-grid">
                             <Button variant="primary" type="submit" disabled={isSubmitting} style={{ borderRadius: '0.75rem', padding: '0.8rem' }} className="fw-bold">
