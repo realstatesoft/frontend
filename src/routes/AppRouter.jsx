@@ -18,6 +18,7 @@ import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
+import UserProfilePage from "../pages/UserProfilePage";
 
 export default function AppRouter() {
     return (
@@ -37,6 +38,7 @@ export default function AppRouter() {
             <Route path="/properties/me" element={<MyProperties />} />
             <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
             <Route path="/trashcan" element={<PropertiesTrashCan />} />
+            <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/visit-requests" element={<VisitRequests />} />
             <Route path="/404" element={<NotFoundPage />} />
