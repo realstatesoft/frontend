@@ -18,6 +18,7 @@ import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
+import AgendaPage from "../pages/Agenda/AgendaPage";
 import UserProfilePage from "../pages/UserProfilePage";
 
 export default function AppRouter() {
@@ -45,6 +46,7 @@ export default function AppRouter() {
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/property-management" element={<PropertyManagementOptions />} />
             <Route path="/clients" element={<ClientList />} />
+            <Route path="/agenda" element={<AgendaPage />} />
         </Routes>
     );
 }
