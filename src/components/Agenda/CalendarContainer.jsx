@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Container } from 'react-bootstrap';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 import CalendarGrid from './CalendarGrid';
+import CreateEventModal from './CreateEventModal';
 import { getAgendaForMonth } from '../../services/agents/agentAgendaService';
 import Swal from 'sweetalert2';
 
@@ -9,6 +10,10 @@ export default function CalendarContainer() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [events, setEvents] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Create-event modal state
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -23,7 +28,6 @@ export default function CalendarContainer() {
     const fetchEvents = async (yyyy, mm) => {
         setIsLoading(true);
         try {
-            // Format YYYY-MM
             const mmString = String(mm + 1).padStart(2, '0');
             const result = await getAgendaForMonth(`${yyyy}-${mmString}`);
             setEvents(result.data || []);
@@ -47,17 +51,21 @@ export default function CalendarContainer() {
         setCurrentDate(new Date(year, month + 1, 1));
     };
 
+    // Open modal without a pre-selected date
     const handleCreateEvent = () => {
-        // Mock action for creating an event
-        Swal.fire({
-            title: 'Crear Evento',
-            text: 'Próximamente: Formulario para crear evento (Conexión al backend POST /agent-agenda)',
-            icon: 'info'
-        });
+        setSelectedDate(null);
+        setShowCreateModal(true);
     };
 
+    // Open modal pre-filled with the clicked day
     const handleDayClick = (day) => {
-        console.log("Day clicked:", day);
+        setSelectedDate(day);
+        setShowCreateModal(true);
+    };
+
+    // Refresh events after successful creation
+    const handleEventCreated = () => {
+        fetchEvents(year, month);
     };
 
     const handleEventClick = (event) => {
@@ -75,7 +83,7 @@ export default function CalendarContainer() {
             title: escapeHtml(event.title),
             html: `
                 <p><b>Tipo:</b> ${escapeHtml(event.eventType)}</p>
-                <p><b>Hora:</b> ${new Date(event.startsAt).toUTCString()}</p>
+                <p><b>Hora:</b> ${new Date(event.startsAt).toLocaleString('es-ES')}</p>
                 <p><b>Ubicación:</b> ${escapeHtml(event.location) || 'N/A'}</p>
                 ${event.description ? `<p>${escapeHtml(event.description)}</p>` : ''}
                 ${event.notes ? `<p><i>Notas:</i> ${escapeHtml(event.notes)}</p>` : ''}
@@ -120,6 +128,14 @@ export default function CalendarContainer() {
                     onEventClick={handleEventClick}
                 />
             )}
+
+            {/* Create Event Modal */}
+            <CreateEventModal
+                show={showCreateModal}
+                onHide={() => setShowCreateModal(false)}
+                initialDate={selectedDate}
+                onSuccess={handleEventCreated}
+            />
         </Container>
     );
 }
