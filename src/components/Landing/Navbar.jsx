@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { CiUser } from "react-icons/ci";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline } from "react-icons/io5";
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline } from "react-icons/io5";
+import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
 
@@ -106,6 +107,12 @@ function CustomNavbar() {
                   </Link>
                   <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <FaRegTrashAlt size={14} style={{ flexShrink: 0 }} /> Papelera
+                  </Link>
+                  <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
+                  </Link>
+                  <Link to="/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
                   </Link>
 
                   <hr className="profile-dropdown-divider" />
