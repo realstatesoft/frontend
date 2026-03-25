@@ -1,4 +1,7 @@
 # frontend
+Dependencias de Interfaz
+Para que los iconos del menú de usuario (Favoritos, Agenda, etc.) se visualicen correctamente, es necesario instalar la librería de iconos:
+npm install react-icons
 # test
 # OR-60-Gestion de Sesion
 ### Estructura
