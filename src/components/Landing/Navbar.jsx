@@ -1,18 +1,24 @@
 import { Container, Navbar, Nav, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import {
+  BoxArrowInRight,
+  BoxArrowRight,
+  Calendar3,
+  Gear,
+  Heart,
+  HouseDoor,
+  Person,
+  Trash,
+} from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
-import { CiUser } from "react-icons/ci";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline } from "react-icons/io5";
-import { MdFavoriteBorder } from "react-icons/md";
-import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
 
 function CustomNavbar() {
   const navigate = useNavigate();
 
   // Obtiene el estado de autenticacion, datos del usuario y funcion de logout del contexto global
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   // Controla si el dropdown de perfil esta visible
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -100,35 +106,35 @@ function CustomNavbar() {
                 <>
                   {/* Seccion 1: navegacion personal */}
                   <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <CiUser size={17} style={{ flexShrink: 0 }} /> Mi perfil
+                    <Person size={17} style={{ flexShrink: 0 }} /> Mi perfil
                   </Link>
                   <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoHomeOutline size={16} style={{ flexShrink: 0 }} /> Mis propiedades
+                    <HouseDoor size={16} style={{ flexShrink: 0 }} /> Mis propiedades
                   </Link>
                   <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <FaRegTrashAlt size={14} style={{ flexShrink: 0 }} /> Papelera
+                    <Trash size={14} style={{ flexShrink: 0 }} /> Papelera
                   </Link>
                   <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
+                    <Heart size={16} style={{ flexShrink: 0 }} /> Favoritos
                   </Link>
                   <Link to="/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
+                    <Calendar3 size={16} style={{ flexShrink: 0 }} /> Agenda
                   </Link>
 
                   <hr className="profile-dropdown-divider" />
 
                   {/* Seccion 2: configuracion y sesion */}
                   <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoSettingsOutline size={16} style={{ flexShrink: 0 }} /> Ajustes
+                    <Gear size={16} style={{ flexShrink: 0 }} /> Ajustes
                   </Link>
                   <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
-                    <IoLogOutOutline size={16} style={{ flexShrink: 0 }} /> Cerrar sesión
+                    <BoxArrowRight size={16} style={{ flexShrink: 0 }} /> Cerrar sesión
                   </button>
                 </>
               ) : (
                 /* ── Usuario no logueado ──────────────────────── */
                 <button className="profile-dropdown-item" onClick={handleLogin}>
-                  <IoLogInOutline size={16} style={{ flexShrink: 0 }} /> Iniciar sesión
+                  <BoxArrowInRight size={16} style={{ flexShrink: 0 }} /> Iniciar sesión
                 </button>
               )}
             </div>
