@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
+import {
+  CheckLg,
+  Envelope,
+  Pencil,
+  Person,
+  Tag,
+  Telephone,
+  XLg,
+} from "react-bootstrap-icons";
 import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
-import { CiUser, CiMail, CiPhone } from "react-icons/ci";
-import { IoPencilOutline, IoCloseOutline, IoCheckmarkOutline } from "react-icons/io5";
-import { LuTag } from "react-icons/lu";
 
 // ─── Modal de edición ─────────────────────────────────────────────────────────
 
@@ -36,7 +42,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
         avatarUrl: form.avatarUrl,
       });
       onSaved(res.data);
-    } catch (err) {
+    } catch {
       setError("No se pudo guardar los cambios. Intenta de nuevo.");
     } finally {
       setSaving(false);
@@ -57,11 +63,11 @@ function EditProfileModal({ profile, onClose, onSaved }) {
         {/* Header */}
         <div className="uedit-header">
           <h5 className="uedit-title" id="uedit-title">
-            <IoPencilOutline size={18} />
+            <Pencil size={18} />
             Editar Perfil
           </h5>
           <button className="uedit-close-btn" onClick={onClose} aria-label="Cerrar">
-            <IoCloseOutline size={22} />
+            <XLg size={22} />
           </button>
         </div>
 
@@ -71,7 +77,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
 
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-name">
-              <CiUser size={15} /> Nombre completo
+              <Person size={15} /> Nombre completo
             </label>
             <input
               id="uedit-name"
@@ -87,7 +93,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
 
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-phone">
-              <CiPhone size={15} /> Teléfono
+              <Telephone size={15} /> Teléfono
             </label>
             <input
               id="uedit-phone"
@@ -103,7 +109,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
 
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-avatar">
-              <CiUser size={15} /> URL de foto de perfil
+              <Person size={15} /> URL de foto de perfil
             </label>
             <input
               id="uedit-avatar"
@@ -135,7 +141,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
               {saving ? (
                 <span className="uedit-spinner" />
               ) : (
-                <IoCheckmarkOutline size={16} />
+                <CheckLg size={16} />
               )}
               {saving ? "Guardando…" : "Guardar cambios"}
             </button>
@@ -150,7 +156,6 @@ function EditProfileModal({ profile, onClose, onSaved }) {
 // ─── Página principal ─────────────────────────────────────────────────────────
 
 const UserProfilePage = () => {
-  const navigate    = useNavigate();
   const location    = useLocation();
   const { isAuthenticated, token } = useAuth();
 
@@ -169,7 +174,7 @@ const UserProfilePage = () => {
         setLoading(true);
         const { data: res } = await api.get("/users/me");
         if (!isCancelled) setProfile(res.data);
-      } catch (err) {
+      } catch {
         if (!isCancelled) setError("No se pudo cargar el perfil. Intenta de nuevo.");
       } finally {
         if (!isCancelled) setLoading(false);
@@ -213,10 +218,10 @@ const UserProfilePage = () => {
   }
 
   const fields = [
-    { label: "Full Name", value: profile?.name,  icon: <CiUser  size={16} /> },
-    { label: "Email",     value: profile?.email, icon: <CiMail  size={16} /> },
-    { label: "Phone",     value: profile?.phone, icon: <CiPhone size={16} /> },
-    { label: "Role",      value: profile?.role,  icon: <LuTag   size={14} />, isRole: true },
+    { label: "Full Name", value: profile?.name,  icon: <Person size={16} /> },
+    { label: "Email",     value: profile?.email, icon: <Envelope size={16} /> },
+    { label: "Phone",     value: profile?.phone, icon: <Telephone size={16} /> },
+    { label: "Role",      value: profile?.role,  icon: <Tag size={14} />, isRole: true },
   ];
 
   return (
@@ -232,7 +237,7 @@ const UserProfilePage = () => {
           {/* Toast de éxito */}
           {saveSuccess && (
             <div className="uprofile-toast">
-              <IoCheckmarkOutline size={16} />
+              <CheckLg size={16} />
               Perfil actualizado correctamente
             </div>
           )}

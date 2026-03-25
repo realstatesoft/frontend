@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Container, Spinner, Alert } from 'react-bootstrap';
-import { useAuth } from '../hooks/useAuth';
-import CustomNavbar from '../components/Landing/Navbar';
-import Footer from '../components/Landing/Footer';
-import ProfileHeader from '../components/Clients/ProfileHeader';
-import ProfileStats from '../components/Clients/ProfileStats';
-import ProfileDetails from '../components/Clients/ProfileDetails';
-import clientApi from '../services/clients/clientApi';
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { Container, Spinner, Alert } from "react-bootstrap";
+import { useAuth } from "../hooks/useAuth";
+import CustomNavbar from "../components/Landing/Navbar";
+import Footer from "../components/Landing/Footer";
+import ProfileHeader from "../components/Clients/ProfileHeader";
+import ProfileStats from "../components/Clients/ProfileStats";
+import ProfileDetails from "../components/Clients/ProfileDetails";
+import ClientInteractionsPanel from "../components/Clients/ClientInteractionsPanel";
+import clientApi from "../services/clients/clientApi";
 
 const ClientProfilePage = () => {
   const { id } = useParams();
@@ -18,9 +19,32 @@ const ClientProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchClient = useCallback(async ({ silent = false } = {}) => {
+    try {
+      if (!silent) {
+        setError(null);
+      }
+      if (!silent) {
+        setLoading(true);
+      }
+      const data = await clientApi.getClientProfile(id);
+      setClient(data);
+    } catch (err) {
+      if (err.response?.status === 404 || err.response?.status === 403) {
+        navigate("/404", { replace: true });
+      } else if (!silent && err.response?.status !== 401) {
+        setError("No se pudo cargar el perfil del cliente.");
+      }
+    } finally {
+      if (!silent) {
+        setLoading(false);
+      }
+    }
+  }, [id, navigate]);
+
   useEffect(() => {
     let isCancelled = false;
-    const fetchClient = async () => {
+    const fetchClientSafely = async () => {
       try {
         setError(null);
         setLoading(true);
@@ -46,7 +70,7 @@ const ClientProfilePage = () => {
     };
 
     if (isAuthenticated) {
-      fetchClient();
+      fetchClientSafely();
     }
 
     return () => {
@@ -81,7 +105,14 @@ const ClientProfilePage = () => {
         <p className="text-muted mb-4">Perfil de Cliente (de un Agente)</p>
         <ProfileHeader client={client} />
         <ProfileStats client={client} />
-        <ProfileDetails client={client} />
+        <div className="mb-4">
+          <ProfileDetails client={client} />
+        </div>
+        <ClientInteractionsPanel
+          client={client}
+          clientId={id}
+          onRefreshClient={() => fetchClient({ silent: true })}
+        />
       </Container>
       <Footer />
     </div>
