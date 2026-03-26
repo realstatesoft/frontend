@@ -15,7 +15,9 @@ export default function LogIn() {
 
     // Prioridad: 1. location.state.from (SPA) 2. query param "redirect" (Interceptor) 3. "/"
     const isValidRedirect = (url) => {
-        return typeof url === 'string' && url.startsWith("/") && !url.startsWith("//") && !url.includes("://");
+        if (typeof url !== 'string') return false;
+        const path = url.split(/[?#]/)[0];
+        return path.startsWith("/") && !path.startsWith("//");
     };
 
     let redirectParam = searchParams.get("redirect");
