@@ -1,0 +1,18 @@
+@use "../../../styles/mixins" as *;
+
+.chart {
+  @include glass-card;
+  padding: var(--spacing-lg);
+}
+
+.chart__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.chart__container {
+  width: 100%;
+  min-height: 280px;
+}
