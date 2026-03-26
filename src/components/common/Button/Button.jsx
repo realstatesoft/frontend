@@ -9,6 +9,7 @@ export default function Button({
   type = 'button',
   children,
   className = '',
+  ...rest
 }) {
   const classes = [
     styles.button,
@@ -24,6 +25,7 @@ export default function Button({
       className={classes}
       disabled={disabled}
       onClick={onClick}
+      {...rest}
     >
       {children}
     </button>
