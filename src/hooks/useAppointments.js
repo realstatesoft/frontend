@@ -3,7 +3,7 @@ import appointmentService from '../services/appointmentService';
 
 export default function useAppointments(params = {}) {
   return useQuery({
-    queryKey: ['appointments', params],
+    queryKey: ['agent-agenda', params],
     queryFn: () => appointmentService.getAll(params),
     staleTime: 1000 * 60 * 2,
     select: (response) => {

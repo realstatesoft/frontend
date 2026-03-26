@@ -2,11 +2,12 @@ import api from './api';
 
 const appointmentService = {
   getAll(params = {}) {
-    return api.get('/appointments', { params }).then((res) => res.data);
+    // Convert date params to yyyy-MM if needed, or handle in component
+    return api.get('/agent-agenda', { params }).then((res) => res.data);
   },
 
   getById(id) {
-    return api.get(`/appointments/${id}`).then((res) => res.data);
+    return api.get(`/agent-agenda/${id}`).then((res) => res.data);
   },
 };
 
