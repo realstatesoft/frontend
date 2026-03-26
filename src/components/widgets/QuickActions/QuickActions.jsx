@@ -4,8 +4,8 @@ import { AGENT_ROUTES } from '../../../utils/constants';
 import styles from './QuickActions.module.scss';
 
 const ACTIONS = [
-  { label: 'Nuevo Cliente', icon: <FiUserPlus />, to: '/clients/register' },
-  { label: 'Nueva Propiedad', icon: <FiHome />, to: '/create-property' },
+  { label: 'Nuevo Cliente', icon: <FiUserPlus />, to: AGENT_ROUTES.REGISTER_CLIENT },
+  { label: 'Nueva Propiedad', icon: <FiHome />, to: AGENT_ROUTES.CREATE_PROPERTY },
   { label: 'Agendar Visita', icon: <FiCalendar />, to: AGENT_ROUTES.AGENDA },
 ];
 

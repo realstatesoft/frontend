@@ -7,6 +7,8 @@ export const AGENT_ROUTES = {
   SALES: '/agent/ventas',
   REPORTS: '/agent/reportes',
   MESSAGES: '/agent/mensajes',
+  CREATE_PROPERTY: '/create-property',
+  REGISTER_CLIENT: '/clients/register',
 };
 
 export const OWNER_ROUTES = {
