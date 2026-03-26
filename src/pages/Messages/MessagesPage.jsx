@@ -36,8 +36,16 @@ function InboxList({ conversations, activeId, onSelect }) {
 }
 
 function ConversationPanel({ conversation }) {
+  const [message, setMessage] = useState('');
   const { data: response } = useMessages(conversation?.id);
   const messages = response?.data || [];
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    // Note: Send mutation to be implemented
+    setMessage('');
+  };
 
   if (!conversation) {
     return (
@@ -76,16 +84,23 @@ function ConversationPanel({ conversation }) {
         ))}
       </div>
 
-      <div className={styles.conversation__inputArea}>
+      <form className={styles.conversation__inputArea} onSubmit={handleSend}>
         <input
           type="text"
           className={styles.conversation__input}
           placeholder="Escribe un mensaje..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
-        <Button variant="primary" size="sm">
+        <Button
+          variant="primary"
+          size="sm"
+          type="submit"
+          disabled={!message.trim()}
+        >
           <FiSend />
         </Button>
-      </div>
+      </form>
     </div>
   );
 }
