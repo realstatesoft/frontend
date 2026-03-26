@@ -1,16 +1,22 @@
 import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Heart } from "react-bootstrap-icons";
 import { tagColors, STATUS_LABELS } from "../../data/propertiesData";
 import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
+import FavoriteToggleButton from "./FavoriteToggleButton";
 
 /**
  * PropertyCard
  * Muestra la tarjeta individual de una propiedad.
  * Acepta tanto la forma estática vieja como la respuesta del API (PropertySummaryResponse).
  */
-export default function PropertyCard({ property }) {
+export default function PropertyCard({
+    property,
+    isFavorite = false,
+    isFavoriteLoading = false,
+    canToggleFavorite = false,
+    onToggleFavorite,
+}) {
     // Normalizar campos del API a los que usa el componente
     const tag = STATUS_LABELS[property.status] ?? property.tag ?? "—";
     const price = property.price;
@@ -52,24 +58,13 @@ export default function PropertyCard({ property }) {
                 >
                     {tag}
                 </Badge>
-                <button
-                    type="button"
-                    className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center rounded-circle border border-1 border-dark bg-white"
-                    style={{
-                        width: 36,
-                        height: 36,
-                        zIndex: 2,
-                        cursor: "pointer",
-                    }}
-                    aria-label="Agregar a favoritos"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // TODO: integrar con API de favoritos
-                    }}
-                >
-                    <Heart size={18} style={{ color: "#333" }} />
-                </button>
+                <FavoriteToggleButton
+                    isFavorite={isFavorite}
+                    loading={isFavoriteLoading}
+                    disabled={!canToggleFavorite || !onToggleFavorite}
+                    ariaLabel={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+                    onClick={() => onToggleFavorite(property.id)}
+                />
                 <Card.Img
                     variant="top"
                     src={image}

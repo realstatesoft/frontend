@@ -5,6 +5,7 @@ import PropertiesHero from "../components/properties/PropertiesHero";
 import PropertiesGrid from "../components/properties/PropertiesGrid";
 import PropertiesMap from "../components/properties/PropertiesMap";
 import useProperties from "../hooks/useProperties";
+import useFavoriteProperties from "../hooks/useFavoriteProperties";
 import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
 
 const PAGE_SIZE = 12;
@@ -38,6 +39,7 @@ export default function PropertiesPage() {
         minBedrooms: minBedrooms ? Number(minBedrooms) : undefined,
         minBathrooms: minBathrooms ? Number(minBathrooms) : undefined,
     });
+    const { favoriteIds, togglingIds, isAuthenticated, toggleFavorite } = useFavoriteProperties();
 
     // Al cambiar cualquier filtro volvemos a la página 1
     const resetPage = () => setCurrentPage(1);
@@ -99,6 +101,10 @@ export default function PropertiesPage() {
                     totalPages={totalPages}
                     loading={loading}
                     error={error}
+                    favoriteIds={favoriteIds}
+                    togglingIds={togglingIds}
+                    canToggleFavorite={isAuthenticated}
+                    onToggleFavorite={toggleFavorite}
                     onPageChange={(page) => {
                         setCurrentPage(page);
                         window.scrollTo({ top: 0, behavior: "smooth" });
