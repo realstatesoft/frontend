@@ -51,39 +51,6 @@ export default function AppRouter() {
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/agents" element={<AgentsPage />} />
-            <Route path="/visit-requests" element={<VisitRequests />} />
-            <Route path="/property-management" element={<PropertyManagementOptions />} />
-            <Route path="/clients" element={<ClientList />} />
-
-            {/* Agent Dashboard */}
-            <Route path="/agent" element={<AgentLayout />}>
-                <Route index element={<Navigate to="/agent/dashboard" replace />} />
-                <Route path="dashboard" element={<DashboardPage />} />
-                <Route path="clientes" element={<ClientsPage />} />
-                <Route path="propiedades" element={<AgentPropertiesPage />} />
-                <Route path="solicitudes-visita" element={<VisitRequests />} />
-                <Route path="agenda" element={<AgendaPage />} />
-                <Route path="ventas" element={<SalesPage />} />
-                <Route path="reportes" element={<ReportsPage />} />
-                <Route path="mensajes" element={<MessagesPage />} />
-            </Route>
-
-            {/* Owner Dashboard */}
-            <Route path="/owner" element={<OwnerLayout />}>
-                <Route index element={<Navigate to="/owner/dashboard" replace />} />
-                <Route path="dashboard" element={<OwnerDashboardPage />} />
-                <Route path="propiedades" element={<OwnerPropertiesPage />} />
-                <Route path="visitas" element={<OwnerVisitsPage />} />
-                <Route path="mensajes" element={<OwnerMessagesPage />} />
-            </Route>
-
-            {/* Role-based redirect */}
-            <Route path="/dashboard" element={<RoleRedirect />} />
-
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
 
             {/* ── Rutas protegidas (requieren autenticación) ────────── */}
             <Route element={<ProtectedRoute />}>
@@ -100,7 +67,36 @@ export default function AppRouter() {
                 <Route path="/clients/:id" element={<ClientProfilePage />} />
                 <Route path="/clients/:id/edit" element={<EditClient />} />
                 <Route path="/agenda" element={<AgendaPage />} />
+
+                {/* Agent Dashboard */}
+                <Route path="/agent" element={<AgentLayout />}>
+                    <Route index element={<Navigate to="/agent/dashboard" replace />} />
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="clientes" element={<ClientsPage />} />
+                    <Route path="propiedades" element={<AgentPropertiesPage />} />
+                    <Route path="solicitudes-visita" element={<VisitRequests />} />
+                    <Route path="agenda" element={<AgendaPage />} />
+                    <Route path="ventas" element={<SalesPage />} />
+                    <Route path="reportes" element={<ReportsPage />} />
+                    <Route path="mensajes" element={<MessagesPage />} />
+                </Route>
+
+                {/* Owner Dashboard */}
+                <Route path="/owner" element={<OwnerLayout />}>
+                    <Route index element={<Navigate to="/owner/dashboard" replace />} />
+                    <Route path="dashboard" element={<OwnerDashboardPage />} />
+                    <Route path="propiedades" element={<OwnerPropertiesPage />} />
+                    <Route path="visitas" element={<OwnerVisitsPage />} />
+                    <Route path="mensajes" element={<OwnerMessagesPage />} />
+                </Route>
+
+                {/* Role-based redirect */}
+                <Route path="/dashboard" element={<RoleRedirect />} />
             </Route>
+
+            {/* Canonical 404 handler */}
+            <Route path="/404" element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 }
