@@ -1,0 +1,90 @@
+// Dashboard design tokens — light default, dark opt-in
+:root {
+  // Backgrounds
+  --color-bg-primary: #f8fafc;
+  --color-bg-secondary: #ffffff;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-hover: #f1f5f9;
+
+  // Accent (matches app primary blue)
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-alt: #22c55e;
+
+  // Semantic colors
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #0ea5e9;
+
+  // Text
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+
+  // Borders
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e1;
+
+  // Radii
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  // Shadows (soft, matching rest of app)
+  --shadow-glass: 0 4px 24px rgba(0, 0, 0, 0.07);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  // Transitions
+  --transition-base: all 0.25s ease;
+  --transition-fast: all 0.15s ease;
+
+  // Layout
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 72px;
+  --topbar-height: 64px;
+
+  // Spacing
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  // Chart tooltip (used in inline styles)
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #e2e8f0;
+  --chart-tooltip-text: #1a1a1a;
+  --chart-grid-stroke: rgba(0, 0, 0, 0.08);
+  --chart-axis-color: #94a3b8;
+}
+
+// ── Dark mode ──
+[data-theme="dark"] {
+  --color-bg-primary: #0f1117;
+  --color-bg-secondary: #161822;
+  --color-bg-surface: rgba(255, 255, 255, 0.05);
+  --color-bg-surface-hover: rgba(255, 255, 255, 0.08);
+  --color-accent: #6c63ff;
+  --color-accent-hover: #5a52e0;
+  --color-accent-alt: #00d4aa;
+  --color-success: #00d4aa;
+  --color-warning: #ffb547;
+  --color-danger: #ff6b6b;
+  --color-info: #4ec9f0;
+  --color-text-primary: #f0f0f0;
+  --color-text-secondary: #c0c4d6;
+  --color-text-muted: #8b8fa8;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.18);
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --chart-tooltip-bg: #1a1d2e;
+  --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+  --chart-tooltip-text: #f0f0f0;
+  --chart-grid-stroke: rgba(255, 255, 255, 0.06);
+  --chart-axis-color: #8b8fa8;
+}

@@ -1,0 +1,32 @@
+@use "../../../styles/mixins" as *;
+
+.card {
+  @include glass-card;
+  transition: var(--transition-base);
+
+  &--sm { padding: var(--spacing-md); }
+  &--md { padding: var(--spacing-lg); }
+  &--lg { padding: var(--spacing-xl); }
+
+  &--hoverable:hover {
+    background: var(--color-bg-surface-hover);
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
+  }
+}
+
+.card__header {
+  @include flex-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.card__subtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
