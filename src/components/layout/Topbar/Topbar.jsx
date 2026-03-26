@@ -21,7 +21,12 @@ export default function Topbar() {
   return (
     <header className={topbarClass}>
       <div className={styles.topbar__left}>
-        <button className={styles.topbar__menuBtn} onClick={toggleSidebar}>
+        <button
+          type="button"
+          className={styles.topbar__menuBtn}
+          onClick={toggleSidebar}
+          aria-label={sidebarCollapsed ? "Abrir menú" : "Cerrar menú"}
+        >
           <FiMenu />
         </button>
         <span className={styles.topbar__greeting}>
@@ -31,13 +36,18 @@ export default function Topbar() {
 
       <div className={styles.topbar__right}>
         <button
+          type="button"
           className={styles.topbar__iconBtn}
           onClick={toggleDarkMode}
-          title={darkMode ? 'Modo Claro' : 'Modo Oscuro'}
+          aria-label={darkMode ? 'Pasar a modo claro' : 'Pasar a modo oscuro'}
         >
           {darkMode ? <FiSun /> : <FiMoon />}
         </button>
-        <button className={styles.topbar__iconBtn}>
+        <button
+          type="button"
+          className={styles.topbar__iconBtn}
+          aria-label="Notificaciones"
+        >
           <FiBell />
           <span className={styles.topbar__badge} />
         </button>
