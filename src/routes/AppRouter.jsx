@@ -20,33 +20,39 @@ import PropertyManagementOptions from "../pages/PropertyManagementOptions/Proper
 import ClientList from "../pages/ClientList/ClientList";
 import AgendaPage from "../pages/Agenda/AgendaPage";
 import UserProfilePage from "../pages/UserProfilePage";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRouter() {
     return (
         <Routes>
+            {/* ── Rutas públicas ─────────────────────────────────────── */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/sell" element={<SellWizardPage />} />
-            <Route path="/clients/register" element={<RegisterClient />} />
-            <Route path="/clients/:id/edit" element={<EditClient />} />
-            <Route path="/clients/:id" element={<ClientProfilePage />} />
-            <Route path="/create-property" element={<CreateProperty />} />
             <Route path="/login" element={<LogIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
-            <Route path="/properties/:id/edit" element={<CreateProperty />} />
-            <Route path="/properties/me" element={<MyProperties />} />
-            <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
-            <Route path="/trashcan" element={<PropertiesTrashCan />} />
-            <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/agents" element={<AgentsPage />} />
-            <Route path="/visit-requests" element={<VisitRequests />} />
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
-            <Route path="/property-management" element={<PropertyManagementOptions />} />
-            <Route path="/clients" element={<ClientList />} />
-            <Route path="/agenda" element={<AgendaPage />} />
+
+            {/* ── Rutas protegidas (requieren autenticación) ────────── */}
+            <Route element={<ProtectedRoute />}>
+                <Route path="/profile" element={<UserProfilePage />} />
+                <Route path="/create-property" element={<CreateProperty />} />
+                <Route path="/properties/:id/edit" element={<CreateProperty />} />
+                <Route path="/properties/me" element={<MyProperties />} />
+                <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
+                <Route path="/trashcan" element={<PropertiesTrashCan />} />
+                <Route path="/visit-requests" element={<VisitRequests />} />
+                <Route path="/property-management" element={<PropertyManagementOptions />} />
+                <Route path="/clients" element={<ClientList />} />
+                <Route path="/clients/register" element={<RegisterClient />} />
+                <Route path="/clients/:id" element={<ClientProfilePage />} />
+                <Route path="/clients/:id/edit" element={<EditClient />} />
+                <Route path="/agenda" element={<AgendaPage />} />
+            </Route>
         </Routes>
     );
 }
