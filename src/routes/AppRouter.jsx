@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
 import PropertiesPage from "../pages/PropertiesPage";
 import AgentsPage from "../pages/AgentsPage";
@@ -18,8 +18,24 @@ import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
+
+// Agent Dashboard
+import AgentLayout from "../components/layout/AgentLayout/AgentLayout";
+import DashboardPage from "../pages/Dashboard/DashboardPage";
+import ClientsPage from "../pages/Clients/ClientsPage";
+import AgentPropertiesPage from "../pages/Properties/AgentPropertiesPage";
 import AgendaPage from "../pages/Agenda/AgendaPage";
-import UserProfilePage from "../pages/UserProfilePage";
+import SalesPage from "../pages/Sales/SalesPage";
+import ReportsPage from "../pages/Reports/ReportsPage";
+import MessagesPage from "../pages/Messages/MessagesPage";
+
+// Owner Dashboard
+import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
+import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
+import OwnerPropertiesPage from "../pages/OwnerProperties/OwnerPropertiesPage";
+import OwnerVisitsPage from "../pages/OwnerVisits/OwnerVisitsPage";
+import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
+import RoleRedirect from "../components/commons/RoleRedirect";
 
 export default function AppRouter() {
     return (
@@ -42,11 +58,36 @@ export default function AppRouter() {
             <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/visit-requests" element={<VisitRequests />} />
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
             <Route path="/property-management" element={<PropertyManagementOptions />} />
             <Route path="/clients" element={<ClientList />} />
-            <Route path="/agenda" element={<AgendaPage />} />
+
+            {/* Agent Dashboard */}
+            <Route path="/agent" element={<AgentLayout />}>
+                <Route index element={<Navigate to="/agent/dashboard" replace />} />
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="clientes" element={<ClientsPage />} />
+                <Route path="propiedades" element={<AgentPropertiesPage />} />
+                <Route path="solicitudes-visita" element={<VisitRequests />} />
+                <Route path="agenda" element={<AgendaPage />} />
+                <Route path="ventas" element={<SalesPage />} />
+                <Route path="reportes" element={<ReportsPage />} />
+                <Route path="mensajes" element={<MessagesPage />} />
+            </Route>
+
+            {/* Owner Dashboard */}
+            <Route path="/owner" element={<OwnerLayout />}>
+                <Route index element={<Navigate to="/owner/dashboard" replace />} />
+                <Route path="dashboard" element={<OwnerDashboardPage />} />
+                <Route path="propiedades" element={<OwnerPropertiesPage />} />
+                <Route path="visitas" element={<OwnerVisitsPage />} />
+                <Route path="mensajes" element={<OwnerMessagesPage />} />
+            </Route>
+
+            {/* Role-based redirect */}
+            <Route path="/dashboard" element={<RoleRedirect />} />
+
+            <Route path="/404" element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 }
