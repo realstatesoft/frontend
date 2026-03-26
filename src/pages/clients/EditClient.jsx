@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Container, Card, Form, Alert, Spinner, Stack, Button } from "react-bootstrap";
-import { useNavigate, useParams, Navigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -181,7 +181,6 @@ function formToPayload(form) {
 export default function EditClient() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
     const { isAuthenticated } = useAuth();
 
     const [form, setForm] = useState(EMPTY_FORM);
@@ -193,7 +192,7 @@ export default function EditClient() {
     // ── Fetch existing client data ──────────────────────────────────────────────
     useEffect(() => {
         let cancelled = false;
-        if (!isAuthenticated) return;
+
 
         clientApi
             .getClientProfile(id)
@@ -218,9 +217,7 @@ export default function EditClient() {
         };
     }, [id, navigate, isAuthenticated]);
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
-    }
+
 
     // ── Setters (same pattern as RegisterClient / usePropertyForm) ─────────────
     const set = (field) => (e) => {
