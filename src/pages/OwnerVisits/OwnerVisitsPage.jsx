@@ -4,7 +4,10 @@ import { STATUS_COLORS } from '../../utils/constants';
 import styles from './OwnerVisitsPage.module.scss';
 
 function formatDate(dateStr) {
+  if (!dateStr) return '—';
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '—';
+
   return date.toLocaleDateString('es-MX', {
     day: 'numeric',
     month: 'short',
@@ -15,13 +18,23 @@ function formatDate(dateStr) {
 }
 
 export default function OwnerVisitsPage() {
-  const { data: response, isLoading } = useOwnerVisits();
+  const { data: response, isLoading, isError, error } = useOwnerVisits();
   const visits = response?.data || [];
 
   if (isLoading) {
     return (
       <div className={styles.visits}>
         <div className={styles.visits__loading}>Cargando solicitudes de visita...</div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={styles.visits}>
+        <div className={styles.visits__error}>
+          <p>Error al cargar las solicitudes: {error?.message || 'Error desconocido'}</p>
+        </div>
       </div>
     );
   }
