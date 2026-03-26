@@ -2,7 +2,9 @@
 
 .page {
   @include flex-column;
+
   gap: var(--spacing-xl);
+
   height: calc(100vh - var(--topbar-height) - var(--spacing-xl) * 2);
 }
 
@@ -24,9 +26,13 @@
 
 .page__body {
   display: grid;
+
   grid-template-columns: 320px 1fr;
+
   gap: var(--spacing-md);
+
   flex: 1;
+
   min-height: 0;
 
   @include responsive(tablet) {
@@ -38,7 +44,9 @@
 // Inbox sidebar
 .inbox {
   @include glass-card;
+
   @include flex-column;
+
   overflow: hidden;
 }
 
@@ -76,21 +84,36 @@
     background: var(--color-bg-surface-hover);
   }
 
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+    background: var(--color-bg-surface-hover);
+  }
+
   &--active {
     background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+
     border-left: 3px solid var(--color-accent);
   }
 }
 
 .inbox__avatar {
   @include flex-center;
+
   width: 40px;
+
   height: 40px;
+
   border-radius: 50%;
+
   background: var(--color-accent);
+
   color: #fff;
+
   font-size: 0.8125rem;
+
   font-weight: 700;
+
   flex-shrink: 0;
 }
 
@@ -115,8 +138,11 @@
 
 .inbox__meta {
   @include flex-column;
+
   align-items: flex-end;
+
   gap: 4px;
+
   flex-shrink: 0;
 }
 
@@ -127,25 +153,36 @@
 
 .inbox__unread {
   @include flex-center;
+
   width: 20px;
+
   height: 20px;
+
   border-radius: 50%;
+
   background: var(--color-accent);
+
   color: #fff;
+
   font-size: 0.625rem;
+
   font-weight: 700;
 }
 
 // Conversation panel
 .conversation {
   @include glass-card;
+
   @include flex-column;
+
   overflow: hidden;
 }
 
 .conversation__header {
   @include flex-between;
+
   padding: var(--spacing-md) var(--spacing-lg);
+
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -163,18 +200,27 @@
 
 .conversation__messages {
   flex: 1;
+
   overflow-y: auto;
+
   @include scrollbar-dark;
+
   padding: var(--spacing-lg);
+
   @include flex-column;
+
   gap: var(--spacing-sm);
 }
 
 .conversation__bubble {
   max-width: 70%;
+
   padding: 10px 16px;
+
   border-radius: var(--radius-md);
+
   font-size: 0.875rem;
+
   line-height: 1.5;
 
   &--agent {
@@ -206,20 +252,31 @@
 
 .conversation__inputArea {
   display: flex;
+
   gap: var(--spacing-sm);
+
   padding: var(--spacing-md) var(--spacing-lg);
+
   border-top: 1px solid var(--color-border);
 }
 
 .conversation__input {
   flex: 1;
+
   padding: 10px 16px;
+
   font-size: 0.875rem;
+
   color: var(--color-text-primary);
+
   background: var(--color-bg-surface);
+
   border: 1px solid var(--color-border);
+
   border-radius: var(--radius-sm);
+
   outline: none;
+
   transition: var(--transition-base);
 
   &::placeholder {
