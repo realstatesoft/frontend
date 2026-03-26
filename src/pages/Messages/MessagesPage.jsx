@@ -11,8 +11,9 @@ function InboxList({ conversations, activeId, onSelect }) {
       <div className={styles.inbox__header}>Conversaciones</div>
       <div className={styles.inbox__list}>
         {conversations.map((conv) => (
-          <div
+          <button
             key={conv.id}
+            type="button"
             className={`${styles.inbox__item} ${conv.id === activeId ? styles['inbox__item--active'] : ''}`}
             onClick={() => onSelect(conv)}
           >
@@ -27,7 +28,7 @@ function InboxList({ conversations, activeId, onSelect }) {
                 <span className={styles.inbox__unread}>{conv.unread}</span>
               )}
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
