@@ -72,4 +72,8 @@
   &--down {
     color: var(--color-danger);
   }
+
+  &--neutral {
+    color: var(--color-text-muted);
+  }
 }

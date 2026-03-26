@@ -1,8 +1,16 @@
 import styles from './StatCard.module.scss';
 
 export default function StatCard({ label, value, trend, icon, colorAccent = 'accent' }) {
-  const trendClass = trend > 0 ? styles['statCard__trend--up'] : styles['statCard__trend--down'];
-  const trendSymbol = trend > 0 ? '↑' : '↓';
+  let trendClass = styles['statCard__trend--neutral'];
+  let trendSymbol = '→';
+
+  if (trend > 0) {
+    trendClass = styles['statCard__trend--up'];
+    trendSymbol = '↑';
+  } else if (trend < 0) {
+    trendClass = styles['statCard__trend--down'];
+    trendSymbol = '↓';
+  }
 
   return (
     <div className={styles.statCard}>
