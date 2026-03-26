@@ -22,8 +22,8 @@ import ClientList from "../pages/ClientList/ClientList";
 // Agent Dashboard
 import AgentLayout from "../components/layout/AgentLayout/AgentLayout";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
-import ClientsPage from "../pages/Clients/ClientsPage";
-import AgentPropertiesPage from "../pages/Properties/AgentPropertiesPage";
+import ClientsPage from "../pages/clients/ClientsPage";
+import AgentPropertiesPage from "../pages/properties/AgentPropertiesPage";
 import AgendaPage from "../pages/Agenda/AgendaPage";
 import SalesPage from "../pages/Sales/SalesPage";
 import ReportsPage from "../pages/Reports/ReportsPage";
