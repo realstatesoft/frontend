@@ -11,7 +11,8 @@ export default function ProtectedRoute() {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const fullUrl = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to="/login" state={{ from: fullUrl }} replace />;
   }
 
   return <Outlet />;

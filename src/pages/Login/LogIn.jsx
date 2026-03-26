@@ -18,7 +18,11 @@ export default function LogIn() {
     if (redirectParam && (!redirectParam.startsWith("/") || redirectParam.startsWith("//") || redirectParam.includes("://"))) {
         redirectParam = null;
     }
-    const from = location.state?.from?.pathname || redirectParam || "/";
+    let fromState = location.state?.from;
+    if (fromState && typeof fromState === 'object') {
+        fromState = `${fromState.pathname || ''}${fromState.search || ''}${fromState.hash || ''}`;
+    }
+    const from = fromState || redirectParam || "/";
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);

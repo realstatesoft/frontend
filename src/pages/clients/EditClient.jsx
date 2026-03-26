@@ -215,7 +215,8 @@ export default function EditClient() {
         return () => {
             cancelled = true;
         };
-    }, [id, navigate, isAuthenticated]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, navigate]);
 
 
 
