@@ -15,8 +15,16 @@ function formatDate(dateStr) {
 }
 
 export default function OwnerVisitsPage() {
-  const { data: response } = useOwnerVisits();
+  const { data: response, isLoading } = useOwnerVisits();
   const visits = response?.data || [];
+
+  if (isLoading) {
+    return (
+      <div className={styles.visits}>
+        <div className={styles.visits__loading}>Cargando solicitudes de visita...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.visits}>
