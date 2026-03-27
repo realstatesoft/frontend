@@ -19,8 +19,9 @@ import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
 import AgendaPage from "../pages/Agenda/AgendaPage";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 import UserProfilePage from "../pages/UserProfilePage";
-import ProtectedRoute from "./ProtectedRoute";
+import PropertyApprovalPage from "../pages/Admin/PropertyApprovalPage";
 
 export default function AppRouter() {
     return (
@@ -38,7 +39,7 @@ export default function AppRouter() {
             <Route path="*" element={<NotFoundPage />} />
 
             {/* ── Rutas protegidas (requieren autenticación) ────────── */}
-            <Route element={<ProtectedRoute />}>
+            <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
                 <Route path="/profile" element={<UserProfilePage />} />
                 <Route path="/create-property" element={<CreateProperty />} />
                 <Route path="/properties/:id/edit" element={<CreateProperty />} />
@@ -53,6 +54,14 @@ export default function AppRouter() {
                 <Route path="/clients/:id/edit" element={<EditClient />} />
                 <Route path="/agenda" element={<AgendaPage />} />
             </Route>
+            <Route 
+                path="/admin/approval" 
+                element={
+                    <ProtectedRoute requiredRole="ADMIN">
+                        <PropertyApprovalPage />
+                    </ProtectedRoute>
+                } 
+            />
         </Routes>
     );
 }
