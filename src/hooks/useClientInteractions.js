@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import {
   createClientInteraction,
@@ -11,10 +11,7 @@ const PAGE_SIZE = 10;
 
 function normalizeInteractionPayload(payload) {
   return Object.fromEntries(
-    Object.entries(payload).filter(([key, value]) => {
-      if (key === "type") return value !== undefined && value !== null && value !== "";
-      return value !== undefined && value !== null && value !== "";
-    })
+    Object.entries(payload).filter(([, value]) => value !== undefined)
   );
 }
 
@@ -113,6 +110,7 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+  const latestRequestIdRef = useRef(0);
 
   const refreshParent = useCallback(async () => {
     if (typeof onChange === "function") {
@@ -122,9 +120,18 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
 
   const fetchInteractions = useCallback(
     async ({ pageToLoad = 0, append = false, typeOverride = filterType } = {}) => {
+      const requestId = ++latestRequestIdRef.current;
+
       if (!enabled || !clientId) {
-        setInteractions([]);
-        setLoading(false);
+        if (requestId === latestRequestIdRef.current) {
+          setInteractions([]);
+          setError(null);
+          setPage(0);
+          setTotalPages(1);
+          setTotalElements(0);
+          setLoading(false);
+          setLoadingMore(false);
+        }
         return;
       }
 
@@ -146,6 +153,10 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
         }
 
         const response = await listClientInteractions(clientId, params);
+        if (requestId !== latestRequestIdRef.current) {
+          return;
+        }
+
         const parsedResponse = parsePageResponse(response);
         const normalizedContent = sortInteractions(parsedResponse.content);
 
@@ -156,6 +167,10 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
         setTotalPages(parsedResponse.totalPages);
         setTotalElements(parsedResponse.totalElements);
       } catch (fetchError) {
+        if (requestId !== latestRequestIdRef.current) {
+          return;
+        }
+
         setError(
           getInteractionErrorMessage(
             fetchError,
@@ -163,8 +178,10 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
           )
         );
       } finally {
-        setLoading(false);
-        setLoadingMore(false);
+        if (requestId === latestRequestIdRef.current) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     },
     [clientId, enabled, filterType]
@@ -193,20 +210,7 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
       try {
         const body = normalizeInteractionPayload(payload);
         await createClientInteraction(clientId, body);
-
-        const shouldResetFilter = filterType !== "ALL" && filterType !== payload.type;
-        const nextFilter = shouldResetFilter ? "ALL" : filterType;
-
-        if (shouldResetFilter) {
-          setFilterType("ALL");
-        }
-
-        await Promise.all([
-          fetchInteractions({ pageToLoad: 0, append: false, typeOverride: nextFilter }),
-          refreshParent(),
-        ]);
         await showSuccessToast("Interacción registrada");
-        return true;
       } catch (mutationError) {
         await showErrorAlert(
           getInteractionErrorMessage(
@@ -215,9 +219,33 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
           )
         );
         return false;
+      }
+
+      const shouldResetFilter = filterType !== "ALL" && filterType !== payload.type;
+      const nextFilter = shouldResetFilter ? "ALL" : filterType;
+
+      if (shouldResetFilter) {
+        setFilterType("ALL");
+      }
+
+      try {
+        await Promise.all([
+          fetchInteractions({ pageToLoad: 0, append: false, typeOverride: nextFilter }),
+          refreshParent(),
+        ]);
+      } catch (refreshError) {
+        console.error("Error al refrescar interacciones tras crear:", refreshError);
+        await showErrorAlert(
+          getInteractionErrorMessage(
+            refreshError,
+            "La interacción se registró, pero no se pudo actualizar la vista."
+          )
+        );
       } finally {
         setCreating(false);
       }
+
+      return true;
     },
     [clientId, fetchInteractions, filterType, refreshParent]
   );
@@ -229,10 +257,7 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
       try {
         const body = normalizeInteractionPayload(payload);
         await updateClientInteraction(clientId, interactionId, body);
-
-        await Promise.all([refreshInteractions(), refreshParent()]);
         await showSuccessToast("Interacción actualizada");
-        return true;
       } catch (mutationError) {
         await showErrorAlert(
           getInteractionErrorMessage(
@@ -241,9 +266,23 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
           )
         );
         return false;
+      }
+
+      try {
+        await Promise.all([refreshInteractions(), refreshParent()]);
+      } catch (refreshError) {
+        console.error("Error al refrescar interacciones tras actualizar:", refreshError);
+        await showErrorAlert(
+          getInteractionErrorMessage(
+            refreshError,
+            "La interacción se actualizó, pero no se pudo refrescar la vista."
+          )
+        );
       } finally {
         setUpdatingId(null);
       }
+
+      return true;
     },
     [clientId, refreshInteractions, refreshParent]
   );
@@ -254,10 +293,7 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
 
       try {
         await deleteClientInteraction(clientId, interactionId);
-
-        await Promise.all([refreshInteractions(), refreshParent()]);
         await showSuccessToast("Interacción eliminada");
-        return true;
       } catch (mutationError) {
         await showErrorAlert(
           getInteractionErrorMessage(
@@ -266,9 +302,23 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
           )
         );
         return false;
+      }
+
+      try {
+        await Promise.all([refreshInteractions(), refreshParent()]);
+      } catch (refreshError) {
+        console.error("Error al refrescar interacciones tras eliminar:", refreshError);
+        await showErrorAlert(
+          getInteractionErrorMessage(
+            refreshError,
+            "La interacción se eliminó, pero no se pudo refrescar la vista."
+          )
+        );
       } finally {
         setDeletingId(null);
       }
+
+      return true;
     },
     [clientId, refreshInteractions, refreshParent]
   );

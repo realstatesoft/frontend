@@ -53,11 +53,27 @@ function buildEditForm(interaction) {
 }
 
 function hasRelevantUpdate(interaction) {
-  if (!interaction?.updatedAt || !interaction?.occurredAt) {
+  if (!interaction?.updatedAt) {
     return false;
   }
 
-  return interaction.updatedAt !== interaction.occurredAt;
+  if (typeof interaction?.edited === "boolean") {
+    return interaction.edited;
+  }
+
+  if (typeof interaction?.isEdited === "boolean") {
+    return interaction.isEdited;
+  }
+
+  if (typeof interaction?.hasRevision === "boolean") {
+    return interaction.hasRevision;
+  }
+
+  if (!interaction?.createdAt) {
+    return false;
+  }
+
+  return interaction.updatedAt !== interaction.createdAt;
 }
 
 export default function InteractionTimelineItem({
@@ -107,7 +123,7 @@ export default function InteractionTimelineItem({
       subject: form.subject.trim(),
       note: form.note.trim(),
       outcome: form.outcome.trim(),
-      occurredAt: form.occurredAt || undefined,
+      occurredAt: form.occurredAt,
     });
 
     if (success) {

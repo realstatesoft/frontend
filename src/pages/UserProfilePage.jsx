@@ -253,20 +253,20 @@ const UserProfilePage = () => {
                 />
               ) : (
                 <div className="uprofile-avatar uprofile-avatar--placeholder">
-                  <CiUser size={54} />
+                  <Person size={54} />
                 </div>
               )}
               <div className="uprofile-identity">
                 <h2 className="uprofile-name">{profile?.name || "Sin nombre"}</h2>
                 <p className="uprofile-email">
-                  <CiMail size={15} className="uprofile-email-icon" />
+                  <Envelope size={15} className="uprofile-email-icon" />
                   {profile?.email || ""}
                 </p>
               </div>
             </div>
 
             <button className="uprofile-edit-btn" onClick={() => setEditOpen(true)}>
-              <IoPencilOutline size={15} />
+              <Pencil size={15} />
               Editar Perfil
             </button>
           </div>

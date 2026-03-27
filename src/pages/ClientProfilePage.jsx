@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../hooks/useAuth";
@@ -18,6 +18,7 @@ const ClientProfilePage = () => {
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const isCancelledRef = useRef(false);
 
   const fetchClient = useCallback(async ({ silent = false } = {}) => {
     try {
@@ -28,32 +29,41 @@ const ClientProfilePage = () => {
         setLoading(true);
       }
       const data = await clientApi.getClientProfile(id);
+      if (isCancelledRef.current) {
+        return;
+      }
+
       setClient(data);
     } catch (err) {
+      if (isCancelledRef.current) {
+        return;
+      }
+
       if (err.response?.status === 404 || err.response?.status === 403) {
         navigate("/404", { replace: true });
       } else if (!silent && err.response?.status !== 401) {
         setError("No se pudo cargar el perfil del cliente.");
       }
     } finally {
-      if (!silent) {
+      if (!silent && !isCancelledRef.current) {
         setLoading(false);
       }
     }
   }, [id, navigate]);
 
   useEffect(() => {
-    let isCancelled = false;
+    isCancelledRef.current = false;
+
     const fetchClientSafely = async () => {
       try {
         setError(null);
         setLoading(true);
         const data = await clientApi.getClientProfile(id);
-        if (!isCancelled) {
+        if (!isCancelledRef.current) {
           setClient(data);
         }
       } catch (err) {
-        if (!isCancelled) {
+        if (!isCancelledRef.current) {
           // Si es 404 o 403, redirigir a Not Found (seguridad por oscuridad)
           if (err.response?.status === 404 || err.response?.status === 403) {
             navigate('/404', { replace: true });
@@ -63,7 +73,7 @@ const ClientProfilePage = () => {
           }
         }
       } finally {
-        if (!isCancelled) {
+        if (!isCancelledRef.current) {
           setLoading(false);
         }
       }
@@ -74,7 +84,7 @@ const ClientProfilePage = () => {
     }
 
     return () => {
-      isCancelled = true;
+      isCancelledRef.current = true;
     };
   }, [id, isAuthenticated, navigate]);
 
