@@ -8,15 +8,15 @@ export default function useAppointments(params = {}) {
     staleTime: 1000 * 60 * 2,
     select: (response) => {
       const items = response?.data;
-      if (Array.isArray(items) && items.length > 0 && items[0].startsAt) {
+      if (Array.isArray(items)) {
         return {
           ...response,
           data: items.map((e) => ({
             id: e.id,
-            title: e.title,
+            title: e.title || e.name || '',
             clientName: e.clientName || '',
-            date: e.startsAt,
-            type: (e.eventType || 'OTHER').toLowerCase(),
+            date: e.startsAt ?? e.date ?? null,
+            type: (e.eventType || e.type || 'OTHER').toLowerCase(),
           })),
         };
       }

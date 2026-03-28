@@ -8,6 +8,8 @@ import Topbar from '../Topbar/Topbar';
 import useUIStore from '../../../store/useUIStore';
 import { AGENT_ROUTES } from '../../../utils/constants';
 import styles from './AgentLayout.module.scss';
+import { useAuth } from '../../../hooks/useAuth';
+import RoleRedirect from '../../commons/RoleRedirect';
 
 const AGENT_NAV_ITEMS = [
   { section: 'Principal' },
@@ -24,6 +26,11 @@ const AGENT_NAV_ITEMS = [
 ];
 
 export default function AgentLayout() {
+  const { user } = useAuth();
+  // If authenticated user is not an agent, redirect using RoleRedirect
+  if (user?.role !== 'AGENT') {
+    return <RoleRedirect />;
+  }
   const { sidebarCollapsed } = useUIStore();
 
   const contentClass = [

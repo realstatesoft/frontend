@@ -19,7 +19,7 @@ function formatDate(dateStr) {
 
 export default function OwnerVisitsPage() {
   const { data: response, isLoading, isError, error } = useOwnerVisits();
-  const visits = response?.data || [];
+  const visits = Array.isArray(response?.data) ? response.data : [];
 
   if (isLoading) {
     return (
@@ -71,7 +71,7 @@ export default function OwnerVisitsPage() {
                 <span className={styles.visits__cardDate}>
                   {formatDate(visit.date)}
                 </span>
-                <Badge variant={STATUS_COLORS[visit.status] || 'default'}>
+                <Badge variant={STATUS_COLORS[visit.status] || 'neutral'}>
                   {visit.status}
                 </Badge>
               </div>

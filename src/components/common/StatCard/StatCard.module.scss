@@ -6,9 +6,7 @@
   padding: var(--spacing-lg);
 
   @include flex-column;
-
   gap: var(--spacing-sm);
-
   min-width: 0;
 }
 
