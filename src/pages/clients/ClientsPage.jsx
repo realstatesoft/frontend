@@ -6,7 +6,7 @@ import useAgentClients from '../../hooks/useAgentClients';
 import { STATUS_COLORS } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 import { Link } from 'react-router-dom';
-import { FiUserPlus } from 'react-icons/fi';
+import { FiUserPlus, FiEye } from 'react-icons/fi';
 import styles from './ClientsPage.module.scss';
 
 const COLUMNS = [
@@ -26,6 +26,15 @@ const COLUMNS = [
     key: 'registeredAt',
     label: 'Registro',
     render: (value) => formatDate(value),
+  },
+  {
+    key: 'id',
+    label: '',
+    render: (_, row) => (
+      <Link to={`/clients/${row.id}`} className="btn btn-sm btn-outline-primary">
+        <FiEye className="me-1" /> Ver Cliente
+      </Link>
+    ),
   },
 ];
 
