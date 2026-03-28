@@ -208,44 +208,46 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
       setCreating(true);
 
       try {
-        const body = normalizeInteractionPayload(payload);
-        await createClientInteraction(clientId, body);
-        await showSuccessToast("Interacción registrada");
-      } catch (mutationError) {
-        await showErrorAlert(
-          getInteractionErrorMessage(
-            mutationError,
-            "No se pudo registrar la interacción."
-          )
-        );
-        return false;
-      }
+        try {
+          const body = normalizeInteractionPayload(payload);
+          await createClientInteraction(clientId, body);
+          await showSuccessToast("Interacción registrada");
+        } catch (mutationError) {
+          await showErrorAlert(
+            getInteractionErrorMessage(
+              mutationError,
+              "No se pudo registrar la interacción."
+            )
+          );
+          return false;
+        }
 
-      const shouldResetFilter = filterType !== "ALL" && filterType !== payload.type;
-      const nextFilter = shouldResetFilter ? "ALL" : filterType;
+        const shouldResetFilter = filterType !== "ALL" && filterType !== payload.type;
+        const nextFilter = shouldResetFilter ? "ALL" : filterType;
 
-      if (shouldResetFilter) {
-        setFilterType("ALL");
-      }
+        if (shouldResetFilter) {
+          setFilterType("ALL");
+        }
 
-      try {
-        await Promise.all([
-          fetchInteractions({ pageToLoad: 0, append: false, typeOverride: nextFilter }),
-          refreshParent(),
-        ]);
-      } catch (refreshError) {
-        console.error("Error al refrescar interacciones tras crear:", refreshError);
-        await showErrorAlert(
-          getInteractionErrorMessage(
-            refreshError,
-            "La interacción se registró, pero no se pudo actualizar la vista."
-          )
-        );
+        try {
+          await Promise.all([
+            fetchInteractions({ pageToLoad: 0, append: false, typeOverride: nextFilter }),
+            refreshParent(),
+          ]);
+        } catch (refreshError) {
+          console.error("Error al refrescar interacciones tras crear:", refreshError);
+          await showErrorAlert(
+            getInteractionErrorMessage(
+              refreshError,
+              "La interacción se registró, pero no se pudo actualizar la vista."
+            )
+          );
+        }
+
+        return true;
       } finally {
         setCreating(false);
       }
-
-      return true;
     },
     [clientId, fetchInteractions, filterType, refreshParent]
   );
@@ -255,34 +257,36 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
       setUpdatingId(interactionId);
 
       try {
-        const body = normalizeInteractionPayload(payload);
-        await updateClientInteraction(clientId, interactionId, body);
-        await showSuccessToast("Interacción actualizada");
-      } catch (mutationError) {
-        await showErrorAlert(
-          getInteractionErrorMessage(
-            mutationError,
-            "No se pudo actualizar la interacción."
-          )
-        );
-        return false;
-      }
+        try {
+          const body = normalizeInteractionPayload(payload);
+          await updateClientInteraction(clientId, interactionId, body);
+          await showSuccessToast("Interacción actualizada");
+        } catch (mutationError) {
+          await showErrorAlert(
+            getInteractionErrorMessage(
+              mutationError,
+              "No se pudo actualizar la interacción."
+            )
+          );
+          return false;
+        }
 
-      try {
-        await Promise.all([refreshInteractions(), refreshParent()]);
-      } catch (refreshError) {
-        console.error("Error al refrescar interacciones tras actualizar:", refreshError);
-        await showErrorAlert(
-          getInteractionErrorMessage(
-            refreshError,
-            "La interacción se actualizó, pero no se pudo refrescar la vista."
-          )
-        );
+        try {
+          await Promise.all([refreshInteractions(), refreshParent()]);
+        } catch (refreshError) {
+          console.error("Error al refrescar interacciones tras actualizar:", refreshError);
+          await showErrorAlert(
+            getInteractionErrorMessage(
+              refreshError,
+              "La interacción se actualizó, pero no se pudo refrescar la vista."
+            )
+          );
+        }
+
+        return true;
       } finally {
         setUpdatingId(null);
       }
-
-      return true;
     },
     [clientId, refreshInteractions, refreshParent]
   );
@@ -292,33 +296,35 @@ export default function useClientInteractions(clientId, { enabled = true, onChan
       setDeletingId(interactionId);
 
       try {
-        await deleteClientInteraction(clientId, interactionId);
-        await showSuccessToast("Interacción eliminada");
-      } catch (mutationError) {
-        await showErrorAlert(
-          getInteractionErrorMessage(
-            mutationError,
-            "No se pudo eliminar la interacción."
-          )
-        );
-        return false;
-      }
+        try {
+          await deleteClientInteraction(clientId, interactionId);
+          await showSuccessToast("Interacción eliminada");
+        } catch (mutationError) {
+          await showErrorAlert(
+            getInteractionErrorMessage(
+              mutationError,
+              "No se pudo eliminar la interacción."
+            )
+          );
+          return false;
+        }
 
-      try {
-        await Promise.all([refreshInteractions(), refreshParent()]);
-      } catch (refreshError) {
-        console.error("Error al refrescar interacciones tras eliminar:", refreshError);
-        await showErrorAlert(
-          getInteractionErrorMessage(
-            refreshError,
-            "La interacción se eliminó, pero no se pudo refrescar la vista."
-          )
-        );
+        try {
+          await Promise.all([refreshInteractions(), refreshParent()]);
+        } catch (refreshError) {
+          console.error("Error al refrescar interacciones tras eliminar:", refreshError);
+          await showErrorAlert(
+            getInteractionErrorMessage(
+              refreshError,
+              "La interacción se eliminó, pero no se pudo refrescar la vista."
+            )
+          );
+        }
+
+        return true;
       } finally {
         setDeletingId(null);
       }
-
-      return true;
     },
     [clientId, refreshInteractions, refreshParent]
   );
