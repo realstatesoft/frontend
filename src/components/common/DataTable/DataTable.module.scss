@@ -1,0 +1,98 @@
+@use "../../../styles/mixins" as *;
+
+.dataTable {
+  width: 100%;
+}
+
+.dataTable__toolbar {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+
+  @include responsive(mobile) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.dataTable__filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.dataTable__filterSelect {
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition-base);
+
+  &:focus {
+    border-color: var(--color-accent);
+  }
+}
+
+.dataTable__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.dataTable__th {
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dataTable__td {
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  transition: var(--transition-fast);
+}
+
+.dataTable__row {
+  transition: var(--transition-fast);
+
+  &:hover .dataTable__td {
+    background: var(--color-bg-surface-hover);
+  }
+}
+
+.dataTable__empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.dataTable__loading {
+  @include flex-center;
+  padding: 48px;
+  color: var(--color-text-muted);
+}
+
+.dataTable__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

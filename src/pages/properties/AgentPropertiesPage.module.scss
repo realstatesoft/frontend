@@ -1,0 +1,29 @@
+@use "../../styles/mixins" as *;
+
+.page {
+  @include flex-column;
+  gap: var(--spacing-xl);
+}
+
+.page__header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.page__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.page__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.page__card {
+  @include glass-card;
+  padding: var(--spacing-lg);
+}

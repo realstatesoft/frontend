@@ -1,0 +1,96 @@
+@use "../../styles/mixins" as *;
+
+.visits {
+  @include flex-column;
+  gap: var(--spacing-xl);
+}
+
+.visits__header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.visits__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.visits__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.visits__list {
+  @include flex-column;
+  gap: var(--spacing-md);
+}
+
+.visits__card {
+  @include glass-card;
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+
+  @include responsive(mobile) {
+    flex-direction: column;
+  }
+}
+
+.visits__cardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.visits__cardProperty {
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.visits__cardVisitor {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.visits__cardMessage {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.visits__cardMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+
+  @include responsive(mobile) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.visits__cardDate {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.visits__empty {
+  @include glass-card;
+  @include flex-center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}

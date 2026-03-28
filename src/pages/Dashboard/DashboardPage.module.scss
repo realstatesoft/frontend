@@ -1,0 +1,52 @@
+@use "../../styles/mixins" as *;
+
+.dashboard {
+  @include flex-column;
+  gap: var(--spacing-xl);
+}
+
+.dashboard__header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.dashboard__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.dashboard__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+
+  @include responsive(desktop) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+
+  @include responsive(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard__gridFull {
+  grid-column: 1 / -1;
+}
