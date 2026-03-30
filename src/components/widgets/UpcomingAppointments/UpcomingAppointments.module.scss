@@ -1,0 +1,69 @@
+@use "../../../styles/mixins" as *;
+
+.appointments {
+  @include glass-card;
+  padding: var(--spacing-lg);
+}
+
+.appointments__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.appointments__list {
+  @include flex-column;
+  gap: var(--spacing-sm);
+}
+
+.appointments__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+
+  &:hover {
+    background: var(--color-bg-surface-hover);
+  }
+}
+
+.appointments__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.appointments__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.appointments__itemTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  @include text-ellipsis;
+}
+
+.appointments__client {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.appointments__time {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.appointments__empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--spacing-lg);
+  font-size: 0.875rem;
+}
