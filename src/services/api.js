@@ -33,12 +33,16 @@ function processQueue(error, token = null) {
 }
 
 function redirectToLogin(error = null) {
-  if (error) {
-    processQueue(error, null);
-  }
+  if (error) processQueue(error, null);
   clearSession();
-  const currentPath = window.location.pathname + window.location.search;
-  window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+
+  const currentPath = window.location.pathname;
+
+  // No agregar redirect si ya estamos en /login o en rutas públicas
+  const publicPaths = ["/login", "/register", "/forgot-password"];
+  const isPublic = publicPaths.some((p) => currentPath.startsWith(p));
+
+  window.location.href = isPublic ? "/login" : `/login?redirect=${encodeURIComponent(currentPath)}`;
 }
 
 // ─── Response interceptor: refresca el token en caso de 401 ──────────────────
@@ -53,7 +57,11 @@ api.interceptors.response.use(
     }
 
     // No interferir con endpoints de autenticación (login, register)
-    if (originalRequest.url?.includes("/auth/login") || originalRequest.url?.includes("/auth/register")) {
+    if (
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/register") ||
+      originalRequest.url?.includes("/auth/logout")
+    ) {
       return Promise.reject(error);
     }
 

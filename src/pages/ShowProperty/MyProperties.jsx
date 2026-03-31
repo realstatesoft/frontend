@@ -1,25 +1,18 @@
 import { Col, Container, Row, Spinner, Button, Alert } from "react-bootstrap";
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Plus } from "react-bootstrap-icons";
 import useMyProperties from "../../hooks/useMyProperties";
-import { useAuth } from "../../hooks/useAuth";
+
 import MyPropertyCard from "../../components/properties/MyPropertyCard";
 import Navbar from "../../components/Landing/Navbar";
 
 const PAGE_SIZE = 12;
 
 export default function MyProperties() {
-    const { isAuthenticated } = useAuth();
-    const location = useLocation();
     const { properties, loading, error, refetch } = useMyProperties({
         page: 1,
         size: PAGE_SIZE,
     });
-
-    // Usuario no autenticado
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
-    }
 
     return (
         <>

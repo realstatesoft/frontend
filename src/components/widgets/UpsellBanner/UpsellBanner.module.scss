@@ -1,0 +1,80 @@
+@use "../../../styles/mixins" as *;
+
+.upsell {
+  @include glass-card;
+  padding: var(--spacing-xl);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-accent) 6%, transparent) 0%,
+    color-mix(in srgb, var(--color-success) 4%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-accent) 15%, transparent);
+  @include flex-column;
+  gap: var(--spacing-md);
+}
+
+.upsell__icon {
+  @include flex-center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent);
+  font-size: 1.25rem;
+}
+
+.upsell__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.upsell__text {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.upsell__benefits {
+  list-style: none;
+  padding: 0;
+  @include flex-column;
+  gap: var(--spacing-xs);
+
+  li {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    padding-left: 20px;
+    position: relative;
+
+    &::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--color-accent);
+      font-weight: 700;
+    }
+  }
+}
+
+.upsell__cta {
+  @include flex-center;
+  gap: var(--spacing-xs);
+  align-self: flex-start;
+  padding: 10px 24px;
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition-base);
+  margin-top: var(--spacing-xs);
+
+  &:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+}

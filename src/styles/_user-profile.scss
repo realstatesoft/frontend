@@ -1,0 +1,475 @@
+@use 'sass:color';
+// ─── User Profile Page ───────────────────────────────────────────────────────
+
+.uprofile-page {
+    background: $light;
+}
+
+.uprofile-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+    overflow: hidden;
+    position: relative; // Para posicionar el toast relativo a la card
+}
+
+// Banner usando el color primario global con degradado sutil
+.uprofile-banner {
+    height: 110px;
+    background: linear-gradient(135deg, $primary 0%, color.adjust($primary, $lightness: 18%) 60%, $warning 100%);
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.uprofile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2.5rem 2.5rem 2rem;
+    margin-top: -56px;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.uprofile-avatar-group {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+// Avatar circular con borde blanco grueso
+.uprofile-avatar {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+    object-fit: cover;
+    background: #fff;
+}
+
+.uprofile-avatar--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $neutral-soft;
+    color: $secondary;
+}
+
+.uprofile-identity {
+    padding-bottom: 0.4rem;
+}
+
+.uprofile-name {
+    font-size: 1.6rem;
+    font-weight: $font-weight-bold;
+    color: $text-dark;
+    margin-bottom: 0.2rem;
+    line-height: 1.25;
+}
+
+.uprofile-email {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: $text-muted;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.uprofile-email-icon {
+    flex-shrink: 0;
+}
+
+// Boton Editar Perfil con icono de lapiz
+.uprofile-edit-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: $primary;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.55rem 1.4rem;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    align-self: center;
+    margin-top: 56px;
+
+    &:hover {
+        background: color.adjust($primary, $lightness: -8%);
+        box-shadow: 0 3px 10px rgba($primary, 0.40);
+    }
+
+    &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 2px;
+    }
+}
+
+// ── Seccion de campos ─────────────────────────────────────────────────────────
+
+.uprofile-section {
+    padding: 2rem 2.5rem 2.5rem;
+    border-top: 1px solid $border-color-soft;
+}
+
+.uprofile-section-title {
+    font-weight: $font-weight-semibold;
+    font-size: 1.05rem;
+    color: $dark;
+    margin-bottom: 1.5rem;
+}
+
+.uprofile-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2.5rem;
+}
+
+.uprofile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+// Label con icono de react-icons a la izquierda
+.uprofile-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: $font-weight-medium;
+    color: $text-muted;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+// Inputs de solo lectura usando los tokens globales de fondo y borde
+.uprofile-input {
+    background: $input-bg-light;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-sm;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    color: $text-dark;
+    cursor: default;
+    transition: none;
+
+    &:disabled {
+        opacity: 1;
+        background: $input-bg-light;
+        color: $text-dark;
+    }
+}
+
+// Badge del campo Role usando el color primario global
+.uprofile-role-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba($primary, 0.10);
+    color: $primary;
+    border: 1px solid rgba($primary, 0.25);
+    border-radius: 50px;
+    padding: 0.3rem 1rem;
+    font-size: 0.82rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+// ─── Toast y Modal (Globales) ────────────────────────────────────────────────
+
+.uprofile-toast {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #198754;
+    color: #fff;
+    padding: 0.55rem 1.4rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    box-shadow: 0 4px 16px rgba(25, 135, 84, 0.35);
+    animation: toast-in 0.3s ease;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+// Overlay del modal
+.uedit-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    animation: overlay-in 0.2s ease;
+}
+
+@keyframes overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+// Contenedor del modal
+.uedit-modal {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+    width: 100%;
+    max-width: 480px;
+    animation: modal-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+}
+
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+// Header del modal
+.uedit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 1.6rem 1rem;
+    border-bottom: 1px solid $border-color-soft;
+}
+
+.uedit-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: $font-weight-semibold;
+    color: $text-dark;
+    margin: 0;
+}
+
+.uedit-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: $text-muted;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.07);
+        color: $text-dark;
+    }
+}
+
+// Formulario
+.uedit-form {
+    padding: 1.4rem 1.6rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.uedit-error {
+    background: rgba(220, 53, 69, 0.08);
+    border: 1px solid rgba(220, 53, 69, 0.25);
+    border-radius: $radius-sm;
+    color: #dc3545;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.9rem;
+}
+
+.uedit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.uedit-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: $font-weight-medium;
+    color: $text-muted;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.uedit-input {
+    background: $input-bg-light;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-sm;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    color: $text-dark;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+
+    &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.12);
+    }
+
+    &::placeholder {
+        color: lighten($text-muted, 15%);
+    }
+}
+
+// Preview de avatar
+.uedit-avatar-preview {
+    margin-top: 0.4rem;
+
+    img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid $border-color-soft;
+    }
+}
+
+// Footer del modal
+.uedit-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid $border-color-soft;
+    margin-top: 0.4rem;
+}
+
+.uedit-btn-cancel {
+    background: transparent;
+    border: 1px solid $border-color-soft;
+    border-radius: 50px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    color: $text-muted;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.05);
+        color: $text-dark;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.uedit-btn-save {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: $primary;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.4rem;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background: color.adjust($primary, $lightness: -8%);
+        box-shadow: 0 3px 10px rgba($primary, 0.35);
+    }
+
+    &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+}
+
+.uedit-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+
+@media (max-width: 576px) {
+    .uprofile-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .uprofile-header {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 1.25rem 1.5rem;
+    }
+
+    .uprofile-avatar-group {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .uprofile-edit-btn {
+        margin-top: 0;
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .uprofile-section {
+        padding: 1.5rem 1.25rem 2rem;
+    }
+
+    .uedit-modal {
+        border-radius: 16px;
+    }
+
+    .uedit-footer {
+        flex-direction: column-reverse;
+        .uedit-btn-cancel,
+        .uedit-btn-save {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
