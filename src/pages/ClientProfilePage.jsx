@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
@@ -10,11 +11,10 @@ import ProfileDetails from "../components/Clients/ProfileDetails";
 import ClientInteractionsPanel from "../components/Clients/ClientInteractionsPanel";
 import clientApi from "../services/clients/clientApi";
 
+
 const ClientProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated } = useAuth();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,18 +79,18 @@ const ClientProfilePage = () => {
       }
     };
 
+
     if (isAuthenticated) {
       fetchClientSafely();
     }
 
+
     return () => {
       isCancelledRef.current = true;
     };
-  }, [id, isAuthenticated, navigate]);
+  }, [id, navigate]);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+
 
   if (loading) {
     return (

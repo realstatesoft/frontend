@@ -12,6 +12,12 @@ import {
   Trash,
 } from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
+
+import { CiUser } from "react-icons/ci";
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline } from "react-icons/io5";
+import { MdFavoriteBorder } from "react-icons/md";
+import { FaRegTrashAlt } from "react-icons/fa";
+
 import Logotipo from "../../assets/Logotipo.png";
 
 function CustomNavbar() {
@@ -120,6 +126,11 @@ function CustomNavbar() {
                   <Link to="/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Calendar3 size={16} style={{ flexShrink: 0 }} /> Agenda
                   </Link>
+                  {user?.role === "AGENT" && (
+                    <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
+                    </Link>
+                  )}
 
                   <hr className="profile-dropdown-divider" />
 

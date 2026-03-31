@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+
 import { Container, Spinner, Alert } from "react-bootstrap";
 import {
   CheckLg,
@@ -156,7 +156,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
 // ─── Página principal ─────────────────────────────────────────────────────────
 
 const UserProfilePage = () => {
-  const location    = useLocation();
+
   const { isAuthenticated, token } = useAuth();
 
   const [profile,     setProfile]     = useState(null);
@@ -193,9 +193,7 @@ const UserProfilePage = () => {
     setTimeout(() => setSaveSuccess(false), 3000);
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+
 
   if (loading) {
     return (
