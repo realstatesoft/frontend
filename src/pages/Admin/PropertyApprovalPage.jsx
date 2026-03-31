@@ -27,35 +27,8 @@ export default function PropertyApprovalPage() {
   
   const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
 
-  // ─── Fetch requests ───────────────────────────────────────────
-  const fetchProperties = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const payload = { size: 12, page: Math.max(0, currentPage - 1) };
-      if (filter !== 'ALL') {
-        payload.status = filter;
-      }
-      
-      const res = await propertyApi.getAll(payload);
-      
-      const pageData = res?.data?.data ?? res?.data ?? { content: [], totalPages: 0 };
-      setProperties(pageData.content ?? []);
-      setTotalPages(pageData.totalPages ?? 0);
-      
-      // Attempt to load stats in background
-      loadStats();
-    } catch (err) {
-      console.error('Error al cargar propiedades:', err);
-      setError('No se pudieron cargar las propiedades. Intente más tarde.');
-    } finally {
-      setLoading(false);
-    }
-  }, [filter, currentPage]);
-
   // Load basic stats by running distinct small calls
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const [pendRes, appRes, rejRes, totRes] = await Promise.all([
         propertyApi.getAll({ status: 'PENDING', size: 1 }),
@@ -73,7 +46,35 @@ export default function PropertyApprovalPage() {
     } catch (e) {
       console.error("Error cargando estadisticas", e);
     }
-  };
+  }, []);
+
+  // ─── Fetch requests ───────────────────────────────────────────
+  const fetchProperties = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const payload = { size: 12, page: Math.max(0, currentPage - 1) };
+      if (filter !== 'ALL') {
+        payload.status = filter;
+      }
+      
+      const res = await propertyApi.getAll(payload);
+      
+      const pageData = res?.data?.data ?? res?.data ?? { content: [], totalPages: 0 };
+      setProperties(pageData.content ?? []);
+      setTotalPages(pageData.totalPages ?? 0);
+      
+      // Load stats in background (errors handled internally)
+      loadStats().catch(e => console.error("Background stats load failed:", e));
+    } catch (err) {
+      console.error('Error al cargar propiedades:', err);
+      setError('No se pudieron cargar las propiedades. Intente más tarde.');
+    } finally {
+      setLoading(false);
+    }
+  }, [filter, currentPage, loadStats]);
+
 
   useEffect(() => {
     fetchProperties();
@@ -83,6 +84,9 @@ export default function PropertyApprovalPage() {
   const handleApprove = async (id) => {
     try {
       setActionLoading(true);
+      const property = properties.find(p => p.id === id);
+      const wasPending = property?.status === 'PENDING';
+      
       await propertyApi.changeStatus(id, 'APPROVED');
       
       setSuccessMsg("Propiedad Aprobada");
@@ -94,7 +98,12 @@ export default function PropertyApprovalPage() {
       } else {
         setProperties(prev => prev.map(p => p.id === id ? { ...p, status: 'APPROVED' } : p));
       }
-      setStats(prev => ({ ...prev, pending: prev.pending - 1, approved: prev.approved + 1 }));
+      
+      setStats(prev => ({ 
+        ...prev, 
+        pending: wasPending ? prev.pending - 1 : prev.pending, 
+        approved: prev.approved + 1 
+      }));
     } catch (err) {
       console.error(err);
       setError("Error al aprobar propiedad");
@@ -106,6 +115,9 @@ export default function PropertyApprovalPage() {
   const handleReject = async (id) => {
     try {
       setActionLoading(true);
+      const property = properties.find(p => p.id === id);
+      const wasPending = property?.status === 'PENDING';
+
       await propertyApi.changeStatus(id, 'REJECTED');
       
       setSuccessMsg("Propiedad Rechazada");
@@ -117,7 +129,12 @@ export default function PropertyApprovalPage() {
       } else {
         setProperties(prev => prev.map(p => p.id === id ? { ...p, status: 'REJECTED' } : p));
       }
-      setStats(prev => ({ ...prev, pending: prev.pending - 1, rejected: prev.rejected + 1 }));
+      
+      setStats(prev => ({ 
+        ...prev, 
+        pending: wasPending ? prev.pending - 1 : prev.pending, 
+        rejected: prev.rejected + 1 
+      }));
     } catch (err) {
       console.error(err);
       setError("Error al rechazar propiedad");

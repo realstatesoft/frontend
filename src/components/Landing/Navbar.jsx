@@ -111,7 +111,7 @@ function CustomNavbar() {
                   <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
                   </Link>
-                  <Link to="/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
                   </Link>
                   {user?.role === "AGENT" && (

@@ -54,7 +54,7 @@ export default function AppRouter() {
             <Route path="/agents" element={<AgentsPage />} />
 
             {/* ── Rutas protegidas (requieren autenticación) ────────── */}
-            <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+            <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<UserProfilePage />} />
                 <Route path="/create-property" element={<CreateProperty />} />
                 <Route path="/properties/:id/edit" element={<CreateProperty />} />
@@ -99,7 +99,7 @@ export default function AppRouter() {
             <Route path="*" element={<NotFoundPage />} />
             <Route 
                 path="/admin/approval" 
-                element={
+                element={ 
                     <ProtectedRoute requiredRole="ADMIN">
                         <PropertyApprovalPage />
                     </ProtectedRoute>
