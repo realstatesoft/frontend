@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Container, Dropdown, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import CustomNavbar from '../../components/Landing/Navbar';
@@ -26,6 +26,7 @@ export default function PropertyApprovalPage() {
   const [actionLoading, setActionLoading] = useState(false);
   
   const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
+  const latestFetchRef = useRef(0);
 
   // Load basic stats by running distinct small calls
   const loadStats = useCallback(async () => {
@@ -50,6 +51,7 @@ export default function PropertyApprovalPage() {
 
   // ─── Fetch requests ───────────────────────────────────────────
   const fetchProperties = useCallback(async () => {
+    const fetchId = ++latestFetchRef.current;
     try {
       setLoading(true);
       setError(null);
@@ -60,6 +62,7 @@ export default function PropertyApprovalPage() {
       }
       
       const res = await propertyApi.getAll(payload);
+      if (fetchId !== latestFetchRef.current) return;
       
       const pageData = res?.data?.data ?? res?.data ?? { content: [], totalPages: 0 };
       setProperties(pageData.content ?? []);
@@ -68,10 +71,11 @@ export default function PropertyApprovalPage() {
       // Load stats in background (errors handled internally)
       loadStats().catch(e => console.error("Background stats load failed:", e));
     } catch (err) {
+      if (fetchId !== latestFetchRef.current) return;
       console.error('Error al cargar propiedades:', err);
       setError('No se pudieron cargar las propiedades. Intente más tarde.');
     } finally {
-      setLoading(false);
+      if (fetchId === latestFetchRef.current) setLoading(false);
     }
   }, [filter, currentPage, loadStats]);
 
@@ -84,26 +88,13 @@ export default function PropertyApprovalPage() {
   const handleApprove = async (id) => {
     try {
       setActionLoading(true);
-      const property = properties.find(p => p.id === id);
-      const wasPending = property?.status === 'PENDING';
-      
       await propertyApi.changeStatus(id, 'APPROVED');
       
       setSuccessMsg("Propiedad Aprobada");
       setTimeout(() => setSuccessMsg(null), 3000);
       
-      // Update local state smoothly
-      if(filter !== 'ALL' && filter !== 'APPROVED') {
-        setProperties(prev => prev.filter(p => p.id !== id));
-      } else {
-        setProperties(prev => prev.map(p => p.id === id ? { ...p, status: 'APPROVED' } : p));
-      }
-      
-      setStats(prev => ({ 
-        ...prev, 
-        pending: wasPending ? prev.pending - 1 : prev.pending, 
-        approved: prev.approved + 1 
-      }));
+      // Refresh data authoritatively to keep pagination/stats in sync
+      await fetchProperties();
     } catch (err) {
       console.error(err);
       setError("Error al aprobar propiedad");
@@ -115,26 +106,13 @@ export default function PropertyApprovalPage() {
   const handleReject = async (id) => {
     try {
       setActionLoading(true);
-      const property = properties.find(p => p.id === id);
-      const wasPending = property?.status === 'PENDING';
-
       await propertyApi.changeStatus(id, 'REJECTED');
       
       setSuccessMsg("Propiedad Rechazada");
       setTimeout(() => setSuccessMsg(null), 3000);
       
-      // Update local state
-      if(filter !== 'ALL' && filter !== 'REJECTED') {
-        setProperties(prev => prev.filter(p => p.id !== id));
-      } else {
-        setProperties(prev => prev.map(p => p.id === id ? { ...p, status: 'REJECTED' } : p));
-      }
-      
-      setStats(prev => ({ 
-        ...prev, 
-        pending: wasPending ? prev.pending - 1 : prev.pending, 
-        rejected: prev.rejected + 1 
-      }));
+      // Refresh data authoritatively
+      await fetchProperties();
     } catch (err) {
       console.error(err);
       setError("Error al rechazar propiedad");
