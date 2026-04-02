@@ -36,8 +36,9 @@ import OwnerPropertiesPage from "../pages/OwnerProperties/OwnerPropertiesPage";
 import OwnerVisitsPage from "../pages/OwnerVisits/OwnerVisitsPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 import UserProfilePage from "../pages/UserProfilePage";
-import ProtectedRoute from "./ProtectedRoute";
+import PropertyApprovalPage from "../pages/Admin/PropertyApprovalPage";
 
 export default function AppRouter() {
     return (
@@ -96,6 +97,14 @@ export default function AppRouter() {
             {/* Canonical 404 handler */}
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
+            <Route 
+                path="/admin/approval" 
+                element={ 
+                    <ProtectedRoute requiredRole="ADMIN">
+                        <PropertyApprovalPage />
+                    </ProtectedRoute>
+                } 
+            />
         </Routes>
     );
 }
