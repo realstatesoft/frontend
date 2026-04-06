@@ -1,15 +1,20 @@
 import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { HeartFill, Share } from "react-bootstrap-icons";
+import { Share } from "react-bootstrap-icons";
 import { FAVORITE_STATUS_LABELS, FAVORITE_BADGE_STYLES } from "../../data/propertiesData";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
+import FavoriteToggleButton from "./FavoriteToggleButton";
 
 /**
  * FavoritePropertyCard
  * Tarjeta de propiedad para la vista "Propiedades Favoritas".
  * Muestra info del agente, fecha agregada y botón de corazón (favorito).
  */
-export default function FavoritePropertyCard({ property }) {
+export default function FavoritePropertyCard({
+  property,
+  onRemoveFavorite,
+  removing = false,
+}) {
   const tag = FAVORITE_STATUS_LABELS[property.status] ?? property.tag ?? "—";
   const numericPrice = Number(property.price);
   const formattedPrice = Number.isFinite(numericPrice)
@@ -23,6 +28,7 @@ export default function FavoritePropertyCard({ property }) {
   const agentName = property.agentName ?? "—";
   const agentPhone = property.agentPhone ?? "—";
   const dateAdded = property.dateAdded ?? "—";
+  const showAgentMeta = Boolean(property.agentName || property.agentPhone || property.dateAdded);
 
   return (
     <Card
@@ -52,20 +58,13 @@ export default function FavoritePropertyCard({ property }) {
         >
           {tag}
         </span>
-        <button
-          type="button"
-          className="position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center rounded-circle border border-1 border-dark bg-white"
-          style={{
-            width: 36,
-            height: 36,
-            zIndex: 2,
-            cursor: "pointer",
-          }}
-          aria-label="Quitar de favoritos"
-          onClick={(e) => e.preventDefault()}
-        >
-          <HeartFill size={18} style={{ color: "#dc3545" }} />
-        </button>
+        <FavoriteToggleButton
+          isFavorite
+          loading={removing}
+          disabled={!onRemoveFavorite}
+          ariaLabel="Quitar de favoritos"
+          onClick={() => onRemoveFavorite(property.id)}
+        />
         <Card.Img
           variant="top"
           src={image}
@@ -98,21 +97,23 @@ export default function FavoritePropertyCard({ property }) {
           <span>{area} m²</span>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <p className="mb-0 fw-semibold" style={{ fontSize: "0.75rem", color: "#666" }}>
-              Agente
-            </p>
-            <p className="mb-0" style={{ fontSize: "0.85rem" }}>{agentName}</p>
-            <p className="mb-0 text-muted" style={{ fontSize: "0.78rem" }}>{agentPhone}</p>
+        {showAgentMeta && (
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <p className="mb-0 fw-semibold" style={{ fontSize: "0.75rem", color: "#666" }}>
+                Agente
+              </p>
+              <p className="mb-0" style={{ fontSize: "0.85rem" }}>{agentName}</p>
+              <p className="mb-0 text-muted" style={{ fontSize: "0.78rem" }}>{agentPhone}</p>
+            </div>
+            <div className="text-end">
+              <p className="mb-0" style={{ fontSize: "0.75rem", color: "#666" }}>
+                Agregado el
+              </p>
+              <p className="mb-0" style={{ fontSize: "0.85rem" }}>{dateAdded}</p>
+            </div>
           </div>
-          <div className="text-end">
-            <p className="mb-0" style={{ fontSize: "0.75rem", color: "#666" }}>
-              Agregado el
-            </p>
-            <p className="mb-0" style={{ fontSize: "0.85rem" }}>{dateAdded}</p>
-          </div>
-        </div>
+        )}
 
         <div className="d-flex gap-2 align-items-center">
           <Button
