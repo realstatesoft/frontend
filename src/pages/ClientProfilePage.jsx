@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Spinner, Alert } from 'react-bootstrap';
-import { useAuth } from '../hooks/useAuth';
 import CustomNavbar from '../components/Landing/Navbar';
 import Footer from '../components/Landing/Footer';
 import ProfileHeader from '../components/Clients/ProfileHeader';
@@ -12,8 +11,6 @@ import clientApi from '../services/clients/clientApi';
 const ClientProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated } = useAuth();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,18 +42,14 @@ const ClientProfilePage = () => {
       }
     };
 
-    if (isAuthenticated) {
-      fetchClient();
-    }
+    fetchClient();
 
     return () => {
       isCancelled = true;
     };
-  }, [id, isAuthenticated, navigate]);
+  }, [id, navigate]);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+
 
   if (loading) {
     return (

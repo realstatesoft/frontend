@@ -11,6 +11,8 @@ import {
   Dropdown,
   Spinner,
   Alert,
+  OverlayTrigger,
+  Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share } from "react-bootstrap-icons";
@@ -20,6 +22,7 @@ import Footer from "../../components/Landing/Footer";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
+import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
 import "./show-property.scss";
@@ -32,7 +35,6 @@ export default function ShowProperty() {
     loading,
     actionLoading,
     error,
-    isOwner,
     status,
     visibility,
     showConfirm,
@@ -53,6 +55,16 @@ export default function ShowProperty() {
     loadingSimilar,
     copyLink
   } = useShowProperty();
+
+  const {
+    canChangeStatus,
+    canChangeVisibility,
+    canEdit,
+    canDelete,
+    canFeature,
+    isOwner: isPropertyOwner,
+    isAdmin,
+  } = usePropertyPermissions(property);
 
   if (loading) {
     return (
@@ -96,67 +108,102 @@ export default function ShowProperty() {
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h1>{property.title}</h1>
             <div className="d-flex gap-2 align-items-center mt-2">
-              {isOwner && (
-                <>
-                  <Dropdown as={ButtonGroup}>
-                    <Dropdown.Toggle size="sm" variant="success">
-                      {status.label}
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      {PROPERTY_STATUS_OPTIONS.map((option) => (
-                        <Dropdown.Item
-                          key={option.value}
-                          onClick={() => openChangeStatusConfirm(option)}
-                        >
-                          {option.label}
-                        </Dropdown.Item>
-                      ))}
-                    </Dropdown.Menu>
-                  </Dropdown>
-
-                  <Dropdown as={ButtonGroup}>
-                    <Dropdown.Toggle size="sm" variant="secondary">
-                      {visibility.label}
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      {PROPERTY_VISIBILITY_OPTIONS.map((option) => (
-                        <Dropdown.Item
-                          key={option.value}
-                          onClick={() => openChangeVisibilityConfirm(option)}
-                        >
-                          {option.label}
-                        </Dropdown.Item>
-                      ))}
-                    </Dropdown.Menu>
-                  </Dropdown>
-
-                  <Button
-                    size="sm"
-                    variant="outline-primary"
-                    className="d-flex align-items-center"
-                    as={Link}
-                    to={`/properties/${property.id}/edit`}
+              {/* Estado general — ADMIN: funcional | Owner no-admin: visible pero deshabilitado con tooltip */}
+              {(canChangeStatus || (isPropertyOwner && !isAdmin)) && (
+                <OverlayTrigger
+                  placement="bottom"
+                  trigger={['hover', 'focus']}
+                  overlay={
+                    !canChangeStatus ? (
+                      <Tooltip id="tooltip-status">
+                        Solo administradores pueden cambiar el estado
+                      </Tooltip>
+                    ) : <span />}
+                >
+                  {/* span wrapper needed for disabled Dropdown to receive mouse events/focus for tooltip */}
+                  <span
+                    tabIndex={0}
+                    role="group"
+                    aria-describedby={!canChangeStatus ? "tooltip-status" : undefined}
                   >
-                    <Pencil size={16} className="property__icon-button"/> Editar
-                  </Button>
+                    <Dropdown as={ButtonGroup}>
+                      <Dropdown.Toggle
+                        size="sm"
+                        variant="success"
+                        disabled={!canChangeStatus}
+                        style={!canChangeStatus ? { pointerEvents: "none", opacity: 0.55 } : undefined}
+                      >
+                        {status.label}
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        {PROPERTY_STATUS_OPTIONS.map((option) => (
+                          <Dropdown.Item
+                            key={option.value}
+                            onClick={() => openChangeStatusConfirm(option)}
+                            disabled={!canChangeStatus}
+                          >
+                            {option.label}
+                          </Dropdown.Item>
+                        ))}
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </span>
+                </OverlayTrigger>
+              )}
 
-                  <Button
-                    size="sm"
-                    variant="warning"
-                    className="d-flex align-items-center"
-                  >
-                    <Star size={16} className="property__icon-button"/> Destacar
-                  </Button>
+              {/* Visibilidad — owner o ADMIN */}
+              {canChangeVisibility && (
+                <Dropdown as={ButtonGroup}>
+                  <Dropdown.Toggle size="sm" variant="secondary">
+                    {visibility.label}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {PROPERTY_VISIBILITY_OPTIONS.map((option) => (
+                      <Dropdown.Item
+                        key={option.value}
+                        onClick={() => openChangeVisibilityConfirm(option)}
+                      >
+                        {option.label}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
 
-                  <Button
-                    size="sm"
-                    variant="danger"
-                    className="d-flex align-items-center"
-                    onClick={openDeleteConfirm}
-                  >
-                    <Trash size={16} className="property__icon-button"/> Eliminar
-                  </Button>
-                </>
+              {/* Editar — owner o ADMIN */}
+              {canEdit && (
+                <Button
+                  size="sm"
+                  variant="outline-primary"
+                  className="d-flex align-items-center"
+                  as={Link}
+                  to={`/properties/${property.id}/edit`}
+                >
+                  <Pencil size={16} className="property__icon-button" /> Editar
+                </Button>
+              )}
+
+              {/* Destacar — cualquier usuario autenticado */}
+              {canFeature && (
+                <Button
+                  size="sm"
+                  variant="warning"
+                  className="d-flex align-items-center"
+                >
+                  <Star size={16} className="property__icon-button" /> Destacar
+                </Button>
+              )}
+
+              {/* Eliminar — owner o ADMIN */}
+              {canDelete && (
+                <Button
+                  size="sm"
+                  variant="danger"
+                  className="d-flex align-items-center"
+                  onClick={openDeleteConfirm}
+                >
+                  <Trash size={16} className="property__icon-button" /> Eliminar
+                </Button>
               )}
               <Dropdown as={ButtonGroup}>
                 <Dropdown.Toggle size="sm" variant="primary">

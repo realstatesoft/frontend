@@ -4,6 +4,7 @@ import { StarFill } from "react-bootstrap-icons";
 import agentApi from "../../services/agents/agentApi";
 import { getWhatsAppLink } from "../../utils/whatsapp";
 import CreateVisitModal from "../visits/CreateVisitModal";
+import Swal from "sweetalert2";
 
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
 
@@ -173,7 +174,15 @@ export default function PropertyContactCard({ property }) {
         show={showVisitModal}
         onHide={() => setShowVisitModal(false)}
         property={property}
-        onSuccess={() => alert('¡Solicitud de visita enviada con éxito!')}
+        onSuccess={() => 
+          Swal.fire({
+            icon: "success",
+            title: "¡Éxito!",
+            text: "¡Solicitud de visita enviada con éxito!",
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        }
       />
     </>
   );
