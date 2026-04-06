@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, renderHook } from '@testing-library/react';
 import { useContext } from 'react';
 import { AuthContext, AuthProvider } from '../../context/AuthContext';
 
@@ -75,14 +75,16 @@ describe('AuthProvider', () => {
   });
 
   it('lanza error si login recibe un accessToken inválido', () => {
-    renderProvider();
-    const ctx = screen.getByTestId('isAuthenticated'); // solo para que renderProvider esté listo
-    // Llamamos directamente al contexto con datos inválidos
-    expect(() => {
-      const provider = document.querySelector('[data-testid="isAuthenticated"]');
-      // Simulamos la excepción leyendo el contexto
-    }).not.toThrow();
+    // Para probar lógica interna sin depender de UI, usamos renderHook
+    const { result } = renderHook(() => useContext(AuthContext), {
+      wrapper: AuthProvider
+    });
+
+    expect(() => result.current.login(null)).toThrow("login(): accessToken inválido");
+    expect(() => result.current.login({})).toThrow("login(): accessToken inválido");
+    expect(() => result.current.login({ accessToken: 123 })).toThrow("login(): accessToken inválido");
   });
+
 
   it('desautentica al usuario llamando a logout()', async () => {
     // Empezar con sesión activa

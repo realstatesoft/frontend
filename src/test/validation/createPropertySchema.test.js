@@ -110,8 +110,13 @@ describe('createPropertySchema', () => {
   });
 
   describe('campos opcionales', () => {
-    it('acepta datos sin campo category', () => {
-      const { category: _cat, ...dataWithoutCategory } = { ...validData };
+    it('acepta datos sin campo category (opcionalidad real)', () => {
+      // Empezamos con un objeto que SÍ tiene category
+      const dataWithCategory = { ...validData, category: 'SALE' };
+      expect(createPropertySchema.safeParse(dataWithCategory).success).toBe(true);
+
+      // Ahora lo removemos y verificamos que sigue siendo válido
+      const { category: _cat, ...dataWithoutCategory } = dataWithCategory;
       const result = createPropertySchema.safeParse(dataWithoutCategory);
       expect(result.success).toBe(true);
     });
