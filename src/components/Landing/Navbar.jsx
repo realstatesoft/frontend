@@ -127,9 +127,15 @@ function CustomNavbar() {
                     <Calendar3 size={16} style={{ flexShrink: 0 }} /> Agenda
                   </Link>
                   {user?.role === "AGENT" && (
-                    <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
-                    </Link>
+                    <>
+                      <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
+                      </Link>
+                    
+                      <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
+                      </Link>
+                    </>
                   )}
 
                   <hr className="profile-dropdown-divider" />
