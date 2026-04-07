@@ -39,6 +39,8 @@ import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import UserProfilePage from "../pages/UserProfilePage";
 import PropertyApprovalPage from "../pages/Admin/PropertyApprovalPage";
+import AdminNotificationsPage from "../pages/Admin/AdminNotificationsPage";
+
 
 export default function AppRouter() {
     return (
@@ -94,16 +96,34 @@ export default function AppRouter() {
                 <Route path="/dashboard" element={<RoleRedirect />} />
             </Route>
 
-            {/* Canonical 404 handler */}
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-            <Route 
-                path="/admin/approval" 
-                element={ 
+            {/* ── Rutas Admin ─────────────────────────────────────── */}
+            <Route
+                path="/admin/approval"
+                element={
                     <ProtectedRoute requiredRole="ADMIN">
                         <PropertyApprovalPage />
                     </ProtectedRoute>
-                } 
+                }
+            />
+            <Route
+                path="/admin/notifications"
+                element={
+                    <ProtectedRoute requiredRole="ADMIN">
+                        <AdminNotificationsPage />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* Canonical 404 handler */}
+            <Route path="/404" element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+            <Route
+                path="/admin/approval"
+                element={
+                    <ProtectedRoute requiredRole="ADMIN">
+                        <PropertyApprovalPage />
+                    </ProtectedRoute>
+                }
             />
         </Routes>
     );
