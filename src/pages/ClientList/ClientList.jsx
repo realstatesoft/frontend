@@ -151,6 +151,12 @@ export default function ClientList() {
                             </p>
                         </div>
                         <div className="d-flex gap-2">
+                            {canEdit && (
+                                <Link to="/clients/register" className="btn btn-primary">
+                                    <i className="bi bi-person-plus me-2"></i>
+                                    Nuevo Prospecto
+                                </Link>
+                            )}
                             {canExport && (
                                 <Button variant="outline-primary" onClick={handleExport} disabled={exporting}>
                                     {exporting ? <Spinner size="sm" className="me-2" /> : <Download className="me-2" />}

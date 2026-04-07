@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container, Card, Form, Alert, Spinner, Stack, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import {
@@ -8,37 +9,14 @@ import {
   InternalInfoSection,
   SearchPreferencesSection,
 } from "./sections";
-
-const INITIAL_FORM = {
-  // Personal
-  firstName: "",
-  lastName: "",
-  birthDate: "",
-  maritalStatus: "",
-  occupation: "",
-  email: "",
-  phone: "",
-  address: "",
-  annualIncome: "",
-  // Internal
-  priority: "Alta",
-  status: "Activo",
-  originChannel: "",
-  comments: "",
-  tags: [],
-  isSearchingProperty: false,
-  // Search preferences
-  budgetRange: "",
-  bedrooms: "",
-  bathrooms: "",
-  propertyTypes: [],
-  preferredZones: [],
-  preferredCharacteristics: [],
-};
+import { useAuth } from "../../hooks/useAuth";
+import { createExternalClient } from "../../services/clients/clientApi";
+import { EMPTY_FORM, formToPayload } from "./utils/clientFormUtils";
 
 export default function RegisterClient() {
   const navigate = useNavigate();
-  const [form, setForm] = useState(INITIAL_FORM);
+  const { user } = useAuth();
+  const [form, setForm] = useState(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -78,11 +56,44 @@ export default function RegisterClient() {
     setLoading(true);
     setError(null);
     try {
-      // TODO: call API to persist client
-      console.log("Submitting client:", form);
+      const payload = formToPayload(form);
+
+      // Combine firstName + lastName into `name` for the external-client endpoint
+      payload.name = [payload.firstName, payload.lastName].filter(Boolean).join(" ");
+      // Map fields expected by external-client endpoint
+      payload.email = payload.userEmail;
+      payload.phone = payload.userPhone;
+      // Inject the logged-in agent's ID
+      payload.agentId = user?.userId ?? null;
+
+      await createExternalClient(payload);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Prospecto registrado",
+        text: "El cliente externo fue creado exitosamente.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
       navigate(-1);
     } catch (err) {
-      setError(err?.message || "Ocurrió un error al guardar el cliente.");
+      const serverMsg =
+        err?.response?.data?.message ||
+        err?.response?.data?.errors?.[0] ||
+        err?.message ||
+        "Ocurrió un error al guardar el cliente.";
+
+      console.error("Error al registrar prospecto:", err?.response?.data ?? err);
+
+      // Show detailed error via SweetAlert2
+      await Swal.fire({
+        icon: "error",
+        title: "Error al registrar",
+        text: serverMsg,
+      });
+
+      setError(serverMsg);
     } finally {
       setLoading(false);
     }
