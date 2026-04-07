@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Container, Spinner, Alert } from 'react-bootstrap';
 import CustomNavbar from '../components/Landing/Navbar';
 import Footer from '../components/Landing/Footer';
@@ -11,9 +11,12 @@ import clientApi from '../services/clients/clientApi';
 const ClientProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const type = searchParams.get('type') || 'AGENT';
 
   useEffect(() => {
     let isCancelled = false;
@@ -21,7 +24,17 @@ const ClientProfilePage = () => {
       try {
         setError(null);
         setLoading(true);
-        const data = await clientApi.getClientProfile(id);
+        let data;
+        if (type === 'EXTERNAL') {
+            data = await clientApi.getExternalClientProfile(id);
+            // Normalize for visual components
+            data.userName = data.name;
+            data.userEmail = data.email;
+            data.userPhone = data.phone;
+            data.isExternal = true;
+        } else {
+            data = await clientApi.getClientProfile(id);
+        }
         if (!isCancelled) {
           setClient(data);
         }
