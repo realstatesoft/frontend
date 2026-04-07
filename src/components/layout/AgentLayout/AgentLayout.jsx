@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import {
   FiGrid, FiUsers, FiHome, FiCalendar,
-  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard,
+  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiUser
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -13,6 +13,7 @@ import RoleRedirect from '../../commons/RoleRedirect';
 
 const AGENT_NAV_ITEMS = [
   { section: 'Principal' },
+  { to: '/agent/perfil', icon: <FiUser />, label: 'Mi Perfil' },
   { to: AGENT_ROUTES.DASHBOARD, icon: <FiGrid />, label: 'Dashboard' },
   { to: AGENT_ROUTES.CLIENTS, icon: <FiUsers />, label: 'Clientes' },
   { to: AGENT_ROUTES.PROPERTIES, icon: <FiHome />, label: 'Propiedades' },
