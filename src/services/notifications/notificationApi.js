@@ -12,6 +12,8 @@ const notificationApi = {
   markAllAsRead: () => api.put(`${BASE}/me/read-all`),
 
   deleteNotification: (id) => api.delete(`${BASE}/${id}`),
+
+  deleteAllNotifications: (params) => api.delete(`${BASE}/me`, { params }),
 };
 
 export default notificationApi;

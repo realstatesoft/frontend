@@ -24,12 +24,16 @@ function CustomNavbar() {
   // ── Notification badge count for ADMIN ──────────────────────
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Normalización de roles para comparaciones case-insensitive
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const isAgent = user?.role?.toUpperCase() === "AGENT";
+
   useEffect(() => {
     const fetchCount = () => {
-      if (isAuthenticated && user?.role === "ADMIN") {
+      if (isAuthenticated && isAdmin) {
         notificationApi.getUnreadCount()
           .then(res => {
-            const count = res?.data?.data?.count ?? res?.data?.count ?? 0;
+            const count = res?.data?.data ?? 0;
             setUnreadCount(count);
           })
           .catch(() => {});
@@ -41,7 +45,7 @@ function CustomNavbar() {
     // Escuchar actualizaciones globales de notificaciones
     window.addEventListener('notificationsUpdated', fetchCount);
     return () => window.removeEventListener('notificationsUpdated', fetchCount);
-  }, [isAuthenticated, user?.role]);
+  }, [isAuthenticated, isAdmin]);
 
   /**
    * Registra un listener global de mousedown para cerrar el dropdown
@@ -107,7 +111,7 @@ function CustomNavbar() {
         {/* Bell icon for ADMIN + Profile icon with dropdown */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
 
-        {isAuthenticated && user?.role === "ADMIN" && (
+        {isAuthenticated && isAdmin && (
           <Link to="/admin/notifications" className="navbar-notification-bell" aria-label="Notificaciones">
             <IoNotificationsOutline size={20} />
             {unreadCount > 0 && (
@@ -145,7 +149,7 @@ function CustomNavbar() {
                   <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
                   </Link>
-                  {user?.role === "AGENT" && (
+                  {isAgent && (
                     <>
                       <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
@@ -157,7 +161,7 @@ function CustomNavbar() {
                     </>
                   )}
 
-                  {user?.role === "ADMIN" && (
+                  {isAdmin && (
                     <>
                       <Link to="/admin/notifications" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoNotificationsOutline size={16} style={{ flexShrink: 0 }} /> Notificaciones

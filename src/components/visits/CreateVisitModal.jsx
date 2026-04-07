@@ -156,12 +156,8 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
                 value={formData.proposedAt ? formData.proposedAt.split('T')[0] : ''}
                 onChange={(e) => {
                   const date = e.target.value;
-                  if (!date) {
-                    setFormData(prev => ({ ...prev, proposedAt: '' }));
-                    return;
-                  }
-                  const currentTime = formData.proposedAt && formData.proposedAt.includes('T') ? formData.proposedAt.split('T')[1] : '09:00';
-                  setFormData(prev => ({ ...prev, proposedAt: `${date}T${currentTime}` }));
+                  setFormData(prev => ({ ...prev, proposedAt: date }));
+                  if (!date) setBusySlots([]);
                 }}
                 required
                 className="border-2"
@@ -224,7 +220,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
                   </>
                 )}
                 
-                {formData.proposedAt && formData.proposedAt.includes('T') && formData.proposedAt.split('T')[1] !== '09:00' && (
+                {formData.proposedAt && formData.proposedAt.includes('T') && (
                   <div className="mt-4 text-center p-3 rounded-md" style={{ backgroundColor: '#f8fafc', border: '1px dashed #2563eb', borderRadius: '8px' }}>
                     <span className="small fw-semibold text-primary">
                       Horario Seleccionado: {new Date(formData.proposedAt).toLocaleString('es-ES', { 
@@ -272,7 +268,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
               variant="dark" 
               type="submit" 
               className="py-3 fw-bold shadow-sm" 
-              disabled={loading || !formData.proposedAt || !formData.proposedAt.includes('T') || formData.proposedAt.endsWith('T09:00')} 
+              disabled={loading || !formData.proposedAt || !formData.proposedAt.includes('T')} 
               style={{ borderRadius: '12px' }}
             >
               {loading ? (

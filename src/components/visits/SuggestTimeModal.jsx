@@ -69,9 +69,9 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
 
   // Generate available slots (07:00 to 19:00)
   const generateAvailableSlots = () => {
-    if (!formData.counterProposedAt || !formData.counterProposedAt.split('T')[0] || loadingAvailability) return [];
-    
     const dateStr = formData.counterProposedAt.split('T')[0];
+    if (!dateStr || loadingAvailability || dateStr !== lastCheckDate) return [];
+    
     const slots = [];
     
     // 07:00 to 18:00
@@ -140,12 +140,8 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                 value={formData.counterProposedAt ? formData.counterProposedAt.split('T')[0] : ''}
                 onChange={(e) => {
                   const date = e.target.value;
-                  if (!date) {
-                    setFormData(prev => ({ ...prev, counterProposedAt: '' }));
-                    return;
-                  }
-                  const currentTime = formData.counterProposedAt && formData.counterProposedAt.includes('T') ? formData.counterProposedAt.split('T')[1] : '09:00';
-                  setFormData(prev => ({ ...prev, counterProposedAt: `${date}T${currentTime}` }));
+                  setFormData(prev => ({ ...prev, counterProposedAt: date }));
+                  if (!date) setBusySlots([]);
                 }}
                 required
                 className="border-2"
@@ -164,13 +160,13 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                   {loadingAvailability && <Spinner animation="border" size="sm" variant="primary" />}
                 </div>
 
-                {!loadingAvailability && availableSlots.length === 0 && (
+                {!loadingAvailability && formData.counterProposedAt.split('T')[0] === lastCheckDate && availableSlots.length === 0 && (
                   <Alert variant="warning" className="small py-2 border-0" style={{ backgroundColor: 'rgba(245, 158, 11, 0.05)', color: '#f59e0b' }}>
                     No tienes horarios libres para este día. Intenta con otra fecha.
                   </Alert>
                 )}
 
-                {!loadingAvailability && availableSlots.length > 0 && (
+                {!loadingAvailability && formData.counterProposedAt.split('T')[0] === lastCheckDate && availableSlots.length > 0 && (
                   <div className="row g-2 overflow-auto" style={{ maxHeight: '240px', padding: '5px' }}>
                     {availableSlots.map((slot, index) => {
                       const slotTime = formatTime(slot.start);
@@ -235,7 +231,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                 variant="primary" 
                 type="submit" 
                 className="py-3 fw-bold shadow-sm" 
-                disabled={!formData.counterProposedAt || !formData.counterProposedAt.includes('T') || formData.counterProposedAt.endsWith('T09:00')} 
+                disabled={!formData.counterProposedAt || !formData.counterProposedAt.includes('T')} 
                 style={{ borderRadius: '12px', backgroundColor: '#2563eb', borderColor: '#2563eb' }}
             >
               ENVIAR PROPUESTA

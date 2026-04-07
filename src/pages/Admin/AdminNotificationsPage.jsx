@@ -5,6 +5,7 @@ import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import notificationApi from '../../services/notifications/notificationApi';
 import Pagination from '../../components/properties/Pagination';
+import ConfirmDialog from '../../components/commons/ConfirmDialog';
 import '../../styles/AdminNotifications.scss';
 
 import { 
@@ -73,13 +74,14 @@ export default function AdminNotificationsPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
   const [actionLoading, setActionLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const latestFetchRef = useRef(0);
 
   // ─── Fetch unread count ──────────────────────────────────────
   const fetchUnreadCount = useCallback(async () => {
     try {
       const res = await notificationApi.getUnreadCount();
-      const count = res?.data?.data?.count ?? res?.data?.count ?? 0;
+      const count = res?.data?.data ?? 0;
       setUnreadCount(count);
     } catch (e) {
       console.error('Error al obtener conteo de no leídas:', e);
@@ -125,10 +127,9 @@ export default function AdminNotificationsPage() {
     try {
       setActionLoading(true);
       await notificationApi.markAsRead(id);
-      setNotifications(prev =>
-        prev.map(n => n.id === id ? { ...n, read: true, readAt: new Date().toISOString() } : n)
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      
+      // Refresh to ensure counts and filters (like UNREAD) are sync'd
+      await fetchNotifications();
       window.dispatchEvent(new Event('notificationsUpdated'));
     } catch (err) {
       console.error(err);
@@ -154,11 +155,45 @@ export default function AdminNotificationsPage() {
     }
   };
 
+  const handleFilteredDeleteAll = async () => {
+    try {
+      setActionLoading(true);
+      setShowDeleteConfirm(false);
+      
+      const params = {};
+      if (filter) params.filter = filter;
+      
+      await notificationApi.deleteAllNotifications(params);
+      
+      setSuccessMsg(filter 
+        ? `Notificaciones de '${activeFilterLabel}' eliminadas` 
+        : 'Todas las notificaciones han sido eliminadas'
+      );
+      setTimeout(() => setSuccessMsg(null), 3000);
+      
+      await fetchNotifications();
+      window.dispatchEvent(new Event('notificationsUpdated'));
+    } catch (err) {
+      console.error(err);
+      setError('Error al eliminar las notificaciones');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       setActionLoading(true);
       await notificationApi.deleteNotification(id);
-      setNotifications(prev => prev.filter(n => n.id !== id));
+      
+      // Refresh to ensure counts and pagination are sync'd.
+      // If was last item on page and not first page, go back
+      if (notifications.length === 1 && currentPage > 1) {
+        setCurrentPage(prev => prev - 1);
+      } else {
+        await fetchNotifications();
+      }
+      
       setSuccessMsg('Notificación eliminada');
       setTimeout(() => setSuccessMsg(null), 3000);
       window.dispatchEvent(new Event('notificationsUpdated'));
@@ -191,22 +226,32 @@ export default function AdminNotificationsPage() {
         <header className="notifications-header">
           <h1>Notificaciones</h1>
           <p className="notifications-subtitle">
-            {unreadCount > 0
-              ? `Tienes ${unreadCount} notificación${unreadCount !== 1 ? 'es' : ''} sin leer`
-              : 'No tienes notificaciones pendientes'
+            {totalElements > 0
+              ? `Viendo ${totalElements} notificación${totalElements !== 1 ? 'es' : ''} en total (${unreadCount} sin leer)`
+              : 'No hay notificaciones en esta vista'
             }
           </p>
-          {unreadCount > 0 && (
-            <div className="header-actions">
+          <div className="header-actions">
+            {unreadCount > 0 && (
               <button
                 className="btn-mark-all"
                 onClick={handleMarkAllAsRead}
                 disabled={actionLoading}
               >
-                ✓ Marcar todas como leídas
+                ✓ Marcar leídas
               </button>
-            </div>
-          )}
+            )}
+            {totalElements > 0 && (
+              <button
+                className="btn-delete-all"
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={actionLoading}
+                style={{ backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '20px', padding: '0.4rem 1rem', fontSize: '0.85rem', fontWeight: 600 }}
+              >
+                🗑️ Eliminar todas
+              </button>
+            )}
+          </div>
         </header>
 
         {/* ── Filter Tabs ──────────────────────────────── */}
@@ -281,7 +326,7 @@ export default function AdminNotificationsPage() {
 
                   {/* Actions */}
                   <div className="notification-actions">
-                    {notification.actionUrl && (
+                    {(notification.actionUrl || notification.data?.propertyId) && (
                       <button
                         className="action-link"
                         onClick={() => handleViewDetails(notification)}
@@ -341,6 +386,20 @@ export default function AdminNotificationsPage() {
           />
         )}
       </Container>
+
+      <ConfirmDialog
+        show={showDeleteConfirm}
+        onHide={() => setShowDeleteConfirm(false)}
+        onConfirm={handleFilteredDeleteAll}
+        title="Confirmar eliminación masiva"
+        message={filter 
+          ? `¿Estás seguro de que deseas eliminar todas las notificaciones de la pestaña "${activeFilterLabel}"? Esta acción no se puede deshacer.`
+          : '¿Estás seguro de que deseas eliminar TODAS las notificaciones? Esta acción no se puede deshacer.'
+        }
+        confirmText="Eliminar todo"
+        variant="danger"
+        loading={actionLoading}
+      />
 
       <Footer />
     </div>
