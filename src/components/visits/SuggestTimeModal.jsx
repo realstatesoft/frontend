@@ -195,7 +195,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                 )}
                 
                 {/* Shows busy slots for context */}
-                {busySlots.length > 0 && (
+                {!loadingAvailability && formData.counterProposedAt.split('T')[0] === lastCheckDate && busySlots.length > 0 && (
                   <div className="mt-4 border-top pt-3">
                     <p className="text-muted mb-2 fw-bold" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ocupado actualmente:</p>
                     <div className="d-flex flex-wrap gap-1">
