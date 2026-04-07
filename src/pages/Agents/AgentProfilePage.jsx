@@ -48,7 +48,14 @@ export default function AgentProfilePage() {
 
   const agentIdLocal = user?.userId || user?.id;
   if (!agentIdLocal) {
-    return null;
+    return (
+      <Container className="py-5 bg-light min-vh-100 d-flex align-items-center justify-content-center">
+        <Alert variant="danger" className="text-center w-100 shadow-sm" style={{ maxWidth: '500px' }}>
+          <h4>Acceso denegado</h4>
+          <p className="mb-0">No se pudo resolver tu identificador personal. Por favor, intenta cerrar sesión e ingresar nuevamente.</p>
+        </Alert>
+      </Container>
+    );
   }
 
   if (loading) {
