@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Container, Card, Form, Alert, Spinner, Stack, Button } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -63,7 +63,7 @@ function clientToForm(client) {
     if (!client) return EMPTY_FORM;
 
     // Split "Juan Pérez" into firstName / lastName (first word vs rest)
-    const fullName = client.userName ?? "";
+    const fullName = client.userName ?? client.name ?? "";
     const spaceIdx = fullName.indexOf(" ");
     const firstName = spaceIdx >= 0 ? fullName.slice(0, spaceIdx) : fullName;
     const lastName = spaceIdx >= 0 ? fullName.slice(spaceIdx + 1) : "";
@@ -181,7 +181,10 @@ function formToPayload(form) {
 export default function EditClient() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { isAuthenticated } = useAuth();
+
+    const type = searchParams.get('type') || 'AGENT';
 
     const [form, setForm] = useState(EMPTY_FORM);
     const [fetchLoading, setFetchLoading] = useState(true);
@@ -193,9 +196,11 @@ export default function EditClient() {
     useEffect(() => {
         let cancelled = false;
 
+        const fetchPromise = type === 'EXTERNAL'
+            ? clientApi.getExternalClientProfile(id)
+            : clientApi.getClientProfile(id);
 
-        clientApi
-            .getClientProfile(id)
+        fetchPromise
             .then((data) => {
                 if (!cancelled) setForm(clientToForm(data));
             })
@@ -215,8 +220,7 @@ export default function EditClient() {
         return () => {
             cancelled = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, navigate]);
+    }, [id, type, navigate]);
 
 
 
@@ -267,7 +271,17 @@ export default function EditClient() {
         setError(null);
         try {
             const payload = formToPayload(form);
-            await clientApi.updateClientProfile(id, payload);
+            
+            if (type === 'EXTERNAL') {
+                payload.name = [payload.firstName, payload.lastName].filter(Boolean).join(" ");
+                payload.email = payload.userEmail;
+                payload.phone = payload.userPhone;
+                
+                await clientApi.updateExternalClientProfile(id, payload);
+            } else {
+                await clientApi.updateClientProfile(id, payload);
+            }
+            
             console.log("Cliente actualizado exitosamente.");
             navigate(-1);
         } catch (err) {
@@ -303,7 +317,7 @@ export default function EditClient() {
                 <Container>
                     <Card className="text-start border-0 shadow-sm rounded-4 p-4 p-md-5">
                         <h3 className="fw-semibold mb-4 text-start">
-                            Editar Cliente Externo
+                            {type === 'EXTERNAL' ? 'Editar Cliente Externo' : 'Editar Cliente'}
                         </h3>
 
                         {error && (
