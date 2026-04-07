@@ -70,7 +70,10 @@ export default function AppRouter() {
                 <Route path="/clients/:id" element={<ClientProfilePage />} />
                 <Route path="/clients/:id/edit" element={<EditClient />} />
 
-                {/* Agent Dashboard */}
+            </Route>
+
+            {/* ── Rutas protegidas (Agent) ───────────────────────── */}
+            <Route element={<ProtectedRoute requiredRole="AGENT" />}>
                 <Route path="/agent" element={<AgentLayout />}>
                     <Route index element={<Navigate to="/agent/dashboard" replace />} />
                     <Route path="perfil" element={<AgentProfilePage />} />
@@ -83,8 +86,10 @@ export default function AppRouter() {
                     <Route path="reportes" element={<ReportsPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                 </Route>
+            </Route>
 
-                {/* Owner Dashboard */}
+            {/* ── Rutas protegidas (Owner) ───────────────────────── */}
+            <Route element={<ProtectedRoute requiredRole="OWNER" />}>
                 <Route path="/owner" element={<OwnerLayout />}>
                     <Route index element={<Navigate to="/owner/dashboard" replace />} />
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
@@ -92,7 +97,9 @@ export default function AppRouter() {
                     <Route path="visitas" element={<OwnerVisitsPage />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
                 </Route>
+            </Route>
 
+            <Route element={<ProtectedRoute />}>
                 {/* Role-based redirect */}
                 <Route path="/dashboard" element={<RoleRedirect />} />
             </Route>
