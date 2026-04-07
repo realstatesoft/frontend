@@ -189,7 +189,7 @@ export default function ClientList() {
                         <Card.Body>
                             <Form onSubmit={handleSearch}>
                                 <Row className="g-3 align-items-end">
-                                    <Col md={4}>
+                                    <Col md={2}>
                                         <Form.Label className="text-muted small mb-1">Buscar</Form.Label>
                                         <InputGroup>
                                             <InputGroup.Text className="bg-white"><Search size={14} /></InputGroup.Text>
@@ -215,6 +215,18 @@ export default function ClientList() {
                                             <option value="">Todos</option>
                                             <option value="ACTIVE">Activo</option>
                                             <option value="INACTIVE">Inactivo</option>
+                                        </Form.Select>
+                                    </Col>
+
+                                    <Col md={2}>
+                                        <Form.Label className="text-muted small mb-1">Origen</Form.Label>
+                                        <Form.Select
+                                            value={filters.internalType || ""}
+                                            onChange={(e) => handleFilterChange("internalType", e.target.value)}
+                                        >
+                                            <option value="">Todos</option>
+                                            <option value="AGENT">Interno</option>
+                                            <option value="EXTERNAL">Externo</option>
                                         </Form.Select>
                                     </Col>
 
@@ -306,6 +318,7 @@ export default function ClientList() {
                                             <th className="border-0 fw-medium">Nombre</th>
                                             <th className="border-0 fw-medium">Email</th>
                                             <th className="border-0 fw-medium">Teléfono</th>
+                                            <th className="border-0 fw-medium">Origen</th>
                                             <th className="border-0 fw-medium">Tipo</th>
                                             <th className="border-0 fw-medium">Estado</th>
                                             <th className="border-0 fw-medium">Registrado</th>
@@ -315,14 +328,14 @@ export default function ClientList() {
                                     <tbody>
                                         {loading ? (
                                             <tr>
-                                                <td colSpan={canEdit ? 8 : 7} className="text-center py-5">
+                                                <td colSpan={canEdit ? 9 : 8} className="text-center py-5">
                                                     <Spinner animation="border" variant="primary" />
                                                     <p className="text-muted mt-2 mb-0">Cargando clientes...</p>
                                                 </td>
                                             </tr>
                                         ) : clients.length === 0 ? (
                                             <tr>
-                                                <td colSpan={canEdit ? 8 : 7} className="text-center py-5 text-muted">
+                                                <td colSpan={canEdit ? 9 : 8} className="text-center py-5 text-muted">
                                                     <Funnel size={32} className="mb-3 opacity-50" />
                                                     <p className="mb-0">No se encontraron clientes con los filtros actuales.</p>
                                                 </td>
@@ -340,10 +353,15 @@ export default function ClientList() {
                                                         </td>
                                                     )}
                                                     <td className="fw-medium text-dark">
-                                                        {client.userName || "N/A"}
+                                                        {client.name || client.userName || "N/A"}
                                                     </td>
-                                                    <td className="text-muted">{client.userEmail || "-"}</td>
-                                                    <td className="text-muted">{client.userPhone || client.phone || "-"}</td>
+                                                    <td className="text-muted">{client.email || client.userEmail || "-"}</td>
+                                                    <td className="text-muted">{client.phone || client.userPhone || "-"}</td>
+                                                    <td>
+                                                        <span className={`badge ${client.internalType === 'EXTERNAL' ? 'bg-success bg-opacity-10 text-success border border-success' : 'bg-primary bg-opacity-10 text-primary border border-primary'}`}>
+                                                            {client.internalType === 'EXTERNAL' ? 'Externo' : 'Interno'}
+                                                        </span>
+                                                    </td>
                                                     <td>
                                                         <span className="badge bg-light text-dark border">
                                                             {client.clientType === "COMPANY" ? "Empresa" : "Particular"}
@@ -361,7 +379,7 @@ export default function ClientList() {
                                                     </td>
                                                     <td className="text-end">
                                                         <Link
-                                                            to={`/clients/${client.id}`}
+                                                            to={`/clients/${client.id}?type=${client.internalType || 'AGENT'}`}
                                                             className="btn btn-sm btn-light me-1"
                                                             title="Ver Perfil"
                                                         >
@@ -370,7 +388,7 @@ export default function ClientList() {
                                                         {canEdit && (
                                                             <>
                                                                 <Link
-                                                                    to={`/clients/${client.id}/edit`}
+                                                                    to={`/clients/${client.id}/edit?type=${client.internalType || 'AGENT'}`}
                                                                     className="btn btn-sm btn-light me-1"
                                                                     title="Editar"
                                                                 >

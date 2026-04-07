@@ -22,6 +22,27 @@ export async function updateClientProfile(id, data) {
 }
 
 /**
+ * Obtiene el perfil de un cliente externo por ID.
+ * @param {number} id - ID del ExternalClient
+ * @returns {Promise<Object>} Datos del cliente
+ */
+export async function getExternalClientProfile(id) {
+  const response = await api.get(`/external-clients/${id}`);
+  return response.data?.data ?? response.data;
+}
+
+/**
+ * Actualiza parcialmente un cliente externo.
+ * @param {number} id - ID del ExternalClient
+ * @param {Object} data - Datos a actualizar
+ * @returns {Promise<Object>} Cliente actualizado
+ */
+export async function updateExternalClientProfile(id, data) {
+  const response = await api.put(`/external-clients/${id}`, data);
+  return response.data?.data ?? response.data;
+}
+
+/**
  * Obtiene lista paginada de clientes filtrados.
  * @param {Object} params - Parámetros: q, status, clientType, createdAtFrom, createdAtTo, page, size, sort
  * @returns {Promise<Object>} Resultado paginado
@@ -67,6 +88,8 @@ export async function updateClientStatus(id, status) {
 export default {
   getClientProfile,
   updateClientProfile,
+  getExternalClientProfile,
+  updateExternalClientProfile,
   searchClients,
   deleteClient,
   exportClients,

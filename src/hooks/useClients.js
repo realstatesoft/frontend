@@ -25,6 +25,7 @@ export default function useClients() {
     q: "",
     status: "",
     clientType: "",
+    internalType: "",
     createdAtFrom: "",
     createdAtTo: "",
     sort: "createdAt,desc",
