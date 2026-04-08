@@ -1,12 +1,10 @@
-import { useState } from 'react';
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
   LineChart, Line, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
-import { FiTrendingUp, FiHome, FiClock, FiPercent, FiDownload } from 'react-icons/fi';
+import { FiTrendingUp, FiHome, FiClock, FiPercent } from 'react-icons/fi';
 import StatCard from '../../components/common/StatCard/StatCard';
 import useReports from '../../hooks/useReports';
-import reportService from '../../services/reportService';
 import { formatCurrency } from '../../utils/formatters';
 import styles from './ReportsPage.module.scss';
 
@@ -18,28 +16,6 @@ export default function ReportsPage() {
   const metrics = report.marketMetrics || {};
   const pieData = report.propertyByType || [];
   const trendData = report.monthlyTrend || [];
-  const [exporting, setExporting] = useState(false);
-
-  async function handleExport() {
-    setExporting(true);
-    let url = null;
-    try {
-      const res = await reportService.exportAgentReport();
-      const disposition = res.headers['content-disposition'] || '';
-      const match = disposition.match(/filename="?([^"]+)"?/);
-      const filename = match ? match[1] : 'reporte-agente.csv';
-      url = URL.createObjectURL(res.data);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.click();
-    } catch {
-      console.error('Error al exportar el reporte');
-    } finally {
-      if (url) URL.revokeObjectURL(url);
-      setExporting(false);
-    }
-  }
 
   if (isLoading) return <p>Cargando reportes...</p>;
 
@@ -50,14 +26,6 @@ export default function ReportsPage() {
           <h1 className={styles.page__title}>Reportes</h1>
           <p className={styles.page__subtitle}>Análisis y métricas del mercado</p>
         </div>
-        <button
-          className="btn btn-outline-primary d-flex align-items-center gap-2"
-          onClick={handleExport}
-          disabled={exporting}
-        >
-          <FiDownload />
-          {exporting ? 'Exportando...' : 'Exportar CSV'}
-        </button>
       </div>
 
       <div className={styles.page__stats}>
