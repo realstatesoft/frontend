@@ -130,7 +130,7 @@ export function clientToForm(client) {
     priority: PRIORITY_MAP[client.priority] ?? client.priority ?? "Alta",
     status: STATUS_MAP[client.status] ?? client.status ?? "Activo",
     originChannel: client.sourceChannel ?? client.originChannel ?? client.origin_channel ?? "",
-    comments: client.comments ?? "",
+    comments: client.notes ?? client.comments ?? "",
     tags: client.tags ?? [],
     isSearchingProperty: client.isSearchingProperty ?? client.is_searching_property ?? false,
     budgetRange,
