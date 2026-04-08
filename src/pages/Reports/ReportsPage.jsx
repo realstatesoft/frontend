@@ -22,20 +22,21 @@ export default function ReportsPage() {
 
   async function handleExport() {
     setExporting(true);
+    let url = null;
     try {
       const res = await reportService.exportAgentReport();
       const disposition = res.headers['content-disposition'] || '';
       const match = disposition.match(/filename="?([^"]+)"?/);
       const filename = match ? match[1] : 'reporte-agente.csv';
-      const url = URL.createObjectURL(res.data);
+      url = URL.createObjectURL(res.data);
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
       link.click();
-      URL.revokeObjectURL(url);
     } catch {
       console.error('Error al exportar el reporte');
     } finally {
+      if (url) URL.revokeObjectURL(url);
       setExporting(false);
     }
   }
