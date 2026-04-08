@@ -3,10 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { CiUser } from "react-icons/ci";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoNotificationsOutline, IoCheckmarkDoneOutline } from "react-icons/io5";
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoShieldOutline, IoNotificationsOutline, IoCheckmarkDoneOutline } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
+import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
 
 function CustomNavbar() {
@@ -149,6 +150,12 @@ function CustomNavbar() {
                   <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
                   </Link>
+                  {user?.role?.toUpperCase() === "ADMIN" && (
+                    <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> Panel de administración
+                    </Link>
+                  )}
+
                   {isAgent && (
                     <>
                       <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Container, Dropdown, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import CustomNavbar from '../../components/Landing/Navbar';
-import Footer from '../../components/Landing/Footer';
 import propertyApi from '../../services/properties/propertyApi';
 import PLACEHOLDER_IMAGE from '../../assets/placeholder_img.png';
 import Pagination from '../../components/properties/Pagination';
@@ -125,9 +123,7 @@ export default function PropertyApprovalPage() {
 
   return (
     <div className="approval-page">
-      <CustomNavbar />
-
-      <Container className="py-5">
+      <Container className="py-4">
         <header className="approval-header">
           <h1>Aprobación de Propiedades</h1>
           <p className="text-muted mb-0">Revisa y aprueba las propiedades enviadas por los agentes y propietarios</p>
@@ -290,7 +286,6 @@ export default function PropertyApprovalPage() {
           />
         )}
       </Container>
-      <Footer />
     </div>
   );
 }
