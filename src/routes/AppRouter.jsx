@@ -39,8 +39,9 @@ import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import UserProfilePage from "../pages/UserProfilePage";
 import PropertyApprovalPage from "../pages/Admin/PropertyApprovalPage";
+import AdminDashboardPage from "../pages/Admin/AdminDashboardPage";
+import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
 import AdminNotificationsPage from "../pages/Admin/AdminNotificationsPage";
-
 
 export default function AppRouter() {
     return (
@@ -102,37 +103,20 @@ export default function AppRouter() {
             <Route element={<ProtectedRoute />}>
                 {/* Role-based redirect */}
                 <Route path="/dashboard" element={<RoleRedirect />} />
+
+                {/* Admin Dashboard */}
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                    <Route path="dashboard" element={<AdminDashboardPage />} />
+                    <Route path="approval" element={<PropertyApprovalPage />} />
+                    <Route path="notifications" element={<AdminNotificationsPage />} />
+                </Route>
             </Route>
 
-            {/* ── Rutas Admin ─────────────────────────────────────── */}
-            <Route
-                path="/admin/approval"
-                element={
-                    <ProtectedRoute requiredRole="ADMIN">
-                        <PropertyApprovalPage />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/notifications"
-                element={
-                    <ProtectedRoute requiredRole="ADMIN">
-                        <AdminNotificationsPage />
-                    </ProtectedRoute>
-                }
-            />
 
             {/* Canonical 404 handler */}
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
-            <Route
-                path="/admin/approval"
-                element={
-                    <ProtectedRoute requiredRole="ADMIN">
-                        <PropertyApprovalPage />
-                    </ProtectedRoute>
-                }
-            />
         </Routes>
     );
 }
