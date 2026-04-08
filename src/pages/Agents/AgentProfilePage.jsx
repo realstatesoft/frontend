@@ -112,14 +112,10 @@ export default function AgentProfilePage() {
   const experienceYears = agent.experienceYears;
   const companyName = agent.companyName || "Valorant Real Estate PY"; // Added fallback logic matching screenshot for consistency
 
-  const rating = agent.avgRating != null ? agent.avgRating : 4.8;
-  const reviewsCount = agent.totalReviews != null ? agent.totalReviews : 156;
-  const stats = agent.stats || {
-    vendidas: 0,
-    alquiladas: 0,
-    total: 0,
-    precioPromedio: "$ 0"
-  };
+  const rating = agent.avgRating;
+  const reviewsCount = agent.totalReviews;
+  const stats = agent.stats;
+  const hasRating = rating != null;
 
   const description = agent.bio || "Este agente aún no ha añadido una descripción a su perfil.";
   const specialties = agent.specialties && agent.specialties.length > 0 ? agent.specialties : [];
@@ -153,42 +149,57 @@ export default function AgentProfilePage() {
                   Agente Inmobiliario {experienceYears && experienceYears > 5 ? 'Senior' : ''} {companyName ? `• ${companyName}` : ''}
                 </p>
               </div>
-              <div className="rating-container">
-                <div className="stars">
-                  {renderStars(rating)}
+              {hasRating && (
+                <div className="rating-container">
+                  <div className="stars">
+                    {renderStars(rating)}
+                  </div>
+                  <span className="rating-text text-nowrap">{rating} ({reviewsCount} reseñas)</span>
                 </div>
-                <span className="rating-text text-nowrap">{rating} ({reviewsCount} reseñas)</span>
-              </div>
+              )}
             </div>
 
-            <div className="agent-stats">
-              <div className="stat-card stat-blue">
-                <span className="stat-value">{stats.vendidas}</span>
-                <span className="stat-label">Vendidas</span>
+            {stats && (
+              <div className="agent-stats">
+                <div className="stat-card stat-blue">
+                  <span className="stat-value">{stats.vendidas}</span>
+                  <span className="stat-label">Vendidas</span>
+                </div>
+                <div className="stat-card stat-green">
+                  <span className="stat-value">{stats.alquiladas}</span>
+                  <span className="stat-label">Alquiladas</span>
+                </div>
+                <div className="stat-card stat-purple">
+                  <span className="stat-value">{stats.total}</span>
+                  <span className="stat-label">Total</span>
+                </div>
+                <div className="stat-card stat-orange">
+                  <span className="stat-value">{stats.precioPromedio}</span>
+                  <span className="stat-label">Precio promedio</span>
+                </div>
               </div>
-              <div className="stat-card stat-green">
-                <span className="stat-value">{stats.alquiladas}</span>
-                <span className="stat-label">Alquiladas</span>
-              </div>
-              <div className="stat-card stat-purple">
-                <span className="stat-value">{stats.total}</span>
-                <span className="stat-label">Total</span>
-              </div>
-              <div className="stat-card stat-orange">
-                <span className="stat-value">{stats.precioPromedio}</span>
-                <span className="stat-label">Precio promedio</span>
-              </div>
-            </div>
+            )}
 
             <div className="action-buttons mt-4">
-              <a 
-                href={whatsappUrl || "#"} 
-                target={whatsappUrl ? "_blank" : undefined}
-                rel="noopener noreferrer"
-                className={`btn-message text-decoration-none ${!whatsappUrl ? "disabled pe-none opacity-50" : ""}`}
-              >
-                <IoPaperPlaneOutline size={18} /> Mensaje
-              </a>
+              {whatsappUrl ? (
+                <a 
+                  href={whatsappUrl} 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-message text-decoration-none"
+                >
+                  <IoPaperPlaneOutline size={18} /> Mensaje
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-message text-decoration-none disabled pe-none opacity-50"
+                  aria-disabled="true"
+                  tabIndex={-1}
+                >
+                  <IoPaperPlaneOutline size={18} /> Mensaje
+                </button>
+              )}
               {phone && (
                 <a href={`tel:${phone}`} className="btn-call text-decoration-none">
                   <IoCallOutline size={18} /> {phone}

@@ -72,7 +72,8 @@ describe('AdminNotificationsPage', () => {
     await waitFor(() => {
       expect(screen.getByText('No hay notificaciones')).toBeInTheDocument();
     });
-    expect(screen.getByText('Aún no has recibido ninguna notificación.')).toBeInTheDocument();
+    const emptyMsg = await screen.findByText('Aún no has recibido ninguna notificación.');
+    expect(emptyMsg).toBeInTheDocument();
   });
 
   it('renders a list of notifications correctly', async () => {
@@ -129,8 +130,9 @@ describe('AdminNotificationsPage', () => {
     await waitFor(() => {
       expect(notificationApi.markAllAsRead).toHaveBeenCalledTimes(1);
     });
-    // Check success feedback message
-    expect(screen.getByText('Todas las notificaciones marcadas como leídas')).toBeInTheDocument();
+    // Check success feedback message (async query to avoid flakiness)
+    const successMsg = await screen.findByText('Todas las notificaciones marcadas como leídas');
+    expect(successMsg).toBeInTheDocument();
   });
 
 });

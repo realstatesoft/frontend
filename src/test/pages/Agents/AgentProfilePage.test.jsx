@@ -68,7 +68,18 @@ describe('AgentProfilePage', () => {
         experienceYears: 6,
         bio: 'Líder en ventas inmobiliarias.',
         specialties: [{ id: 1, name: 'Comercial' }, { id: 2, name: 'Residencial' }],
-        userAvatarUrl: 'https://example.com/avatar.jpg'
+        userAvatarUrl: 'https://example.com/avatar.jpg',
+        avgRating: 4.5,
+        totalReviews: 12,
+        stats: {
+          vendidas: 15,
+          alquiladas: 7,
+          total: 22,
+          precioPromedio: "$ 850.000"
+        },
+        socialMedia: [
+          { platform: "INSTAGRAM", url: "https://instagram.com/carlos" }
+        ]
       }
     });
 
@@ -84,6 +95,21 @@ describe('AgentProfilePage', () => {
     
     // Validating dynamic fields loaded correctly
     expect(screen.getByText('Líder en ventas inmobiliarias.')).toBeInTheDocument();
+    
+    // Validating rating
+    expect(screen.getByText(/4.5/)).toBeInTheDocument();
+    expect(screen.getByText(/12 reseñas/i)).toBeInTheDocument();
+    
+    // Validating stats
+    expect(screen.getByText('15')).toBeInTheDocument();
+    expect(screen.getByText('7')).toBeInTheDocument();
+    expect(screen.getByText('22')).toBeInTheDocument();
+    expect(screen.getByText('$ 850.000')).toBeInTheDocument();
+    
+    // Validating social links
+    const instagramLink = screen.getByLabelText(/Instagram/i);
+    expect(instagramLink).toBeInTheDocument();
+    expect(instagramLink.closest('a')).toHaveAttribute('href', 'https://instagram.com/carlos');
   });
 
   it('handles API errors gracefully and renders internal warnings', async () => {
