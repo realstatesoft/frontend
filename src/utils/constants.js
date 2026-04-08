@@ -18,6 +18,11 @@ export const OWNER_ROUTES = {
   MESSAGES: '/owner/mensajes',
 };
 
+export const ADMIN_ROUTES = {
+  DASHBOARD: '/admin/dashboard',
+  APPROVAL: '/admin/approval',
+};
+
 export const STATUS_COLORS = {
   activo: 'success',
   active: 'success',
