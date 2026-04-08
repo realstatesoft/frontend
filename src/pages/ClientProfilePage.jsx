@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { useParams, Navigate, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../hooks/useAuth";
 import CustomNavbar from "../components/Landing/Navbar";
@@ -14,21 +14,36 @@ const ClientProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const isCancelledRef = useRef(false);
 
+  const type = searchParams.get("type") || "AGENT";
+
   const fetchClient = useCallback(async ({ silent = false } = {}) => {
     try {
       if (!silent) {
         setError(null);
-      }
-      if (!silent) {
         setLoading(true);
       }
-      const data = await clientApi.getClientProfile(id);
+
+      let data;
+      if (type === "EXTERNAL") {
+        data = await clientApi.getExternalClientProfile(id);
+        data = {
+          ...data,
+          userName: data.name,
+          userEmail: data.email,
+          userPhone: data.phone,
+          isExternal: true,
+        };
+      } else {
+        data = await clientApi.getClientProfile(id);
+      }
+
       if (isCancelledRef.current) {
         return;
       }
@@ -49,44 +64,19 @@ const ClientProfilePage = () => {
         setLoading(false);
       }
     }
-  }, [id, navigate]);
+  }, [id, navigate, type]);
 
   useEffect(() => {
     isCancelledRef.current = false;
 
-    const fetchClientSafely = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-        const data = await clientApi.getClientProfile(id);
-        if (!isCancelledRef.current) {
-          setClient(data);
-        }
-      } catch (err) {
-        if (!isCancelledRef.current) {
-          // Si es 404 o 403, redirigir a Not Found (seguridad por oscuridad)
-          if (err.response?.status === 404 || err.response?.status === 403) {
-            navigate('/404', { replace: true });
-          } else if (err.response?.status !== 401) {
-            // Si no es 401 (que maneja el interceptor global), mostrar error genérico
-            setError('No se pudo cargar el perfil del cliente.');
-          }
-        }
-      } finally {
-        if (!isCancelledRef.current) {
-          setLoading(false);
-        }
-      }
-    };
-
     if (isAuthenticated) {
-      fetchClientSafely();
+      fetchClient();
     }
 
     return () => {
       isCancelledRef.current = true;
     };
-  }, [id, isAuthenticated, navigate]);
+  }, [fetchClient, isAuthenticated]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;

@@ -1,0 +1,132 @@
+@use "../../styles/mixins" as *;
+
+.page {
+  @include flex-column;
+  gap: var(--spacing-xl);
+}
+
+.page__header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.page__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.page__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.page__calendar {
+  @include glass-card;
+  padding: var(--spacing-lg);
+
+  // FullCalendar theme overrides
+  :global {
+    .fc {
+      --fc-border-color: var(--color-border);
+      --fc-button-bg-color: var(--color-accent);
+      --fc-button-border-color: var(--color-accent);
+      --fc-button-hover-bg-color: var(--color-accent-hover);
+      --fc-button-hover-border-color: var(--color-accent-hover);
+      --fc-button-active-bg-color: var(--color-accent-hover);
+      --fc-button-active-border-color: var(--color-accent-hover);
+      --fc-today-bg-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+      --fc-page-bg-color: transparent;
+      --fc-neutral-bg-color: var(--color-bg-surface-hover);
+      --fc-list-event-hover-bg-color: var(--color-bg-surface-hover);
+      font-family: inherit;
+    }
+
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+      border-color: var(--color-border);
+    }
+
+    .fc-col-header-cell-cushion,
+    .fc-daygrid-day-number {
+      color: var(--color-text-secondary);
+      text-decoration: none;
+    }
+
+    .fc-toolbar-title {
+      color: var(--color-text-primary);
+      font-size: 1.125rem !important;
+      font-weight: 600;
+    }
+
+    .fc-button {
+      font-size: 0.8125rem !important;
+      border-radius: var(--radius-sm) !important;
+      padding: 6px 12px !important;
+    }
+
+    .fc-event {
+      border: none;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .fc-daygrid-event-dot {
+      display: none;
+    }
+  }
+}
+
+.page__modal {
+  position: fixed;
+  inset: 0;
+  @include flex-center;
+  z-index: 200;
+}
+
+.page__modalOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.page__modalContent {
+  @include glass-card;
+  position: relative;
+  padding: var(--spacing-xl);
+  max-width: 420px;
+  width: 90%;
+  z-index: 1;
+}
+
+.page__modalTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.page__modalField {
+  margin-bottom: var(--spacing-sm);
+}
+
+.page__modalLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.page__modalValue {
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.page__modalClose {
+  margin-top: var(--spacing-md);
+}

@@ -123,8 +123,8 @@ export default function PropertyContactCard({ property }) {
           {experienceYears != null
             ? `${experienceYears} años de experiencia`
             : hasAgent
-            ? "Agente inmobiliario"
-            : "Propietario"}
+              ? "Agente inmobiliario"
+              : "Propietario"}
         </p>
 
         {(rating != null || totalReviews > 0) && (
@@ -174,7 +174,8 @@ export default function PropertyContactCard({ property }) {
         show={showVisitModal}
         onHide={() => setShowVisitModal(false)}
         property={property}
-        onSuccess={() => 
+        agentId={property?.agentId}
+        onSuccess={() =>
           Swal.fire({
             icon: "success",
             title: "¡Éxito!",

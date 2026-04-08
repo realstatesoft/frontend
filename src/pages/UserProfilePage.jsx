@@ -1,30 +1,22 @@
 import { useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
-import {
-  CheckLg,
-  Envelope,
-  Pencil,
-  Person,
-  Tag,
-  Telephone,
-  XLg,
-} from "react-bootstrap-icons";
 import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
-
-// ─── Modal de edición ─────────────────────────────────────────────────────────
+import { CiUser, CiMail, CiPhone } from "react-icons/ci";
+import { IoPencilOutline, IoCloseOutline, IoCheckmarkOutline } from "react-icons/io5";
+import { LuTag } from "react-icons/lu";
 
 function EditProfileModal({ profile, onClose, onSaved }) {
   const [form, setForm] = useState({
-    name:      profile?.name      || "",
-    phone:     profile?.phone     || "",
+    name: profile?.name || "",
+    phone: profile?.phone || "",
     avatarUrl: profile?.avatarUrl || "",
   });
-  const [saving, setSaving]   = useState(false);
-  const [error,  setError]    = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -37,8 +29,8 @@ function EditProfileModal({ profile, onClose, onSaved }) {
     setError(null);
     try {
       const { data: res } = await api.put("/users/me", {
-        name:      form.name,
-        phone:     form.phone,
+        name: form.name,
+        phone: form.phone,
         avatarUrl: form.avatarUrl,
       });
       onSaved(res.data);
@@ -49,9 +41,10 @@ function EditProfileModal({ profile, onClose, onSaved }) {
     }
   }
 
-  // Cerrar con Escape
   useEffect(() => {
-    function onKey(e) { if (e.key === "Escape") onClose(); }
+    function onKey(e) {
+      if (e.key === "Escape") onClose();
+    }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
@@ -59,25 +52,22 @@ function EditProfileModal({ profile, onClose, onSaved }) {
   return (
     <div className="uedit-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="uedit-modal" role="dialog" aria-modal="true" aria-labelledby="uedit-title">
-
-        {/* Header */}
         <div className="uedit-header">
           <h5 className="uedit-title" id="uedit-title">
-            <Pencil size={18} />
+            <IoPencilOutline size={18} />
             Editar Perfil
           </h5>
           <button className="uedit-close-btn" onClick={onClose} aria-label="Cerrar">
-            <XLg size={22} />
+            <IoCloseOutline size={22} />
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="uedit-form">
           {error && <div className="uedit-error">{error}</div>}
 
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-name">
-              <Person size={15} /> Nombre completo
+              <CiUser size={15} /> Nombre completo
             </label>
             <input
               id="uedit-name"
@@ -93,7 +83,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
 
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-phone">
-              <Telephone size={15} /> Teléfono
+              <CiPhone size={15} /> Teléfono
             </label>
             <input
               id="uedit-phone"
@@ -109,7 +99,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
 
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-avatar">
-              <Person size={15} /> URL de foto de perfil
+              <CiUser size={15} /> URL de foto de perfil
             </label>
             <input
               id="uedit-avatar"
@@ -120,49 +110,42 @@ function EditProfileModal({ profile, onClose, onSaved }) {
               onChange={handleChange}
               placeholder="https://ejemplo.com/foto.jpg"
             />
-            {/* Preview de la imagen si se ingresa URL */}
             {form.avatarUrl && (
               <div className="uedit-avatar-preview">
                 <img
                   src={form.avatarUrl}
                   alt="Preview"
-                  onError={(e) => { e.target.style.display = "none"; }}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
                 />
               </div>
             )}
           </div>
 
-          {/* Footer */}
           <div className="uedit-footer">
             <button type="button" className="uedit-btn-cancel" onClick={onClose} disabled={saving}>
               Cancelar
             </button>
             <button type="submit" className="uedit-btn-save" disabled={saving}>
-              {saving ? (
-                <span className="uedit-spinner" />
-              ) : (
-                <CheckLg size={16} />
-              )}
+              {saving ? <span className="uedit-spinner" /> : <IoCheckmarkOutline size={16} />}
               {saving ? "Guardando…" : "Guardar cambios"}
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );
 }
 
-// ─── Página principal ─────────────────────────────────────────────────────────
-
 const UserProfilePage = () => {
-  const location    = useLocation();
+  const location = useLocation();
   const { isAuthenticated, token } = useAuth();
 
-  const [profile,     setProfile]     = useState(null);
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState(null);
-  const [editOpen,    setEditOpen]    = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
@@ -182,10 +165,11 @@ const UserProfilePage = () => {
     };
 
     if (isAuthenticated) fetchProfile();
-    return () => { isCancelled = true; };
+    return () => {
+      isCancelled = true;
+    };
   }, [isAuthenticated, token]);
 
-  // Callback cuando el modal guarda exitosamente
   function handleSaved(updatedProfile) {
     setProfile(updatedProfile);
     setEditOpen(false);
@@ -218,10 +202,10 @@ const UserProfilePage = () => {
   }
 
   const fields = [
-    { label: "Full Name", value: profile?.name,  icon: <Person size={16} /> },
-    { label: "Email",     value: profile?.email, icon: <Envelope size={16} /> },
-    { label: "Phone",     value: profile?.phone, icon: <Telephone size={16} /> },
-    { label: "Role",      value: profile?.role,  icon: <Tag size={14} />, isRole: true },
+    { label: "Full Name", value: profile?.name, icon: <CiUser size={16} /> },
+    { label: "Email", value: profile?.email, icon: <CiMail size={16} /> },
+    { label: "Phone", value: profile?.phone, icon: <CiPhone size={16} /> },
+    { label: "Role", value: profile?.role, icon: <LuTag size={14} />, isRole: true },
   ];
 
   return (
@@ -230,83 +214,66 @@ const UserProfilePage = () => {
 
       <Container className="py-5">
         <div className="uprofile-card">
-
-          {/* Banner */}
           <div className="uprofile-banner" />
 
-          {/* Toast de éxito */}
           {saveSuccess && (
             <div className="uprofile-toast">
-              <CheckLg size={16} />
+              <IoCheckmarkOutline size={16} />
               Perfil actualizado correctamente
             </div>
           )}
 
-          {/* Header */}
           <div className="uprofile-header">
             <div className="uprofile-avatar-group">
               {profile?.avatarUrl ? (
-                <img
-                  src={profile.avatarUrl}
-                  alt={profile.name || "Avatar"}
-                  className="uprofile-avatar"
-                />
+                <img src={profile.avatarUrl} alt={profile.name || "Avatar"} className="uprofile-avatar" />
               ) : (
                 <div className="uprofile-avatar uprofile-avatar--placeholder">
-                  <Person size={54} />
+                  <CiUser size={54} />
                 </div>
               )}
               <div className="uprofile-identity">
                 <h2 className="uprofile-name">{profile?.name || "Sin nombre"}</h2>
                 <p className="uprofile-email">
-                  <Envelope size={15} className="uprofile-email-icon" />
+                  <CiMail size={15} className="uprofile-email-icon" />
                   {profile?.email || ""}
                 </p>
               </div>
             </div>
 
             <button className="uprofile-edit-btn" onClick={() => setEditOpen(true)}>
-              <Pencil size={15} />
+              <IoPencilOutline size={15} />
               Editar Perfil
             </button>
           </div>
 
-          {/* Información Personal */}
           <div className="uprofile-section">
             <h5 className="uprofile-section-title">Información Personal</h5>
             <div className="uprofile-fields">
               {fields.map(({ label, value, icon, isRole }) => (
                 <div className="uprofile-field" key={label}>
                   <label className="uprofile-label">
-                    {icon}{label}
+                    {icon}
+                    {label}
                   </label>
                   {isRole ? (
-                    <div><span className="uprofile-role-badge">{value || "—"}</span></div>
+                    <div>
+                      <span className="uprofile-role-badge">{value || "—"}</span>
+                    </div>
                   ) : (
-                    <input
-                      type="text"
-                      className="uprofile-input"
-                      value={value || "—"}
-                      disabled
-                    />
+                    <input type="text" className="uprofile-input" value={value || "—"} disabled />
                   )}
                 </div>
               ))}
             </div>
           </div>
-
         </div>
       </Container>
 
       <Footer />
 
-      {/* Modal de edición */}
       {editOpen && (
-        <EditProfileModal
-          profile={profile}
-          onClose={() => setEditOpen(false)}
-          onSaved={handleSaved}
-        />
+        <EditProfileModal profile={profile} onClose={() => setEditOpen(false)} onSaved={handleSaved} />
       )}
     </div>
   );

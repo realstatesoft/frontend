@@ -5,6 +5,7 @@ import logo from '../../assets/Logotipo.png';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
+import { ADMIN_ROUTES } from '../../utils/constants';
 import './Login.scss'; 
 
 export default function LogIn() {
@@ -14,11 +15,27 @@ export default function LogIn() {
     const [searchParams] = useSearchParams();
 
     // Prioridad: 1. location.state.from (SPA) 2. query param "redirect" (Interceptor) 3. "/"
+    const isValidRedirect = (url) => {
+        if (typeof url !== 'string') return false;
+        const path = url.split(/[?#]/)[0];
+        return path.startsWith("/") && !path.startsWith("//");
+    };
+
     let redirectParam = searchParams.get("redirect");
-    if (redirectParam && (!redirectParam.startsWith("/") || redirectParam.startsWith("//") || redirectParam.includes("://"))) {
+    if (!isValidRedirect(redirectParam)) {
         redirectParam = null;
     }
-    const from = location.state?.from?.pathname || redirectParam || "/";
+
+    let fromState = location.state?.from;
+    if (fromState && typeof fromState === 'object') {
+        fromState = `${fromState.pathname || ''}${fromState.search || ''}${fromState.hash || ''}`;
+    }
+    
+    if (!isValidRedirect(fromState)) {
+        fromState = null;
+    }
+
+    const from = fromState || redirectParam || "/";
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,8 +66,11 @@ export default function LogIn() {
 
             if (result.data) {
                 login(result.data);
-                // Redirigir al destino original o al home
-                navigate(from, { replace: true });
+                const isAdmin = result.data.role?.toUpperCase() === 'ADMIN';
+                const isDefaultHome = from === '/' || from === '';
+                const destination =
+                    isAdmin && isDefaultHome ? ADMIN_ROUTES.DASHBOARD : from;
+                navigate(destination, { replace: true });
             } else {
             setErrorMessage("Respuesta inesperada del servidor");
             }

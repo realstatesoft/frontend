@@ -1,0 +1,30 @@
+@use "../../../styles/mixins" as *;
+
+.agentLayout {
+  min-height: 100vh;
+  background: var(--color-bg-primary);
+}
+
+.agentLayout__content {
+  margin-left: var(--sidebar-width);
+  padding-top: var(--topbar-height);
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+
+  &--collapsed {
+    margin-left: var(--sidebar-collapsed-width);
+  }
+
+  @include responsive(tablet) {
+    margin-left: 0;
+  }
+}
+
+.agentLayout__main {
+  padding: var(--spacing-xl);
+  @include scrollbar-dark;
+
+  @include responsive(mobile) {
+    padding: var(--spacing-md);
+  }
+}
