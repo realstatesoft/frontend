@@ -68,7 +68,6 @@ const ClientProfilePage = () => {
 
   useEffect(() => {
     isCancelledRef.current = false;
-
     if (isAuthenticated) {
       fetchClient();
     }
