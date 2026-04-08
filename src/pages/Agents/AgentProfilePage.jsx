@@ -130,7 +130,7 @@ export default function AgentProfilePage() {
         <div className="profile-content mt-4">
           {/* Información General y Detalles DB */}
           <div className="profile-section">
-            <h4 className="section-title">Información General</h4>
+            <h4 className="section-title">Información General </h4>
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label className="form-label">Nombre Completo</label>
