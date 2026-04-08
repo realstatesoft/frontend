@@ -109,19 +109,10 @@ export default function AppRouter() {
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="dashboard" element={<AdminDashboardPage />} />
                     <Route path="approval" element={<PropertyApprovalPage />} />
+                    <Route path="notifications" element={<AdminNotificationsPage />} />
                 </Route>
             </Route>
 
-
-            {/* ── Rutas Admin ─────────────────────────────────────── */}
-            <Route
-                path="/admin/notifications"
-                element={
-                    <ProtectedRoute requiredRole="ADMIN">
-                        <AdminNotificationsPage />
-                    </ProtectedRoute>
-                }
-            />
 
             {/* Canonical 404 handler */}
             <Route path="/404" element={<NotFoundPage />} />

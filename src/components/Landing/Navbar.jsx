@@ -3,15 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { CiUser } from "react-icons/ci";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoShieldOutline } from "react-icons/io5";
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoShieldOutline, IoNotificationsOutline, IoCheckmarkDoneOutline } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
 import { ADMIN_ROUTES } from "../../utils/constants";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoNotificationsOutline, IoCheckmarkDoneOutline } from "react-icons/io5";
-import { MdFavoriteBorder } from "react-icons/md";
-import { FaRegTrashAlt } from "react-icons/fa";
-import Logotipo from "../../assets/Logotipo.png";
 import notificationApi from "../../services/notifications/notificationApi";
 
 function CustomNavbar() {
