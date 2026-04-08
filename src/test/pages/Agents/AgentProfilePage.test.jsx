@@ -92,7 +92,7 @@ describe('AgentProfilePage', () => {
 
 
     // Validating dynamic fields loaded correctly
-    expect(screen.getByText('Líder en ventas inmobiliarias.')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Líder en ventas inmobiliarias.')).toBeInTheDocument();
     
     // Validating rating
     expect(screen.getByText(/4.5/)).toBeInTheDocument();

@@ -133,28 +133,28 @@ export default function AgentProfilePage() {
             <h4 className="section-title">Información General</h4>
             <div className="row">
               <div className="col-md-6 mb-3">
-                <label className="form-label">Nombre Completo</label>
-                <input type="text" className="form-control profile-input" value={name} readOnly />
+                <label htmlFor="agent-name" className="form-label">Nombre Completo</label>
+                <input id="agent-name" type="text" className="form-control profile-input" value={name} readOnly />
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Teléfono</label>
-                <input type="text" className="form-control profile-input" value={phone} readOnly />
+                <label htmlFor="agent-phone" className="form-label">Teléfono</label>
+                <input id="agent-phone" type="text" className="form-control profile-input" value={phone} readOnly />
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Compañía / Agencia</label>
-                <input type="text" className="form-control profile-input" value={companyName} readOnly />
+                <label htmlFor="agent-company" className="form-label">Compañía / Agencia</label>
+                <input id="agent-company" type="text" className="form-control profile-input" value={companyName} readOnly />
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Años de Experiencia</label>
-                <input type="text" className="form-control profile-input" value={experienceYears + (experienceYears == 1 ? " año" : " años")} readOnly />
+                <label htmlFor="agent-experience" className="form-label">Años de Experiencia</label>
+                <input id="agent-experience" type="text" className="form-control profile-input" value={experienceYears + (experienceYears == 1 ? " año" : " años")} readOnly />
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Número de Licencia</label>
-                <input type="text" className="form-control profile-input" value={licenseNumber} readOnly />
+                <label htmlFor="agent-license" className="form-label">Número de Licencia</label>
+                <input id="agent-license" type="text" className="form-control profile-input" value={licenseNumber} readOnly />
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Correo Electrónico</label>
-                <input type="text" className="form-control profile-input" value={email} readOnly />
+                <label htmlFor="agent-email" className="form-label">Correo Electrónico</label>
+                <input id="agent-email" type="text" className="form-control profile-input" value={email} readOnly />
               </div>
             </div>
           </div>
@@ -164,8 +164,9 @@ export default function AgentProfilePage() {
             <h4 className="section-title">Información Profesional</h4>
             
             <div className="mb-4">
-              <label className="form-label">Biografía</label>
+              <label htmlFor="agent-bio" className="form-label">Biografía</label>
               <textarea 
+                id="agent-bio"
                 className="form-control profile-textarea" 
                 rows="5" 
                 value={bio} 
