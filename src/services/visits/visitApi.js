@@ -1,5 +1,21 @@
 import api from "../api";
 
+// ─── AVAILABILITY ─────────────────────────────────────────────
+
+/**
+ * Obtiene los slots ocupados de un agente en una fecha.
+ * GET /agents/{agentId}/availability?date=YYYY-MM-DD
+ * @param {number} agentId - ID del perfil de agente
+ * @param {string} date - Fecha en formato YYYY-MM-DD
+ * @returns {Promise<Array<{startTime: string, endTime: string, reason: string}>>}
+ */
+export async function getAgentAvailability(agentId, date) {
+  const response = await api.get(`/agents/${agentId}/availability`, {
+    params: { date }
+  });
+  return response.data?.data ?? [];
+}
+
 // ─── QUERIES ──────────────────────────────────────────────────
 
 /**
@@ -80,6 +96,7 @@ export async function cancelVisitRequest(id) {
 }
 
 export default {
+  getAgentAvailability,
   getMyVisitRequestsAsAgent,
   getMyVisitRequestsAsBuyer,
   getVisitRequestsByProperty,

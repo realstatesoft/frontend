@@ -12,5 +12,9 @@ export default function RoleRedirect() {
     return <Navigate to="/agent/dashboard" replace />;
   }
 
+  if (user?.role?.toUpperCase() === 'ADMIN') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
   return <Navigate to="/owner/dashboard" replace />;
 }

@@ -3,10 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { CiUser } from "react-icons/ci";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline } from "react-icons/io5";
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoShieldOutline, IoNotificationsOutline, IoCheckmarkDoneOutline } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
+import { ADMIN_ROUTES } from "../../utils/constants";
+import notificationApi from "../../services/notifications/notificationApi";
 
 function CustomNavbar() {
   const navigate = useNavigate();
@@ -19,6 +21,32 @@ function CustomNavbar() {
 
   // Ref adjunto al contenedor del dropdown para detectar clics fuera de el
   const dropdownRef = useRef(null);
+
+  // ── Notification badge count for ADMIN ──────────────────────
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Normalización de roles para comparaciones case-insensitive
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+  const isAgent = user?.role?.toUpperCase() === "AGENT";
+
+  useEffect(() => {
+    const fetchCount = () => {
+      if (isAuthenticated && isAdmin) {
+        notificationApi.getUnreadCount()
+          .then(res => {
+            const count = res?.data?.data ?? 0;
+            setUnreadCount(count);
+          })
+          .catch(() => {});
+      }
+    };
+
+    fetchCount();
+
+    // Escuchar actualizaciones globales de notificaciones
+    window.addEventListener('notificationsUpdated', fetchCount);
+    return () => window.removeEventListener('notificationsUpdated', fetchCount);
+  }, [isAuthenticated, isAdmin]);
 
   /**
    * Registra un listener global de mousedown para cerrar el dropdown
@@ -81,7 +109,18 @@ function CustomNavbar() {
           </Nav>
         </Navbar.Collapse>
 
-        {/* Icono de perfil con dropdown condicional segun estado de sesion */}
+        {/* Bell icon for ADMIN + Profile icon with dropdown */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+
+        {isAuthenticated && isAdmin && (
+          <Link to="/admin/notifications" className="navbar-notification-bell" aria-label="Notificaciones">
+            <IoNotificationsOutline size={20} />
+            {unreadCount > 0 && (
+              <span className="bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </Link>
+        )}
+
         <div className="profile-dropdown-wrapper" ref={dropdownRef}>
           <button
             className="profile-avatar-btn"
@@ -111,13 +150,38 @@ function CustomNavbar() {
                   <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
                   </Link>
-                  <Link to="/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
-                  </Link>
-                  {user?.role === "AGENT" && (
-                    <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
+                  {user?.role?.toUpperCase() === "ADMIN" && (
+                    <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> Panel de administración
                     </Link>
+                  )}
+
+                  {isAgent && (
+                    <>
+                      <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
+                      </Link>
+                    
+                      <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
+                      </Link>
+                    </>
+                  )}
+
+                  {isAdmin && (
+                    <>
+                      <Link to="/admin/notifications" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoNotificationsOutline size={16} style={{ flexShrink: 0 }} /> Notificaciones
+                        {unreadCount > 0 && (
+                          <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
+                            {unreadCount}
+                          </span>
+                        )}
+                      </Link>
+                      <Link to="/admin/approval" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoCheckmarkDoneOutline size={16} style={{ flexShrink: 0 }} /> Aprobación de propiedades
+                      </Link>
+                    </>
                   )}
 
                   <hr className="profile-dropdown-divider" />
@@ -138,6 +202,8 @@ function CustomNavbar() {
               )}
             </div>
           )}
+        </div>
+
         </div>
 
         {!isAuthenticated && (
