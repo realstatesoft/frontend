@@ -4,10 +4,41 @@ import { Container, Spinner, Alert, Button } from "react-bootstrap";
 import { useAuth } from "../../hooks/useAuth";
 import agentApi from "../../services/agents/agentApi";
 import { getWhatsAppLink } from "../../utils/whatsapp";
-import { IoPaperPlaneOutline, IoCallOutline, IoLogoInstagram, IoLogoFacebook, IoGlobeOutline, IoLinkOutline, IoPencilOutline, IoCheckmarkOutline, IoCloseOutline } from "react-icons/io5";
+import {
+  IoPaperPlaneOutline,
+  IoCallOutline,
+  IoLogoInstagram,
+  IoLogoFacebook,
+  IoLogoLinkedin,
+  IoLogoTwitter,
+  IoLogoTiktok,
+  IoPencilOutline,
+  IoStar,
+  IoStarHalf,
+  IoStarOutline
+} from "react-icons/io5";
 import "./AgentProfilePage.scss";
 
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
+
+const renderStars = (rating) => {
+  // Aseguramos de parsear correctamente el número, reemplazando comas por puntos en caso de venir de la DB/Locale
+  const safeRating = parseFloat(String(rating).replace(',', '.'));
+  const finalRating = isNaN(safeRating) ? 0 : safeRating;
+  
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    // Tolerancia para evitar problemas de precisión en javascript (ej. 4.9999)
+    if (finalRating >= i - 0.05) {
+      stars.push(<IoStar key={i} color="#ffc107" />);
+    } else if (finalRating >= i - 0.55) {
+      stars.push(<IoStarHalf key={i} color="#ffc107" />);
+    } else {
+      stars.push(<IoStarOutline key={i} color="#ffc107" />);
+    }
+  }
+  return stars;
+};
 
 export default function AgentProfilePage() {
   const { user } = useAuth();
@@ -77,12 +108,33 @@ export default function AgentProfilePage() {
   const name = agent.userName || "Agente Inmobiliario";
   const avatarUrl = agent.userAvatarUrl || DEFAULT_AVATAR;
   const phone = agent.userPhone;
-  const whatsappUrl = getWhatsAppLink(phone);
+  const whatsappUrl = phone ? getWhatsAppLink(phone) : null;
   const experienceYears = agent.experienceYears;
-  
-  // As recommended in plan, defaults/mocks if the backend doesn't provide them yet
-  const descriptionFallback = agent.aboutMe || `${name} ha sido un profesional destacado y líder innovador en el sector inmobiliario. Como líder dedicado con amplios conocimientos y la convicción compartida de que los bienes raíces son un trabajo de servicio al cliente, siempre prioriza los intereses de quienes confían en él.\n\n${name} se apasiona por ayudar a las personas a cumplir sus sueños inmobiliarios, ya sea que compren su primera vivienda, reduzcan su tamaño, inviertan o realicen cualquier transacción. Su amplio conocimiento de las condiciones del mercado y tendencias lo convierten en la persona ideal a su lado.`;
-  const specialties = agent.specialties && agent.specialties.length > 0 ? agent.specialties : ["Agente de comprador", "Propiedades de inversión", "Reubicación"];
+  const companyName = agent.companyName || "Valorant Real Estate PY"; // Added fallback logic matching screenshot for consistency
+
+  const rating = agent.avgRating != null ? agent.avgRating : 4.8;
+  const reviewsCount = agent.totalReviews != null ? agent.totalReviews : 156;
+  const stats = agent.stats || {
+    vendidas: 0,
+    alquiladas: 0,
+    total: 0,
+    precioPromedio: "$ 0"
+  };
+
+  const description = agent.bio || "Este agente aún no ha añadido una descripción a su perfil.";
+  const specialties = agent.specialties && agent.specialties.length > 0 ? agent.specialties : [];
+
+  const socialMedia = agent.socialMedia || [];
+  const getSocialLink = (platformName) => {
+    const found = socialMedia.find(s => s.platform === platformName);
+    return found ? found.url : null;
+  };
+
+  const instagramLink = getSocialLink("INSTAGRAM");
+  const facebookLink = getSocialLink("FACEBOOK");
+  const linkedinLink = getSocialLink("LINKEDIN");
+  const twitterLink = getSocialLink("TWITTER");
+  const tiktokLink = getSocialLink("TIKTOK");
 
   return (
     <div className="agent-profile-page">
@@ -98,31 +150,58 @@ export default function AgentProfilePage() {
               <div>
                 <h1 className="agent-name">{name}</h1>
                 <p className="agent-title">
-                  Agente Inmobiliario {experienceYears && experienceYears > 5 ? 'Senior' : ''} • Valorant Real Estate PY
+                  Agente Inmobiliario {experienceYears && experienceYears > 5 ? 'Senior' : ''} {companyName ? `• ${companyName}` : ''}
                 </p>
               </div>
-              <Button 
-                variant="outline-primary" 
-                size="sm" 
-                onClick={() => alert("Compañero: Aquí va la funcionalidad del modal para editar todo el perfil (Ticket pendiente)")}>
-                <IoPencilOutline className="me-1" /> Editar Perfil
-              </Button>
+              <div className="rating-container">
+                <div className="stars">
+                  {renderStars(rating)}
+                </div>
+                <span className="rating-text text-nowrap">{rating} ({reviewsCount} reseñas)</span>
+              </div>
             </div>
 
-            <div className="action-buttons mt-2">
+            <div className="agent-stats">
+              <div className="stat-card stat-blue">
+                <span className="stat-value">{stats.vendidas}</span>
+                <span className="stat-label">Vendidas</span>
+              </div>
+              <div className="stat-card stat-green">
+                <span className="stat-value">{stats.alquiladas}</span>
+                <span className="stat-label">Alquiladas</span>
+              </div>
+              <div className="stat-card stat-purple">
+                <span className="stat-value">{stats.total}</span>
+                <span className="stat-label">Total</span>
+              </div>
+              <div className="stat-card stat-orange">
+                <span className="stat-value">{stats.precioPromedio}</span>
+                <span className="stat-label">Precio promedio</span>
+              </div>
+            </div>
+
+            <div className="action-buttons mt-4">
               <a 
                 href={whatsappUrl || "#"} 
                 target={whatsappUrl ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className="btn-message text-decoration-none"
+                className={`btn-message text-decoration-none ${!whatsappUrl ? "disabled pe-none opacity-50" : ""}`}
               >
-                <IoPaperPlaneOutline size={18} /> Message
+                <IoPaperPlaneOutline size={18} /> Mensaje
               </a>
               {phone && (
                 <a href={`tel:${phone}`} className="btn-call text-decoration-none">
                   <IoCallOutline size={18} /> {phone}
                 </a>
               )}
+              
+              {/* Botón estático sugerido */}
+              <button 
+                className="btn-call text-decoration-none" 
+                onClick={(e) => { e.preventDefault(); alert("Función Editar Perfil aún no disponible."); }}
+              >
+                <IoPencilOutline size={18} /> Editar Perfil
+              </button>
             </div>
           </div>
         </div>
@@ -131,35 +210,41 @@ export default function AgentProfilePage() {
         <div className="details-card">
           <div className="about-section">
             <h3 className="section-title mb-3">Sobre mí</h3>
-            {descriptionFallback.split('\n\n').map((paragraph, idx) => (
+            {description.split('\n').map((paragraph, idx) => (
               <p key={idx}>{paragraph}</p>
             ))}
           </div>
 
-          <div className="specialties-section">
-            <h3 className="section-title">Especialidades</h3>
-            <div className="tags-container">
-              {specialties.map((spec, index) => (
-                <span key={index} className="specialty-tag">{spec}</span>
-              ))}
-            </div>
-          </div>
-
-          {experienceYears != null && (
-            <div className="experience-section">
-              {experienceYears} años de experiencia
+          {specialties.length > 0 && (
+            <div className="specialties-section">
+              <h3 className="section-title">Especialidades</h3>
+              <div className="tags-container">
+                {specialties.map((spec, index) => (
+                  <span key={index} className="specialty-tag">{spec.name}</span>
+                ))}
+              </div>
             </div>
           )}
 
-          <div className="links-section">
-            <a href="#">
-              <IoLinkOutline size={18} /> Visita la página del equipo
-            </a>
-            <div className="social-icons">
-              <a href="#" aria-label="Instagram"><IoLogoInstagram /></a>
-              <a href="#" aria-label="Facebook"><IoLogoFacebook /></a>
+          {experienceYears != null && (
+            <div className="experience-section">
+              <h3 className="section-title">Experiencia</h3>
+              <p>{experienceYears} años de experiencia en el mercado inmobiliario.</p>
             </div>
-          </div>
+          )}
+
+          {(instagramLink || facebookLink || linkedinLink || twitterLink || tiktokLink) && (
+            <div className="links-section">
+              <h3 className="section-title mb-3">Redes Sociales</h3>
+              <div className="social-icons">
+                {instagramLink && <a href={instagramLink} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IoLogoInstagram /></a>}
+                {facebookLink && <a href={facebookLink} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><IoLogoFacebook /></a>}
+                {linkedinLink && <a href={linkedinLink} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><IoLogoLinkedin /></a>}
+                {twitterLink && <a href={twitterLink} target="_blank" rel="noopener noreferrer" aria-label="Twitter"><IoLogoTwitter /></a>}
+                {tiktokLink && <a href={tiktokLink} target="_blank" rel="noopener noreferrer" aria-label="TikTok"><IoLogoTiktok /></a>}
+              </div>
+            </div>
+          )}
         </div>
       </Container>
     </div>
