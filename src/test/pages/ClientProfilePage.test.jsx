@@ -179,9 +179,10 @@ describe('ClientProfilePage', () => {
 
       renderPage('1', 'AGENT');
 
+      // Esperar a que el spinner desaparezca usando el mismo selector que el resto del spec:
+      // react-bootstrap Spinner renderiza con class spinner-border, sin role="status"
       await waitFor(() =>
-        // el spinner desaparece = carga terminó
-        expect(screen.queryByRole('status')).not.toBeInTheDocument()
+        expect(document.querySelector('.spinner-border')).toBeNull()
       );
       expect(
         screen.queryByText(/no se pudo cargar el perfil del cliente/i)
