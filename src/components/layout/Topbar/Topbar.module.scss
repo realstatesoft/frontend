@@ -60,6 +60,34 @@
   }
 }
 
+.topbar__homeBtn {
+  @include flex-center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 var(--spacing-sm);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: var(--transition-base);
+
+  &:hover {
+    background: var(--color-bg-surface-hover);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+}
+
+.topbar__homeBtnText {
+  font-weight: 500;
+
+  @include responsive(mobile) {
+    display: none;
+  }
+}
+
 .topbar__right {
   display: flex;
   align-items: center;
@@ -105,4 +133,11 @@
   font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
+  border: none;
+  padding: 0;
+  transition: var(--transition-base);
+
+  &:hover {
+    opacity: 0.85;
+  }
 }

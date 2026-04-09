@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Container, Dropdown, Spinner, Alert } from 'react-bootstrap';
-import CustomNavbar from '../components/Landing/Navbar';
-import Footer from '../components/Landing/Footer';
 import StatsCards from '../components/visits/StatsCards';
 import VisitCard from '../components/visits/VisitCard';
 import SuggestTimeModal from '../components/visits/SuggestTimeModal';
@@ -145,9 +143,7 @@ const VisitRequests = () => {
 
   return (
     <div className="visit-requests-page">
-      <CustomNavbar />
-
-      <Container className="py-5">
+      <Container className="py-4">
         <header className="visit-requests-header">
           <h1 className="fw-bold mb-2">Solicitudes de Visitas</h1>
           <p className="text-muted mb-0">Revisa y aprueba las solicitudes de visitas a sus propiedades</p>
@@ -205,8 +201,6 @@ const VisitRequests = () => {
           )}
         </section>
       </Container>
-
-      <Footer />
 
       {/* Modals */}
       {selectedVisit && (
