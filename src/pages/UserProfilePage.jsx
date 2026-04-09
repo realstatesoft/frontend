@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
@@ -9,16 +9,14 @@ import { CiUser, CiMail, CiPhone } from "react-icons/ci";
 import { IoPencilOutline, IoCloseOutline, IoCheckmarkOutline } from "react-icons/io5";
 import { LuTag } from "react-icons/lu";
 
-// ─── Modal de edición ─────────────────────────────────────────────────────────
-
 function EditProfileModal({ profile, onClose, onSaved }) {
   const [form, setForm] = useState({
-    name:      profile?.name      || "",
-    phone:     profile?.phone     || "",
+    name: profile?.name || "",
+    phone: profile?.phone || "",
     avatarUrl: profile?.avatarUrl || "",
   });
-  const [saving, setSaving]   = useState(false);
-  const [error,  setError]    = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -31,21 +29,22 @@ function EditProfileModal({ profile, onClose, onSaved }) {
     setError(null);
     try {
       const { data: res } = await api.put("/users/me", {
-        name:      form.name,
-        phone:     form.phone,
+        name: form.name,
+        phone: form.phone,
         avatarUrl: form.avatarUrl,
       });
       onSaved(res.data);
-    } catch (err) {
+    } catch {
       setError("No se pudo guardar los cambios. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
   }
 
-  // Cerrar con Escape
   useEffect(() => {
-    function onKey(e) { if (e.key === "Escape") onClose(); }
+    function onKey(e) {
+      if (e.key === "Escape") onClose();
+    }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
@@ -53,8 +52,6 @@ function EditProfileModal({ profile, onClose, onSaved }) {
   return (
     <div className="uedit-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="uedit-modal" role="dialog" aria-modal="true" aria-labelledby="uedit-title">
-
-        {/* Header */}
         <div className="uedit-header">
           <h5 className="uedit-title" id="uedit-title">
             <IoPencilOutline size={18} />
@@ -65,7 +62,6 @@ function EditProfileModal({ profile, onClose, onSaved }) {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="uedit-form">
           {error && <div className="uedit-error">{error}</div>}
 
@@ -114,49 +110,42 @@ function EditProfileModal({ profile, onClose, onSaved }) {
               onChange={handleChange}
               placeholder="https://ejemplo.com/foto.jpg"
             />
-            {/* Preview de la imagen si se ingresa URL */}
             {form.avatarUrl && (
               <div className="uedit-avatar-preview">
                 <img
                   src={form.avatarUrl}
                   alt="Preview"
-                  onError={(e) => { e.target.style.display = "none"; }}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
                 />
               </div>
             )}
           </div>
 
-          {/* Footer */}
           <div className="uedit-footer">
             <button type="button" className="uedit-btn-cancel" onClick={onClose} disabled={saving}>
               Cancelar
             </button>
             <button type="submit" className="uedit-btn-save" disabled={saving}>
-              {saving ? (
-                <span className="uedit-spinner" />
-              ) : (
-                <IoCheckmarkOutline size={16} />
-              )}
+              {saving ? <span className="uedit-spinner" /> : <IoCheckmarkOutline size={16} />}
               {saving ? "Guardando…" : "Guardar cambios"}
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );
 }
 
-// ─── Página principal ─────────────────────────────────────────────────────────
-
 const UserProfilePage = () => {
-  const navigate    = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, token } = useAuth();
 
-  const [profile,     setProfile]     = useState(null);
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState(null);
-  const [editOpen,    setEditOpen]    = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
@@ -168,7 +157,7 @@ const UserProfilePage = () => {
         setLoading(true);
         const { data: res } = await api.get("/users/me");
         if (!isCancelled) setProfile(res.data);
-      } catch (err) {
+      } catch {
         if (!isCancelled) setError("No se pudo cargar el perfil. Intenta de nuevo.");
       } finally {
         if (!isCancelled) setLoading(false);
@@ -176,10 +165,11 @@ const UserProfilePage = () => {
     };
 
     if (isAuthenticated) fetchProfile();
-    return () => { isCancelled = true; };
+    return () => {
+      isCancelled = true;
+    };
   }, [isAuthenticated, token]);
 
-  // Callback cuando el modal guarda exitosamente
   function handleSaved(updatedProfile) {
     setProfile(updatedProfile);
     setEditOpen(false);
@@ -187,7 +177,9 @@ const UserProfilePage = () => {
     setTimeout(() => setSaveSuccess(false), 3000);
   }
 
-
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
   if (loading) {
     return (
@@ -210,10 +202,10 @@ const UserProfilePage = () => {
   }
 
   const fields = [
-    { label: "Full Name", value: profile?.name,  icon: <CiUser  size={16} /> },
-    { label: "Email",     value: profile?.email, icon: <CiMail  size={16} /> },
-    { label: "Phone",     value: profile?.phone, icon: <CiPhone size={16} /> },
-    { label: "Role",      value: profile?.role,  icon: <LuTag   size={14} />, isRole: true },
+    { label: "Full Name", value: profile?.name, icon: <CiUser size={16} /> },
+    { label: "Email", value: profile?.email, icon: <CiMail size={16} /> },
+    { label: "Phone", value: profile?.phone, icon: <CiPhone size={16} /> },
+    { label: "Role", value: profile?.role, icon: <LuTag size={14} />, isRole: true },
   ];
 
   return (
@@ -222,11 +214,8 @@ const UserProfilePage = () => {
 
       <Container className="py-5">
         <div className="uprofile-card">
-
-          {/* Banner */}
           <div className="uprofile-banner" />
 
-          {/* Toast de éxito */}
           {saveSuccess && (
             <div className="uprofile-toast">
               <IoCheckmarkOutline size={16} />
@@ -234,15 +223,10 @@ const UserProfilePage = () => {
             </div>
           )}
 
-          {/* Header */}
           <div className="uprofile-header">
             <div className="uprofile-avatar-group">
               {profile?.avatarUrl ? (
-                <img
-                  src={profile.avatarUrl}
-                  alt={profile.name || "Avatar"}
-                  className="uprofile-avatar"
-                />
+                <img src={profile.avatarUrl} alt={profile.name || "Avatar"} className="uprofile-avatar" />
               ) : (
                 <div className="uprofile-avatar uprofile-avatar--placeholder">
                   <CiUser size={54} />
@@ -263,42 +247,33 @@ const UserProfilePage = () => {
             </button>
           </div>
 
-          {/* Información Personal */}
           <div className="uprofile-section">
             <h5 className="uprofile-section-title">Información Personal</h5>
             <div className="uprofile-fields">
               {fields.map(({ label, value, icon, isRole }) => (
                 <div className="uprofile-field" key={label}>
                   <label className="uprofile-label">
-                    {icon}{label}
+                    {icon}
+                    {label}
                   </label>
                   {isRole ? (
-                    <div><span className="uprofile-role-badge">{value || "—"}</span></div>
+                    <div>
+                      <span className="uprofile-role-badge">{value || "—"}</span>
+                    </div>
                   ) : (
-                    <input
-                      type="text"
-                      className="uprofile-input"
-                      value={value || "—"}
-                      disabled
-                    />
+                    <input type="text" className="uprofile-input" value={value || "—"} disabled />
                   )}
                 </div>
               ))}
             </div>
           </div>
-
         </div>
       </Container>
 
       <Footer />
 
-      {/* Modal de edición */}
       {editOpen && (
-        <EditProfileModal
-          profile={profile}
-          onClose={() => setEditOpen(false)}
-          onSaved={handleSaved}
-        />
+        <EditProfileModal profile={profile} onClose={() => setEditOpen(false)} onSaved={handleSaved} />
       )}
     </div>
   );
