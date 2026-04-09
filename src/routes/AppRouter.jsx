@@ -19,6 +19,7 @@ import EditClient from "../pages/clients/EditClient";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
 import AgentProfilePage from "../pages/Agents/AgentProfilePage";
+import AgentEditPage from "../pages/Agents/AgentEditPage";
 // Agent Dashboard
 import AgentLayout from "../components/layout/AgentLayout/AgentLayout";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
@@ -78,6 +79,7 @@ export default function AppRouter() {
                 <Route path="/agent" element={<AgentLayout />}>
                     <Route index element={<Navigate to="/agent/dashboard" replace />} />
                     <Route path="perfil" element={<AgentProfilePage />} />
+                    <Route path="AgentEdit/:id" element={<AgentEditPage />} />
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="clientes" element={<ClientsPage />} />
                     <Route path="propiedades" element={<AgentPropertiesPage />} />

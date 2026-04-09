@@ -49,9 +49,31 @@ export async function searchAgents(keyword, params = {}) {
   return response.data;
 }
 
+/**
+ * Actualiza un perfil de agente.
+ * @param {number} id - ID del agente
+ * @param {Object} data - Datos a actualizar (companyName, bio, experienceYears, licenseNumber, specialtyIds, socialMedia)
+ * @returns {Promise<Object>} Agente actualizado
+ */
+export async function updateAgent(id, data) {
+  const response = await api.put(`/agents/${id}`, data);
+  return response.data;
+}
+
+/**
+ * Obtiene todas las especialidades disponibles.
+ * @returns {Promise<Object>} Lista de especialidades
+ */
+export async function getAllSpecialties() {
+  const response = await api.get("/agents/specialties");
+  return response.data;
+}
+
 export default {
   getSuggestedAgents,
   getAllAgents,
   getAgentById,
   searchAgents,
+  updateAgent,
+  getAllSpecialties,
 };
