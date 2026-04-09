@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../../hooks/useAuth";
@@ -24,6 +24,26 @@ export default function AgentEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const redirectTimerRef = useRef(null);
+
+  // ── Resolve authenticated user ID ────────────────────────────
+  const authenticatedId = user?.userId || user?.id;
+
+  // ── Early guard: route id must match the authenticated user ──
+  useEffect(() => {
+    if (authenticatedId && id && String(id) !== String(authenticatedId)) {
+      navigate("/agent/perfil", { replace: true });
+    }
+  }, [id, authenticatedId, navigate]);
+
+  // ── Cleanup redirect timer on unmount ─────────────────────────
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   // ── Data loading ──────────────────────────────────────────────
   const [agent, setAgent] = useState(null);
@@ -46,12 +66,14 @@ export default function AgentEditPage() {
 
   // ── Load agent + specialties catalog ──────────────────────────
   useEffect(() => {
+    if (!authenticatedId) return;
+
     let cancelled = false;
     setLoading(true);
     setError(null);
 
     Promise.all([
-      agentApi.getAgentById(id),
+      agentApi.getAgentById(authenticatedId),
       agentApi.getAllSpecialties(),
     ])
       .then(([agentRes, specRes]) => {
@@ -95,7 +117,7 @@ export default function AgentEditPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [authenticatedId]);
 
   // ── Handlers ──────────────────────────────────────────────────
   function handleChange(e) {
@@ -160,9 +182,9 @@ export default function AgentEditPage() {
         socialMedia: form.socialMedia.filter((sm) => sm.url.trim() !== ""),
       };
 
-      await agentApi.updateAgent(id, payload);
+      await agentApi.updateAgent(authenticatedId, payload);
       setSaveSuccess(true);
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
         navigate("/agent/perfil");
       }, 1200);
     } catch (err) {
@@ -215,6 +237,7 @@ export default function AgentEditPage() {
               className="btn-back-circle"
               onClick={() => navigate("/agent/perfil")}
               title="Volver al perfil"
+              aria-label="Volver al perfil"
             >
               <IoArrowBack size={20} />
             </button>
