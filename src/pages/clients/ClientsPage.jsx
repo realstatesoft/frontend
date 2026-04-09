@@ -99,6 +99,7 @@ export default function ClientsPage() {
           data={filteredData}
           loading={isLoading}
           onSearch={setSearch}
+          rowKey={(row) => `${row.internalType ?? 'X'}-${row.id}`}
           filters={[
             { key: 'status', label: 'Estado', value: statusFilter, options: STATUS_OPTIONS },
             { key: 'internalType', label: 'Origen', value: internalTypeFilter, options: INTERNAL_TYPE_OPTIONS },

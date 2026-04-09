@@ -1,11 +1,37 @@
-import { FiBell, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+import { useRef, useState, useEffect } from 'react';
+import { FiBell, FiHome, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
+import { CiUser } from 'react-icons/ci';
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline } from 'react-icons/io5';
+import { MdFavoriteBorder } from 'react-icons/md';
+import { FaRegTrashAlt } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
 import useUIStore from '../../../store/useUIStore';
 import styles from './Topbar.module.scss';
 
 export default function Topbar() {
   const { sidebarCollapsed, toggleSidebar, darkMode, toggleDarkMode } = useUIStore();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  function handleLogout() {
+    setDropdownOpen(false);
+    logout();
+    navigate('/');
+  }
 
   const roleLabel = user?.role === 'AGENT' ? 'Agente' : 'Propietario';
 
@@ -29,6 +55,10 @@ export default function Topbar() {
         >
           <FiMenu />
         </button>
+        <Link to="/" className={styles.topbar__homeBtn} title="Volver a inicio">
+          <FiHome />
+          <span className={styles.topbar__homeBtnText}>Inicio</span>
+        </Link>
         <span className={styles.topbar__greeting}>
           Bienvenido, <strong>{user?.email || roleLabel}</strong>
         </span>
@@ -51,8 +81,49 @@ export default function Topbar() {
           <FiBell />
           <span className={styles.topbar__badge} />
         </button>
-        <div className={styles.topbar__avatar}>
-          {initials}
+        <div className="profile-dropdown-wrapper" ref={dropdownRef}>
+          <button
+            type="button"
+            className={styles.topbar__avatar}
+            onClick={() => setDropdownOpen(o => !o)}
+            aria-label="Menú de perfil"
+          >
+            {initials}
+          </button>
+
+          {dropdownOpen && (
+            <div className="profile-dropdown-menu">
+              <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <CiUser size={17} style={{ flexShrink: 0 }} /> Mi perfil
+              </Link>
+              <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <IoHomeOutline size={16} style={{ flexShrink: 0 }} /> Mis propiedades
+              </Link>
+              <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <FaRegTrashAlt size={14} style={{ flexShrink: 0 }} /> Papelera
+              </Link>
+              <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
+              </Link>
+              {user?.role === 'AGENT' && (
+                <>
+                  <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
+                  </Link>
+                  <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Dashboard
+                  </Link>
+                </>
+              )}
+              <hr className="profile-dropdown-divider" />
+              <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <IoSettingsOutline size={16} style={{ flexShrink: 0 }} /> Ajustes
+              </Link>
+              <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
+                <IoLogOutOutline size={16} style={{ flexShrink: 0 }} /> Cerrar sesión
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
