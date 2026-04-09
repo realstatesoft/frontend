@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../../hooks/useAuth";
 import agentApi from "../../services/agents/agentApi";
@@ -10,6 +11,7 @@ const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
 
 export default function AgentProfilePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -120,7 +122,7 @@ export default function AgentProfilePage() {
           <div className="pb-2">
             <button 
               className="btn btn-primary px-4 py-2 custom-edit-btn" 
-              onClick={(e) => { e.preventDefault(); alert("Función Editar Perfil aún no implementada."); }}
+              onClick={() => navigate(`/agent/AgentEdit/${agent.id}`)}
             >
               Editar Perfil
             </button>
