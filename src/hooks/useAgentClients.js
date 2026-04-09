@@ -11,9 +11,6 @@ export default function useAgentClients(params = {}) {
       if (payload && payload.content) {
         const mapped = payload.content.map((c) => ({
           ...c,
-          name: c.userName,
-          email: c.userEmail,
-          phone: c.userPhone,
           registeredAt: c.createdAt,
         }));
         return { ...response, data: mapped };
