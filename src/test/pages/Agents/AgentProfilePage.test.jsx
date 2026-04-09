@@ -90,11 +90,9 @@ describe('AgentProfilePage', () => {
       expect(screen.getByText('Carlos Agente Test')).toBeInTheDocument();
     });
 
-    // Validating specific derived content based on experience > 5
-    expect(screen.getByText(/Agente Inmobiliario Senior/i)).toBeInTheDocument();
-    
+
     // Validating dynamic fields loaded correctly
-    expect(screen.getByText('Líder en ventas inmobiliarias.')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Líder en ventas inmobiliarias.')).toBeInTheDocument();
     
     // Validating rating
     expect(screen.getByText(/4.5/)).toBeInTheDocument();
@@ -106,10 +104,7 @@ describe('AgentProfilePage', () => {
     expect(screen.getByText('22')).toBeInTheDocument();
     expect(screen.getByText('$ 850.000')).toBeInTheDocument();
     
-    // Validating social links
-    const instagramLink = screen.getByLabelText(/Instagram/i);
-    expect(instagramLink).toBeInTheDocument();
-    expect(instagramLink.closest('a')).toHaveAttribute('href', 'https://instagram.com/carlos');
+
   });
 
   it('handles API errors gracefully and renders internal warnings', async () => {

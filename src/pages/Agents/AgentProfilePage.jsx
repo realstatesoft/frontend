@@ -1,44 +1,12 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import { Container, Spinner, Alert, Button } from "react-bootstrap";
+import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../../hooks/useAuth";
 import agentApi from "../../services/agents/agentApi";
-import { getWhatsAppLink } from "../../utils/whatsapp";
-import {
-  IoPaperPlaneOutline,
-  IoCallOutline,
-  IoLogoInstagram,
-  IoLogoFacebook,
-  IoLogoLinkedin,
-  IoLogoTwitter,
-  IoLogoTiktok,
-  IoPencilOutline,
-  IoStar,
-  IoStarHalf,
-  IoStarOutline
-} from "react-icons/io5";
+import { IoMail } from "react-icons/io5";
 import "./AgentProfilePage.scss";
 
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
-
-const renderStars = (rating) => {
-  // Aseguramos de parsear correctamente el número, reemplazando comas por puntos en caso de venir de la DB/Locale
-  const safeRating = parseFloat(String(rating).replace(',', '.'));
-  const finalRating = isNaN(safeRating) ? 0 : safeRating;
-  
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    // Tolerancia para evitar problemas de precisión en javascript (ej. 4.9999)
-    if (finalRating >= i - 0.05) {
-      stars.push(<IoStar key={i} color="#ffc107" />);
-    } else if (finalRating >= i - 0.55) {
-      stars.push(<IoStarHalf key={i} color="#ffc107" />);
-    } else {
-      stars.push(<IoStarOutline key={i} color="#ffc107" />);
-    }
-  }
-  return stars;
-};
 
 export default function AgentProfilePage() {
   const { user } = useAuth();
@@ -52,7 +20,10 @@ export default function AgentProfilePage() {
     setError(null);
 
     const agentId = user?.userId || user?.id;
-    if (!agentId) return;
+    if (!agentId) {
+       setLoading(false);
+       return;
+    }
 
     agentApi
       .getAgentById(agentId)
@@ -106,153 +77,145 @@ export default function AgentProfilePage() {
   }
 
   const name = agent.userName || "Agente Inmobiliario";
+  const email = agent.userEmail || "Sin registro";
+  const phone = agent.userPhone || "No especificado";
   const avatarUrl = agent.userAvatarUrl || DEFAULT_AVATAR;
-  const phone = agent.userPhone;
-  const whatsappUrl = phone ? getWhatsAppLink(phone) : null;
-  const experienceYears = agent.experienceYears;
-  const companyName = agent.companyName || "Valorant Real Estate PY"; // Added fallback logic matching screenshot for consistency
-
+  const companyName = agent.companyName || "No especificado";
+  const licenseNumber = agent.licenseNumber || "No especificado";
+  const experienceYears = agent.experienceYears || 0;
+  const bio = agent.bio || "El agente no cuenta con una biografía registrada.";
+  const specialties = agent.specialties && agent.specialties.length > 0 ? agent.specialties : [];
+  const stats = agent.stats;
+  
   const rating = agent.avgRating;
   const reviewsCount = agent.totalReviews;
-  const stats = agent.stats;
   const hasRating = rating != null;
 
-  const description = agent.bio || "Este agente aún no ha añadido una descripción a su perfil.";
-  const specialties = agent.specialties && agent.specialties.length > 0 ? agent.specialties : [];
-
-  const socialMedia = agent.socialMedia || [];
-  const getSocialLink = (platformName) => {
-    const found = socialMedia.find(s => s.platform === platformName);
-    return found ? found.url : null;
-  };
-
-  const instagramLink = getSocialLink("INSTAGRAM");
-  const facebookLink = getSocialLink("FACEBOOK");
-  const linkedinLink = getSocialLink("LINKEDIN");
-  const twitterLink = getSocialLink("TWITTER");
-  const tiktokLink = getSocialLink("TIKTOK");
-
   return (
-    <div className="agent-profile-page">
-      <Container fluid className="px-0 px-md-4">
-        {/* Main Info Card */}
-        <div className="main-card">
-          <div className="avatar-container">
-            <img src={avatarUrl} alt={name} />
+    <div className="agent-profile-page-new">
+      <div className="profile-header-banner"></div>
+      
+      <Container className="profile-main-container">
+        
+        {/* Top Header Card */}
+        <div className="profile-top-section d-flex justify-content-between align-items-end flex-wrap gap-3">
+          <div className="d-flex align-items-center gap-4">
+            <div className="avatar-wrapper">
+              <img src={avatarUrl} alt={name} className="profile-avatar" />
+            </div>
+            <div className="profile-names-wrapper pb-2">
+              <h2 className="mb-1 profile-name">{name}</h2>
+              <div className="d-flex flex-wrap gap-3 mt-1">
+                <span className="text-muted profile-email">
+                   {email}
+                </span>
+                {hasRating && (
+                  <span className="text-muted text-warning fw-medium">
+                    ★ {rating} ({reviewsCount} reseñas)
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-
-          <div className="info-container flex-grow-1">
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <h1 className="agent-name">{name}</h1>
-                <p className="agent-title">
-                  Agente Inmobiliario {experienceYears && experienceYears > 5 ? 'Senior' : ''} {companyName ? `• ${companyName}` : ''}
-                </p>
-              </div>
-              {hasRating && (
-                <div className="rating-container">
-                  <div className="stars">
-                    {renderStars(rating)}
-                  </div>
-                  <span className="rating-text text-nowrap">{rating} ({reviewsCount} reseñas)</span>
-                </div>
-              )}
-            </div>
-
-            {stats && (
-              <div className="agent-stats">
-                <div className="stat-card stat-blue">
-                  <span className="stat-value">{stats.vendidas}</span>
-                  <span className="stat-label">Vendidas</span>
-                </div>
-                <div className="stat-card stat-green">
-                  <span className="stat-value">{stats.alquiladas}</span>
-                  <span className="stat-label">Alquiladas</span>
-                </div>
-                <div className="stat-card stat-purple">
-                  <span className="stat-value">{stats.total}</span>
-                  <span className="stat-label">Total</span>
-                </div>
-                <div className="stat-card stat-orange">
-                  <span className="stat-value">{stats.precioPromedio}</span>
-                  <span className="stat-label">Precio promedio</span>
-                </div>
-              </div>
-            )}
-
-            <div className="action-buttons mt-4">
-              {whatsappUrl ? (
-                <a 
-                  href={whatsappUrl} 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-message text-decoration-none"
-                >
-                  <IoPaperPlaneOutline size={18} /> Mensaje
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-message text-decoration-none disabled pe-none opacity-50"
-                  aria-disabled="true"
-                  tabIndex={-1}
-                >
-                  <IoPaperPlaneOutline size={18} /> Mensaje
-                </button>
-              )}
-              {phone && (
-                <a href={`tel:${phone}`} className="btn-call text-decoration-none">
-                  <IoCallOutline size={18} /> {phone}
-                </a>
-              )}
-              
-              {/* Botón estático sugerido */}
-              <button 
-                className="btn-call text-decoration-none" 
-                onClick={(e) => { e.preventDefault(); alert("Función Editar Perfil aún no disponible."); }}
-              >
-                <IoPencilOutline size={18} /> Editar Perfil
-              </button>
-            </div>
+          <div className="pb-2">
+            <button 
+              className="btn btn-primary px-4 py-2 custom-edit-btn" 
+              onClick={(e) => { e.preventDefault(); alert("Función Editar Perfil aún no implementada."); }}
+            >
+              Editar Perfil
+            </button>
           </div>
         </div>
 
-        {/* Details Card */}
-        <div className="details-card">
-          <div className="about-section">
-            <h3 className="section-title mb-3">Sobre mí</h3>
-            {description.split('\n').map((paragraph, idx) => (
-              <p key={idx}>{paragraph}</p>
-            ))}
-          </div>
-
-          {specialties.length > 0 && (
-            <div className="specialties-section">
-              <h3 className="section-title">Especialidades</h3>
-              <div className="tags-container">
-                {specialties.map((spec, index) => (
-                  <span key={index} className="specialty-tag">{spec.name}</span>
-                ))}
+        <div className="profile-content mt-4">
+          {/* Información General y Detalles DB */}
+          <div className="profile-section">
+            <h4 className="section-title">Información General</h4>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="agent-name" className="form-label">Nombre Completo</label>
+                <input id="agent-name" type="text" className="form-control profile-input" value={name} readOnly />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="agent-phone" className="form-label">Teléfono</label>
+                <input id="agent-phone" type="text" className="form-control profile-input" value={phone} readOnly />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="agent-company" className="form-label">Compañía / Agencia</label>
+                <input id="agent-company" type="text" className="form-control profile-input" value={companyName} readOnly />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="agent-experience" className="form-label">Años de Experiencia</label>
+                <input id="agent-experience" type="text" className="form-control profile-input" value={experienceYears + (experienceYears == 1 ? " año" : " años")} readOnly />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="agent-license" className="form-label">Número de Licencia</label>
+                <input id="agent-license" type="text" className="form-control profile-input" value={licenseNumber} readOnly />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="agent-email" className="form-label">Correo Electrónico</label>
+                <input id="agent-email" type="text" className="form-control profile-input" value={email} readOnly />
               </div>
             </div>
-          )}
+          </div>
 
-          {experienceYears != null && (
-            <div className="experience-section">
-              <h3 className="section-title">Experiencia</h3>
-              <p>{experienceYears} años de experiencia en el mercado inmobiliario.</p>
+          {/* Información Profesional */}
+          <div className="profile-section">
+            <h4 className="section-title">Información Profesional</h4>
+            
+            <div className="mb-4">
+              <label htmlFor="agent-bio" className="form-label">Biografía</label>
+              <textarea 
+                id="agent-bio"
+                className="form-control profile-textarea" 
+                rows="5" 
+                value={bio} 
+                readOnly 
+              />
             </div>
-          )}
 
-          {(instagramLink || facebookLink || linkedinLink || twitterLink || tiktokLink) && (
-            <div className="links-section">
-              <h3 className="section-title mb-3">Redes Sociales</h3>
-              <div className="social-icons">
-                {instagramLink && <a href={instagramLink} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IoLogoInstagram /></a>}
-                {facebookLink && <a href={facebookLink} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><IoLogoFacebook /></a>}
-                {linkedinLink && <a href={linkedinLink} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><IoLogoLinkedin /></a>}
-                {twitterLink && <a href={twitterLink} target="_blank" rel="noopener noreferrer" aria-label="Twitter"><IoLogoTwitter /></a>}
-                {tiktokLink && <a href={tiktokLink} target="_blank" rel="noopener noreferrer" aria-label="TikTok"><IoLogoTiktok /></a>}
+            <div className="mb-4">
+              <label className="form-label">Especialidades</label>
+              <div className="d-flex flex-wrap gap-2">
+                {specialties.length > 0 ? (
+                  specialties.map(s => {
+                    const displayName = s.name 
+                      ? s.name.charAt(0).toUpperCase() + s.name.slice(1).toLowerCase()
+                      : "";
+                    return (
+                      <span key={s.id} className="custom-badge badge-blue">
+                        {displayName}
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="text-muted fst-italic">No hay especialidades registradas.</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Estadísticas de Base de Datos */}
+          {stats && (
+            <div className="profile-section pb-5">
+              <h4 className="section-title">Estadísticas de Actividad</h4>
+              <div className="agent-stats">
+                  <div className="stat-card stat-blue">
+                    <span className="stat-value">{stats.vendidas}</span>
+                    <span className="stat-label">Vendidas</span>
+                  </div>
+                  <div className="stat-card stat-green">
+                    <span className="stat-value">{stats.alquiladas}</span>
+                    <span className="stat-label">Alquiladas</span>
+                  </div>
+                  <div className="stat-card stat-purple">
+                    <span className="stat-value">{stats.total}</span>
+                    <span className="stat-label">Total</span>
+                  </div>
+                  <div className="stat-card stat-orange">
+                    <span className="stat-value">{stats.precioPromedio}</span>
+                    <span className="stat-label">Precio promedio</span>
+                  </div>
               </div>
             </div>
           )}
