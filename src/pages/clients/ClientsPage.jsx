@@ -39,9 +39,13 @@ const COLUMNS = [
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'activo', label: 'Activo' },
-  { value: 'pendiente', label: 'Pendiente' },
-  { value: 'inactivo', label: 'Inactivo' },
+  { value: 'ACTIVE', label: 'Activo' },
+  { value: 'INACTIVE', label: 'Inactivo' },
+];
+
+const INTERNAL_TYPE_OPTIONS = [
+  { value: 'AGENT', label: 'Interno' },
+  { value: 'EXTERNAL', label: 'Externo' },
 ];
 
 export default function ClientsPage() {
@@ -49,6 +53,7 @@ export default function ClientsPage() {
   const clients = response?.data || [];
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [internalTypeFilter, setInternalTypeFilter] = useState('');
 
   const filteredData = useMemo(() => {
     let result = clients;
@@ -63,11 +68,15 @@ export default function ClientsPage() {
     if (statusFilter) {
       result = result.filter((c) => c.status === statusFilter);
     }
+    if (internalTypeFilter) {
+      result = result.filter((c) => c.internalType === internalTypeFilter);
+    }
     return result;
-  }, [clients, search, statusFilter]);
+  }, [clients, search, statusFilter, internalTypeFilter]);
 
   const handleFilter = (key, value) => {
     if (key === 'status') setStatusFilter(value);
+    if (key === 'internalType') setInternalTypeFilter(value);
   };
 
   return (
@@ -92,6 +101,7 @@ export default function ClientsPage() {
           onSearch={setSearch}
           filters={[
             { key: 'status', label: 'Estado', value: statusFilter, options: STATUS_OPTIONS },
+            { key: 'internalType', label: 'Origen', value: internalTypeFilter, options: INTERNAL_TYPE_OPTIONS },
           ]}
           onFilter={handleFilter}
           emptyMessage="No se encontraron clientes"
