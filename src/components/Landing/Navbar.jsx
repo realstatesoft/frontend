@@ -12,7 +12,18 @@ import {
 } from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
 import { CiUser } from "react-icons/ci";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoShieldOutline, IoNotificationsOutline, IoCheckmarkDoneOutline } from "react-icons/io5";
+import {
+  IoHomeOutline,
+  IoSettingsOutline,
+  IoLogOutOutline,
+  IoLogInOutline,
+  IoCalendarClearOutline,
+  IoSpeedometerOutline,
+  IoOptionsOutline,
+  IoShieldOutline,
+  IoNotificationsOutline,
+  IoCheckmarkDoneOutline,
+} from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
@@ -158,6 +169,9 @@ function CustomNavbar() {
                   </Link>
                   <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Heart size={16} style={{ flexShrink: 0 }} /> Favoritos
+                  </Link>
+                  <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> Mis preferencias
                   </Link>
                   {user?.role?.toUpperCase() === "ADMIN" && (
                     <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>

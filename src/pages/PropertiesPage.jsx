@@ -4,8 +4,10 @@ import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
 import PropertiesGrid from "../components/properties/PropertiesGrid";
 import PropertiesMap from "../components/properties/PropertiesMap";
+import PreferencesBanner, { shouldShowBanner } from "../components/preferences/PreferencesBanner";
 import useProperties from "../hooks/useProperties";
 import useFavoriteProperties from "../hooks/useFavoriteProperties";
+import { useAuth } from "../hooks/useAuth";
 import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
 
 const PAGE_SIZE = 12;
@@ -15,6 +17,7 @@ const PAGE_SIZE = 12;
  * Gestiona filtros avanzados y paginación de propiedades con filtros server-side.
  */
 export default function PropertiesPage() {
+    const { isAuthenticated: authCheck, preferencesCompleted } = useAuth();
     const [search, setSearch] = useState("");
     const [typeFilter, setTypeFilter] = useState("");
     const [availability, setAvailability] = useState("");
@@ -23,6 +26,7 @@ export default function PropertiesPage() {
     const [minBedrooms, setMinBedrooms] = useState("");
     const [minBathrooms, setMinBathrooms] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [bannerDismissed, setBannerDismissed] = useState(false);
 
     // Convertir labels a valores enum del backend
     const backendType = typeFilter ? PROPERTY_TYPE[typeFilter] : undefined;
@@ -63,6 +67,11 @@ export default function PropertiesPage() {
         setCurrentPage(1);
     };
 
+    // Determinar si mostrar el banner de preferencias
+    const showBanner =
+        !bannerDismissed &&
+        shouldShowBanner(preferencesCompleted, authCheck);
+
     return (
         <>
             <CustomNavbar />
@@ -87,6 +96,15 @@ export default function PropertiesPage() {
             />
 
             <div style={{ backgroundColor: "#f8f9fa", minHeight: "60vh" }}>
+                {/* Banner de preferencias (entre filtros y grilla) */}
+                {showBanner && (
+                    <div className="container pt-3">
+                        <PreferencesBanner
+                            onDismiss={() => setBannerDismissed(true)}
+                        />
+                    </div>
+                )}
+
                 {!loading && !error && properties?.length > 0 && (
                     <div className="properties-page__map-wrap">
                         <PropertiesMap properties={properties} />

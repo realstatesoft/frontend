@@ -1,0 +1,612 @@
+// Variables y Mixins rápidos para el módulo
+$pref-primary: #3b82f6; // Azul primario
+$pref-primary-hover: #2563eb;
+$pref-bg-light: #f8fafc;
+$pref-border: #e2e8f0;
+$pref-text-main: #1e293b;
+$pref-text-muted: #64748b;
+$pref-radius: 1rem;
+$pref-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+// ── Preferences Page ─────────────────────────────────────────────────────────
+
+.preferences-page {
+  padding: 3rem 0;
+  background-color: #f1f5f9;
+  min-height: calc(100vh - 80px); // Ajustar según altura de navbar
+
+  &__header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  &__title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: $pref-text-main;
+    letter-spacing: -0.025em;
+  }
+
+  &__subtitle {
+    color: $pref-text-muted;
+    max-width: 600px;
+    margin: 0.5rem auto 0;
+    font-size: 1.1rem;
+  }
+
+  &__card {
+    background: white;
+    border-radius: $pref-radius + 0.5rem;
+    box-shadow: $pref-shadow;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+  }
+}
+
+// ── Preferences Form ─────────────────────────────────────────────────────────
+
+.pref-form {
+  display: flex;
+  flex-direction: column;
+
+  &__body {
+    padding: 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+
+  &__category {
+    &-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $pref-text-main;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    &-hint {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: $pref-text-muted;
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  &__footer {
+    padding: 1.5rem 2.5rem;
+    background: #f8fafc;
+    border-top: 1px solid $pref-border;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    @media (min-width: 576px) {
+      flex-direction: row-reverse;
+      justify-content: space-between;
+    }
+  }
+
+  &__submit {
+    background: $pref-primary;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 100px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+    &:hover:not(:disabled) {
+      background: $pref-primary-hover;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  &__skip {
+    background: transparent;
+    border: none;
+    color: $pref-text-muted;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0.5rem;
+
+    &:hover {
+      color: $pref-text-main;
+    }
+  }
+}
+
+// ── Selectable Chip ──────────────────────────────────────────────────────────
+
+.pref-chip {
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  background: white;
+  border: 1px solid $pref-border;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    border-color: $pref-primary;
+    background: rgba(59, 130, 246, 0.02);
+    color: $pref-primary;
+  }
+
+  &--selected {
+    background: $pref-primary;
+    color: white !important;
+    border-color: $pref-primary;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+  }
+
+  &__check {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    animation: prefChipIn 0.2s ease-out;
+  }
+}
+
+@keyframes prefChipIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+// ── Range Inputs ─────────────────────────────────────────────────────────────
+
+.pref-range {
+  background: white;
+  border: 1px solid $pref-border;
+  padding: 1.25rem;
+  border-radius: 12px;
+  max-width: 500px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: $pref-primary;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  &__label {
+    font-weight: 600;
+    color: $pref-text-main;
+  }
+
+  &__unit {
+    font-size: 0.85rem;
+    color: white;
+    background: #64748b;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  &__inputs {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__input-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__sublabel {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: $pref-text-muted;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid $pref-border;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.2s;
+
+    &:focus {
+      border-color: $pref-primary;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &::placeholder {
+      color: #cbd5e1;
+      font-weight: 400;
+    }
+  }
+
+  &__separator {
+    color: #cbd5e1;
+    font-weight: 700;
+    margin-top: 1.2rem;
+  }
+}
+
+// ── Preferences Banner ───────────────────────────────────────────────────────
+
+.pref-banner {
+  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &--in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &--out {
+    opacity: 0;
+    transform: scale(0.95);
+    transition-duration: 0.3s;
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 2rem;
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #0f172a;
+    line-height: 1.3;
+  }
+
+  &__subtitle {
+    margin: 4px 0 0;
+    font-size: 0.95rem;
+    color: #475569;
+  }
+
+  &__cta {
+    background: $pref-primary;
+    color: white;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+
+    &:hover {
+      background: $pref-primary-hover;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(59, 130, 246, 0.25);
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: $pref-text-main;
+    }
+  }
+}
+
+// ── Stepper (for SignUp) ─────────────────────────────────────────────────────
+
+.signup-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
+
+  &__item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+
+    &:last-child {
+      flex: 0;
+    }
+  }
+
+  &__step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #e2e8f0;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  &__line {
+    flex: 1;
+    height: 2px;
+    background: #e2e8f0;
+    margin: 0 10px;
+    margin-top: -18px; // Alinear con círculos
+  }
+
+  // Estados
+  &__step--active {
+    .signup-stepper__circle {
+      background: $pref-primary;
+      color: white;
+      box-shadow: 0 0 0 2px $pref-primary;
+    }
+    .signup-stepper__label {
+      color: $pref-primary;
+    }
+  }
+
+  &__step--done {
+    .signup-stepper__circle {
+      background: #22c55e;
+      color: white;
+      box-shadow: 0 0 0 2px #22c55e;
+    }
+    .signup-stepper__label {
+      color: #22c55e;
+    }
+    + .signup-stepper__line {
+      background: #22c55e;
+    }
+  }
+}
+
+// ── SignUp UI Extras ─────────────────────────────────────────────────────────
+
+.signup-card {
+  border-radius: 1.5rem !important;
+}
+
+.signup-logo {
+  height: 50px;
+  object-fit: contain;
+}
+
+.signup-input {
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid #e2e8f0 !important;
+  font-size: 0.95rem !important;
+
+  &:focus {
+    border-color: $pref-primary !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
+}
+
+.signup-btn {
+  padding: 0.8rem !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+}
+
+.signup-btn-prev {
+  padding: 0.8rem 1.5rem !important;
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+}
+
+.signup-social-btn {
+  padding: 0.7rem 1.5rem !important;
+  border-radius: 0.75rem !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+}
+
+// ── Toasts / Feedback ────────────────────────────────────────────────────────
+
+.pref-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 100px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 9999;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-weight: 600;
+  color: $pref-text-main;
+  border: 1px solid $pref-border;
+
+  &--visible {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.pref-error {
+  padding: 3rem;
+  border-radius: $pref-radius;
+  background: #fff1f2;
+  border: 1px solid #fecaca;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+
+  &__icon {
+    font-size: 3rem;
+    color: #ef4444;
+  }
+
+  &__msg {
+    color: #991b1b;
+    font-weight: 500;
+    max-width: 400px;
+    margin: 0;
+  }
+
+  &__retry {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 100px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover { background: #dc2626; }
+  }
+}
+
+// ── Skeletons ────────────────────────────────────────────────────────────────
+
+.pref-skeleton {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  &__block {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  &__title {
+    width: 200px;
+    height: 24px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    animation: prefPulse 1.5s infinite;
+  }
+
+  &__chips {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__chip {
+    width: 100px;
+    height: 36px;
+    background: #f1f5f9;
+    border-radius: 100px;
+    animation: prefPulse 1.5s infinite;
+  }
+}
+
+@keyframes prefPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
