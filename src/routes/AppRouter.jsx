@@ -37,6 +37,7 @@ import OwnerVisitsPage from "../pages/OwnerVisits/OwnerVisitsPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
 import UserProfilePage from "../pages/UserProfilePage";
+import PreferencesPage from "../pages/PreferencesPage";
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRouter() {
@@ -55,6 +56,7 @@ export default function AppRouter() {
             {/* ── Rutas protegidas (requieren autenticación) ────────── */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<UserProfilePage />} />
+                <Route path="/preferences" element={<PreferencesPage />} />
                 <Route path="/create-property" element={<CreateProperty />} />
                 <Route path="/properties/:id/edit" element={<CreateProperty />} />
                 <Route path="/properties/me" element={<MyProperties />} />

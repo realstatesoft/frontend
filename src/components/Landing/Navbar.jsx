@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { CiUser } from "react-icons/ci";
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline } from "react-icons/io5";
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoLogInOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoOptionsOutline } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
@@ -113,6 +113,9 @@ function CustomNavbar() {
                   </Link>
                   <Link to="/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
+                  </Link>
+                  <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> Mis preferencias
                   </Link>
                   {user?.role === "AGENT" && (
                     <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
