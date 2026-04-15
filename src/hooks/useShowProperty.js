@@ -12,6 +12,7 @@ import {
   PROPERTY_VISIBILITY_OPTIONS,
 } from "../constants/propertyEnums";
 import { PLACEHOLDER_IMAGES } from "../constants/showPropertyConstants";
+import propertyFlagsApi from "../services/propertyFlagsApi";
 
 const getErrorMessage = (err) =>
   err.response?.data?.message ??
@@ -42,6 +43,8 @@ export function useShowProperty() {
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmData, setConfirmData] = useState({});
+
+  const [activeFlagCount, setActiveFlagCount] = useState(0);
 
   const { user, isAuthenticated } = useAuth();
   const propertyOwnerId = property?.ownerId ?? property?.userId ?? null;
@@ -113,10 +116,28 @@ export function useShowProperty() {
       });
   }, [id]);
 
+  const fetchActiveFlagCount = useCallback(() => {
+    if (!id) {
+      setActiveFlagCount(0);
+      return;
+    }
+    propertyFlagsApi.getActiveFlagCount(id)
+      .then((data) => {
+         // data could be directly the number or JSON with data field
+         const count = typeof data === 'number' ? data : (data?.data ?? data?.count ?? 0);
+         setActiveFlagCount(count);
+      })
+      .catch(() => {
+        // Ignorar si falla el conteo
+        setActiveFlagCount(0);
+      });
+  }, [id]);
+
   useEffect(() => {
     fetchProperty();
     fetchSimilar();
-  }, [fetchProperty, fetchSimilar]);
+    fetchActiveFlagCount();
+  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -285,6 +306,7 @@ export function useShowProperty() {
     actionLoading,
     error,
     isOwner,
+    isAuthenticated,
     status,
     visibility,
     showConfirm,
@@ -305,6 +327,7 @@ export function useShowProperty() {
     loadingSimilar,
     similarProperties,
     similarError,
-    copyLink
+    copyLink,
+    activeFlagCount
   };
 }

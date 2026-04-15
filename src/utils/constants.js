@@ -21,6 +21,7 @@ export const OWNER_ROUTES = {
 export const ADMIN_ROUTES = {
   DASHBOARD: '/admin/dashboard',
   APPROVAL: '/admin/approval',
+  FLAGS: '/admin/flags',
 };
 
 export const STATUS_COLORS = {
