@@ -1,14 +1,28 @@
+import { useEffect } from 'react';
 import { FiHome, FiEye, FiMessageCircle, FiTrendingUp } from 'react-icons/fi';
 import StatCard from '../../components/common/StatCard/StatCard';
 import OwnerQuickActions from '../../components/widgets/OwnerQuickActions/OwnerQuickActions';
 import UpsellBanner from '../../components/widgets/UpsellBanner/UpsellBanner';
 import PropertyViewsChart from '../../components/widgets/PropertyViewsChart/PropertyViewsChart';
 import useOwnerStats from '../../hooks/useOwnerStats';
+import useTourStore from '../../store/useTourStore';
+import { OWNER_TOUR_STEPS, TOUR_STORAGE_KEY } from '../../data/tourSteps';
 import styles from './OwnerDashboardPage.module.scss';
 
 export default function OwnerDashboardPage() {
   const { data: response } = useOwnerStats();
   const stats = response?.data || {};
+  const { startTour } = useTourStore();
+
+  useEffect(() => {
+    const tourId = 'owner';
+    const alreadySeen = localStorage.getItem(TOUR_STORAGE_KEY(tourId));
+    if (!alreadySeen) {
+      localStorage.setItem(TOUR_STORAGE_KEY(tourId), 'true');
+      const timer = setTimeout(() => startTour(tourId, OWNER_TOUR_STEPS), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [startTour]);
 
   return (
     <div className={styles.dashboard}>
@@ -19,7 +33,7 @@ export default function OwnerDashboardPage() {
         </div>
       </div>
 
-      <div className={styles.dashboard__stats}>
+      <div className={styles.dashboard__stats} data-tour="dashboard-stats">
         <StatCard
           label="Mis Propiedades"
           value={stats.myProperties?.value ?? 0}
@@ -50,7 +64,9 @@ export default function OwnerDashboardPage() {
         />
       </div>
 
-      <OwnerQuickActions />
+      <div data-tour="quick-actions">
+        <OwnerQuickActions />
+      </div>
 
       <div className={styles.dashboard__grid}>
         <PropertyViewsChart />

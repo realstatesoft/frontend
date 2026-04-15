@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { FiUsers, FiShoppingBag, FiMapPin, FiDollarSign } from 'react-icons/fi';
 import StatCard from '../../components/common/StatCard/StatCard';
 import QuickActions from '../../components/widgets/QuickActions/QuickActions';
@@ -5,11 +6,24 @@ import SalesPerformanceChart from '../../components/widgets/SalesPerformanceChar
 import UpcomingAppointments from '../../components/widgets/UpcomingAppointments/UpcomingAppointments';
 import useAgentStats from '../../hooks/useAgentStats';
 import { formatCurrency } from '../../utils/formatters';
+import useTourStore from '../../store/useTourStore';
+import { AGENT_TOUR_STEPS, TOUR_STORAGE_KEY } from '../../data/tourSteps';
 import styles from './DashboardPage.module.scss';
 
 export default function DashboardPage() {
   const { data: response } = useAgentStats();
   const stats = response?.data || {};
+  const { startTour } = useTourStore();
+
+  useEffect(() => {
+    const tourId = 'agent';
+    const alreadySeen = localStorage.getItem(TOUR_STORAGE_KEY(tourId));
+    if (!alreadySeen) {
+      localStorage.setItem(TOUR_STORAGE_KEY(tourId), 'true');
+      const timer = setTimeout(() => startTour(tourId, AGENT_TOUR_STEPS), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [startTour]);
 
   return (
     <div className={styles.dashboard}>
@@ -20,7 +34,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className={styles.dashboard__stats}>
+      <div className={styles.dashboard__stats} data-tour="dashboard-stats">
         <StatCard
           label="Clientes Activos"
           value={stats.activeClients?.value ?? 0}
@@ -51,7 +65,9 @@ export default function DashboardPage() {
         />
       </div>
 
-      <QuickActions />
+      <div data-tour="quick-actions">
+        <QuickActions />
+      </div>
 
       <div className={styles.dashboard__grid}>
         <SalesPerformanceChart />

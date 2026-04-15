@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import {
   FiGrid, FiHome, FiEye, FiMessageSquare,
 } from 'react-icons/fi';
@@ -7,6 +7,11 @@ import Topbar from '../Topbar/Topbar';
 import useUIStore from '../../../store/useUIStore';
 import { OWNER_ROUTES } from '../../../utils/constants';
 import styles from './OwnerLayout.module.scss';
+import { useAuth } from '../../../hooks/useAuth';
+import RoleRedirect from '../../commons/RoleRedirect';
+import TourOverlay from '../../common/Tour/TourOverlay';
+import TourLauncher from '../../common/Tour/TourLauncher';
+import { OWNER_TOUR_STEPS } from '../../../data/tourSteps';
 
 const OWNER_NAV_ITEMS = [
   { section: 'Principal' },
@@ -19,7 +24,12 @@ const OWNER_NAV_ITEMS = [
 ];
 
 export default function OwnerLayout() {
+  const { user } = useAuth();
+  if (user?.role !== 'OWNER') return <RoleRedirect />;
+
   const { sidebarCollapsed } = useUIStore();
+  const location = useLocation();
+  const isDashboard = location.pathname === OWNER_ROUTES.DASHBOARD;
 
   const contentClass = [
     styles.ownerLayout__content,
@@ -28,13 +38,14 @@ export default function OwnerLayout() {
 
   return (
     <div className={styles.ownerLayout}>
-      <Sidebar navItems={OWNER_NAV_ITEMS} />
-      <Topbar />
+      <Sidebar navItems={OWNER_NAV_ITEMS} data-tour="sidebar" />
+      <Topbar extraActions={isDashboard ? <TourLauncher tourId="owner" steps={OWNER_TOUR_STEPS} /> : null} />
       <div className={contentClass}>
         <main className={styles.ownerLayout__main}>
           <Outlet />
         </main>
       </div>
+      <TourOverlay />
     </div>
   );
 }

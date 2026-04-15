@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import {
   FiGrid, FiUsers, FiHome, FiCalendar,
   FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiUser
@@ -10,6 +10,9 @@ import { AGENT_ROUTES } from '../../../utils/constants';
 import styles from './AgentLayout.module.scss';
 import { useAuth } from '../../../hooks/useAuth';
 import RoleRedirect from '../../commons/RoleRedirect';
+import TourOverlay from '../../common/Tour/TourOverlay';
+import TourLauncher from '../../common/Tour/TourLauncher';
+import { AGENT_TOUR_STEPS } from '../../../data/tourSteps';
 
 const AGENT_NAV_ITEMS = [
   { section: 'Principal' },
@@ -28,11 +31,11 @@ const AGENT_NAV_ITEMS = [
 
 export default function AgentLayout() {
   const { user } = useAuth();
-  // If authenticated user is not an agent, redirect using RoleRedirect
-  if (user?.role !== 'AGENT') {
-    return <RoleRedirect />;
-  }
+  if (user?.role !== 'AGENT') return <RoleRedirect />;
+
   const { sidebarCollapsed } = useUIStore();
+  const location = useLocation();
+  const isDashboard = location.pathname === AGENT_ROUTES.DASHBOARD;
 
   const contentClass = [
     styles.agentLayout__content,
@@ -41,13 +44,14 @@ export default function AgentLayout() {
 
   return (
     <div className={styles.agentLayout}>
-      <Sidebar navItems={AGENT_NAV_ITEMS} />
-      <Topbar />
+      <Sidebar navItems={AGENT_NAV_ITEMS} data-tour="sidebar" />
+      <Topbar extraActions={isDashboard ? <TourLauncher tourId="agent" steps={AGENT_TOUR_STEPS} /> : null} />
       <div className={contentClass}>
         <main className={styles.agentLayout__main}>
           <Outlet />
         </main>
       </div>
+      <TourOverlay />
     </div>
   );
 }

@@ -100,6 +100,13 @@
   transition: opacity 0.2s ease;
 }
 
+.sidebar__logo_img {
+  height: 48px;
+  width: auto;
+  transform: scale(2.2);
+  transform-origin: left center;
+}
+
 .sidebar__nav {
   @include flex-column;
   flex: 1;

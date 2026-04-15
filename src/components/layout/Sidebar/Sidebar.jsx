@@ -1,6 +1,7 @@
 import {
   FiChevronLeft, FiChevronRight,
 } from 'react-icons/fi';
+import Logotipo from '../../../assets/Logotipo.png';
 import SidebarItem from './SidebarItem';
 import useUIStore from '../../../store/useUIStore';
 import styles from './Sidebar.module.scss';
@@ -15,12 +16,13 @@ export default function Sidebar({ navItems = [] }) {
 
   return (
     <>
-      <aside className={sidebarClass}>
+      <aside className={sidebarClass} data-tour="sidebar">
         <div className={styles.sidebar__logo}>
-          <span className={styles.sidebar__logo_brand}>
-            <span className={styles['sidebar__logo-icon']}>O</span>
-            <span className={styles['sidebar__logo-text']}>OpenRoof</span>
-          </span>
+          <img
+            src={Logotipo}
+            alt="OpenRoof"
+            className={styles.sidebar__logo_img}
+          />
         </div>
 
         <nav className={styles.sidebar__nav}>
