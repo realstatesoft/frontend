@@ -95,7 +95,7 @@ export default function SignUp() {
         nextStep();
       } else {
         // Si no tenemos ID, algo falló en la respuesta
-        navigate('/');
+        setErrorMessage('Error al obtener el ID del usuario tras el registro.');
       }
     } catch (error) {
       setErrorMessage(error.message || 'Error al registrar usuario');

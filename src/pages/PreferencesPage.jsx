@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { IoCheckmarkCircle, IoCloseCircle, IoArrowBackOutline } from "react-icons/io5";
@@ -9,8 +9,8 @@ import { useAuth } from "../hooks/useAuth";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 
 // ── Toast simple ──────────────────────────────────────────────────────────────
-function Toast({ visible, message }) {
-  const isError = !message?.includes("¡");
+function Toast({ visible, message, type = "success" }) {
+  const isError = type === "error";
   return (
     <div className={`pref-toast${visible ? " pref-toast--visible" : ""}`} role="status">
       <span className="pref-toast__icon">
@@ -45,19 +45,32 @@ export default function PreferencesPage() {
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const [toastType, setToastType] = useState("success");
+  const timeoutRef = useRef(null);
 
-  function showToast(msg) {
+  function showToast(msg, type = "success") {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     setToastMsg(msg);
+    setToastType(type);
     setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 3500);
+    timeoutRef.current = setTimeout(() => setToastVisible(false), 3500);
   }
+
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   async function handleSubmit({ selectedOptionIds, ranges }) {
     try {
       await savePreferences({ userId, selectedOptionIds, ranges });
-      showToast("¡Preferencias guardadas! Ahora te mostraremos propiedades más relevantes.");
+      showToast("¡Preferencias guardadas! Ahora te mostraremos propiedades más relevantes.", "success");
     } catch (err) {
-      showToast(err?.message ?? "Error al guardar. Intentá de nuevo.");
+      showToast(err?.message ?? "Error al guardar. Intentá de nuevo.", "error");
     }
   }
 
@@ -127,7 +140,7 @@ export default function PreferencesPage() {
 
       <Footer />
 
-      <Toast visible={toastVisible} message={toastMsg} />
+      <Toast visible={toastVisible} message={toastMsg} type={toastType} />
     </>
   );
 }

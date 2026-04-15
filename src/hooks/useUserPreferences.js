@@ -80,6 +80,9 @@ export function useUserPreferences(userId) {
    */
   const savePreferences = useCallback(
     async (data) => {
+      if (!userId) {
+        throw new Error("No se pudo identificar al usuario para guardar preferencias.");
+      }
       setIsSaving(true);
       try {
         const saved = await saveUserPreferences(data);
@@ -99,7 +102,7 @@ export function useUserPreferences(userId) {
         setIsSaving(false);
       }
     },
-    [authContext]
+    [userId, authContext]
   );
 
   return {

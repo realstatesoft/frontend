@@ -176,11 +176,11 @@ $pref-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     font-size: 1rem;
-    animation: prefChipIn 0.2s ease-out;
+    animation: pref-chip-in 0.2s ease-out;
   }
 }
 
-@keyframes prefChipIn {
+@keyframes pref-chip-in {
   from { opacity: 0; transform: scale(0.5); }
   to   { opacity: 1; transform: scale(1); }
 }
@@ -587,25 +587,11 @@ $pref-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     height: 24px;
     background: #f1f5f9;
     border-radius: 4px;
-    animation: prefPulse 1.5s infinite;
-  }
-
-  &__chips {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  &__chip {
-    width: 100px;
-    height: 36px;
-    background: #f1f5f9;
-    border-radius: 100px;
-    animation: prefPulse 1.5s infinite;
+    animation: pref-pulse 1.5s infinite;
   }
 }
 
-@keyframes prefPulse {
+@keyframes pref-pulse {
   0% { opacity: 1; }
   50% { opacity: 0.5; }
   100% { opacity: 1; }
