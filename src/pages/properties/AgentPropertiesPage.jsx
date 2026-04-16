@@ -3,39 +3,72 @@ import DataTable from '../../components/common/DataTable/DataTable';
 import Badge from '../../components/common/Badge/Badge';
 import Button from '../../components/common/Button/Button';
 import useAgentProperties from '../../hooks/useAgentProperties';
-import { STATUS_COLORS } from '../../utils/constants';
 import { formatCurrency } from '../../utils/formatters';
 import { Link } from 'react-router-dom';
 import { FiHome } from 'react-icons/fi';
 import styles from './AgentPropertiesPage.module.scss';
 
+const PROPERTY_TYPE_LABELS = {
+  HOUSE: 'Casa',
+  APARTMENT: 'Departamento',
+  LAND: 'Terreno',
+  OFFICE: 'Oficina',
+  WAREHOUSE: 'Depósito',
+  FARM: 'Granja',
+};
+
+const PROPERTY_STATUS_LABELS = {
+  PENDING: 'Pendiente',
+  APPROVED: 'Aprobado',
+  REJECTED: 'Rechazado',
+  PUBLISHED: 'Publicado',
+  SOLD: 'Vendido',
+  RENTED: 'Alquilado',
+  ARCHIVED: 'Archivado',
+};
+
+const PROPERTY_STATUS_COLORS = {
+  PENDING: 'warning',
+  APPROVED: 'success',
+  REJECTED: 'danger',
+  PUBLISHED: 'info',
+  SOLD: 'accent',
+  RENTED: 'accent',
+  ARCHIVED: 'neutral',
+};
+
 const COLUMNS = [
   { key: 'title', label: 'Propiedad' },
-  { key: 'type', label: 'Tipo', render: (v) => v?.charAt(0).toUpperCase() + v?.slice(1) },
+  { key: 'propertyType', label: 'Tipo', render: (v) => PROPERTY_TYPE_LABELS[v] || v },
   { key: 'price', label: 'Precio', render: (v) => formatCurrency(v) },
-  { key: 'location', label: 'Ubicación' },
+  { key: 'locationName', label: 'Ubicación' },
   {
     key: 'status',
     label: 'Estado',
     render: (value) => (
-      <Badge variant={STATUS_COLORS[value] || 'neutral'}>
-        {value?.charAt(0).toUpperCase() + value?.slice(1)}
+      <Badge variant={PROPERTY_STATUS_COLORS[value] || 'neutral'}>
+        {PROPERTY_STATUS_LABELS[value] || value}
       </Badge>
     ),
   },
 ];
 
 const TYPE_OPTIONS = [
-  { value: 'casa', label: 'Casa' },
-  { value: 'departamento', label: 'Departamento' },
-  { value: 'terreno', label: 'Terreno' },
-  { value: 'oficina', label: 'Oficina' },
+  { value: 'HOUSE', label: 'Casa' },
+  { value: 'APARTMENT', label: 'Departamento' },
+  { value: 'LAND', label: 'Terreno' },
+  { value: 'OFFICE', label: 'Oficina' },
+  { value: 'WAREHOUSE', label: 'Depósito' },
+  { value: 'FARM', label: 'Granja' },
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'activo', label: 'Activo' },
-  { value: 'pendiente', label: 'Pendiente' },
-  { value: 'inactivo', label: 'Inactivo' },
+  { value: 'PENDING', label: 'Pendiente' },
+  { value: 'APPROVED', label: 'Aprobado' },
+  { value: 'PUBLISHED', label: 'Publicado' },
+  { value: 'SOLD', label: 'Vendido' },
+  { value: 'RENTED', label: 'Alquilado' },
+  { value: 'ARCHIVED', label: 'Archivado' },
 ];
 
 export default function AgentPropertiesPage() {
@@ -52,11 +85,11 @@ export default function AgentPropertiesPage() {
       result = result.filter(
         (p) =>
           p.title?.toLowerCase().includes(q) ||
-          p.location?.toLowerCase().includes(q)
+          p.locationName?.toLowerCase().includes(q)
       );
     }
     if (typeFilter) {
-      result = result.filter((p) => p.type === typeFilter);
+      result = result.filter((p) => p.propertyType === typeFilter);
     }
     if (statusFilter) {
       result = result.filter((p) => p.status === statusFilter);
@@ -65,7 +98,7 @@ export default function AgentPropertiesPage() {
   }, [properties, search, typeFilter, statusFilter]);
 
   const handleFilter = (key, value) => {
-    if (key === 'type') setTypeFilter(value);
+    if (key === 'propertyType') setTypeFilter(value);
     if (key === 'status') setStatusFilter(value);
   };
 
@@ -90,7 +123,7 @@ export default function AgentPropertiesPage() {
           loading={isLoading}
           onSearch={setSearch}
           filters={[
-            { key: 'type', label: 'Tipo', value: typeFilter, options: TYPE_OPTIONS },
+            { key: 'propertyType', label: 'Tipo', value: typeFilter, options: TYPE_OPTIONS },
             { key: 'status', label: 'Estado', value: statusFilter, options: STATUS_OPTIONS },
           ]}
           onFilter={handleFilter}

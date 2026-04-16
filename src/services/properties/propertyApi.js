@@ -31,6 +31,9 @@ const propertyApi = {
 
   getSimilar: (id, limit) => api.get(`${BASE}/${id}/similar?size=${limit}`),
 
+  /** Propiedades asignadas al agente autenticado (solo AGENT) */
+  getMyAssignments: () => api.get("/assignments/me"),
+
 };
 
 export default propertyApi;
