@@ -46,6 +46,7 @@ import PropertyApprovalPage from "../pages/Admin/PropertyApprovalPage";
 import AdminDashboardPage from "../pages/Admin/AdminDashboardPage";
 import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
 import AdminNotificationsPage from "../pages/Admin/AdminNotificationsPage";
+import PreferencesPage from "../pages/PreferencesPage";
 
 export default function AppRouter() {
     return (
@@ -67,6 +68,7 @@ export default function AppRouter() {
                 <Route path="/properties/:id/edit" element={<CreateProperty />} />
                 <Route path="/properties/me" element={<MyProperties />} />
                 <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
+                <Route path="/preferences" element={<PreferencesPage />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
