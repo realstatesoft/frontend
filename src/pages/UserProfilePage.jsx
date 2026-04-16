@@ -8,6 +8,7 @@ import Footer from "../components/Landing/Footer";
 import { CiUser, CiMail, CiPhone } from "react-icons/ci";
 import { IoPencilOutline, IoCloseOutline, IoCheckmarkOutline } from "react-icons/io5";
 import { LuTag } from "react-icons/lu";
+import DocumentsSection from "../components/profile/DocumentsSection";
 
 function EditProfileModal({ profile, onClose, onSaved }) {
   const [form, setForm] = useState({
@@ -147,6 +148,7 @@ const UserProfilePage = () => {
   const [error, setError] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     let isCancelled = false;
@@ -233,7 +235,18 @@ const UserProfilePage = () => {
                 </div>
               )}
               <div className="uprofile-identity">
-                <h2 className="uprofile-name">{profile?.name || "Sin nombre"}</h2>
+                <h2 className="uprofile-name" style={{ display: 'flex', alignItems: 'center' }}>
+                  {profile?.name || "Sin nombre"}
+                  {isVerified ? (
+                    <span className="badge bg-success ms-3" style={{ fontSize: '0.65em', verticalAlign: 'middle', padding: '0.35em 0.6em', borderRadius: '8px', fontWeight: '600' }}>
+                      <IoCheckmarkOutline size={14} className="me-1"/> Perfil Verificado
+                    </span>
+                  ) : (
+                    <span className="badge bg-warning text-dark ms-3" style={{ fontSize: '0.65em', verticalAlign: 'middle', padding: '0.35em 0.6em', borderRadius: '8px', fontWeight: '600' }}>
+                      Pendiente de verificación
+                    </span>
+                  )}
+                </h2>
                 <p className="uprofile-email">
                   <CiMail size={15} className="uprofile-email-icon" />
                   {profile?.email || ""}
@@ -267,6 +280,8 @@ const UserProfilePage = () => {
               ))}
             </div>
           </div>
+
+          <DocumentsSection onVerificationStatusChange={setIsVerified} />
         </div>
       </Container>
 

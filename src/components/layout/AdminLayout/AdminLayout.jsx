@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { FiGrid, FiCheckSquare, FiFlag } from 'react-icons/fi';
+import { FiGrid, FiCheckSquare, FiFlag, FiFileText } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
 import useUIStore from '../../../store/useUIStore';
@@ -13,6 +13,7 @@ const ADMIN_NAV_ITEMS = [
   { to: ADMIN_ROUTES.DASHBOARD, icon: <FiGrid />, label: 'Panel' },
   { to: ADMIN_ROUTES.APPROVAL, icon: <FiCheckSquare />, label: 'Aprobación de propiedades' },
   { to: ADMIN_ROUTES.FLAGS, icon: <FiFlag />, label: 'Reportes' },
+  { to: ADMIN_ROUTES.DOCUMENTS, icon: <FiFileText />, label: 'Validación de Documentos ' },
 ];
 
 export default function AdminLayout() {
