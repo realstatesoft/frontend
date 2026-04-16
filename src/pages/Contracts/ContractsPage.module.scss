@@ -1,0 +1,740 @@
+@use "../../styles/mixins" as *;
+
+// ─── Page layout (matches SalesPage.module.scss pattern) ─────────────────────
+
+.page {
+  @include flex-column;
+  gap: var(--spacing-xl);
+}
+
+.page__header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.page__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.page__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.page__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.page__card {
+  @include glass-card;
+  padding: var(--spacing-lg);
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
+.page__tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 0;
+}
+
+.page__tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &--active {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+    font-weight: 600;
+  }
+}
+
+.page__tabCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--color-border);
+  border-radius: 10px;
+  color: var(--color-text-muted);
+
+  .page__tab--active & {
+    background: var(--color-accent);
+    color: #fff;
+  }
+}
+
+// ─── Table cell helpers ───────────────────────────────────────────────────────
+
+.contracts__propName {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  @include text-ellipsis;
+  max-width: 160px;
+  display: block;
+}
+
+.contracts__commission {
+  font-weight: 600;
+  color: var(--color-success, #22c55e);
+}
+
+.contracts__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contracts__actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+  }
+
+  &--update:hover {
+    background: var(--color-accent, #6366f1);
+    border-color: var(--color-accent, #6366f1);
+  }
+}
+
+// ─── Modal base ───────────────────────────────────────────────────────────────
+
+.modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal__box {
+  @include glass-card;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &--sm {
+    max-width: 440px;
+  }
+}
+
+.modal__header {
+  @include flex-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.modal__close {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--color-border);
+    color: var(--color-text-primary);
+  }
+}
+
+.modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  @include flex-column;
+  gap: var(--spacing-lg);
+  @include scrollbar-styled;
+}
+
+.modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+// ─── Modal sections (detail) ──────────────────────────────────────────────────
+
+.modal__section {
+  @include flex-column;
+  gap: 10px;
+}
+
+.modal__sectionTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.modal__grid {
+  @include flex-column;
+  gap: 6px;
+}
+
+.modal__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+
+  &--highlight {
+    background: var(--color-bg-surface-hover, rgba(37, 99, 235, 0.05));
+    font-weight: 600;
+  }
+}
+
+.modal__rowLabel {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.modal__rowValue {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+.modal__terms {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, var(--color-text-muted));
+  line-height: 1.6;
+  background: var(--color-bg-surface-hover, rgba(0,0,0,0.03));
+  border-radius: 6px;
+  padding: 12px;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.modal__noAgent {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-weight: 400;
+}
+
+// ─── Modal status change ──────────────────────────────────────────────────────
+
+.modal__statusInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.modal__statusOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal__statusOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: var(--color-bg-surface-hover, rgba(37,99,235,0.04));
+    border-color: var(--color-accent);
+  }
+
+  input[type="radio"] {
+    accent-color: var(--color-accent);
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.modal__noTransitions {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  padding: 12px;
+  background: var(--color-bg-surface-hover, rgba(0,0,0,0.03));
+  border-radius: 6px;
+  text-align: center;
+}
+
+// ─── Footer buttons ───────────────────────────────────────────────────────────
+
+.modal__btnClose {
+  padding: 8px 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--color-border);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.modal__btnConfirm {
+  padding: 8px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-accent);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Shared buttons ───────────────────────────────────────────────────────────
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  border: none;
+
+  &--primary {
+    background: var(--color-accent);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      opacity: 0.88;
+    }
+  }
+
+  &--ghost {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+
+    &:hover:not(:disabled) {
+      background: var(--color-border);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Modal wide variant (create form) ────────────────────────────────────────
+
+.modal__box--wide {
+  max-width: 860px;
+}
+
+// ─── Create contract form ─────────────────────────────────────────────────────
+
+.form__loadingNote {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.form__section {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  background: var(--color-bg-surface, rgba(0,0,0,0.02));
+}
+
+.form__sectionTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.form__row {
+  @include flex-column;
+  gap: 4px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form__cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, var(--color-text-muted));
+}
+
+.form__required {
+  color: var(--color-danger, #ef4444);
+}
+
+.form__input,
+.form__select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-surface, #fff);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: var(--color-accent);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--color-bg-surface-hover, rgba(0,0,0,0.05));
+  }
+}
+
+.form__input--textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.form__error {
+  font-size: 0.8rem;
+  color: var(--color-danger, #ef4444);
+  margin-top: 6px;
+}
+
+// ─── Edit action button (DRAFT only) ──────────────────────────────────────────
+
+.contracts__actionBtn--edit:hover {
+  background: var(--color-warning, #f59e0b);
+  border-color: var(--color-warning, #f59e0b);
+  color: #fff;
+}
+
+.contracts__actionBtn--sign:hover {
+  background: var(--color-success, #22c55e);
+  border-color: var(--color-success, #22c55e);
+  color: #fff;
+}
+
+// ─── Draft badge ──────────────────────────────────────────────────────────────
+
+.contracts__draftBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+// ─── Signature panel (ContractDetailModal) ────────────────────────────────────
+
+.modal__sigsLoading,
+.modal__noSigs {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.sign__progressBar {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.sign__progressFill {
+  height: 100%;
+  background: var(--color-success, #22c55e);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.sign__progressLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.sign__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sign__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+
+  &--signed {
+    background: rgba(34, 197, 94, 0.06);
+    border-color: rgba(34, 197, 94, 0.3);
+  }
+
+  &--pending {
+    background: var(--color-bg-surface, rgba(0,0,0,0.02));
+  }
+}
+
+.sign__status {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.sign__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sign__name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.sign__role,
+.sign__type {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.sign__date {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+// ─── ContractSignModal UI ─────────────────────────────────────────────────────
+
+.sign__summary {
+  background: var(--color-bg-surface-hover, rgba(0,0,0,0.03));
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sign__summaryProp {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.sign__summaryRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.sign__typeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sign__typeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 10px;
+  border: 2px solid var(--color-border);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: var(--color-accent);
+    background: rgba(99, 102, 241, 0.04);
+  }
+
+  &--active {
+    border-color: var(--color-accent);
+    background: rgba(99, 102, 241, 0.08);
+  }
+}
+
+.sign__typeRadio {
+  display: none;
+}
+
+.sign__typeIcon {
+  font-size: 1.4rem;
+  color: var(--color-accent);
+}
+
+.sign__typeLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.sign__typeDesc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+  font-style: italic;
+}
+
+.sign__confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, var(--color-text-muted));
+  line-height: 1.5;
+
+  input[type="checkbox"] {
+    margin-top: 2px;
+    accent-color: var(--color-accent);
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}
+
+.sign__preview {
+  max-width: 200px;
+  max-height: 100px;
+  margin-top: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  object-fit: contain;
+}
+

@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
    * Espera: { accessToken, refreshToken, email, role }
    */
   function login(responseData) {
-    const { accessToken, refreshToken, email, role, id } = responseData ?? {};
+    const { accessToken, refreshToken, email, role, id, agentProfileId } = responseData ?? {};
 
     if (!accessToken || typeof accessToken !== "string") {
       throw new Error("login(): accessToken inválido o ausente en el response");
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
       throw new Error("login(): refreshToken inválido o ausente en el response");
     }
 
-    const userInfo = { email, role, userId: id };
+    const userInfo = { email, role, userId: id, agentProfileId: agentProfileId ?? null };
 
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
