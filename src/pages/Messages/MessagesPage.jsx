@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiSend } from 'react-icons/fi';
-import { useConversations, useMessages } from '../../hooks/useMessagesData';
+import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
 import Button from '../../components/common/Button/Button';
 import styles from './MessagesPage.module.scss';
@@ -39,13 +39,24 @@ function ConversationPanel({ conversation }) {
   const [message, setMessage] = useState('');
   const { data: response } = useMessages(conversation?.id);
   const messages = response?.data || [];
+  const sendMessage = useSendMessage();
+  const markAsRead = useMarkAsRead();
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    // Note: Send mutation to be implemented
+    if (!message.trim() || !conversation) return;
+    await sendMessage.mutateAsync({
+      receiverId: conversation.id,
+      content: message.trim()
+    });
     setMessage('');
   };
+
+  useEffect(() => {
+    if (conversation?.id && messages.some(m => !m.ownMessage)) {
+      markAsRead.mutate(conversation.id);
+    }
+  }, [conversation?.id, messages]);
 
   if (!conversation) {
     return (
@@ -96,7 +107,7 @@ function ConversationPanel({ conversation }) {
           variant="primary"
           size="sm"
           type="submit"
-          disabled={!message.trim()}
+          disabled={!message.trim() || sendMessage.isPending}
         >
           <FiSend />
         </Button>

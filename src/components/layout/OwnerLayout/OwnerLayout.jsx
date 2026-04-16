@@ -20,7 +20,7 @@ const OWNER_NAV_ITEMS = [
   { section: 'Gestión' },
   { to: OWNER_ROUTES.VISITS, icon: <FiEye />, label: 'Visitas' },
   { section: 'Comunicación' },
-  { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes' },
+  { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes', showBadge: true },
 ];
 
 export default function OwnerLayout() {

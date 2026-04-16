@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import messageService from '../services/messageService';
 
 export function useConversations() {
@@ -17,5 +17,27 @@ export function useMessages(conversationId) {
     enabled: !!conversationId,
     staleTime: 1000 * 15,
     refetchInterval: 30000,
+  });
+}
+
+export function useSendMessage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ receiverId, content, propertyId }) =>
+      messageService.sendMessage(receiverId, content, propertyId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    },
+  });
+}
+
+export function useMarkAsRead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: messageService.markAsRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
   });
 }

@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.scss';
 
-export default function SidebarItem({ to, icon, label, collapsed }) {
+export default function SidebarItem({ to, icon, label, collapsed, badge }) {
   return (
     <NavLink
       to={to}
@@ -13,6 +13,7 @@ export default function SidebarItem({ to, icon, label, collapsed }) {
     >
       <span className={styles.sidebar__itemIcon}>{icon}</span>
       <span className={styles.sidebar__itemLabel}>{label}</span>
+      {badge}
     </NavLink>
   );
 }
