@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 import propertyFlagsApi from '../../services/propertyFlagsApi';
 
@@ -8,6 +8,14 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,17 +25,25 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
     setError('');
 
     try {
-      await propertyFlagsApi.createPropertyFlag(propertyId, { flagType, reason });
+      const normalizedReason = reason.trim();
+      await propertyFlagsApi.createPropertyFlag(propertyId, { flagType, reason: normalizedReason });
+      
+      if (!isMounted.current) return;
+      
       setSuccess(true);
       if (onSuccess) onSuccess();
     } catch (err) {
+      if (!isMounted.current) return;
+      
       setError(
         err.response?.data?.message ||
         err.response?.data?.error ||
         'Ocurrió un error al enviar el reporte. Por favor, intentá nuevamente.'
       );
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -61,7 +77,7 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
               Tu reporte será revisado por nuestro equipo.
             </p>
 
-            {error && <div className="alert alert-danger p-2 fs-6">{error}</div>}
+            {error && <div className="alert alert-danger p-2 fs-6" role="alert">{error}</div>}
 
             <Form.Group className="mb-3">
               <Form.Label>Tipo de reporte <span className="text-danger">*</span></Form.Label>

@@ -328,6 +328,7 @@ export function useShowProperty() {
     similarProperties,
     similarError,
     copyLink,
-    activeFlagCount
+    activeFlagCount,
+    fetchActiveFlagCount
   };
 }
