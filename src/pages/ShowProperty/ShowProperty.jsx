@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Container,
   Row,
@@ -15,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -25,6 +26,7 @@ import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
+import ReportPropertyModal from "../../components/properties/ReportPropertyModal"
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -53,8 +55,13 @@ export default function ShowProperty() {
     PROPERTY_VISIBILITY_OPTIONS,
     similarProperties,
     loadingSimilar,
-    copyLink
+    copyLink,
+    activeFlagCount,
+    isAuthenticated,
+    fetchActiveFlagCount
   } = useShowProperty();
+
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const {
     canChangeStatus,
@@ -104,6 +111,13 @@ export default function ShowProperty() {
         />
 
         <Container>
+          {activeFlagCount > 0 && (
+            <Alert variant="warning" className="d-flex align-items-center mb-4">
+              <Flag size={20} className="me-2" />
+              <span>Esta propiedad tiene reportes activos de otros usuarios. Procedé con precaución.</span>
+            </Alert>
+          )}
+
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h1>{property.title}</h1>
@@ -489,6 +503,19 @@ export default function ShowProperty() {
 
             <Col lg={4} className="mt-4 mt-lg-0">
               <PropertyContactCard property={property} />
+
+              {isAuthenticated && (
+                <div className="mt-4 text-center">
+                  <Button 
+                    variant="link" 
+                    className="text-muted d-inline-flex align-items-center"
+                    onClick={() => setShowReportModal(true)}
+                    style={{ textDecoration: 'none', fontSize: '0.9rem' }}
+                  >
+                    <Flag className="me-2" /> Reportar propiedad
+                  </Button>
+                </div>
+              )}
             </Col>
           </Row>
           
@@ -514,6 +541,13 @@ export default function ShowProperty() {
           
         </Container>
       </div>
+
+      <ReportPropertyModal 
+        propertyId={property.id} 
+        isOpen={showReportModal} 
+        onClose={() => setShowReportModal(false)}
+        onSuccess={() => fetchActiveFlagCount && fetchActiveFlagCount()}
+      />
 
       <Footer />
     </>
