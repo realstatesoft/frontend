@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Container, Button, Spinner, Form, Modal } from "react-bootstrap";
 import {
   IoCheckmarkOutline, IoCloseOutline, IoEyeOutline,
@@ -9,22 +9,9 @@ import {
 } from "react-icons/io5";
 import Swal from "sweetalert2";
 import api from "../../services/api";
+import { KYC_REQUIRED, DOC_LABELS } from "../../constants/documents";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
-
-const KYC_REQUIRED = ["ID_FRONT", "ID_BACK", "SELFIE", "PROOF_OF_ADDRESS"];
-
-const DOC_LABELS = {
-  ID_FRONT:         "Cédula — Frente",
-  ID_BACK:          "Cédula — Reverso",
-  SELFIE:           "Foto de Rostro",
-  PROOF_OF_ADDRESS: "Comprobante de Domicilio",
-  PROOF_OF_INCOME:  "Comprobante de Ingresos",
-  TAX_RETURN:       "Declaración de Impuestos",
-  BANK_STATEMENT:   "Extracto Bancario",
-  OTHER:            "Otro",
-  ID:               "Cédula (legacy)",
-};
 
 const formatSize = (bytes) => {
   if (!bytes) return "—";
@@ -341,7 +328,7 @@ export default function AdminDocumentsPage() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [processingId, setProcessingId] = useState(null);
 
-  const fetchDocuments = async () => {
+  const fetchDocuments = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await api.get("/users/documents");
@@ -351,9 +338,9 @@ export default function AdminDocumentsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchDocuments(); }, []);
+  useEffect(() => { fetchDocuments(); }, [fetchDocuments]);
 
   // Agrupar por userId
   const userGroups = useMemo(() => {

@@ -3,39 +3,31 @@ import { normalizePhoneForWhatsApp, getWhatsAppLink } from '../../utils/whatsapp
 
 describe('whatsapp utils', () => {
   describe('normalizePhoneForWhatsApp', () => {
-    it('returns empty string for null, undefined or non-string', () => {
-      expect(normalizePhoneForWhatsApp(null)).toBe('');
-      expect(normalizePhoneForWhatsApp(undefined)).toBe('');
-      expect(normalizePhoneForWhatsApp(123)).toBe('');
-      expect(normalizePhoneForWhatsApp({})).toBe('');
-    });
-
-    it('removes spaces, dashes, parentheses and + signs', () => {
-      expect(normalizePhoneForWhatsApp('+595 (981) 123-456')).toBe('595981123456');
-    });
-
-    it('replaces leading 0 with default country code', () => {
-      // 0981 123 456 -> 595 981 123 456
-      expect(normalizePhoneForWhatsApp('0981123456')).toBe('595981123456');
+    it.each([
+      [null, ''],
+      [undefined, ''],
+      [123, ''],
+      [{}, ''],
+      ['+595 (981) 123-456', '595981123456'],
+      ['0981123456', '595981123456'],
+      ['5491145678901', '5491145678901']
+    ])('normalizes %s into %s', (input, expected) => {
+      expect(normalizePhoneForWhatsApp(input)).toBe(expected);
     });
 
     it('respects explicitly provided custom default country code for leading 0', () => {
       expect(normalizePhoneForWhatsApp('0981123456', '54')).toBe('54981123456');
     });
-
-    it('keeps existing country codes if not starting with 0', () => {
-      expect(normalizePhoneForWhatsApp('5491145678901')).toBe('5491145678901');
-    });
   });
 
   describe('getWhatsAppLink', () => {
-    it('returns null if normalized phone is too short (< 8 digits)', () => {
-      expect(getWhatsAppLink('123')).toBeNull();
-      expect(getWhatsAppLink('021')).toBeNull(); 
-    });
-
-    it('generates wa.me link without message', () => {
-      expect(getWhatsAppLink('+595 981 123456')).toBe('https://wa.me/595981123456');
+    it.each([
+      ['123', null],
+      ['021', null],
+      ['+595 981 123456', 'https://wa.me/595981123456'],
+      ['0981123456', 'https://wa.me/595981123456'] // prefilled empty message handling (not passed)
+    ])('generates expected link for phone %s', (input, expected) => {
+      expect(getWhatsAppLink(input)).toBe(expected);
     });
 
     it('generates wa.me link with uri-encoded message', () => {

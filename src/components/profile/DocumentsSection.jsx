@@ -24,39 +24,9 @@ import {
   IoShieldCheckmarkOutline,
 } from "react-icons/io5";
 
-// ─── Constantes ───────────────────────────────────────────────────────────────
+import { KYC_REQUIRED_TYPES } from "../../constants/documents";
 
-// Documentos KYC obligatorios para verificar el perfil en Paraguay
-const KYC_REQUIRED_TYPES = [
-  {
-    value: "ID_FRONT",
-    label: "Cédula de Identidad — Frente",
-    description: "Fotografiá el frente de tu CI. Tu nombre, número y foto deben ser claramente visibles.",
-    tip: "Buena iluminación, sin reflejos ni bordes cortados.",
-    accept: "Foto o PDF",
-  },
-  {
-    value: "ID_BACK",
-    label: "Cédula de Identidad — Reverso",
-    description: "Fotografiá el dorso de tu CI. El código de barras debe ser legible.",
-    tip: "Evitá sombras sobre el código de barras.",
-    accept: "Foto o PDF",
-  },
-  {
-    value: "SELFIE",
-    label: "Foto de tu rostro (Selfie)",
-    description: "Subí una foto reciente de tu cara mirando de frente. Sin anteojos de sol ni accesorios que cubran el rostro.",
-    tip: "Fondo claro y buena iluminación. Sosté la cámara a la altura de los ojos.",
-    accept: "Solo foto (JPG, PNG)",
-  },
-  {
-    value: "PROOF_OF_ADDRESS",
-    label: "Comprobante de Domicilio",
-    description: "Subí una factura de servicios (luz, agua, gas) o un certificado de residencia con fecha de los últimos 3 meses.",
-    tip: "Tu nombre completo, dirección y fecha deben ser legibles.",
-    accept: "Foto o PDF",
-  },
-];
+// ─── Constantes ───────────────────────────────────────────────────────────────
 
 // Documentos adicionales opcionales
 const OPTIONAL_DOCUMENT_TYPES = [
@@ -438,8 +408,14 @@ function DocumentCard({ doc, onReplace, onDelete }) {
 
   async function handleDelete() {
     setDeleting(true);
-    try { await onDelete(doc.id); }
-    finally { setDeleting(false); setConfirmDelete(false); }
+    try { 
+      await onDelete(doc.id); 
+    } catch (error) {
+      Swal.fire("Error", "No se pudo eliminar el documento.", "error");
+    } finally { 
+      setDeleting(false); 
+      setConfirmDelete(false); 
+    }
   }
 
   const renderTooltip = (props, text) => <Tooltip id="button-tooltip" {...props}>{text}</Tooltip>;
@@ -581,9 +557,10 @@ export default function DocumentsSection({ onVerificationStatusChange }) {
   );
 
   // Alguno está en revisión por el admin
-  const anyKycPending = KYC_REQUIRED_TYPES.some(req =>
+  const pendingKycCount = KYC_REQUIRED_TYPES.filter(req =>
     docs.some(d => d.documentType === req.value && d.documentStatus === "PENDING")
-  );
+  ).length;
+  const anyKycPending = pendingKycCount > 0;
 
   return (
     <div className="doc-section">
@@ -636,7 +613,7 @@ export default function DocumentsSection({ onVerificationStatusChange }) {
             {kycPending === 0 && !anyKycPending
               ? "Documentos completados"
               : anyKycPending
-                ? `En revisión (${KYC_REQUIRED_TYPES.filter(r => docs.some(d => d.documentType === r.value && d.documentStatus === "PENDING")).length} pendiente${KYC_REQUIRED_TYPES.filter(r => docs.some(d => d.documentType === r.value && d.documentStatus === "PENDING")).length > 1 ? "s" : ""})`
+                ? `En revisión (${pendingKycCount} pendiente${pendingKycCount > 1 ? "s" : ""})`
                 : `Completar verificación (${kycPending} faltante${kycPending > 1 ? "s" : ""})`
             }
           </button>

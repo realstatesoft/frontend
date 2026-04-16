@@ -22,9 +22,7 @@ export async function uploadDocument(file, documentType) {
   formData.append("file", file);
   formData.append("documentType", documentType);
 
-  const { data: res } = await api.post(BASE, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data: res } = await api.post(BASE, formData);
   return res.data;
 }
 
@@ -38,9 +36,7 @@ export async function replaceDocument(id, file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const { data: res } = await api.put(`${BASE}/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data: res } = await api.put(`${BASE}/${id}`, formData);
   return res.data;
 }
 

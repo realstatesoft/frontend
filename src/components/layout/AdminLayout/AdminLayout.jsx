@@ -13,7 +13,7 @@ const ADMIN_NAV_ITEMS = [
   { to: ADMIN_ROUTES.DASHBOARD, icon: <FiGrid />, label: 'Panel' },
   { to: ADMIN_ROUTES.APPROVAL, icon: <FiCheckSquare />, label: 'Aprobación de propiedades' },
   { to: ADMIN_ROUTES.FLAGS, icon: <FiFlag />, label: 'Reportes' },
-  { to: ADMIN_ROUTES.DOCUMENTS, icon: <FiFileText />, label: 'Validación de Documentos ' },
+  { to: ADMIN_ROUTES.DOCUMENTS, icon: <FiFileText />, label: 'Validación de Documentos' },
 ];
 
 export default function AdminLayout() {

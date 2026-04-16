@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import AdminDocumentsPage from '../../pages/Admin/AdminDocumentsPage';
 import api from '../../services/api';
 import Swal from 'sweetalert2';
@@ -107,10 +107,13 @@ describe('AdminDocumentsPage KYC', () => {
     expect(screen.getAllByText(/Incompleto/i).length).toBeGreaterThan(0);
 
     // Comprobar estadísticas en la parte superior
+    const statsContainer = document.querySelector('.kyc-stats');
+    const { getByText: getByTextInStats } = within(statsContainer);
+    
     // Total users: 2
-    expect(screen.getByText('2')).toBeInTheDocument(); // Solicitudes totales
-    expect(screen.getByText('1')).toBeInTheDocument(); // En revisión (Ana)
-    expect(screen.getByText('0')).toBeInTheDocument(); // Verificados (ninguno)
+    expect(getByTextInStats('2')).toBeInTheDocument(); // Solicitudes totales
+    expect(getByTextInStats('1')).toBeInTheDocument(); // En revisión (Ana)
+    expect(getByTextInStats('0')).toBeInTheDocument(); // Verificados (ninguno)
   });
 
   it('abre el modal de perfil de usuario correctamente', async () => {
@@ -167,7 +170,6 @@ describe('AdminDocumentsPage KYC', () => {
            .mockResolvedValueOnce({ data: { data: mockDocuments } }); // reload after approve
            
     api.patch.mockResolvedValueOnce({});
-    Swal.fire.mockResolvedValueOnce({ isConfirmed: true });
 
     render(<AdminDocumentsPage />);
 

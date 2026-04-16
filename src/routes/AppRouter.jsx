@@ -112,6 +112,9 @@ export default function AppRouter() {
                 <Route path="/dashboard" element={<RoleRedirect />} />
 
                 {/* Admin Dashboard */}
+            </Route>
+
+            <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="dashboard" element={<AdminDashboardPage />} />

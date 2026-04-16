@@ -104,7 +104,13 @@ describe('propertyHelpers', () => {
         roofMaterial: 'Teja'
       };
       const features = buildFeaturesFromProperty(property);
-      expect(features.length).toBe(3);
+      expect(features).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ title: 'Dormitorios y baños' }),
+          expect.objectContaining({ title: 'Exterior' }),
+          expect.objectContaining({ title: 'Construcción' })
+        ])
+      );
     });
   });
 });

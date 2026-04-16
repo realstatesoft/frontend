@@ -238,11 +238,11 @@ const UserProfilePage = () => {
                 <h2 className="uprofile-name" style={{ display: 'flex', alignItems: 'center' }}>
                   {profile?.name || "Sin nombre"}
                   {isVerified ? (
-                    <span className="badge bg-success ms-3" style={{ fontSize: '0.65em', verticalAlign: 'middle', padding: '0.35em 0.6em', borderRadius: '8px', fontWeight: '600' }}>
+                    <span className="uprofile-badge uprofile-badge--verified ms-3">
                       <IoCheckmarkOutline size={14} className="me-1"/> Perfil Verificado
                     </span>
                   ) : (
-                    <span className="badge bg-warning text-dark ms-3" style={{ fontSize: '0.65em', verticalAlign: 'middle', padding: '0.35em 0.6em', borderRadius: '8px', fontWeight: '600' }}>
+                    <span className="uprofile-badge uprofile-badge--pending ms-3">
                       Pendiente de verificación
                     </span>
                   )}
