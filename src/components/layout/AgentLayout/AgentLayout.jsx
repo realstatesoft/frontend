@@ -31,10 +31,11 @@ const AGENT_NAV_ITEMS = [
 
 export default function AgentLayout() {
   const { user } = useAuth();
-  if (user?.role !== 'AGENT') return <RoleRedirect />;
-
   const { sidebarCollapsed } = useUIStore();
   const location = useLocation();
+
+  if (user?.role !== 'AGENT') return <RoleRedirect />;
+
   const isDashboard = location.pathname === AGENT_ROUTES.DASHBOARD;
 
   const contentClass = [
@@ -44,7 +45,7 @@ export default function AgentLayout() {
 
   return (
     <div className={styles.agentLayout}>
-      <Sidebar navItems={AGENT_NAV_ITEMS} data-tour="sidebar" />
+      <Sidebar navItems={AGENT_NAV_ITEMS} />
       <Topbar extraActions={isDashboard ? <TourLauncher tourId="agent" steps={AGENT_TOUR_STEPS} /> : null} />
       <div className={contentClass}>
         <main className={styles.agentLayout__main}>

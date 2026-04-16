@@ -21,7 +21,7 @@ export default function Sidebar({ navItems = [] }) {
           <img
             src={Logotipo}
             alt="OpenRoof"
-            className={styles.sidebar__logo_img}
+            className={styles['sidebar__logo-img']}
           />
         </div>
 

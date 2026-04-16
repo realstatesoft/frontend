@@ -48,7 +48,7 @@ export const OWNER_TOUR_STEPS = [
     id: 'dashboard-stats',
     target: '[data-tour="dashboard-stats"]',
     title: 'Tus Estadísticas',
-    content: 'Ve de un vistazo cuántas propiedades tenés publicadas, las visitas recibidas, consultas y vistas totales.',
+    content: 'Ve de un vistazo cuántas propiedades tienes publicadas, las visitas recibidas, consultas y vistas totales.',
     placement: 'bottom',
   },
   {

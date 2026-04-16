@@ -25,10 +25,11 @@ const OWNER_NAV_ITEMS = [
 
 export default function OwnerLayout() {
   const { user } = useAuth();
-  if (user?.role !== 'OWNER') return <RoleRedirect />;
-
   const { sidebarCollapsed } = useUIStore();
   const location = useLocation();
+
+  if (user?.role !== 'OWNER') return <RoleRedirect />;
+
   const isDashboard = location.pathname === OWNER_ROUTES.DASHBOARD;
 
   const contentClass = [
@@ -38,7 +39,7 @@ export default function OwnerLayout() {
 
   return (
     <div className={styles.ownerLayout}>
-      <Sidebar navItems={OWNER_NAV_ITEMS} data-tour="sidebar" />
+      <Sidebar navItems={OWNER_NAV_ITEMS} />
       <Topbar extraActions={isDashboard ? <TourLauncher tourId="owner" steps={OWNER_TOUR_STEPS} /> : null} />
       <div className={contentClass}>
         <main className={styles.ownerLayout__main}>

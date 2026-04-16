@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import useTourStore from '../../../store/useTourStore';
 import TourTooltip from './TourTooltip';
 import styles from './Tour.module.scss';
@@ -22,6 +22,7 @@ function getTargetRect(selector) {
 export default function TourOverlay() {
   const { isActive, steps, currentStep, nextStep, prevStep, endTour } = useTourStore();
   const [targetRect, setTargetRect] = useState(null);
+  const timeoutRef = useRef(null);
 
   const step = isActive && steps.length > 0 ? steps[currentStep] : null;
 
@@ -31,6 +32,28 @@ export default function TourOverlay() {
       return;
     }
     setTargetRect(getTargetRect(step.target));
+
+    const handleUpdate = () => {
+      if (step) {
+        setTargetRect(getTargetRect(step.target));
+      }
+    };
+
+    const debouncedUpdate = () => {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(handleUpdate, 100);
+    };
+
+    window.addEventListener('resize', debouncedUpdate);
+    window.addEventListener('scroll', debouncedUpdate, true);
+    window.addEventListener('orientationchange', debouncedUpdate);
+
+    return () => {
+      clearTimeout(timeoutRef.current);
+      window.removeEventListener('resize', debouncedUpdate);
+      window.removeEventListener('scroll', debouncedUpdate, true);
+      window.removeEventListener('orientationchange', debouncedUpdate);
+    };
   }, [step]);
 
   if (!step) return null;

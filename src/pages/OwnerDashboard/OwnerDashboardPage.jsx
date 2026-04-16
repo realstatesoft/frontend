@@ -1,28 +1,18 @@
-import { useEffect } from 'react';
 import { FiHome, FiEye, FiMessageCircle, FiTrendingUp } from 'react-icons/fi';
 import StatCard from '../../components/common/StatCard/StatCard';
 import OwnerQuickActions from '../../components/widgets/OwnerQuickActions/OwnerQuickActions';
 import UpsellBanner from '../../components/widgets/UpsellBanner/UpsellBanner';
 import PropertyViewsChart from '../../components/widgets/PropertyViewsChart/PropertyViewsChart';
 import useOwnerStats from '../../hooks/useOwnerStats';
-import useTourStore from '../../store/useTourStore';
-import { OWNER_TOUR_STEPS, TOUR_STORAGE_KEY } from '../../data/tourSteps';
+import { OWNER_TOUR_STEPS } from '../../data/tourSteps';
+import { useAutoStartTour } from '../../hooks/useAutoStartTour';
 import styles from './OwnerDashboardPage.module.scss';
 
 export default function OwnerDashboardPage() {
   const { data: response } = useOwnerStats();
   const stats = response?.data || {};
-  const { startTour } = useTourStore();
 
-  useEffect(() => {
-    const tourId = 'owner';
-    const alreadySeen = localStorage.getItem(TOUR_STORAGE_KEY(tourId));
-    if (!alreadySeen) {
-      localStorage.setItem(TOUR_STORAGE_KEY(tourId), 'true');
-      const timer = setTimeout(() => startTour(tourId, OWNER_TOUR_STEPS), 400);
-      return () => clearTimeout(timer);
-    }
-  }, [startTour]);
+  useAutoStartTour('owner', OWNER_TOUR_STEPS, 400);
 
   return (
     <div className={styles.dashboard}>

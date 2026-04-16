@@ -9,17 +9,32 @@ function computePosition(rect, placement, tooltipEl) {
   const tw = tooltipEl.offsetWidth || 300;
   const th = tooltipEl.offsetHeight || 150;
 
+  let candidateTop, candidateLeft;
+
   switch (placement) {
     case 'right':
-      return { top: top + height / 2 - th / 2, left: left + width + GAP };
+      candidateTop = top + height / 2 - th / 2;
+      candidateLeft = left + width + GAP;
+      break;
     case 'left':
-      return { top: top + height / 2 - th / 2, left: left - tw - GAP };
+      candidateTop = top + height / 2 - th / 2;
+      candidateLeft = left - tw - GAP;
+      break;
     case 'top':
-      return { top: top - th - GAP, left: left + width / 2 - tw / 2 };
+      candidateTop = top - th - GAP;
+      candidateLeft = left + width / 2 - tw / 2;
+      break;
     case 'bottom':
     default:
-      return { top: top + height + GAP, left: left + width / 2 - tw / 2 };
+      candidateTop = top + height + GAP;
+      candidateLeft = left + width / 2 - tw / 2;
+      break;
   }
+
+  const clampedLeft = Math.max(0, Math.min(candidateLeft, window.innerWidth - tw));
+  const clampedTop = Math.max(0, Math.min(candidateTop, window.innerHeight - th));
+
+  return { top: clampedTop, left: clampedLeft };
 }
 
 export default function TourTooltip({ step, stepIndex, totalSteps, targetRect, onNext, onPrev, onEnd }) {

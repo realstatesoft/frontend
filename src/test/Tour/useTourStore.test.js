@@ -56,5 +56,6 @@ describe('useTourStore', () => {
     expect(state.isActive).toBe(false);
     expect(state.currentStep).toBe(0);
     expect(state.tourId).toBe(null);
+    expect(state.steps).toEqual([]);
   });
 });
