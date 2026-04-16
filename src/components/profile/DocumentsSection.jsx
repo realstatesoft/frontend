@@ -182,7 +182,7 @@ function KYCWizardModal({ onClose, onDocUploaded, existingDocs }) {
   const currentStep = pendingSteps[stepIndex];
   const isLastStep = stepIndex === pendingSteps.length - 1;
   const totalSteps = pendingSteps.length;
-  const progressPct = ((stepIndex) / totalSteps) * 100;
+  const progressPct = ((stepIndex + (uploading ? 1 : 0)) / totalSteps) * 100;
 
   function handleFileSelected(f) {
     const err = validateFile(f);
@@ -410,8 +410,8 @@ function DocumentCard({ doc, onReplace, onDelete }) {
     setDeleting(true);
     try { 
       await onDelete(doc.id); 
-    } catch (error) {
-      Swal.fire("Error", "No se pudo eliminar el documento.", "error");
+    } catch (err) {
+      Swal.fire("Error", err?.response?.data?.message || "No se pudo eliminar el documento.", "error");
     } finally { 
       setDeleting(false); 
       setConfirmDelete(false); 
@@ -421,7 +421,7 @@ function DocumentCard({ doc, onReplace, onDelete }) {
   const renderTooltip = (props, text) => <Tooltip id="button-tooltip" {...props}>{text}</Tooltip>;
 
   return (
-    <div className={`doc-card doc-card--${doc.documentStatus.toLowerCase()}`}>
+    <div className={`doc-card doc-card--${(doc.documentStatus || 'unknown').toLowerCase()}`}>
       <div className="doc-card__main">
         <div className="doc-card__icon"><IoDocumentTextOutline size={24} /></div>
         <div className="doc-card__content">
@@ -660,9 +660,11 @@ export default function DocumentsSection({ onVerificationStatusChange }) {
               onReplace={(id) => setReplaceId(id)}
               onDelete={async (id) => {
                 await deleteDocument(id);
-                const updated = docs.filter(d => d.id !== id);
-                setDocs(updated);
-                checkVerification(updated);
+                setDocs(prevDocs => {
+                  const updated = prevDocs.filter(d => d.id !== id);
+                  checkVerification(updated);
+                  return updated;
+                });
                 Swal.fire({ icon: "success", title: "Eliminado", text: "El archivo fue removido.", timer: 1500, showConfirmButton: false });
               }}
             />

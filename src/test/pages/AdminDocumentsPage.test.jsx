@@ -108,12 +108,17 @@ describe('AdminDocumentsPage KYC', () => {
 
     // Comprobar estadísticas en la parte superior
     const statsContainer = document.querySelector('.kyc-stats');
-    const { getByText: getByTextInStats } = within(statsContainer);
+    const { getByText } = within(statsContainer);
     
     // Total users: 2
-    expect(getByTextInStats('2')).toBeInTheDocument(); // Solicitudes totales
-    expect(getByTextInStats('1')).toBeInTheDocument(); // En revisión (Ana)
-    expect(getByTextInStats('0')).toBeInTheDocument(); // Verificados (ninguno)
+    const totalLabel = getByText('Solicitudes totales');
+    expect(within(totalLabel.parentElement).getByText('2')).toBeInTheDocument();
+    
+    const pendingLabel = getByText('En revisión');
+    expect(within(pendingLabel.parentElement).getByText('1')).toBeInTheDocument();
+    
+    const verifiedLabel = getByText('Verificados');
+    expect(within(verifiedLabel.parentElement).getByText('0')).toBeInTheDocument();
   });
 
   it('abre el modal de perfil de usuario correctamente', async () => {
@@ -129,10 +134,11 @@ describe('AdminDocumentsPage KYC', () => {
     fireEvent.click(btn);
 
     // Debe abrirse el modal (verificamos que el título/texto esté en el DOM Modal)
-    expect(screen.getAllByText(/Revisión de Solicitud/i).length).toBeGreaterThan(1);
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText(/Revisión de Solicitud/i)).toBeInTheDocument();
     
     // Verify specific documents are shown inside the modal
-    expect(screen.getByText('Cédula — Frente')).toBeInTheDocument();
+    expect(within(dialog).getByText('Cédula — Frente')).toBeInTheDocument();
     
     // Ana tiene ID_FRONT como Aprobado y SELFIE como Pendiente
     // Debería haber botones Aprobar / Rechazar para SELFIE
