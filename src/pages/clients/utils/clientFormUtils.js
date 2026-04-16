@@ -172,7 +172,7 @@ export function formToPayload(form) {
     maxBathrooms: bathroomParts.max != null ? Math.round(bathroomParts.max) : null,
 
     birthDate: form.birthDate || null,
-    maritalStatus: MARITAL_TO_ENUM[form.maritalStatus] ?? form.maritalStatus ?? null,
+    maritalStatus: MARITAL_TO_ENUM[form.maritalStatus] || null,
     occupation: form.occupation || null,
     annualIncome: isNaN(annualIncome) ? null : annualIncome,
     address: form.address || null,
