@@ -25,8 +25,9 @@ import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { formatPrice } from "../../utils/priceFormat";
-import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
-import ReportPropertyModal from "../../components/properties/ReportPropertyModal"
+import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
+import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
+import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -122,47 +123,27 @@ export default function ShowProperty() {
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h1>{property.title}</h1>
             <div className="d-flex gap-2 align-items-center mt-2">
-              {/* Estado general — ADMIN: funcional | Owner no-admin: visible pero deshabilitado con tooltip */}
-              {(canChangeStatus || (isPropertyOwner && !isAdmin)) && (
-                <OverlayTrigger
-                  placement="bottom"
-                  trigger={['hover', 'focus']}
-                  overlay={
-                    !canChangeStatus ? (
-                      <Tooltip id="tooltip-status">
-                        Solo administradores pueden cambiar el estado
-                      </Tooltip>
-                    ) : <span />}
-                >
-                  {/* span wrapper needed for disabled Dropdown to receive mouse events/focus for tooltip */}
-                  <span
-                    tabIndex={0}
-                    role="group"
-                    aria-describedby={!canChangeStatus ? "tooltip-status" : undefined}
-                  >
-                    <Dropdown as={ButtonGroup}>
-                      <Dropdown.Toggle
-                        size="sm"
-                        variant="success"
-                        disabled={!canChangeStatus}
-                        style={!canChangeStatus ? { pointerEvents: "none", opacity: 0.55 } : undefined}
-                      >
-                        {status.label}
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        {PROPERTY_STATUS_OPTIONS.map((option) => (
-                          <Dropdown.Item
-                            key={option.value}
-                            onClick={() => openChangeStatusConfirm(option)}
-                            disabled={!canChangeStatus}
-                          >
-                            {option.label}
-                          </Dropdown.Item>
-                        ))}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </span>
-                </OverlayTrigger>
+              {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
+              {(canChangeStatus || canEdit) && (
+                canChangeStatus ? (
+                  <Dropdown as={ButtonGroup}>
+                    <Dropdown.Toggle size="sm" variant="success">
+                      {status.label}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {PROPERTY_STATUS_OPTIONS.map((option) => (
+                        <Dropdown.Item
+                          key={option.value}
+                          onClick={() => openChangeStatusConfirm(option)}
+                        >
+                          {option.label}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                ) : (
+                  <PropertyStatusBadge status={status} />
+                )
               )}
 
               {/* Visibilidad — owner o ADMIN */}
