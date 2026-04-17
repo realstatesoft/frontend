@@ -6,13 +6,13 @@
  * @property {string} [phone]
  * @property {string} role
  * @property {string} [avatarUrl]
- * @property {string | null} [suspendedUntil]   - ISO 8601. null = indefinido
+ * @property {string | null} [suspendedUntil] 
  * @property {string | null} [suspensionReason]
  */
 
 /**
  * @typedef {Object} SuspendUserRequest
- * @property {string | null} suspendedUntil  - null = suspensión indefinida
+ * @property {string | null} suspendedUntil 
  * @property {string} suspensionReason
  */
 

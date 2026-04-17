@@ -516,7 +516,7 @@ export default function ShowProperty() {
                   >
                     <Flag className="me-2" /> Reportar propiedad
                   </Button>
-                  {!isPropertyOwner && (
+                  {!isPropertyOwner && (property.ownerId || property.userId) && (
                     <Button 
                       variant="link" 
                       className="text-muted d-inline-flex align-items-center"

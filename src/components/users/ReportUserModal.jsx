@@ -64,7 +64,7 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
       // Detectar duplicado
       const status = err.response?.status;
       const msg = err.response?.data?.message || err.response?.data?.error || '';
-      if (status === 409 || msg.toLowerCase().includes('ya') || msg.toLowerCase().includes('duplicado')) {
+      if (status === 409) {
         setError('Ya enviaste un reporte para este usuario. Nuestro equipo lo está revisando.');
       } else {
         setError(msg || 'Ocurrió un error al enviar el reporte. Por favor, intentá nuevamente.');

@@ -35,10 +35,10 @@ export default function SuspendUserModal({ user, open, onClose, onSuccess }) {
     }
   }, [open]);
 
-  // Calcular la fecha mínima (mañana)
+  // Calcular la fecha mínima (mañana en hora local)
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDate = tomorrow.toISOString().split('T')[0];
+  const minDate = tomorrow.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD local
 
   function validate() {
     const errors = {};
@@ -67,7 +67,7 @@ export default function SuspendUserModal({ user, open, onClose, onSuccess }) {
 
     try {
       const payload = {
-        suspendedUntil: suspensionType === 'indefinida' ? null : `${suspendedUntil}T23:59:59`,
+        suspendedUntil: suspensionType === 'indefinida' ? '9999-12-31T23:59:59Z' : `${suspendedUntil}T23:59:59Z`,
         suspensionReason: suspensionReason.trim(),
       };
       await adminService.suspendUser(user.id, payload);

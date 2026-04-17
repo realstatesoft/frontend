@@ -22,7 +22,6 @@ export const ADMIN_ROUTES = {
   DASHBOARD: '/admin/dashboard',
   APPROVAL: '/admin/approval',
   FLAGS: '/admin/flags',
-  USERS: '/admin/users',
 };
 
 export const STATUS_COLORS = {
