@@ -46,6 +46,8 @@ import AdminNotificationsPage from "../pages/Admin/AdminNotificationsPage";
 import FlagsPage from "../pages/Admin/Flags/FlagsPage";
 import PreferencesPage from "../pages/PreferencesPage";
 
+import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
+
 export default function AppRouter() {
     return (
         <Routes>
@@ -110,12 +112,16 @@ export default function AppRouter() {
                 <Route path="/dashboard" element={<RoleRedirect />} />
 
                 {/* Admin Dashboard */}
+            </Route>
+
+            <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="dashboard" element={<AdminDashboardPage />} />
                     <Route path="approval" element={<PropertyApprovalPage />} />
                     <Route path="notifications" element={<AdminNotificationsPage />} />
                     <Route path="flags" element={<FlagsPage />} />
+                    <Route path="documents" element={<AdminDocumentsPage />} />
                 </Route>
             </Route>
 
