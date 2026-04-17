@@ -187,7 +187,7 @@ export default function RegisterClient() {
         err?.message ||
         "Ocurrio un error al guardar el cliente.";
 
-      console.error("Error al registrar cliente:", err?.response?.data ?? err);
+      console.error("Error al registrar cliente."); // PII removed for security
 
       // Duplicate agent_client record
       const isDuplicate = serverMsg.includes("Ya existe");

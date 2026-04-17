@@ -49,4 +49,8 @@ export const ALLOWED_STATUS_TRANSITIONS = {
   DRAFT:             ['SENT', 'CANCELLED'],
   SENT:              ['PARTIALLY_SIGNED', 'REJECTED', 'CANCELLED'],
   PARTIALLY_SIGNED:  ['SIGNED', 'REJECTED', 'CANCELLED'],
+  SIGNED:            [],
+  REJECTED:          [],
+  EXPIRED:           [],
+  CANCELLED:         [],
 };
