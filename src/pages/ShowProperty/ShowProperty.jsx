@@ -27,6 +27,7 @@ import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal"
+import ReportUserModal from "../../components/users/ReportUserModal"
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -62,6 +63,7 @@ export default function ShowProperty() {
   } = useShowProperty();
 
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showReportUserModal, setShowReportUserModal] = useState(false);
 
   const {
     canChangeStatus,
@@ -505,15 +507,25 @@ export default function ShowProperty() {
               <PropertyContactCard property={property} />
 
               {isAuthenticated && (
-                <div className="mt-4 text-center">
+                <div className="mt-4 text-center d-flex flex-column align-items-center gap-2">
                   <Button 
                     variant="link" 
                     className="text-muted d-inline-flex align-items-center"
                     onClick={() => setShowReportModal(true)}
-                    style={{ textDecoration: 'none', fontSize: '0.9rem' }}
+                    style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                   >
                     <Flag className="me-2" /> Reportar propiedad
                   </Button>
+                  {!isPropertyOwner && (
+                    <Button 
+                      variant="link" 
+                      className="text-muted d-inline-flex align-items-center"
+                      onClick={() => setShowReportUserModal(true)}
+                      style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
+                    >
+                      <Flag className="me-2" /> Reportar usuario
+                    </Button>
+                  )}
                 </div>
               )}
             </Col>
@@ -547,6 +559,12 @@ export default function ShowProperty() {
         isOpen={showReportModal} 
         onClose={() => setShowReportModal(false)}
         onSuccess={() => fetchActiveFlagCount && fetchActiveFlagCount()}
+      />
+
+      <ReportUserModal
+        reportedUser={{ id: property.ownerId || property.userId, name: property.ownerName || `Usuario #${property.ownerId || property.userId}` }}
+        open={showReportUserModal}
+        onClose={() => setShowReportUserModal(false)}
       />
 
       <Footer />

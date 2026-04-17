@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { FiGrid, FiCheckSquare, FiFlag } from 'react-icons/fi';
+import { FiGrid, FiCheckSquare, FiFlag, FiUsers } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
 import useUIStore from '../../../store/useUIStore';
