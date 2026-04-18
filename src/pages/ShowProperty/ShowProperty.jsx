@@ -25,11 +25,9 @@ import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { formatPrice } from "../../utils/priceFormat";
-import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
-import ReportPropertyModal from "../../components/properties/ReportPropertyModal"
-import ReportUserModal from "../../components/users/ReportUserModal"
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
+import ReportUserModal from "../../components/users/ReportUserModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import "./show-property.scss";
 
