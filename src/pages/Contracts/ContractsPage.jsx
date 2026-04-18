@@ -189,7 +189,7 @@ export default function ContractsPage() {
           <button
             className={styles.contracts__actionBtn}
             title="Ver detalle"
-            onClick={(e) => { e.stopPropagation(); setSelectedContract(row); }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/agent/contratos/${row.id}`); }}
           >
             <FiEye />
           </button>
@@ -322,13 +322,6 @@ export default function ContractsPage() {
           emptyMessage="No se encontraron contratos"
         />
       </div>
-
-      {selectedContract && (
-        <ContractDetailModal
-          contract={selectedContract}
-          onClose={() => setSelectedContract(null)}
-        />
-      )}
 
       {statusContract && (
         <ContractStatusModal

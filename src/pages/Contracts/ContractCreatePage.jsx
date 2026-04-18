@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiSave, FiSend } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import propertyApi from '../../services/properties/propertyApi';
 import { searchClients } from '../../services/clients/clientApi';
 import { getAllAgents } from '../../services/agents/agentApi';
-import { useCreateContract, useUpdateContractStatus } from '../../hooks/useContracts';
+import { 
+  useCreateContract, 
+  useUpdateContract,
+  useUpdateContractStatus,
+  useContractDetail
+} from '../../hooks/useContracts';
 import { useAuth } from '../../hooks/useAuth';
 import {
   CONTRACT_TYPE_OPTIONS,
@@ -136,13 +141,18 @@ const INITIAL_FORM = {
   listingAgentId: '',
   buyerAgentId: '',
   amount: '',
-  commissionPct: '3.00',
-  listingAgentCommissionPct: '3.00',
+  commissionPct: '0.00',
+  listingAgentCommissionPct: '0.00',
   buyerAgentCommissionPct: '0.00',
   startDate: '',
   endDate: '',
   terms: '',
 };
+
+const PROPERTY_SOURCE_OPTIONS = [
+  { value: 'ASSIGNED', label: 'Mis propiedades asignadas' },
+  { value: 'ALL', label: 'Todas las propiedades públicas' },
+];
 
 export default function ContractCreatePage() {
   const navigate = useNavigate();
@@ -158,8 +168,49 @@ export default function ContractCreatePage() {
 
   const { user } = useAuth();
   const isAgent = user?.role === 'AGENT';
+
+  const { id: contractIdFromUrl } = useParams();
+  const isEditing = Boolean(contractIdFromUrl);
+
   const createContract = useCreateContract();
+  const updateContract = useUpdateContract();
   const updateStatus = useUpdateContractStatus();
+
+  // ─── Cargar contrato si estamos editando ────────────────────────────────────
+  const { data: existingContract, isLoading: isLoadingContract } = useContractDetail(contractIdFromUrl);
+
+  useEffect(() => {
+    if (isEditing && existingContract?.data) {
+      const c = existingContract.data;
+      console.log('Cargando contrato para edición:', c);
+      
+      // Si la propiedad no está en la lista de 'properties', traerla
+      if (c.propertyId && !properties.find(p => p.id === c.propertyId)) {
+        propertyApi.getById(c.propertyId).then(res => {
+          const prop = res?.data?.data ?? res?.data;
+          if (prop) setProperties(prev => [prop, ...prev]);
+        }).catch(() => {});
+      }
+
+      setForm({
+        propertyId:                c.propertyId?.toString() || '',
+        contractType:              c.contractType || 'SALE',
+        buyerId:                   c.buyerId?.toString() || '',
+        sellerId:                  c.sellerId?.toString() || '',
+        listingAgentId:            c.listingAgentId?.toString() || '',
+        buyerAgentId:              c.buyerAgentId?.toString() || '',
+        amount:                    c.amount?.toString() || '',
+        commissionPct:             c.commissionPct?.toString() || '0.00',
+        listingAgentCommissionPct: c.listingAgentCommissionPct?.toString() || '0.00',
+        buyerAgentCommissionPct:   c.buyerAgentCommissionPct?.toString() || '0.00',
+        startDate:                 c.startDate || '',
+        endDate:                   c.endDate || '',
+        terms:                     c.terms || '',
+      });
+      setSellerName(c.sellerName || '');
+      setCustomTerms(c.terms || '');
+    }
+  }, [isEditing, existingContract, properties.length === 0]);
 
   // ─── Cargar datos para los selects ──────────────────────────────────────────
   useEffect(() => {
@@ -168,7 +219,7 @@ export default function ContractCreatePage() {
       setLoadingData(true);
       try {
         const propsPromise = isAgent
-          ? propertyApi.getMyAssignments()
+          ? propertyApi.getAgentScope({ size: 100 })
           : propertyApi.getMe({ page: 0, size: 100, status: 'PUBLISHED' });
 
         const [propsRes, clientsRes, agentsRes] = await Promise.all([
@@ -178,14 +229,8 @@ export default function ContractCreatePage() {
         ]);
         if (cancelled) return;
 
-        if (isAgent) {
-          const raw = propsRes?.data?.data ?? propsRes?.data ?? [];
-          const list = Array.isArray(raw) ? raw : [];
-          setProperties(list.map((a) => ({ id: a.propertyId, title: a.propertyTitle })));
-        } else {
-          const raw = propsRes?.data?.data ?? propsRes?.data ?? {};
-          setProperties(raw.content ?? []);
-        }
+        const raw = propsRes?.data?.data?.content ?? propsRes?.data?.data ?? propsRes?.data ?? [];
+        setProperties(Array.isArray(raw) ? raw : []);
 
         setClients(clientsRes?.content ?? []);
         const agentsRaw = agentsRes?.data ?? agentsRes ?? {};
@@ -198,7 +243,47 @@ export default function ContractCreatePage() {
     }
     load();
     return () => { cancelled = true; };
-  }, [isAgent]);
+  }, [isAgent, user?.agentProfileId]);
+
+  // ─── Buscar por MLS-ID (Prop ID) ──────────────────────────────────────────
+  const [mlsSearch, setMlsSearch] = useState('');
+  const [isSearchingMls, setIsSearchingMls] = useState(false);
+
+  const handleMlsSearch = async () => {
+    if (!mlsSearch.trim()) return;
+    setIsSearchingMls(true);
+    try {
+      const res = await propertyApi.getById(mlsSearch.trim());
+      const prop = res?.data?.data ?? res?.data ?? null;
+      
+      if (prop) {
+        // Añadir a la lista si no está
+        setProperties(prev => {
+          if (prev.find(p => p.id === prop.id)) return prev;
+          return [prop, ...prev];
+        });
+        // Seleccionarla
+        handlePropertyChange({ target: { value: prop.id } });
+        Swal.fire({
+          icon: 'success',
+          title: 'Propiedad encontrada',
+          text: `${prop.title} cargada correctamente.`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+      } else {
+        throw new Error();
+      }
+    } catch {
+      Swal.fire({
+        icon: 'error',
+        title: 'No encontrada',
+        text: 'No se encontró ninguna propiedad con ese ID.',
+      });
+    } finally {
+      setIsSearchingMls(false);
+    }
+  };
 
   // ─── Auto-fill al seleccionar propiedad ────────────────────────────────────
   const handlePropertyChange = async (e) => {
@@ -215,6 +300,9 @@ export default function ContractCreatePage() {
         sellerId: prop.ownerId ?? '',
         listingAgentId: prop.agentId ?? '',
         amount: prop.price ?? '',
+        commissionPct: prop.commissionPct ?? '0.00',
+        listingAgentCommissionPct: prop.agentId ? (prop.commissionPct ?? '0.00') : '0.00',
+        buyerAgentCommissionPct: '0.00',
         contractType: prop.category === 'RENT' ? 'RENT' : prev.contractType,
       }));
       setSellerName(prop.ownerName ?? '');
@@ -279,6 +367,25 @@ export default function ContractCreatePage() {
 
   // ─── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async (sendAfterCreate = false) => {
+    // 1. Validaciones de campos obligatorios
+    if (!form.propertyId) {
+      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'La propiedad es obligatoria.' });
+      return;
+    }
+    if (!form.buyerId) {
+      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El comprador/inquilino es obligatorio.' });
+      return;
+    }
+    if (!form.amount || parseFloat(form.amount) <= 0) {
+      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El monto total es obligatorio y debe ser mayor a 0.' });
+      return;
+    }
+    if (!form.startDate) {
+      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'La fecha de inicio es obligatoria.' });
+      return;
+    }
+
+    // 2. Validaciones de comisiones
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
 
@@ -301,8 +408,14 @@ export default function ContractCreatePage() {
     };
 
     try {
-      const res = await createContract.mutateAsync(payload);
-      const contractId = res?.data?.id ?? res?.id;
+      let res;
+      if (isEditing) {
+        res = await updateContract.mutateAsync({ id: contractIdFromUrl, ...payload });
+      } else {
+        res = await createContract.mutateAsync(payload);
+      }
+      
+      const contractId = res?.data?.id ?? res?.id ?? contractIdFromUrl;
 
       if (sendAfterCreate && contractId) {
         try {
@@ -351,23 +464,36 @@ export default function ContractCreatePage() {
     <div className={styles.page}>
       {/* ── Header ── */}
       <div className={styles.page__header}>
-        <button
-          type="button"
-          className={styles.page__back}
-          onClick={() => navigate('/agent/contratos')}
-        >
-          <FiArrowLeft /> Volver a contratos
-        </button>
-        <h1 className={styles.page__title}>Nuevo Contrato</h1>
-        <p className={styles.page__subtitle}>
-          Completa la información del contrato. Se guardará como borrador hasta que lo envíes.
-        </p>
+        <div className={styles.page__headerTitleRow}>
+          <div className={styles.page__headerTexts}>
+            <button
+              type="button"
+              className={styles.page__back}
+              onClick={() => navigate('/agent/contratos')}
+            >
+              <FiArrowLeft /> Volver a contratos
+            </button>
+            <h1 className={styles.page__title}>
+              {isEditing ? `Editando Contrato #${contractIdFromUrl}` : 'Nuevo Contrato'}
+            </h1>
+            <p className={styles.page__subtitle}>
+              {isEditing 
+                ? 'Modifica los datos del borrador antes de enviarlo.' 
+                : 'Completa la información del contrato. Se guardará como borrador hasta que lo envíes.'}
+            </p>
+          </div>
+
+          {(loadingData || isLoadingContract) && (
+            <div className={styles.page__loadingBadge}>
+              <div className={styles.page__loadingPulse}></div>
+              {isLoadingContract ? 'Cargando contrato...' : 'Cargando datos maestros...'}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className={styles.page__content}>
-        {loadingData && (
-          <p className={styles.form__loadingNote}>Cargando datos…</p>
-        )}
+
 
         {/* ══════════════════════════════════════════════════════════════════ */}
         {/* COLUMNA IZQUIERDA — Datos del contrato */}
@@ -376,6 +502,31 @@ export default function ContractCreatePage() {
           {/* ── Propiedad y tipo ── */}
           <fieldset className={styles.form__section}>
             <legend className={styles.form__sectionTitle}>Propiedad y tipo</legend>
+
+            {/* Buscador de MLS */}
+            <div className={styles.form__row} style={{ marginBottom: '1.5rem' }}>
+              <label className={styles.form__label}>
+                Buscar por MLS-ID (ID de propiedad)
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  className={styles.form__input}
+                  placeholder="Ej: 37"
+                  value={mlsSearch}
+                  onChange={(e) => setMlsSearch(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleMlsSearch()}
+                />
+                <button
+                  type="button"
+                  className={`${styles.btn} ${styles['btn--secondary']}`}
+                  onClick={handleMlsSearch}
+                  disabled={isSearchingMls}
+                >
+                  {isSearchingMls ? 'Buscando...' : 'Buscar'}
+                </button>
+              </div>
+            </div>
 
             <div className={styles.form__grid2}>
               <div className={styles.form__row}>
@@ -393,7 +544,7 @@ export default function ContractCreatePage() {
                   <option value="">— Seleccionar propiedad —</option>
                   {properties.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.title} ({p.type ?? p.propertyType ?? ''})
+                      #{p.id} - {p.title}
                     </option>
                   ))}
                 </select>
@@ -687,11 +838,11 @@ export default function ContractCreatePage() {
               </label>
               <textarea
                 id="cc-custom-terms"
-                className={`${styles.form__input} ${styles['form__input--textarea']}`}
+                className={`${styles.form__input} ${styles['form__input--textarea']} ${styles['form__input--jumbo']}`}
                 value={customTerms}
                 onChange={(e) => setCustomTerms(e.target.value)}
-                rows={4}
-                placeholder="Escribe condiciones especiales adicionales…"
+                rows={12}
+                placeholder="Escribe aquí todas las cláusulas personalizadas, acuerdos específicos o condiciones legales adicionales…"
               />
             </div>
 

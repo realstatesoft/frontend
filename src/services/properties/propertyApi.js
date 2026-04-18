@@ -34,6 +34,8 @@ const propertyApi = {
   /** Propiedades asignadas al agente autenticado (solo AGENT) */
   getMyAssignments: () => api.get("/assignments/me"),
 
+  /** Propiedades del agente (Scope completo: asignadas + clientes) */
+  getAgentScope: (params) => api.get(`${BASE}/agent/me`, { params }),
 };
 
 export default propertyApi;

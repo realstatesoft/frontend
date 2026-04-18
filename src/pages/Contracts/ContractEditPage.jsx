@@ -136,6 +136,9 @@ export default function ContractEditPage() {
 
     setSellerName(contract.sellerName ?? '');
     setForm({
+      propertyId:                contract.propertyId ?? '',
+      buyerId:                   contract.buyerId ?? '',
+      sellerId:                  contract.sellerId ?? '',
       contractType:              contract.contractType ?? 'SALE',
       listingAgentId:            contract.listingAgentId ?? '',
       buyerAgentId:              contract.buyerAgentId ?? '',
@@ -148,7 +151,30 @@ export default function ContractEditPage() {
     });
 
     // Restaurar términos: separar cláusulas detectables del texto libre
-    setCustomTerms(contract.terms ?? '');
+    const fullTerms = contract.terms || '';
+    const clauses = getClausesForType(contract.contractType);
+    const detectedIds = [];
+    
+    // Buscar qué cláusulas están presentes en el texto basándose en su etiqueta
+    clauses.forEach(c => {
+      // Buscamos el patrón "N. ETIQUETA" que usamos al guardar
+      if (fullTerms.toUpperCase().includes(c.label.toUpperCase())) {
+        detectedIds.push(c.id);
+      }
+    });
+
+    setSelectedClauses(detectedIds);
+
+    // Intentar extraer solo las condiciones adicionales si existen
+    const additionalMatch = fullTerms.match(/CONDICIONES ADICIONALES\n([\s\S]*)$/i);
+    if (additionalMatch && additionalMatch[1]) {
+      setCustomTerms(additionalMatch[1].trim());
+    } else if (detectedIds.length === 0) {
+      // Si no detectamos ninguna cláusula estándar, asumimos que todo es custom
+      setCustomTerms(fullTerms);
+    } else {
+      setCustomTerms('');
+    }
   }, [contract, navigate]);
 
   const validateCommission = useCallback((updated) => {
@@ -202,6 +228,9 @@ export default function ContractEditPage() {
 
     const payload = {
       id: parseInt(id, 10),
+      propertyId:                parseInt(form.propertyId, 10),
+      buyerId:                   parseInt(form.buyerId, 10),
+      sellerId:                  parseInt(form.sellerId, 10),
       contractType:              form.contractType,
       listingAgentId:            form.listingAgentId ? parseInt(form.listingAgentId, 10) : null,
       buyerAgentId:              form.buyerAgentId   ? parseInt(form.buyerAgentId,   10) : null,
@@ -521,11 +550,11 @@ export default function ContractEditPage() {
               </label>
               <textarea
                 id="ce-custom-terms"
-                className={`${styles.form__input} ${styles['form__input--textarea']}`}
+                className={`${styles.form__input} ${styles['form__input--textarea']} ${styles['form__input--jumbo']}`}
                 value={customTerms}
                 onChange={(e) => setCustomTerms(e.target.value)}
-                rows={4}
-                placeholder="Escribe condiciones especiales adicionales…"
+                rows={12}
+                placeholder="Escribe aquí todas las cláusulas personalizadas, acuerdos específicos o condiciones legales adicionales…"
               />
             </div>
           </div>

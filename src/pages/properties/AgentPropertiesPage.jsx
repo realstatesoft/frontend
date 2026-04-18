@@ -38,6 +38,7 @@ const PROPERTY_STATUS_COLORS = {
 };
 
 const COLUMNS = [
+  { key: 'id', label: 'ID' },
   { key: 'title', label: 'Propiedad' },
   { key: 'propertyType', label: 'Tipo', render: (v) => PROPERTY_TYPE_LABELS[v] || v },
   { key: 'price', label: 'Precio', render: (v) => formatCurrency(v) },
@@ -85,7 +86,8 @@ export default function AgentPropertiesPage() {
       result = result.filter(
         (p) =>
           p.title?.toLowerCase().includes(q) ||
-          p.locationName?.toLowerCase().includes(q)
+          p.locationName?.toLowerCase().includes(q) ||
+          p.id?.toString().includes(q)
       );
     }
     if (typeFilter) {

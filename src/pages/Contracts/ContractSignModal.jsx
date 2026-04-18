@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiEdit3, FiFileText, FiCamera } from 'react-icons/fi';
 import Swal from 'sweetalert2';
-import { useSignContract } from '../../hooks/useContracts';
+import { useSignContract, useContractSignatures } from '../../hooks/useContracts';
+import { useAuth } from '../../hooks/useAuth';
 import { CONTRACT_STATUS_LABELS, CONTRACT_STATUS_COLORS } from '../../constants/contractConstants';
 import Badge from '../../components/common/Badge/Badge';
 import styles from './ContractsPage.module.scss';
@@ -36,38 +37,43 @@ const SIGNATURE_ROLES = [
   { value: 'BUYER',   label: 'Comprador / Inquilino' },
   { value: 'SELLER',  label: 'Vendedor / Propietario' },
   { value: 'AGENT',   label: 'Agente' },
+  { value: 'LISTING_AGENT', label: 'Agente Listador' },
+  { value: 'BUYER_AGENT',   label: 'Agente del Comprador' },
   { value: 'WITNESS', label: 'Testigo' },
 ];
 
 export default function ContractSignModal({ contract, onClose, onSuccess }) {
-  const [signatureType, setSignatureType] = useState('ELECTRONIC');
-  const [role, setRole] = useState('BUYER');
-  const [signatureData, setSignatureData] = useState('');
+  const { user } = useAuth();
+  const { data: signaturesRes, isLoading: loadingSigs } = useContractSignatures(contract?.id);
+  const [role, setRole] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const [autoDetected, setAutoDetected] = useState(false);
 
   const signMutation = useSignContract();
 
-  const selectedType = SIGNATURE_TYPES.find((t) => t.value === signatureType);
+  // Autodetectar el rol del usuario logueado
+  useEffect(() => {
+    if (signaturesRes?.data && user && !role) {
+      const pendingSigs = signaturesRes.data.filter(s => !s.signed);
+      // Buscar si el usuario actual coincide con alguno de los que DEBEN firmar
+      const myPendingRole = pendingSigs.find(s => s.userId === user.id || s.email === user.email);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setSignatureData(reader.result);
-    reader.readAsDataURL(file);
-  };
-
-  const isValid = () => {
-    if (signatureType === 'ELECTRONIC') return confirmed;
-    if (signatureType === 'DIGITAL') return signatureData.trim().length > 0;
-    if (signatureType === 'HANDWRITTEN_SCAN') return signatureData.length > 0;
-    return false;
-  };
+      if (myPendingRole) {
+        setRole(myPendingRole.role);
+        setAutoDetected(true);
+      }
+    }
+  }, [signaturesRes?.data, user, role]);
 
   const handleSign = async () => {
+    if (!role) {
+      Swal.fire('Error', 'No se ha podido detectar o seleccionar tu rol en este contrato.', 'error');
+      return;
+    }
+
     const result = await Swal.fire({
       title: '¿Confirmar firma?',
-      html: `<p>Estás a punto de firmar el contrato <strong>#${contract.id}</strong>.<br/>Esta acción no se puede deshacer.</p>`,
+      html: `<p>Estás a punto de firmar como <strong>${SIGNATURE_ROLES.find(r => r.value === role)?.label || role}</strong>.<br/>Esta acción tiene validez legal.</p>`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, firmar',
@@ -80,16 +86,16 @@ export default function ContractSignModal({ contract, onClose, onSuccess }) {
     try {
       await signMutation.mutateAsync({
         id: contract.id,
-        signatureType,
+        signatureType: 'ELECTRONIC',
         role,
-        signatureData: signatureType === 'ELECTRONIC' ? 'ELECTRONIC_CONFIRMED' : signatureData,
+        signatureData: 'ELECTRONIC_CONFIRMED',
       });
 
       Swal.fire({
         icon: 'success',
-        title: '¡Firma registrada!',
-        text: 'Tu firma ha sido registrada exitosamente.',
-        timer: 2500,
+        title: '¡Contrato firmado!',
+        text: 'Tu firma electrónica ha sido registrada exitosamente.',
+        timer: 2000,
         showConfirmButton: false,
       });
 
@@ -99,166 +105,83 @@ export default function ContractSignModal({ contract, onClose, onSuccess }) {
       Swal.fire({
         icon: 'error',
         title: 'Error al firmar',
-        text: err?.response?.data?.message ?? 'No se pudo registrar la firma. Intenta de nuevo.',
+        text: err?.response?.data?.message ?? 'No se pudo registrar la firma.',
       });
     }
   };
 
-  if (!contract) return null;
+  if (!contract || loadingSigs) return null;
 
   return (
     <div className={styles.modal__backdrop} onClick={onClose}>
       <div
-        className={`${styles.modal__box} ${styles['modal__box--wide']}`}
+        className={styles.modal__box}
         onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Firmar contrato"
       >
-        {/* Header */}
         <div className={styles.modal__header}>
-          <h2 className={styles.modal__title}>Firmar Contrato #{contract.id}</h2>
-          <button className={styles.modal__close} onClick={onClose} aria-label="Cerrar">
-            &times;
-          </button>
+          <h2 className={styles.modal__title}>Firmar documento</h2>
+          <button className={styles.modal__close} onClick={onClose}>&times;</button>
         </div>
 
         <div className={styles.modal__body}>
-          {/* Resumen del contrato */}
-          <div className={styles.sign__summary}>
-            <p className={styles.sign__summaryProp}><strong>{contract.propertyTitle}</strong></p>
-            <div className={styles.sign__summaryRow}>
-              <span>Estado actual:</span>
-              <Badge variant={CONTRACT_STATUS_COLORS[contract.status] || 'neutral'}>
-                {CONTRACT_STATUS_LABELS[contract.status] || contract.status}
-              </Badge>
-            </div>
-            <div className={styles.sign__summaryRow}>
-              <span>Vendedor:</span>
-              <span>{contract.sellerName || '—'}</span>
-            </div>
-            <div className={styles.sign__summaryRow}>
-              <span>Comprador:</span>
-              <span>{contract.buyerName || '—'}</span>
-            </div>
+          <div className={styles.sign__summary} style={{ marginBottom: '1.5rem' }}>
+            <p><strong>{contract.propertyTitle}</strong></p>
+            <p className={styles.sign__summaryProp}>Contrato de {CONTRACT_STATUS_LABELS[contract.status]}</p>
           </div>
 
-          {/* Rol del firmante */}
-          <div className={styles.form__section}>
+          {!autoDetected ? (
             <div className={styles.form__row}>
-              <label className={styles.form__label} htmlFor="sign-role">
-                Tu rol en este contrato <span className={styles.form__required}>*</span>
-              </label>
+              <label className={styles.form__label}>Selecciona tu rol:</label>
               <select
-                id="sign-role"
                 className={styles.form__select}
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
-                {SIGNATURE_ROLES.map((r) => (
+                <option value="">-- Seleccionar rol --</option>
+                {SIGNATURE_ROLES.map(r => (
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </select>
             </div>
-          </div>
-
-          {/* Tipo de firma */}
-          <div className={styles.sign__typeGrid}>
-            {SIGNATURE_TYPES.map((type) => (
-              <label
-                key={type.value}
-                className={`${styles.sign__typeCard} ${signatureType === type.value ? styles['sign__typeCard--active'] : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="signatureType"
-                  value={type.value}
-                  checked={signatureType === type.value}
-                  onChange={() => {
-                    setSignatureType(type.value);
-                    setSignatureData('');
-                    setConfirmed(false);
-                  }}
-                  className={styles.sign__typeRadio}
-                />
-                <span className={styles.sign__typeIcon}>{type.icon}</span>
-                <span className={styles.sign__typeLabel}>{type.label}</span>
-              </label>
-            ))}
-          </div>
-
-          <p className={styles.sign__typeDesc}>{selectedType?.description}</p>
-
-          {/* Input según tipo */}
-          {signatureType === 'ELECTRONIC' && (
-            <label className={styles.sign__confirm}>
-              <input
-                type="checkbox"
-                id="sign-confirm"
-                checked={confirmed}
-                onChange={(e) => setConfirmed(e.target.checked)}
-              />
-              <span>
-                Confirmo que he leído y acepto los términos del contrato. Entiendo que esta acción
-                tiene valor legal como firma electrónica.
-              </span>
-            </label>
-          )}
-
-          {signatureType === 'DIGITAL' && (
-            <div className={styles.form__row}>
-              <label className={styles.form__label} htmlFor="sign-cert">
-                Hash / ID del certificado <span className={styles.form__required}>*</span>
-              </label>
-              <input
-                id="sign-cert"
-                type="text"
-                className={styles.form__input}
-                value={signatureData}
-                onChange={(e) => setSignatureData(e.target.value)}
-                placeholder="Ej: SHA256:abc123def456..."
-              />
+          ) : (
+            <div className={styles.autoRoleBox} style={{
+              background: '#f0f9ff',
+              padding: '1rem',
+              borderRadius: '8px',
+              border: '1px solid #bae6fd',
+              marginBottom: '1.5rem'
+            }}>
+              <p style={{ margin: 0, color: '#0369a1', fontSize: '0.9rem' }}>
+                Detectamos tu identidad como: <strong>{SIGNATURE_ROLES.find(r => r.value === role)?.label}</strong>
+              </p>
             </div>
           )}
 
-          {signatureType === 'HANDWRITTEN_SCAN' && (
-            <div className={styles.form__row}>
-              <label className={styles.form__label} htmlFor="sign-file">
-                Imagen de firma manuscrita <span className={styles.form__required}>*</span>
-              </label>
-              <input
-                id="sign-file"
-                type="file"
-                accept="image/*"
-                className={styles.form__input}
-                onChange={handleFileChange}
-              />
-              {signatureData && (
-                <img
-                  src={signatureData}
-                  alt="Vista previa de firma"
-                  className={styles.sign__preview}
-                />
-              )}
-            </div>
-          )}
+          <label className={styles.sign__confirm} style={{ display: 'flex', gap: '10px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={confirmed}
+              onChange={(e) => setConfirmed(e.target.checked)}
+              style={{ width: '20px', height: '20px' }}
+            />
+            <span style={{ fontSize: '0.9rem', color: '#475569' }}>
+              Acepto los términos del contrato y entiendo que mi clic tiene valor de firma electrónica legal.
+            </span>
+          </label>
         </div>
 
-        {/* Footer */}
         <div className={styles.modal__footer}>
-          <button
-            className={styles.modal__btnClose}
-            onClick={onClose}
-            disabled={signMutation.isPending}
-          >
-            Cancelar
-          </button>
+          <button className={styles.modal__btnClose} onClick={onClose}>Cancelar</button>
           <button
             className={styles.modal__btnConfirm}
             onClick={handleSign}
-            disabled={!isValid() || signMutation.isPending}
+            disabled={!confirmed || !role || signMutation.isPending}
+            style={{
+              backgroundColor: confirmed && role ? '#1a3c5e' : '#cbd5e1',
+              transition: 'all 0.3s'
+            }}
           >
-            {signMutation.isPending ? 'Firmando…' : '✍️ Firmar contrato'}
+            {signMutation.isPending ? 'Procesando...' : 'Confirmar y Firmar'}
           </button>
         </div>
       </div>
