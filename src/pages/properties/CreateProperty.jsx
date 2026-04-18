@@ -1,10 +1,13 @@
-import { useState } from "react";
-import { Container, Card, Form, Alert, Spinner } from "react-bootstrap";
+import { useState, useEffect, useCallback } from "react";
+import { Container, Card, Form, Alert, Spinner, Row, Col } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { usePropertyForm } from "../../hooks/usePropertyForm";
+import { useAuth } from "../../hooks/useAuth";
+import { searchClients } from "../../services/clients/clientApi";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
+import { FormSectionTitle, FormLabel } from "../../components/properties/FormComponents";
 import {
   BasicInfoSection,
   PropertyFeaturesSection,
@@ -15,9 +18,14 @@ import {
 
 export default function CreateProperty() {
   const { id } = useParams();
-
+  const { user } = useAuth();
+  const isAgent = user?.role === "AGENT";
 
   const [showConfirm, setShowConfirm] = useState(false);
+  // Clientes del agente (solo se cargan cuando el usuario es AGENT)
+  const [clients, setClients] = useState([]);
+  const [loadingClients, setLoadingClients] = useState(false);
+  const [clientLoadError, setClientLoadError] = useState(false);
 
   const {
     form,
@@ -25,6 +33,8 @@ export default function CreateProperty() {
     fetchLoading,
     error,
     isEditMode,
+    ownerClientId,
+    setOwnerClient,
     fieldErrors,
     validateForm,
     set,
@@ -48,6 +58,30 @@ export default function CreateProperty() {
     handleSubmit,
     dismissError,
   } = usePropertyForm(id);
+
+  // Cargar clientes del agente al montar (solo en modo creación y si es agente)
+  useEffect(() => {
+    if (!isAgent || isEditMode) return;
+    let cancelled = false;
+    setLoadingClients(true);
+    setClientLoadError(false);
+    searchClients({ page: 0, size: 100, sort: "created_at,desc" })
+      .then((res) => {
+        if (!cancelled) {
+          // Only show clients who have a real user account (userId != null)
+          const all = res?.content ?? [];
+          setClients(all.filter((c) => c.userId != null));
+        }
+      })
+      .catch(() => { if (!cancelled) setClientLoadError(true); })
+      .finally(() => { if (!cancelled) setLoadingClients(false); });
+    return () => { cancelled = true; };
+  }, [isAgent, isEditMode]);
+
+  const handleOwnerChange = useCallback((e) => {
+    const val = e.target.value;
+    setOwnerClient(val ? Number(val) : null);
+  }, [setOwnerClient]);
 
   const handleOpenConfirm = (e) => {
     e.preventDefault();
@@ -98,6 +132,43 @@ export default function CreateProperty() {
           )}
 
           <Form onSubmit={handleOpenConfirm} noValidate className="create-property-form">
+            {/* ── Sección: propietario del inmueble (solo agentes, solo en creación) ── */}
+            {isAgent && !isEditMode && (
+              <>
+                <FormSectionTitle title="Propietario del inmueble" />
+                <Row className="g-3 mb-4">
+                  <Col md={6}>
+                    <Form.Group>
+                      <FormLabel>Cliente propietario</FormLabel>
+                      {loadingClients ? (
+                        <div className="d-flex align-items-center gap-2 text-muted" style={{ fontSize: 14 }}>
+                          <Spinner animation="border" size="sm" /> Cargando clientes...
+                        </div>
+                      ) : clientLoadError ? (
+                        <Alert variant="warning" className="py-2 mb-0" style={{ fontSize: 14 }}>
+                          No se pudieron cargar los clientes. Verificá la conexión con el servidor.
+                        </Alert>
+                      ) : (
+                        <Form.Select
+                          value={ownerClientId ?? ""}
+                          onChange={handleOwnerChange}
+                        >
+                          <option value="">— Yo soy el propietario —</option>
+                          {clients.map((c) => (
+                            <option key={c.id} value={c.userId}>
+                              {c.name} ({c.email})
+                            </option>
+                          ))}
+                        </Form.Select>
+                      )}
+                      <Form.Text className="text-muted">
+                        Si publicás en nombre de un cliente, seleccionalo aquí. De lo contrario la propiedad quedará a tu nombre.
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </>
+            )}
             <BasicInfoSection form={form} set={set} fieldErrors={fieldErrors} />
             <PropertyFeaturesSection
               form={form}

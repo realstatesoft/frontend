@@ -29,6 +29,10 @@ import AgendaPage from "../pages/Agenda/AgendaPage";
 import SalesPage from "../pages/Sales/SalesPage";
 import ReportsPage from "../pages/Reports/ReportsPage";
 import MessagesPage from "../pages/Messages/MessagesPage";
+import ContractsPage from "../pages/Contracts/ContractsPage";
+import ContractCreatePage from "../pages/Contracts/ContractCreatePage";
+import ContractEditPage from "../pages/Contracts/ContractEditPage";
+import ContractDetailPage from "../pages/Contracts/ContractDetailPage";
 
 // Owner Dashboard
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
@@ -77,6 +81,7 @@ export default function AppRouter() {
                 <Route path="/clients/:id" element={<ClientProfilePage />} />
                 <Route path="/clients/:id/edit" element={<EditClient />} />
 
+                <Route path="/contratos/:id" element={<ContractDetailPage />} />
             </Route>
 
             {/* ── Rutas protegidas (Agent) ───────────────────────── */}
@@ -91,6 +96,10 @@ export default function AppRouter() {
                     <Route path="solicitudes-visita" element={<VisitRequests />} />
                     <Route path="agenda" element={<AgendaPage />} />
                     <Route path="ventas" element={<SalesPage />} />
+                    <Route path="contratos" element={<ContractsPage />} />
+                    <Route path="contratos/nuevo" element={<ContractCreatePage />} />
+                    <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="contratos/:id/editar" element={<ContractEditPage />} />
                     <Route path="reportes" element={<ReportsPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                 </Route>
