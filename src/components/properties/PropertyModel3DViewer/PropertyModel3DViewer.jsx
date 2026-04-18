@@ -10,7 +10,7 @@ const PropertyModel3DViewer = ({ src, alt, poster, title }) => {
   }, []);
 
   return (
-    <div className="property-3d-viewer">
+    <div className="property-3d-viewer PropertyModel3DViewer">
       {title && <h6 className="property-3d-viewer__title">{title}</h6>}
       <div className="property-3d-viewer__container">
         <model-viewer
@@ -34,7 +34,7 @@ const PropertyModel3DViewer = ({ src, alt, poster, title }) => {
           <button className="property-3d-viewer__ar-button" slot="ar-button">
             👋 Ver en tu espacio (AR)
           </button>
-          <div id="ar-prompt">
+          <div className="ar-prompt">
             <img src="https://modelviewer.dev/shared-assets/icons/hand.png" alt="Icono de mano" />
           </div>
         </model-viewer>

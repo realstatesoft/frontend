@@ -83,9 +83,18 @@ export default function ShowProperty() {
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
 
+  // Resetear estados cuando cambia la propiedad (navegación entre propiedades similares)
+  useEffect(() => {
+    setTourSubTab(null);
+    setTourConfig(null);
+    setLoadingConfig(false);
+  }, [property?.id]);
+
   // Determinar pestañas disponibles y subpestaña inicial
   const hasModel = property?.media?.some(m => m.type === 'MODEL_3D');
-  const scenes360 = property?.media?.filter(m => m.type === 'IMAGE_360') || [];
+  const scenes360 = useMemo(() => {
+    return property?.media?.filter(m => m.type === 'IMAGE_360') || [];
+  }, [property?.media]);
   const hasTour360 = property?.media?.some(m => m.type === 'VIRTUAL_TOUR_CONFIG') || scenes360.length > 0;
 
   useEffect(() => {
@@ -97,17 +106,18 @@ export default function ShowProperty() {
 
   // Cargar configuración de tour 360 si aplica
   useEffect(() => {
-    if (!property?.media) return;
-    const configMedia = property.media.find(m => m.type === 'VIRTUAL_TOUR_CONFIG');
-    if (configMedia && !tourConfig) {
+    const configMedia = property?.media?.find(m => m.type === 'VIRTUAL_TOUR_CONFIG');
+    if (configMedia?.url) {
       setLoadingConfig(true);
       fetch(configMedia.url)
         .then(res => res.json())
         .then(data => setTourConfig(data))
         .catch(err => console.error("Error al cargar configuración 360:", err))
         .finally(() => setLoadingConfig(false));
+    } else {
+      setTourConfig(null);
     }
-  }, [property?.media, tourConfig]);
+  }, [property?.id, property?.media]);
 
   // Generar config de respaldo si no hay una oficial pero sí hay fotos 360
   // Usamos useMemo para evitar que el visor se reinicie en cada render del padre
@@ -515,9 +525,9 @@ export default function ShowProperty() {
                       )}
 
                       {tourSubTab === 'model3d' && (
-                        property.media?.filter(m => m.type === 'MODEL_3D').map(model => (
+                        property.media?.filter(m => m.type === 'MODEL_3D').map((model, idx) => (
                           <PropertyModel3DViewer 
-                            key={model.id}
+                            key={model.id || model.url || idx}
                             src={model.url}
                             title={model.title || "Modelo 3D Interactivo"}
                             poster={images[0]}

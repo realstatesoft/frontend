@@ -344,7 +344,8 @@ export function usePropertyForm(propertyId) {
 
   const addTour360Image = useCallback(async (file) => {
     if (!file) return;
-    if (!file.type?.startsWith("image/")) {
+    const allowed = ["image/jpeg", "image/png"];
+    if (!allowed.includes(file.type)) {
       await Swal.fire("Formato no permitido", "El tour virtual solo admite imágenes esféricas (JPG/PNG).", "warning");
       return;
     }
@@ -391,6 +392,19 @@ export function usePropertyForm(propertyId) {
 
   const addTourConfig = useCallback(async (file) => {
     if (!file) return;
+
+    // Validar JSON antes de subir
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed.nodes || !Array.isArray(parsed.nodes)) {
+        throw new Error("El archivo no tiene el formato de tour válido (falta el campo 'nodes').");
+      }
+    } catch (e) {
+      await Swal.fire("Archivo inválido", "El archivo seleccionado no es un JSON de tour válido: " + e.message, "error");
+      return;
+    }
+
     const targetId = propertyId || form.id;
 
     setUploadingTour(true);
@@ -530,14 +544,16 @@ export function usePropertyForm(propertyId) {
           const { data } = await propertyApi.create(payload);
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });
-            const createdId = data.data.id;
+            const createdId = data.data?.id;
             await Swal.fire({
               icon: "success",
               title: "¡Propiedad registrada!",
               text: "La propiedad fue creada exitosamente.",
             });
             setFieldErrors({});
-            navigate(`/properties/${createdId}`);
+            if (createdId) {
+              navigate(`/properties/${createdId}`);
+            }
           } else {
             setError(data?.message ?? "Ocurrió un error al guardar la propiedad.");
             await Swal.fire({

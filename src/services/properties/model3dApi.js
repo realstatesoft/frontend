@@ -2,59 +2,36 @@ import api from "../api";
 
 const BASE = "/properties";
 
-const model3dApi = {
-  uploadModel: (propertyId, file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return api.post(`${BASE}/${propertyId}/model3d`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
+const postMultipart = (url, file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return api.post(url, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
 
-  uploadModelGeneric: (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return api.post(`${BASE}/model3d/upload`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
+const model3dApi = {
+  uploadModel: (propertyId, file) => 
+    postMultipart(`${BASE}/${propertyId}/model3d`, file),
+
+  uploadModelGeneric: (file) => 
+    postMultipart(`${BASE}/model3d/upload`, file),
 
   getModels: (propertyId) => api.get(`${BASE}/${propertyId}/model3d`),
 
   deleteModel: (propertyId, mediaId) => api.delete(`${BASE}/${propertyId}/model3d/${mediaId}`),
 
+  upload360Image: (propertyId, file) => 
+    postMultipart(`${BASE}/${propertyId}/tour/360`, file),
 
-  upload360Image: (propertyId, file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return api.post(`${BASE}/${propertyId}/tour/360`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
+  uploadTourConfig: (propertyId, file) => 
+    postMultipart(`${BASE}/${propertyId}/tour/config`, file),
 
-  uploadTourConfig: (propertyId, file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return api.post(`${BASE}/${propertyId}/tour/config`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
+  upload360ImageGeneric: (file) => 
+    postMultipart(`${BASE}/tour/360/upload`, file),
 
-  upload360ImageGeneric: (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return api.post(`${BASE}/tour/360/upload`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
-
-  uploadTourConfigGeneric: (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    return api.post(`${BASE}/tour/config/upload`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
+  uploadTourConfigGeneric: (file) => 
+    postMultipart(`${BASE}/tour/config/upload`, file),
 };
 
 export default model3dApi;

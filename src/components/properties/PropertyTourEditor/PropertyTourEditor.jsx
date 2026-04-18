@@ -23,6 +23,15 @@ export default function PropertyTourEditor({ show, onHide, propertyId, media, cu
   const viewerRef = useRef(null);
   const containerRef = useRef(null);
 
+  const escapeHtml = (unsafe) => {
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
   // 1. Inicializar nodos a partir de la media 360 disponible
   useEffect(() => {
     if (!show) return;
@@ -55,9 +64,13 @@ export default function PropertyTourEditor({ show, onHide, propertyId, media, cu
         })
         .filter(Boolean); // Quitar nodos que ya no tienen foto
 
+      const validIds = existingNodes.map(n => n.id);
       setNodes(existingNodes);
-      setStartNodeId(currentConfig.startNodeId || existingNodes[0]?.id);
-      setActiveNodeId(activeNodeId || existingNodes[0]?.id);
+      
+      // Validar y normalizar IDs de inicio y activo
+      const rawStartId = currentConfig.startNodeId;
+      setStartNodeId(validIds.includes(rawStartId) ? rawStartId : (existingNodes[0]?.id || null));
+      setActiveNodeId((prev) => (validIds.includes(prev) ? prev : (existingNodes[0]?.id || null)));
     } else {
       const baseNodes = scenes360.map((m, idx) => ({
         // Usar ID real o generar uno basado en la URL/índice para evitar 'undefined'
@@ -103,11 +116,11 @@ export default function PropertyTourEditor({ show, onHide, propertyId, media, cu
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#3b6bf5" class="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
               <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
             </svg>
-            <div class="tour-marker-label">${targetNode?.name || 'Habitación'}</div>
+            <div class="tour-marker-label">${escapeHtml(targetNode?.name || 'Habitación')}</div>
           </div>
         `,
         size: { width: 32, height: 32 },
-        tooltip: `Ir a: ${targetNode?.name || 'X'}`,
+        tooltip: `Ir a: ${escapeHtml(targetNode?.name || 'Habitación')}`,
       });
     });
 
@@ -201,10 +214,12 @@ export default function PropertyTourEditor({ show, onHide, propertyId, media, cu
         result = data;
       }
 
-      if (result?.success) {
+      if (result && result.success && result.data) {
         if (onSave) onSave(result.data); // Notificar al padre (form)
         await Swal.fire("¡Éxito!", "El recorrido virtual se ha configurado correctamente.", "success");
         onHide();
+      } else {
+        throw new Error(result?.message || "Error desconocido al guardar la configuración.");
       }
     } catch (err) {
       Swal.fire("Error", "No se pudo guardar la configuración: " + (err.response?.data?.message || err.message), "error");

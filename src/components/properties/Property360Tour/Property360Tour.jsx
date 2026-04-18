@@ -27,7 +27,10 @@ export default function Property360Tour({ config, startNodeId }) {
 
     try {
       setLoading(true);
+      setError(null); // Limpiar error previo antes de re-intentar
       
+      const nodeId = startNodeId || config.startNodeId || config.nodes?.[0]?.id;
+
       // Inicializar el visor
       const viewer = new Viewer({
         container: containerRef.current,
@@ -50,7 +53,7 @@ export default function Property360Tour({ config, startNodeId }) {
             positionMode: 'manual',
             renderMode: '3d',
             nodes: config.nodes,
-            startNodeId: startNodeId || config.nodes[0].id,
+            startNodeId: nodeId,
           }],
         ],
       });
@@ -84,7 +87,7 @@ export default function Property360Tour({ config, startNodeId }) {
   }
 
   return (
-    <div className="property-360-container">
+    <div className="property-360-container property-360-tour">
       {loading && (
         <div className="property-360-loader">
           <Spinner animation="border" variant="primary" className="mb-2" />

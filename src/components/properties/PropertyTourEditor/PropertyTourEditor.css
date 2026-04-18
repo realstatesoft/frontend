@@ -105,12 +105,12 @@
   white-space: nowrap;
 }
 
-/* Photo Sphere Viewer modifications */
-.psv-container {
+/* Photo Sphere Viewer modifications inside the editor */
+.tour-editor-modal .psv-container {
   font-family: inherit !important;
 }
 
-.psv-navbar {
+.tour-editor-modal .psv-navbar {
   background: rgba(0, 0, 0, 0.4) !important;
 }
 

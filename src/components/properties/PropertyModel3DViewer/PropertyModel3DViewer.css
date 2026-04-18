@@ -86,7 +86,7 @@
   transform: scale(1.05);
 }
 
-#ar-prompt {
+.PropertyModel3DViewer .ar-prompt {
   position: absolute;
   left: 50%;
   bottom: 80px;
@@ -94,11 +94,11 @@
   display: none;
 }
 
-model-viewer[ar-status="session-started"] > #ar-prompt {
+.PropertyModel3DViewer model-viewer[ar-status="session-started"] > .ar-prompt {
   display: block;
 }
 
-#ar-prompt > img {
+.PropertyModel3DViewer .ar-prompt > img {
   animation: notify 2s linear infinite;
 }
 
