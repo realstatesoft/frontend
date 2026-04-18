@@ -37,6 +37,7 @@ export function useShowProperty() {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [similarError, setSimilarError] = useState(null);
+  const [viewCount, setViewCount] = useState(null);
 
   const [status, setStatus] = useState(PROPERTY_STATUS_OPTIONS[0]);
   const [visibility, setVisibility] = useState(PROPERTY_VISIBILITY_OPTIONS[0]);
@@ -133,11 +134,49 @@ export function useShowProperty() {
       });
   }, [id]);
 
+  const fetchViewCount = useCallback(() => {
+    if (!id) {
+      setViewCount(null);
+      return Promise.resolve(null);
+    }
+
+    return propertyApi
+      .getViewCount(id)
+      .then(({ data }) => {
+        const count = typeof data === "number" ? data : (data?.data ?? data?.count ?? data);
+        setViewCount(Number.isFinite(Number(count)) ? Number(count) : null);
+        return count;
+      })
+      .catch(() => {
+        setViewCount(null);
+        return null;
+      });
+  }, [id]);
+
+  const registerPropertyView = useCallback(() => {
+    if (!id) return Promise.resolve(null);
+    return propertyApi.registerView(id).catch(() => null);
+  }, [id]);
+
   useEffect(() => {
     fetchProperty();
     fetchSimilar();
     fetchActiveFlagCount();
-  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount]);
+
+    let cancelled = false;
+
+    const registerAndCountViews = async () => {
+      await registerPropertyView();
+      if (cancelled) return;
+      await fetchViewCount();
+    };
+
+    registerAndCountViews();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount, fetchViewCount, registerPropertyView]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -329,6 +368,7 @@ export function useShowProperty() {
     similarError,
     copyLink,
     activeFlagCount,
+    viewCount,
     fetchActiveFlagCount
   };
 }

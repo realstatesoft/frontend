@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -59,6 +59,7 @@ export default function ShowProperty() {
     loadingSimilar,
     copyLink,
     activeFlagCount,
+    viewCount,
     isAuthenticated,
     fetchActiveFlagCount
   } = useShowProperty();
@@ -242,11 +243,19 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <img
-                src={images[0]}
-                alt="Fachada"
-                className="property__main-image"
-              />
+              <div className="property__main-image-wrapper">
+                <img
+                  src={images[0]}
+                  alt="Fachada"
+                  className="property__main-image"
+                />
+                {viewCount != null && (
+                  <div className="property__views-badge">
+                    <Eye size={20} className="property__views-icon" />
+                    <span>{viewCount} han visto esta propiedad</span>
+                  </div>
+                )}
+              </div>
             </Col>
             <Col xs={6}>
               <Row className="g-1 h-100">
@@ -382,7 +391,6 @@ export default function ShowProperty() {
 
                     <div className="property__meta-box mt-4">
                       {(property.createdAt ||
-                        property.viewCount != null ||
                         property.favoriteCount != null) && (
                         <>
                           {property.createdAt && (
@@ -392,9 +400,6 @@ export default function ShowProperty() {
                                 {formatTimeAgo(property.createdAt)}
                               </strong>
                             </>
-                          )}
-                          {property.viewCount != null && (
-                            <> &nbsp;|&nbsp; {property.viewCount} vistas</> //componente que diga el padding que vas a usar etc
                           )}
                           {property.favoriteCount != null && (
                             <>
