@@ -40,6 +40,11 @@ export default function CreateProperty() {
     removeMedia,
     setPrimaryMedia,
     uploadingMedia,
+    addModel3D,
+    uploadingModel3D,
+    addTour360Image,
+    addTourConfig,
+    uploadingTour,
     handleSubmit,
     dismissError,
   } = usePropertyForm(id);
@@ -102,6 +107,11 @@ export default function CreateProperty() {
               removeMedia={removeMedia}
               setPrimaryMedia={setPrimaryMedia}
               uploadingMedia={uploadingMedia}
+              addModel3D={addModel3D}
+              uploadingModel3D={uploadingModel3D}
+              addTour360Image={addTour360Image}
+              addTourConfig={addTourConfig}
+              uploadingTour={uploadingTour}
             />
             <ConstructionSection form={form} set={set} />
             <InteriorAndRoomsSection

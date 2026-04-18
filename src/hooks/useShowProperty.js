@@ -288,6 +288,7 @@ export function useShowProperty() {
   // Valores derivados para la UI
   const images = property?.media?.length
     ? property.media
+        .filter((m) => m.type === "IMAGE")
         .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
         .map((m) => m.url)
     : PLACEHOLDER_IMAGES;

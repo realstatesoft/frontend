@@ -1,0 +1,126 @@
+.tour-editor-modal .modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.tour-editor-modal .modal-body {
+  height: 70vh; /* Altura máxima del contenido */
+  max-height: 800px;
+  overflow: hidden;
+}
+
+.tour-editor-sidebar {
+  height: 100%; /* Ocupa todo el alto del modal-body */
+  display: flex;
+  flex-direction: column;
+}
+
+.tour-scenes-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-bottom: 50px;
+}
+
+.scene-card {
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.scene-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.scene-card.active {
+  border-color: #3b6bf5;
+  background-color: #f0f4ff;
+}
+
+.scene-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.scene-thumb-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+}
+
+.scene-name-input {
+  font-weight: 600;
+  color: #333;
+  width: 100%;
+}
+
+.scene-card.active .scene-name-input {
+  color: #3b6bf5;
+}
+
+.tour-editor-viewport-container {
+  flex-grow: 1;
+  height: 100%;
+  position: relative;
+  background-color: #000;
+}
+
+.tour-editor-viewport {
+  width: 100%;
+  height: 100%;
+}
+
+.tour-links-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.tour-marker-label {
+  background: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: translateY(-20px);
+  white-space: nowrap;
+}
+
+/* Photo Sphere Viewer modifications */
+.psv-container {
+  font-family: inherit !important;
+}
+
+.psv-navbar {
+  background: rgba(0, 0, 0, 0.4) !important;
+}
+
+@media (max-width: 992px) {
+  .tour-editor-sidebar {
+    height: 40vh;
+    border-right: none !important;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .tour-editor-viewport {
+    height: 40vh;
+  }
+}

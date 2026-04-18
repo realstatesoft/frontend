@@ -19,6 +19,7 @@ import {
   getFloorIndex,
 } from "../constants/createPropertyConstants";
 import { createPropertySchema } from "../validation/createPropertySchema";
+import model3dApi from "../services/properties/model3dApi";
 
 const getInitialForm = () => ({
   title: "",
@@ -284,6 +285,158 @@ export function usePropertyForm(propertyId) {
     }));
   }, []);
 
+  const [uploadingModel3D, setUploadingModel3D] = useState(false);
+
+  const addModel3D = useCallback(async (file) => {
+    if (!file) return;
+    const extension = file.name?.split('.').pop()?.toLowerCase();
+    if (extension !== 'glb' && extension !== 'gltf') {
+      await Swal.fire("Formato no permitido", "Solo se admiten archivos .glb o .gltf", "warning");
+      return;
+    }
+
+    setUploadingModel3D(true);
+    try {
+      Swal.showLoading();
+      let newItem;
+      
+      if (propertyId || form.id) {
+        // Asociación inmediata
+        const { data } = await model3dApi.uploadModel(propertyId || form.id, file);
+        if (data?.success) {
+          newItem = {
+            type: "MODEL_3D",
+            url: data.data.url,
+            isPrimary: false,
+            orderIndex: (form.media || []).length,
+            title: data.data.title || file.name,
+          };
+        }
+      } else {
+        // Subida genérica (se asociará al darle a GuardarPropiedad)
+        const { data } = await model3dApi.uploadModelGeneric(file);
+        if (data?.success) {
+          newItem = {
+            type: "MODEL_3D",
+            url: data.data.url,
+            isPrimary: false,
+            orderIndex: (form.media || []).length,
+            title: data.data.title || file.name,
+          };
+        }
+      }
+
+      if (newItem) {
+        setForm(f => ({
+          ...f,
+          media: [...(f.media || []), newItem]
+        }));
+        await Swal.fire("Éxito", "Modelo 3D cargado correctamente.", "success");
+      }
+    } catch (err) {
+      await Swal.fire("Error", "No se pudo subir el modelo: " + (err.response?.data?.message || err.message), "error");
+    } finally {
+      setUploadingModel3D(false);
+    }
+  }, [propertyId, form.id, form.media]);
+
+  const [uploadingTour, setUploadingTour] = useState(false);
+
+  const addTour360Image = useCallback(async (file) => {
+    if (!file) return;
+    if (!file.type?.startsWith("image/")) {
+      await Swal.fire("Formato no permitido", "El tour virtual solo admite imágenes esféricas (JPG/PNG).", "warning");
+      return;
+    }
+    const targetId = propertyId || form.id;
+    setUploadingTour(true);
+    try {
+      Swal.showLoading();
+      let newItem;
+
+      if (targetId) {
+        const { data } = await model3dApi.upload360Image(targetId, file);
+        if (data?.success) {
+          newItem = {
+            type: "IMAGE_360",
+            url: data.data.url,
+            isPrimary: false,
+            orderIndex: (form.media || []).length,
+            title: file.name,
+          };
+        }
+      } else {
+        const { data } = await model3dApi.upload360ImageGeneric(file);
+        if (data?.success) {
+          newItem = {
+            type: "IMAGE_360",
+            url: data.data.url,
+            isPrimary: false,
+            orderIndex: (form.media || []).length,
+            title: file.name,
+          };
+        }
+      }
+
+      if (newItem) {
+        setForm(f => ({ ...f, media: [...(f.media || []), newItem] }));
+        await Swal.fire("Éxito", "Imagen 360 cargada.", "success");
+      }
+    } catch (err) {
+      await Swal.fire("Error", "No se pudo subir la imagen: " + (err.response?.data?.message || err.message), "error");
+    } finally {
+      setUploadingTour(false);
+    }
+  }, [propertyId, form.id, form.media]);
+
+  const addTourConfig = useCallback(async (file) => {
+    if (!file) return;
+    const targetId = propertyId || form.id;
+
+    setUploadingTour(true);
+    try {
+      Swal.showLoading();
+      let newItem;
+
+      if (targetId) {
+        const { data } = await model3dApi.uploadTourConfig(targetId, file);
+        if (data?.success) {
+          newItem = {
+            type: "VIRTUAL_TOUR_CONFIG",
+            url: data.data.url,
+            isPrimary: false,
+            orderIndex: 0,
+            title: "Configuración de Tour",
+          };
+        }
+      } else {
+        const { data } = await model3dApi.uploadTourConfigGeneric(file);
+        if (data?.success) {
+          newItem = {
+            type: "VIRTUAL_TOUR_CONFIG",
+            url: data.data.url,
+            isPrimary: false,
+            orderIndex: 0,
+            title: "Configuración de Tour",
+          };
+        }
+      }
+
+      if (newItem) {
+        // Reemplazar config previa si existe
+        setForm(f => ({
+          ...f,
+          media: [...(f.media || []).filter(m => m.type !== 'VIRTUAL_TOUR_CONFIG'), newItem]
+        }));
+        await Swal.fire("Éxito", "Configuración del tour cargada.", "success");
+      }
+    } catch (err) {
+      await Swal.fire("Error", "No se pudo subir el JSON: " + (err.response?.data?.message || err.message), "error");
+    } finally {
+      setUploadingTour(false);
+    }
+  }, [propertyId, form.id, form.media]);
+
   const validateForm = useCallback(() => {
     const dataToValidate = {
       title: form.title,
@@ -377,13 +530,14 @@ export function usePropertyForm(propertyId) {
           const { data } = await propertyApi.create(payload);
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });
+            const createdId = data.data.id;
             await Swal.fire({
               icon: "success",
               title: "¡Propiedad registrada!",
               text: "La propiedad fue creada exitosamente.",
             });
-            setForm(getInitialForm());
             setFieldErrors({});
+            navigate(`/properties/${createdId}`);
           } else {
             setError(data?.message ?? "Ocurrió un error al guardar la propiedad.");
             await Swal.fire({
@@ -423,6 +577,11 @@ export function usePropertyForm(propertyId) {
     removeMedia,
     setPrimaryMedia,
     uploadingMedia,
+    addModel3D,
+    uploadingModel3D,
+    addTour360Image,
+    addTourConfig,
+    uploadingTour,
     handleSubmit,
     dismissError,
     fieldErrors,

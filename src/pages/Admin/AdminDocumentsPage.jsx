@@ -331,8 +331,8 @@ export default function AdminDocumentsPage() {
   const fetchDocuments = useCallback(async () => {
     try {
       setLoading(true);
-      const { data } = await api.get("/users/documents");
-      setDocuments(data.data || []);
+      const { data } = await api.get("/users/documents?size=1000");
+      setDocuments(data.data?.content || []);
     } catch (err) {
       Swal.fire("Error", "No se pudieron cargar los documentos " + (err.response?.data?.message || ""), "error");
     } finally {
