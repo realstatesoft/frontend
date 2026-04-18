@@ -2,11 +2,13 @@
 
 .page {
   @include flex-column;
+
   gap: var(--spacing-xl);
 }
 
 .page__header {
   @include flex-between;
+
   flex-wrap: wrap;
   gap: var(--spacing-md);
 }
@@ -39,11 +41,13 @@
 
 .page__card {
   @include glass-card;
+
   padding: var(--spacing-lg);
 }
 
 .page__toolbar {
   @include flex-between;
+
   margin-bottom: var(--spacing-md);
   gap: var(--spacing-md);
   flex-wrap: wrap;
@@ -75,6 +79,7 @@
 
 .chart {
   @include glass-card;
+
   padding: var(--spacing-lg);
 }
 
@@ -100,6 +105,7 @@
 
 .chart__col {
   @include flex-column;
+
   align-items: center;
   gap: 4px;
 }
@@ -148,7 +154,9 @@
 .sales__propName {
   font-weight: 500;
   color: var(--color-text-primary);
+
   @include text-ellipsis;
+
   max-width: 140px;
   display: block;
 }

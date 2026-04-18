@@ -8,85 +8,8 @@ import {
   CONTRACT_TYPE_OPTIONS,
   CONTRACT_TYPE,
 } from '../../constants/contractConstants';
+import { getClausesForType } from './contractClauses';
 import styles from './ContractCreatePage.module.scss';
-
-/* ─── Cláusulas predefinidas (same as ContractCreatePage) ────────────────────── */
-
-const SALE_CLAUSES = [
-  {
-    id: 'sale_title',
-    label: 'Título de propiedad limpio',
-    text: 'El vendedor declara que el inmueble se encuentra libre de gravámenes, hipotecas, embargos, litigios pendientes y cualquier limitación de dominio.',
-  },
-  {
-    id: 'sale_delivery',
-    label: 'Entrega del inmueble',
-    text: 'El vendedor se compromete a entregar el inmueble en las mismas condiciones en que fue mostrado al comprador, incluyendo instalaciones fijas, accesorios y mejoras existentes.',
-  },
-  {
-    id: 'sale_payment',
-    label: 'Forma de pago',
-    text: 'El comprador se obliga a realizar el pago del precio pactado según el calendario de pagos acordado. El incumplimiento generará intereses moratorios del 1.5% mensual.',
-  },
-  {
-    id: 'sale_expenses',
-    label: 'Gastos de escrituración',
-    text: 'Los gastos notariales, registrales e impuestos de transferencia serán cubiertos al 50% por cada parte, salvo acuerdo diferente.',
-  },
-  {
-    id: 'sale_penalty',
-    label: 'Cláusula penal por incumplimiento',
-    text: 'En caso de incumplimiento, la parte incumplidora deberá pagar el 10% del valor total del contrato.',
-  },
-];
-
-const RENT_CLAUSES = [
-  {
-    id: 'rent_use',
-    label: 'Uso del inmueble',
-    text: 'El inquilino se compromete a utilizar el inmueble exclusivamente para el uso pactado. Queda prohibido subarrendar sin autorización escrita.',
-  },
-  {
-    id: 'rent_payment',
-    label: 'Pago de renta',
-    text: 'El inquilino pagará la renta mensual dentro de los primeros 5 días de cada mes. El retraso generará un recargo del 5% por semana.',
-  },
-  {
-    id: 'rent_deposit',
-    label: 'Depósito de garantía',
-    text: 'Al firma, el inquilino entregará un depósito de 2 meses de renta, devuelto al término del contrato previo verificación del estado.',
-  },
-  {
-    id: 'rent_maintenance',
-    label: 'Mantenimiento',
-    text: 'Reparaciones menores: inquilino. Reparaciones estructurales y principales: propietario (salvo negligencia del inquilino).',
-  },
-];
-
-const GENERAL_CLAUSES = [
-  {
-    id: 'gen_force_majeure',
-    label: 'Fuerza mayor',
-    text: 'Ninguna parte será responsable por incumplimiento causado por fuerza mayor o caso fortuito.',
-  },
-  {
-    id: 'gen_modifications',
-    label: 'Modificaciones al contrato',
-    text: 'Cualquier modificación deberá realizarse por escrito y firmada por todas las partes. Las modificaciones verbales no tendrán validez.',
-  },
-];
-
-function getClausesForType(contractType) {
-  switch (contractType) {
-    case 'SALE':
-    case 'OPTION_TO_BUY':
-      return [...SALE_CLAUSES, ...GENERAL_CLAUSES];
-    case 'RENT':
-      return [...RENT_CLAUSES, ...GENERAL_CLAUSES];
-    default:
-      return GENERAL_CLAUSES;
-  }
-}
 
 export default function ContractEditPage() {
   const { id } = useParams();

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   CONTRACT_STATUS_LABELS,
   CONTRACT_STATUS_COLORS,
@@ -8,8 +8,14 @@ import Badge from '../../components/common/Badge/Badge';
 import styles from './ContractsPage.module.scss';
 
 export default function ContractStatusModal({ contract, onConfirm, onClose, loading }) {
+  const [selected, setSelected] = useState('');
+
   const transitions = ALLOWED_STATUS_TRANSITIONS[contract?.status] || [];
-  const [selected, setSelected] = useState(transitions[0] || '');
+
+  // Sincronizar selección si el contrato o sus transiciones permitidas cambian
+  useEffect(() => {
+    setSelected(transitions[0] || '');
+  }, [contract?.status, transitions.length]);
 
   if (!contract) return null;
 
