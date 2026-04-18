@@ -43,7 +43,10 @@ describe('documentService', () => {
 
       expect(api.post).toHaveBeenCalledWith(
         '/users/me/documents',
-        expect.any(FormData)
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
       );
       
       const formDataArg = api.post.mock.calls[0][1];
@@ -63,7 +66,10 @@ describe('documentService', () => {
 
       expect(api.put).toHaveBeenCalledWith(
         '/users/me/documents/10',
-        expect.any(FormData)
+        expect.any(FormData),
+        expect.objectContaining({
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
       );
       
       const formDataArg = api.put.mock.calls[0][1];

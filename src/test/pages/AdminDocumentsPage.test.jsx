@@ -70,7 +70,7 @@ const mockDocuments = [
 describe('AdminDocumentsPage KYC', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    api.get.mockResolvedValue({ data: { data: [] } });
+    api.get.mockResolvedValue({ data: { success: true, data: { content: [], last: true } } });
   });
 
   it('renderiza la cabecera y el estado vacío correctamente', async () => {
@@ -88,7 +88,7 @@ describe('AdminDocumentsPage KYC', () => {
   });
 
   it('agrupa documentos por usuario y calcula el estado general', async () => {
-    api.get.mockResolvedValueOnce({ data: { data: mockDocuments } });
+    api.get.mockResolvedValueOnce({ data: { success: true, data: { content: mockDocuments, last: true } } });
     render(<AdminDocumentsPage />);
 
     // Esperar a que rendericen las tarjetas de usuario
@@ -122,7 +122,7 @@ describe('AdminDocumentsPage KYC', () => {
   });
 
   it('abre el modal de perfil de usuario correctamente', async () => {
-    api.get.mockResolvedValueOnce({ data: { data: mockDocuments } });
+    api.get.mockResolvedValueOnce({ data: { success: true, data: { content: mockDocuments, last: true } } });
     render(<AdminDocumentsPage />);
 
     await waitFor(() => {
@@ -147,7 +147,7 @@ describe('AdminDocumentsPage KYC', () => {
   });
 
   it('filtra correctamente por estado', async () => {
-    api.get.mockResolvedValueOnce({ data: { data: mockDocuments } });
+    api.get.mockResolvedValueOnce({ data: { success: true, data: { content: mockDocuments, last: true } } });
     render(<AdminDocumentsPage />);
 
     await waitFor(() => {
@@ -172,8 +172,8 @@ describe('AdminDocumentsPage KYC', () => {
   });
 
   it('aprueba un documento pendiente', async () => {
-    api.get.mockResolvedValueOnce({ data: { data: mockDocuments } }) // first load
-           .mockResolvedValueOnce({ data: { data: mockDocuments } }); // reload after approve
+    api.get.mockResolvedValueOnce({ data: { success: true, data: { content: mockDocuments, last: true } } }) // first load
+           .mockResolvedValueOnce({ data: { success: true, data: { content: mockDocuments, last: true } } }); // reload after approve
            
     api.patch.mockResolvedValueOnce({});
 

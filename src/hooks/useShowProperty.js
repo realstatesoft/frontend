@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useAuth } from "./useAuth";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -286,11 +286,13 @@ export function useShowProperty() {
   };
 
   // Valores derivados para la UI
-  const images = property?.media?.length
-    ? property.media
-        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
-        .map((m) => m.url)
-    : PLACEHOLDER_IMAGES;
+  const images = useMemo(() => {
+    const filtered = property?.media?.filter((m) => m.type === "IMAGE") || [];
+    if (filtered.length === 0) return PLACEHOLDER_IMAGES;
+    return filtered
+      .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
+      .map((m) => m.url);
+  }, [property?.media]);
 
   const features = buildFeaturesFromProperty(property);
   const priceFormatted = property?.price != null ? `₲ ${formatPrice(String(property.price))}` : "";

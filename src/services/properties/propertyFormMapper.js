@@ -237,6 +237,7 @@ export const propertyToForm = (property) => {
     fullBathrooms: property.fullBathrooms != null ? String(property.fullBathrooms) : "",
     rooms,
     media: property.media || [],
+    id: property.id,
   };
 };
 

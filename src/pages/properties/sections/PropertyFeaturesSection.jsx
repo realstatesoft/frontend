@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Row, Col, Form, Button, Badge, Stack, Spinner } from "react-bootstrap";
 import { FormSectionTitle, FormLabel, FormMultiSelect } from "../../../components/properties/FormComponents";
 import {
@@ -11,6 +11,9 @@ import {
   WATER_OPTIONS,
   SANITARY_OPTIONS,
 } from "../../../constants/createPropertyConstants";
+import model3dApi from "../../../services/properties/model3dApi";
+import Swal from "sweetalert2";
+import PropertyTourEditor from "../../../components/properties/PropertyTourEditor/PropertyTourEditor";
 
 const ACCEPT_IMAGES = "image/jpeg,image/png,image/webp";
 const MAX_IMAGES = 20;
@@ -23,16 +26,28 @@ export function PropertyFeaturesSection({
   removeMedia,
   setPrimaryMedia,
   uploadingMedia,
+  addModel3D,
+  uploadingModel3D,
+  addTour360Image,
+  addTourConfig,
+  uploadingTour,
 }) {
   const fileInputRef = useRef(null);
 
   const media = form.media || [];
-  const canAddMore = media.length < MAX_IMAGES;
+  // Filtrar solo las fotos convencionales para la galería, pero guardando el índice original
+  const galleryMedia = useMemo(() => {
+    return media
+      .map((item, idx) => ({ ...item, originalIndex: idx }))
+      .filter(m => m.type === 'PHOTO' || m.type === 'IMAGE');
+  }, [media]);
+
+  const canAddMore = galleryMedia.length < MAX_IMAGES;
 
   const handleFileChange = (e) => {
     const files = e.target.files;
     if (!files?.length) return;
-    for (let i = 0; i < files.length && media.length + i < MAX_IMAGES; i++) {
+    for (let i = 0; i < files.length && galleryMedia.length + i < MAX_IMAGES; i++) {
       addMedia(files[i]);
     }
     e.target.value = "";
@@ -52,6 +67,53 @@ export function PropertyFeaturesSection({
     e.preventDefault();
     e.stopPropagation();
   };
+
+  const handleModelUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      await addModel3D(file);
+    } finally {
+      if (modelInputRef.current) modelInputRef.current.value = "";
+    }
+  };
+
+  const modelInputRef = useRef(null);
+  const tour360InputRef = useRef(null);
+  const [showTourEditor, setShowTourEditor] = useState(false);
+
+  const handleTour360Upload = async (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        await addTour360Image(file);
+      } finally {
+        if (tour360InputRef.current) tour360InputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleTourSaved = (configMedia) => {
+    const nextMedia = (form.media || []).filter(m => m.type !== 'VIRTUAL_TOUR_CONFIG');
+    setArr("media")([...nextMedia, configMedia]);
+    setParsedConfig(null); 
+  };
+
+  // Obtener config actual si existe para pasarla al editor
+  const currentTourConfig = form.media?.find(m => m.type === 'VIRTUAL_TOUR_CONFIG');
+  const [parsedConfig, setParsedConfig] = useState(null);
+
+  useEffect(() => {
+    if (currentTourConfig?.url) {
+      fetch(currentTourConfig.url)
+        .then(res => res.json())
+        .then(data => setParsedConfig(data))
+        .catch(err => console.error("Error al pre-cargar config:", err));
+    } else {
+      setParsedConfig(null);
+    }
+  }, [currentTourConfig?.url]);
+
   return (
     <>
       <FormSectionTitle title="Características de la Propiedad" />
@@ -141,8 +203,8 @@ export function PropertyFeaturesSection({
           <Form.Group>
             <FormLabel>Contenido Multimedia</FormLabel>
             <Row className="g-2 mb-2">
-              {media.map((item, i) => (
-                <Col xs={3} key={item.url || i}>
+              {galleryMedia.map((item) => (
+                <Col xs={3} key={item.url || item.originalIndex}>
                   <div
                     className="position-relative rounded overflow-hidden"
                     style={{ aspectRatio: "1" }}
@@ -160,7 +222,7 @@ export function PropertyFeaturesSection({
                         fontSize: 9,
                         cursor: "pointer",
                       }}
-                      onClick={() => setPrimaryMedia(i)}
+                      onClick={() => setPrimaryMedia(item.originalIndex)}
                     >
                       <i className={`bi bi-star${item.isPrimary ? "-fill" : ""} me-1`} />
                       {item.isPrimary ? "Portada" : "Marcar portada"}
@@ -176,7 +238,7 @@ export function PropertyFeaturesSection({
                         cursor: "pointer",
                         fontSize: 14,
                       }}
-                      onClick={() => removeMedia(i)}
+                      onClick={() => removeMedia(item.originalIndex)}
                       aria-label="Quitar imagen"
                     >
                       ×
@@ -218,9 +280,9 @@ export function PropertyFeaturesSection({
                 </Col>
               )}
             </Row>
-            {media.length > 0 && (
+            {galleryMedia.length > 0 && (
               <small className="text-muted d-block mb-2">
-                {media.length} imagen{media.length !== 1 ? "es" : ""}. Cliqueá en la estrella para marcar como portada.
+                {galleryMedia.length} imagen{galleryMedia.length !== 1 ? "es" : ""}. Cliqueá en la estrella para marcar como portada.
               </small>
             )}
             <Stack direction="horizontal" gap={2}>
@@ -233,19 +295,76 @@ export function PropertyFeaturesSection({
               >
                 <i className="bi bi-file-earmark" /> Subir planos
               </Button>
+              <input 
+                type="file" 
+                ref={modelInputRef} 
+                className="d-none" 
+                accept=".glb,.gltf" 
+                onChange={handleModelUpload}
+              />
               <Button
-                variant="outline-secondary"
+                variant="outline-primary"
                 size="sm"
                 type="button"
                 className="d-flex align-items-center gap-1"
-                disabled
+                onClick={() => modelInputRef.current?.click()}
+                disabled={uploadingModel3D}
               >
-                <i className="bi bi-camera-video" /> Subir vista 3D
+                {uploadingModel3D ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  <i className="bi bi-box" />
+                )}
+                {uploadingModel3D ? "Subiendo..." : "Subir Plano 3D"}
+              </Button>
+
+              <input 
+                type="file" 
+                ref={tour360InputRef} 
+                className="d-none" 
+                accept={ACCEPT_IMAGES} 
+                onChange={handleTour360Upload}
+              />
+              <Button
+                variant="outline-info"
+                size="sm"
+                type="button"
+                className="d-flex align-items-center gap-1"
+                onClick={() => tour360InputRef.current?.click()}
+                disabled={uploadingTour}
+              >
+                {uploadingTour ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  <i className="bi bi-camera-reuters" />
+                )}
+                {uploadingTour ? "Subiendo..." : "Añadir Habitación 360"}
+              </Button>
+
+              <Button
+                variant="outline-dark"
+                size="sm"
+                type="button"
+                className="d-flex align-items-center gap-1"
+                onClick={() => setShowTourEditor(true)}
+                disabled={!form.media?.some(m => m.type === 'IMAGE_360')}
+              >
+                <i className="bi bi-pencil-square" />
+                Configurar Recorrido
               </Button>
             </Stack>
           </Form.Group>
         </Col>
       </Row>
+
+      <PropertyTourEditor 
+        show={showTourEditor}
+        onHide={() => setShowTourEditor(false)}
+        propertyId={form.id}
+        media={form.media || []}
+        currentConfig={parsedConfig}
+        onSave={handleTourSaved}
+      />
     </>
   );
 }

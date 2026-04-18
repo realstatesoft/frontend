@@ -151,10 +151,31 @@
     text-align: center;
     cursor: pointer;
     background-color: #fff;
-    transition: box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 
-    &:hover {
+    &:hover:not(&--static) {
       box-shadow: $shadow-soft;
+      transform: translateY(-2px);
+    }
+
+    &--static {
+      cursor: default;
+      opacity: 0.7;
+      background-color: #f8fafc;
+    }
+  }
+
+  &__empty-3d {
+    padding: 3rem 0;
+    text-align: center;
+    
+    &-box {
+      border: 2px dashed #e2e8f0;
+      border-radius: 16px;
+      padding: 3rem;
+      background-color: #f8fafc;
+      max-width: 500px;
+      margin: 0 auto;
     }
   }
 
