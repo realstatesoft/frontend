@@ -186,7 +186,7 @@ export default function ShowProperty() {
                 </Dropdown>
               )}
 
-              {/* Editar — owner o ADMIN */}
+              {/* Editar — owner o ADMIN  */}
               {canEdit && (
                 <Button
                   size="sm"
