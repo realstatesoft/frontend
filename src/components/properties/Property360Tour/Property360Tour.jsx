@@ -22,7 +22,6 @@ export default function Property360Tour({ config, startNodeId }) {
   useEffect(() => {
     if (!containerRef.current || !config || !config.nodes || config.nodes.length === 0) {
       setLoading(false);
-      if (!config || !config.nodes) setError("No se encontró configuración válida para el tour.");
       return;
     }
 
@@ -32,13 +31,11 @@ export default function Property360Tour({ config, startNodeId }) {
       // Inicializar el visor
       const viewer = new Viewer({
         container: containerRef.current,
-        panorama: config.nodes[0].panorama, // Temporal, el plugin manejará los nodos
         loadingTxt: 'Cargando escena...',
         caption: 'Recorrido Virtual 360°',
         defaultYaw: '0',
         defaultPitch: '0',
         navbar: [
-          'autorotate',
           'zoom',
           'move',
           'download',

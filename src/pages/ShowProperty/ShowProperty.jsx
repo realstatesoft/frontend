@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Container,
   Row,
@@ -110,14 +110,21 @@ export default function ShowProperty() {
   }, [property?.media, tourConfig]);
 
   // Generar config de respaldo si no hay una oficial pero sí hay fotos 360
-  const finalTourConfig = tourConfig || (scenes360.length > 0 ? {
-    nodes: scenes360.map((m, idx) => ({
-      id: `media_${m.id || idx}`,
-      panorama: m.url,
-      name: m.title || `Habitación ${idx + 1}`,
-      links: []
-    }))
-  } : null);
+  // Usamos useMemo para evitar que el visor se reinicie en cada render del padre
+  const finalTourConfig = useMemo(() => {
+    if (tourConfig) return tourConfig;
+    if (!loadingConfig && scenes360.length > 0) {
+      return {
+        nodes: scenes360.map((m, idx) => ({
+          id: `media_${m.id || idx}`,
+          panorama: m.url,
+          name: m.title || `Habitación ${idx + 1}`,
+          links: []
+        }))
+      };
+    }
+    return null;
+  }, [tourConfig, loadingConfig, scenes360]);
 
   if (loading) {
     return (
