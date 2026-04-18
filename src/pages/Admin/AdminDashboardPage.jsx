@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   FiUsers,
   FiHome,
@@ -17,7 +17,6 @@ import StatCard from '../../components/common/StatCard/StatCard';
 import { ADMIN_ROUTES } from '../../utils/constants';
 import useAdminDashboard from '../../hooks/useAdminDashboard';
 import styles from './AdminDashboardPage.module.scss';
-import { useNavigate } from 'react-router-dom';
 
 const QUICK_ICONS = {
   users: FiUsers,
@@ -172,9 +171,9 @@ export default function AdminDashboardPage() {
                     );
                   })}
                 </div>
-                <span className={styles.activityFooterNote}>
+                <Link to={ADMIN_ROUTES.AUDIT_LOGS} className={styles.footerLink}>
                   Ver todo el historial <FiArrowRight aria-hidden className={styles.activityFooterArrow} />
-                </span>
+                </Link>
               </section>
 
               <section className={styles.panel} aria-labelledby="admin-attention-title">
