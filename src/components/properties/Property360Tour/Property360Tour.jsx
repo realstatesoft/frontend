@@ -25,56 +25,71 @@ export default function Property360Tour({ config, startNodeId }) {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError(null); // Limpiar error previo antes de re-intentar
-      
-      const nodeId = startNodeId || config.startNodeId || config.nodes?.[0]?.id;
+    let viewer = null;
+    let timer = null;
 
-      // Inicializar el visor
-      const viewer = new Viewer({
-        container: containerRef.current,
-        loadingTxt: 'Cargando escena...',
-        caption: 'Recorrido Virtual 360°',
-        defaultYaw: '0',
-        defaultPitch: '0',
-        navbar: [
-          'zoom',
-          'move',
-          'download',
-          'description',
-          'caption',
-          'fullscreen',
-        ],
-        plugins: [
-          [MarkersPlugin, {}],
-          [VirtualTourPlugin, {
-            dataMode: 'client',
-            positionMode: 'manual',
-            renderMode: '3d',
-            nodes: config.nodes,
-            startNodeId: nodeId,
-          }],
-        ],
-      });
+    // Usar un pequeño retraso para asegurar que el contenedor DOM esté listo y con dimensiones
+    timer = setTimeout(() => {
+      if (!containerRef.current) return;
 
-      viewerRef.current = viewer;
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const nodeId = startNodeId || config.startNodeId || config.nodes?.[0]?.id;
 
-      viewer.addEventListener('ready', () => {
+        viewer = new Viewer({
+          container: containerRef.current,
+          loadingTxt: 'Cargando escena...',
+          caption: 'Recorrido Virtual 360°',
+          defaultYaw: '0',
+          defaultPitch: '0',
+          navbar: [
+            'zoom',
+            'move',
+            'download',
+            'description',
+            'caption',
+            'fullscreen',
+          ],
+          plugins: [
+            [MarkersPlugin, {}],
+            [VirtualTourPlugin, {
+              dataMode: 'client',
+              positionMode: 'manual',
+              renderMode: '3d',
+              nodes: config.nodes,
+              startNodeId: nodeId,
+            }],
+          ],
+        });
+
+        viewerRef.current = viewer;
+
+        viewer.addEventListener('ready', () => {
+          setLoading(false);
+          console.log("360 Viewer: Ready");
+        }, { once: true });
+
+      } catch (err) {
+        console.error("Error al iniciar el tour 360:", err);
+        setError("Error al inicializar el visor 360.");
         setLoading(false);
-      }, { once: true });
+      }
+    }, 50);
 
-      // Limpieza al desmontar
-      return () => {
-        if (viewerRef.current) {
+    // Limpieza al desmontar o antes de una re-inicialización
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (viewerRef.current) {
+        try {
           viewerRef.current.destroy();
+        } catch (e) {
+          console.warn("Error al destruir el visor:", e);
         }
-      };
-    } catch (err) {
-      console.error("Error al iniciar el tour 360:", err);
-      setError("Error al inicializar el visor 360.");
-      setLoading(false);
-    }
+        viewerRef.current = null;
+      }
+    };
   }, [config, startNodeId]);
 
   if (error) {
