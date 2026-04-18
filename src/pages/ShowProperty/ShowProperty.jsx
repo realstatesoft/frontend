@@ -85,7 +85,8 @@ export default function ShowProperty() {
 
   // Determinar pestañas disponibles y subpestaña inicial
   const hasModel = property?.media?.some(m => m.type === 'MODEL_3D');
-  const hasTour360 = property?.media?.some(m => m.type === 'VIRTUAL_TOUR_CONFIG');
+  const scenes360 = property?.media?.filter(m => m.type === 'IMAGE_360') || [];
+  const hasTour360 = property?.media?.some(m => m.type === 'VIRTUAL_TOUR_CONFIG') || scenes360.length > 0;
 
   useEffect(() => {
     if (!tourSubTab) {
@@ -107,6 +108,16 @@ export default function ShowProperty() {
         .finally(() => setLoadingConfig(false));
     }
   }, [property?.media, tourConfig]);
+
+  // Generar config de respaldo si no hay una oficial pero sí hay fotos 360
+  const finalTourConfig = tourConfig || (scenes360.length > 0 ? {
+    nodes: scenes360.map((m, idx) => ({
+      id: `media_${m.id || idx}`,
+      panorama: m.url,
+      name: m.title || `Habitación ${idx + 1}`,
+      links: []
+    }))
+  } : null);
 
   if (loading) {
     return (
@@ -489,8 +500,8 @@ export default function ShowProperty() {
                             <Spinner animation="border" size="sm" className="mb-2" />
                             <span className="text-muted">Iniciando recorrido...</span>
                           </div>
-                        ) : tourConfig ? (
-                          <Property360Tour config={tourConfig} />
+                        ) : finalTourConfig ? (
+                          <Property360Tour config={finalTourConfig} />
                         ) : (
                           <Alert variant="info">Cargando configuración del recorrido...</Alert>
                         )
