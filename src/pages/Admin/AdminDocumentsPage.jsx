@@ -331,8 +331,21 @@ export default function AdminDocumentsPage() {
   const fetchDocuments = useCallback(async () => {
     try {
       setLoading(true);
-      const { data } = await api.get("/users/documents");
-      setDocuments(data.data || []);
+      let allDocs = [];
+      let page = 0;
+      let last = false;
+
+      while (!last) {
+        const { data } = await api.get(`/users/documents?page=${page}&size=100`);
+        if (data?.success && data?.data) {
+          allDocs = [...allDocs, ...(data.data.content || [])];
+          last = data.data.last;
+          page++;
+        } else {
+          last = true;
+        }
+      }
+      setDocuments(allDocs);
     } catch (err) {
       Swal.fire("Error", "No se pudieron cargar los documentos " + (err.response?.data?.message || ""), "error");
     } finally {
