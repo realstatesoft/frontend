@@ -146,7 +146,7 @@ function CustomNavbar() {
         )}
 
         {isAuthenticated && messagesUnread > 0 && (
-          <Link to="/messages" className="navbar-notification-bell" aria-label="Mensajes">
+          <Link to="/mensajes" className="navbar-notification-bell" aria-label="Mensajes">
             <IoNotificationsOutline size={20} />
             <span className="bell-badge">{messagesUnread > 99 ? '99+' : messagesUnread}</span>
           </Link>
