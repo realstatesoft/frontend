@@ -41,3 +41,13 @@ export function useMarkAsRead() {
     },
   });
 }
+
+export function useUnreadMessagesCount() {
+  return useQuery({
+    queryKey: ['conversations', 'unread-count'],
+    queryFn: messageService.getUnreadCount,
+    staleTime: 1000 * 30,
+    refetchInterval: 30000,
+  });
+}
+

@@ -29,6 +29,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
 import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
+import { useUnreadMessagesCount } from "../../hooks/useMessagesData";
 
 function CustomNavbar() {
   const navigate = useNavigate();
@@ -44,6 +45,9 @@ function CustomNavbar() {
 
   // ── Notification badge count for ADMIN ──────────────────────
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // ── Messages unread count ──────────────────────────────
+  const { data: messagesUnread = 0 } = useUnreadMessagesCount();
 
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
@@ -138,6 +142,13 @@ function CustomNavbar() {
             {unreadCount > 0 && (
               <span className="bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
             )}
+          </Link>
+        )}
+
+        {isAuthenticated && messagesUnread > 0 && (
+          <Link to="/messages" className="navbar-notification-bell" aria-label="Mensajes">
+            <IoNotificationsOutline size={20} />
+            <span className="bell-badge">{messagesUnread > 99 ? '99+' : messagesUnread}</span>
           </Link>
         )}
 
