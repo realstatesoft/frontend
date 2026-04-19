@@ -21,6 +21,9 @@ const adminService = {
     const trimmed = q != null ? String(q).trim() : '';
     if (trimmed !== '') params.q = trimmed;
     return api.get('/admin/audit-logs/entity-options', { params }).then((res) => res.data);
+  },
+
+  /**
    * Suspende a un usuario.
    * @param {number} userId
    * @param {{ suspendedUntil: string | null; suspensionReason: string }} data
