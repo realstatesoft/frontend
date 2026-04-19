@@ -8,6 +8,7 @@ export const AGENT_ROUTES = {
   CONTRACTS: '/agent/contratos',
   REPORTS: '/agent/reportes',
   MESSAGES: '/agent/mensajes',
+  OFFERS: '/agent/ofertas',
   CREATE_PROPERTY: '/create-property',
   REGISTER_CLIENT: '/clients/register',
 };
@@ -17,6 +18,7 @@ export const OWNER_ROUTES = {
   PROPERTIES: '/owner/propiedades',
   VISITS: '/owner/visitas',
   MESSAGES: '/owner/mensajes',
+  OFFERS: '/owner/ofertas',
 };
 
 export const ADMIN_ROUTES = {

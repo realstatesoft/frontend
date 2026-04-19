@@ -37,11 +37,11 @@ describe('QuickActions', () => {
       expect(screen.getByText('Agendar Visita')).toBeInTheDocument();
     });
 
-    it('renderiza exactamente 3 acciones', () => {
+    it('renderiza exactamente 4 acciones', () => {
       renderQuickActions();
       // Each action is a Link rendered as an anchor
       const links = screen.getAllByRole('link');
-      expect(links).toHaveLength(3);
+      expect(links).toHaveLength(4);
     });
   });
 

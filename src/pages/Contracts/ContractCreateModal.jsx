@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import propertyApi from '../../services/properties/propertyApi';
 import { searchClients } from '../../services/clients/clientApi';
 import { getAllAgents } from '../../services/agents/agentApi';
+import PriceInput from '../../components/commons/PriceInput';
 import { useCreateContract } from '../../hooks/useContracts';
 import { useAuth } from '../../hooks/useAuth';
 import {
@@ -257,15 +258,13 @@ export default function ContractCreateModal({ onClose }) {
                 <label className={styles.form__label} htmlFor="cc-amount">
                   Monto (USD) <span className={styles.form__required}>*</span>
                 </label>
-                <input
+                <PriceInput
                   id="cc-amount"
-                  type="number"
                   name="amount"
                   className={styles.form__input}
                   value={form.amount}
-                  onChange={handleChange}
-                  min="0"
-                  step="0.01"
+                  onChange={(e) => handleChange({ target: { name: 'amount', value: e.target.value } })}
+                  placeholder="0"
                   required
                 />
               </div>

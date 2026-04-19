@@ -1,0 +1,246 @@
+@use "../../styles/mixins" as *;
+
+.offersPage {
+  padding: 2rem 0 4rem;
+  
+  h1 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+  }
+}
+
+.offersPage__header {
+  margin-bottom: 2.5rem;
+  text-align: left;
+}
+
+.offersPage__card {
+  @include glass-card;
+  border: none;
+  background: #ffffff;
+}
+
+.offersPage__tabs {
+  padding: 1.25rem 1.5rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  
+  :global(.nav-link) {
+    border: none;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border-radius: 8px 8px 0 0;
+
+    &:hover {
+      color: var(--color-text-primary);
+      background: var(--color-bg-surface-hover);
+    }
+
+    &.active {
+      color: var(--color-primary);
+      background: #fff;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--color-primary);
+        border-radius: 3px 3px 0 0;
+      }
+    }
+  }
+}
+
+.offersPage__count {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.offersPage__tableWrapper {
+  padding: 1.5rem;
+}
+
+.offersPage__table {
+  width: 100%;
+  margin-bottom: 0;
+  
+  thead {
+    th {
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      border-bottom: 2px solid #f1f5f9;
+      padding: 1rem 1.25rem;
+      vertical-align: middle;
+    }
+  }
+  
+  tbody {
+    tr {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: #f8fafc;
+      }
+      
+      td {
+        padding: 1.25rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+      }
+    }
+  }
+}
+
+.offersPage__propertyInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.offersPage__propertyIcon {
+  width: 44px;
+  height: 44px;
+  background: #eff6ff;
+  color: #2563eb;
+  @include flex-center;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.offersPage__propertyName {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.offersPage__propertyId {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.offersPage__personInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.offersPage__amount {
+  font-weight: 700;
+  color: #166534;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.offersPage__date {
+  font-size: 0.85rem;
+  color: #64748b;
+  @include flex-center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.offersPage__badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 0.75rem;
+}
+
+.offersPage__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.offersPage__btnContract {
+  min-width: 152px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.offersPage__btnAction {
+  width: 38px;
+  height: 38px;
+  @include flex-center;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  padding: 0;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.offersPage__btnContact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 124px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.offersPage__btnDetail {
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+}
+
+.offersPage__loading {
+  height: 400px;
+  @include flex-center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.offersPage__empty {
+  text-align: center;
+  color: #94a3b8;
+}

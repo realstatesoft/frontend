@@ -21,6 +21,7 @@ const AGENT_NAV_ITEMS = [
   { to: AGENT_ROUTES.CLIENTS, icon: <FiUsers />, label: 'Clientes' },
   { to: AGENT_ROUTES.PROPERTIES, icon: <FiHome />, label: 'Propiedades' },
   { to: AGENT_ROUTES.VISIT_REQUESTS, icon: <FiClipboard />, label: 'Solicitudes de Visita' },
+  { to: AGENT_ROUTES.OFFERS, icon: <FiDollarSign />, label: 'Ofertas Recibidas' },
   { section: 'Gestión' },
   { to: AGENT_ROUTES.AGENDA, icon: <FiCalendar />, label: 'Agenda' },
   { to: AGENT_ROUTES.SALES, icon: <FiDollarSign />, label: 'Ventas' },
