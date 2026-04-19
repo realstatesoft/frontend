@@ -16,6 +16,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
+import ClientMessagesPage from "../pages/ClientMessages/ClientMessagesPage";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
 import AgentProfilePage from "../pages/Agents/AgentProfilePage";
@@ -74,6 +75,7 @@ export default function AppRouter() {
                 <Route path="/clients/register" element={<RegisterClient />} />
                 <Route path="/clients/:id" element={<ClientProfilePage />} />
                 <Route path="/clients/:id/edit" element={<EditClient />} />
+                <Route path="/mensajes" element={<ClientMessagesPage />} />
 
             </Route>
 
