@@ -29,6 +29,10 @@ import AgendaPage from "../pages/Agenda/AgendaPage";
 import SalesPage from "../pages/Sales/SalesPage";
 import ReportsPage from "../pages/Reports/ReportsPage";
 import MessagesPage from "../pages/Messages/MessagesPage";
+import ContractsPage from "../pages/Contracts/ContractsPage";
+import ContractCreatePage from "../pages/Contracts/ContractCreatePage";
+import ContractEditPage from "../pages/Contracts/ContractEditPage";
+import ContractDetailPage from "../pages/Contracts/ContractDetailPage";
 
 // Owner Dashboard
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
@@ -44,6 +48,10 @@ import AdminDashboardPage from "../pages/Admin/AdminDashboardPage";
 import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
 import AdminNotificationsPage from "../pages/Admin/AdminNotificationsPage";
 import AdminAuditLogsPage from "../pages/Admin/AdminAuditLogsPage";
+import FlagsPage from "../pages/Admin/Flags/FlagsPage";
+import PreferencesPage from "../pages/PreferencesPage";
+
+import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
 
 export default function AppRouter() {
     return (
@@ -65,6 +73,7 @@ export default function AppRouter() {
                 <Route path="/properties/:id/edit" element={<CreateProperty />} />
                 <Route path="/properties/me" element={<MyProperties />} />
                 <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
+                <Route path="/preferences" element={<PreferencesPage />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
@@ -73,6 +82,7 @@ export default function AppRouter() {
                 <Route path="/clients/:id" element={<ClientProfilePage />} />
                 <Route path="/clients/:id/edit" element={<EditClient />} />
 
+                <Route path="/contratos/:id" element={<ContractDetailPage />} />
             </Route>
 
             {/* ── Rutas protegidas (Agent) ───────────────────────── */}
@@ -87,6 +97,10 @@ export default function AppRouter() {
                     <Route path="solicitudes-visita" element={<VisitRequests />} />
                     <Route path="agenda" element={<AgendaPage />} />
                     <Route path="ventas" element={<SalesPage />} />
+                    <Route path="contratos" element={<ContractsPage />} />
+                    <Route path="contratos/nuevo" element={<ContractCreatePage />} />
+                    <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="contratos/:id/editar" element={<ContractEditPage />} />
                     <Route path="reportes" element={<ReportsPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                 </Route>
@@ -108,12 +122,17 @@ export default function AppRouter() {
                 <Route path="/dashboard" element={<RoleRedirect />} />
 
                 {/* Admin Dashboard */}
+            </Route>
+
+            <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="dashboard" element={<AdminDashboardPage />} />
                     <Route path="approval" element={<PropertyApprovalPage />} />
                     <Route path="notifications" element={<AdminNotificationsPage />} />
                     <Route path="audit-logs" element={<AdminAuditLogsPage />} />
+                    <Route path="flags" element={<FlagsPage />} />
+                    <Route path="documents" element={<AdminDocumentsPage />} />
                 </Route>
             </Route>
 

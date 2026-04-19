@@ -9,7 +9,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import useUIStore from '../../../store/useUIStore';
 import styles from './Topbar.module.scss';
 
-export default function Topbar() {
+export default function Topbar({ extraActions }) {
   const { sidebarCollapsed, toggleSidebar, darkMode, toggleDarkMode } = useUIStore();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -65,6 +65,7 @@ export default function Topbar() {
       </div>
 
       <div className={styles.topbar__right}>
+        {extraActions}
         <button
           type="button"
           className={styles.topbar__iconBtn}

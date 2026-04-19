@@ -1,3 +1,4 @@
+import { useState, useEffect, useMemo } from "react";
 import {
   Container,
   Row,
@@ -15,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -24,7 +25,13 @@ import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { formatPrice } from "../../utils/priceFormat";
-import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard"
+import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
+import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
+import ReportUserModal from "../../components/users/ReportUserModal";
+import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
+import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
+import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
+import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -53,8 +60,14 @@ export default function ShowProperty() {
     PROPERTY_VISIBILITY_OPTIONS,
     similarProperties,
     loadingSimilar,
-    copyLink
+    copyLink,
+    activeFlagCount,
+    isAuthenticated,
+    fetchActiveFlagCount
   } = useShowProperty();
+
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showReportUserModal, setShowReportUserModal] = useState(false);
 
   const {
     canChangeStatus,
@@ -65,6 +78,63 @@ export default function ShowProperty() {
     isOwner: isPropertyOwner,
     isAdmin,
   } = usePropertyPermissions(property);
+
+  const [tourSubTab, setTourSubTab] = useState(null);
+  const [tourConfig, setTourConfig] = useState(null);
+  const [loadingConfig, setLoadingConfig] = useState(false);
+
+  // Resetear estados cuando cambia la propiedad (navegación entre propiedades similares)
+  useEffect(() => {
+    setTourSubTab(null);
+    setTourConfig(null);
+    setLoadingConfig(false);
+  }, [property?.id]);
+
+  // Determinar pestañas disponibles y subpestaña inicial
+  const hasModel = property?.media?.some(m => m.type === 'MODEL_3D');
+  const scenes360 = useMemo(() => {
+    return property?.media?.filter(m => m.type === 'IMAGE_360') || [];
+  }, [property?.media]);
+  const hasTour360 = property?.media?.some(m => m.type === 'VIRTUAL_TOUR_CONFIG') || scenes360.length > 0;
+
+  useEffect(() => {
+    if (!tourSubTab) {
+      if (hasTour360) setTourSubTab('tour360');
+      else if (hasModel) setTourSubTab('model3d');
+    }
+  }, [hasModel, hasTour360]);
+
+  // Cargar configuración de tour 360 si aplica
+  useEffect(() => {
+    const configMedia = property?.media?.find(m => m.type === 'VIRTUAL_TOUR_CONFIG');
+    if (configMedia?.url) {
+      setLoadingConfig(true);
+      fetch(configMedia.url)
+        .then(res => res.json())
+        .then(data => setTourConfig(data))
+        .catch(err => console.error("Error al cargar configuración 360:", err))
+        .finally(() => setLoadingConfig(false));
+    } else {
+      setTourConfig(null);
+    }
+  }, [property?.id, property?.media]);
+
+  // Generar config de respaldo si no hay una oficial pero sí hay fotos 360
+  // Usamos useMemo para evitar que el visor se reinicie en cada render del padre
+  const finalTourConfig = useMemo(() => {
+    if (tourConfig) return tourConfig;
+    if (!loadingConfig && scenes360.length > 0) {
+      return {
+        nodes: scenes360.map((m, idx) => ({
+          id: `media_${m.id || idx}`,
+          panorama: m.url,
+          name: m.title || `Habitación ${idx + 1}`,
+          links: []
+        }))
+      };
+    }
+    return null;
+  }, [tourConfig, loadingConfig, scenes360]);
 
   if (loading) {
     return (
@@ -104,51 +174,38 @@ export default function ShowProperty() {
         />
 
         <Container>
+          {activeFlagCount > 0 && (
+            <Alert variant="warning" className="d-flex align-items-center mb-4">
+              <Flag size={20} className="me-2" />
+              <span>Esta propiedad tiene reportes activos de otros usuarios. Procedé con precaución.</span>
+            </Alert>
+          )}
+
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h1>{property.title}</h1>
             <div className="d-flex gap-2 align-items-center mt-2">
-              {/* Estado general — ADMIN: funcional | Owner no-admin: visible pero deshabilitado con tooltip */}
-              {(canChangeStatus || (isPropertyOwner && !isAdmin)) && (
-                <OverlayTrigger
-                  placement="bottom"
-                  trigger={['hover', 'focus']}
-                  overlay={
-                    !canChangeStatus ? (
-                      <Tooltip id="tooltip-status">
-                        Solo administradores pueden cambiar el estado
-                      </Tooltip>
-                    ) : <span />}
-                >
-                  {/* span wrapper needed for disabled Dropdown to receive mouse events/focus for tooltip */}
-                  <span
-                    tabIndex={0}
-                    role="group"
-                    aria-describedby={!canChangeStatus ? "tooltip-status" : undefined}
-                  >
-                    <Dropdown as={ButtonGroup}>
-                      <Dropdown.Toggle
-                        size="sm"
-                        variant="success"
-                        disabled={!canChangeStatus}
-                        style={!canChangeStatus ? { pointerEvents: "none", opacity: 0.55 } : undefined}
-                      >
-                        {status.label}
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        {PROPERTY_STATUS_OPTIONS.map((option) => (
-                          <Dropdown.Item
-                            key={option.value}
-                            onClick={() => openChangeStatusConfirm(option)}
-                            disabled={!canChangeStatus}
-                          >
-                            {option.label}
-                          </Dropdown.Item>
-                        ))}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </span>
-                </OverlayTrigger>
+              {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
+              {(canChangeStatus || canEdit) && (
+                canChangeStatus ? (
+                  <Dropdown as={ButtonGroup}>
+                    <Dropdown.Toggle size="sm" variant="success">
+                      {status.label}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {PROPERTY_STATUS_OPTIONS.map((option) => (
+                        <Dropdown.Item
+                          key={option.value}
+                          onClick={() => openChangeStatusConfirm(option)}
+                        >
+                          {option.label}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                ) : (
+                  <PropertyStatusBadge status={status} />
+                )
               )}
 
               {/* Visibilidad — owner o ADMIN */}
@@ -170,7 +227,7 @@ export default function ShowProperty() {
                 </Dropdown>
               )}
 
-              {/* Editar — owner o ADMIN */}
+              {/* Editar — owner o ADMIN  */}
               {canEdit && (
                 <Button
                   size="sm"
@@ -428,30 +485,81 @@ export default function ShowProperty() {
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="tours">
-                    <h5 className="property__section-title">Tours y Planos</h5>
-                    <Row className="g-4 mt-1">
-                      {[
-                        {
-                          key: "tour3d",
-                          label: "Tour 3D 360°",
-                          Icon: CameraVideo,
-                        },
-                        {
-                          key: "planos",
-                          label: "Planos de la propiedad",
-                          Icon: FileText,
-                        },
-                      ].map(({ key, label, Icon }) => (
-                        <Col sm={6} key={key}>
-                          <div className="property__tour-card">
-                            <div className="mb-3">
-                              <Icon size={36} color="#555" />
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <h5 className="property__section-title mb-0">Recorridos e Interacción</h5>
+                      {(hasModel || hasTour360) && (
+                        <ButtonGroup size="sm">
+                          {hasTour360 && (
+                            <Button 
+                              variant={tourSubTab === 'tour360' ? 'primary' : 'outline-primary'}
+                              onClick={() => setTourSubTab('tour360')}
+                            >
+                              Tour 360°
+                            </Button>
+                          )}
+                          {hasModel && (
+                            <Button 
+                              variant={tourSubTab === 'model3d' ? 'primary' : 'outline-primary'}
+                              onClick={() => setTourSubTab('model3d')}
+                            >
+                              Plano 3D
+                            </Button>
+                          )}
+                        </ButtonGroup>
+                      )}
+                    </div>
+                    
+                    {/* Contenedor de Subpestañas */}
+                    <div className="property__tour-viewport">
+                      {tourSubTab === 'tour360' && (
+                        loadingConfig ? (
+                          <div className="d-flex flex-column align-items-center py-5">
+                            <Spinner animation="border" size="sm" className="mb-2" />
+                            <span className="text-muted">Iniciando recorrido...</span>
+                          </div>
+                        ) : finalTourConfig ? (
+                          <Property360Tour config={finalTourConfig} />
+                        ) : (
+                          <Alert variant="info">Cargando configuración del recorrido...</Alert>
+                        )
+                      )}
+
+                      {tourSubTab === 'model3d' && (
+                        property.media?.filter(m => m.type === 'MODEL_3D').map((model, idx) => (
+                          <PropertyModel3DViewer 
+                            key={model.id || model.url || idx}
+                            src={model.url}
+                            title={model.title || "Modelo 3D Interactivo"}
+                            poster={images[0]}
+                          />
+                        ))
+                      )}
+
+                      {/* Si no hay ninguno, mostrar empty state */}
+                      {!hasModel && !hasTour360 && (
+                        <div className="property__empty-3d">
+                          <div className="property__empty-3d-box">
+                            <CameraVideo size={48} className="mb-3 text-muted" />
+                            <p className="mb-1 fw-bold">No hay recorridos disponibles</p>
+                            <p className="text-muted small">Esta propiedad aún no cuenta con contenido 360 o modelos 3D.</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-4">
+                      <Row className="g-4">
+                        <Col sm={6}>
+                          <div className="property__tour-card property__tour-card--static">
+                            <div className="mb-2">
+                              <FileText size={28} color="#555" />
                             </div>
-                            <p className="property__tour-label">{label}</p>
+                            <p className="property__tour-label">Planos de la propiedad</p>
+                            <span className="text-muted small">Próximamente disponible</span>
                           </div>
                         </Col>
-                      ))}
-                    </Row>
+                      </Row>
+                    </div>
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="caracteristicas">
@@ -489,6 +597,29 @@ export default function ShowProperty() {
 
             <Col lg={4} className="mt-4 mt-lg-0">
               <PropertyContactCard property={property} />
+
+              {isAuthenticated && (
+                <div className="mt-4 text-center d-flex flex-column align-items-center gap-2">
+                  <Button 
+                    variant="link" 
+                    className="text-muted d-inline-flex align-items-center"
+                    onClick={() => setShowReportModal(true)}
+                    style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
+                  >
+                    <Flag className="me-2" /> Reportar propiedad
+                  </Button>
+                  {!isPropertyOwner && (property.ownerId || property.userId) && (
+                    <Button 
+                      variant="link" 
+                      className="text-muted d-inline-flex align-items-center"
+                      onClick={() => setShowReportUserModal(true)}
+                      style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
+                    >
+                      <Flag className="me-2" /> Reportar usuario
+                    </Button>
+                  )}
+                </div>
+              )}
             </Col>
           </Row>
           
@@ -514,6 +645,19 @@ export default function ShowProperty() {
           
         </Container>
       </div>
+
+      <ReportPropertyModal 
+        propertyId={property.id} 
+        isOpen={showReportModal} 
+        onClose={() => setShowReportModal(false)}
+        onSuccess={() => fetchActiveFlagCount && fetchActiveFlagCount()}
+      />
+
+      <ReportUserModal
+        reportedUser={{ id: property.ownerId || property.userId, name: property.ownerName || `Usuario #${property.ownerId || property.userId}` }}
+        open={showReportUserModal}
+        onClose={() => setShowReportUserModal(false)}
+      />
 
       <Footer />
     </>

@@ -5,6 +5,7 @@ export const AGENT_ROUTES = {
   VISIT_REQUESTS: '/agent/solicitudes-visita',
   AGENDA: '/agent/agenda',
   SALES: '/agent/ventas',
+  CONTRACTS: '/agent/contratos',
   REPORTS: '/agent/reportes',
   MESSAGES: '/agent/mensajes',
   CREATE_PROPERTY: '/create-property',
@@ -22,6 +23,8 @@ export const ADMIN_ROUTES = {
   DASHBOARD: '/admin/dashboard',
   APPROVAL: '/admin/approval',
   AUDIT_LOGS: '/admin/audit-logs',
+  FLAGS: '/admin/flags',
+  DOCUMENTS: '/admin/documents',
 };
 
 export const STATUS_COLORS = {

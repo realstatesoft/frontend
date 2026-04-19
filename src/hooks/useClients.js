@@ -28,7 +28,7 @@ export default function useClients() {
     internalType: "",
     createdAtFrom: "",
     createdAtTo: "",
-    sort: "createdAt,desc",
+    sort: "created_at,desc",
   });
 
   const fetchClients = useCallback(async () => {
