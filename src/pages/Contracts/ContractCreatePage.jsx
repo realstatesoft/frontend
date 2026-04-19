@@ -169,7 +169,8 @@ export default function ContractCreatePage() {
             setSellerName(prop.ownerName || '');
           }
         })
-        .catch(err => console.error("Error al pre-cargar oferta:", err));
+        .catch(err => console.error("Error al pre-cargar oferta:", err))
+        .finally(() => setIsPreFilling(false));
     }
   }, [location.search, isEditing, isPreFilling]);
 

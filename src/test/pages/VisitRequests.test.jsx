@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import VisitRequests from '../../pages/VisitRequests';
 
-vi.mock('../../../hooks/useAuth', () => ({
+vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({ user: { id: 1, role: 'AGENT' }, isAuthenticated: true }),
 }));
 

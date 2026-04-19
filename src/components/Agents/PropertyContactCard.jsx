@@ -69,6 +69,10 @@ export default function PropertyContactCard({ property }) {
 
   const whatsappUrl = getWhatsAppLink(phone);
 
+  const handleOfferSuccess = () => {
+    setShowOfferModal(false);
+  };
+
   if (loadingAgent) {
     return (
       <div
@@ -210,6 +214,7 @@ export default function PropertyContactCard({ property }) {
         show={showOfferModal}
         onHide={() => setShowOfferModal(false)}
         property={property}
+        onSuccess={handleOfferSuccess}
       />
     </>
   );

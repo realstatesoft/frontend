@@ -10,7 +10,7 @@ export const AGENT_ROUTES = {
   MESSAGES: '/agent/mensajes',
   OFFERS: '/agent/ofertas',
   CREATE_PROPERTY: '/create-property',
-  REGISTER_CLIENT: '/clients/register',
+  REGISTER_CLIENT: '/clientes/registrar',
 };
 
 export const OWNER_ROUTES = {

@@ -21,6 +21,7 @@ import {
   buildRoomsFromCounts,
   DIMENSION_OPTIONS,
 } from "../../constants/createPropertyConstants";
+import { parsePriceInput } from "../../utils/priceFormat";
 
 // ── Helpers de conversión ─────────────────────────────────────────────────────
 
@@ -214,7 +215,7 @@ export const propertyToForm = (property) => {
     locationId: property.locationId ?? null,
     description: property.description || "",
     propertyType: PROPERTY_TYPE_LABELS[property.propertyType] ?? "Casa",
-    price: property.price != null ? String(property.price).replace(/\D/g, "") : "",
+    price: property.price != null ? parsePriceInput(String(property.price)) : "",
     surfaceArea: property.surfaceArea != null ? String(property.surfaceArea) : "",
     builtArea: property.builtArea != null ? String(property.builtArea) : "",
     availability: AVAILABILITY_LABELS[property.availability] ?? "Inmediata",

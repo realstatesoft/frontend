@@ -67,6 +67,13 @@ export default function OfferManagementPage() {
     || ''
   ), []);
 
+  const escapeHtml = useCallback((value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;'), []);
+
   const getOfferBuyerEmail = useCallback((offer) => (
     offer?.buyerEmail
     || offer?.clientEmail
@@ -101,7 +108,7 @@ export default function OfferManagementPage() {
     const map = new Map();
 
     receivedPropertyIds.forEach((propertyId, index) => {
-      const queryData = propertyContractsQueries[index]?.data?.data;
+      const queryData = propertyContractsQueries[index]?.data;
       map.set(propertyId, Array.isArray(queryData) ? queryData : []);
     });
 
@@ -426,16 +433,22 @@ export default function OfferManagementPage() {
                           size="sm" 
                           className={styles.offersPage__btnDetail}
                           onClick={() => {
+                            const safePropertyTitle = escapeHtml(offer.propertyTitle);
+                            const safeMessage = escapeHtml(offer.message || 'Sin mensaje adicional.');
+                            const safeRejectionReason = offer.rejectionReason
+                              ? escapeHtml(offer.rejectionReason)
+                              : '';
+
                             Swal.fire({
                               title: 'Detalle de Oferta',
                               html: `
                                 <div class="text-start">
-                                  <p class="mb-2"><strong>Propiedad:</strong> ${offer.propertyTitle}</p>
+                                  <p class="mb-2"><strong>Propiedad:</strong> ${safePropertyTitle}</p>
                                   <p class="mb-2"><strong>Monto:</strong> <span class="text-primary fw-bold">₲ ${formatPrice(offer.amount.toString())}</span></p>
                                   <hr/>
                                   <p class="mb-0 text-muted"><strong>Mensaje:</strong></p>
-                                  <p class="mt-1">${offer.message || 'Sin mensaje adicional.'}</p>
-                                  ${offer.rejectionReason ? `<div class="mt-3 p-2 bg-danger-subtle rounded"><p class="mb-0 text-danger small"><strong>Motivo del rechazo:</strong></p><p class="mb-0 small">${offer.rejectionReason}</p></div>` : ''}
+                                  <p class="mt-1">${safeMessage}</p>
+                                  ${safeRejectionReason ? `<div class="mt-3 p-2 bg-danger-subtle rounded"><p class="mb-0 text-danger small"><strong>Motivo del rechazo:</strong></p><p class="mb-0 small">${safeRejectionReason}</p></div>` : ''}
                                 </div>
                               `,
                               confirmButtonText: 'Cerrar',

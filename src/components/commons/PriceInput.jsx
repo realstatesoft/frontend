@@ -12,30 +12,46 @@ import { formatPrice, parsePriceInput } from "../../utils/priceFormat";
 export default function PriceInput({
   value = "",
   onChange,
+  onBlur,
   placeholder = "0",
   className = "",
   disabled = false,
   ...rest
 }) {
-  const rawValue =
-    value === null || value === undefined ? "" : String(value).replace(/\D/g, "");
+  const rawValue = value === null || value === undefined ? "" : String(value);
   const displayValue = formatPrice(rawValue || "");
 
   const handleChange = useCallback(
     (e) => {
-      const rawDigits = parsePriceInput(e.target.value);
-      onChange?.({ target: { value: rawDigits } });
+      const normalizedValue = parsePriceInput(e.target.value);
+      onChange?.({ target: { value: normalizedValue } });
     },
     [onChange]
+  );
+
+  const handleBlur = useCallback(
+    (e) => {
+      const normalizedValue = parsePriceInput(e.target.value);
+      if (normalizedValue.includes(".")) {
+        const [integerPart, decimalPart = ""] = normalizedValue.split(".");
+        const normalizedWithTwoDecimals = `${integerPart}.${decimalPart
+          .padEnd(2, "0")
+          .slice(0, 2)}`;
+        onChange?.({ target: { value: normalizedWithTwoDecimals } });
+      }
+      onBlur?.(e);
+    },
+    [onBlur, onChange]
   );
 
   return (
     <Form.Control
       type="text"
-      inputMode="numeric"
+      inputMode="decimal"
       autoComplete="off"
       value={displayValue}
       onChange={handleChange}
+      onBlur={handleBlur}
       placeholder={placeholder}
       className={className}
       disabled={disabled}

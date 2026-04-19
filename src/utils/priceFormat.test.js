@@ -20,15 +20,25 @@ describe('priceFormat util', () => {
       expect(formatPrice('')).toBe('');
     });
 
-    it('removes non-digit characters before formatting', () => {
-      expect(formatPrice('abc1.2dc3')).toBe('123');
+    it('preserves valid decimal patterns while formatting', () => {
+      expect(formatPrice('abc1.2dc3')).toBe('1,23');
+    });
+
+    it('formats decimal values using locale separators', () => {
+      expect(formatPrice('1200.50')).toBe('1.200,50');
+      expect(formatPrice('1.200,5')).toBe('1.200,5');
     });
   });
 
   describe('parsePriceInput', () => {
-    it('removes non-digit characters to get raw number string', () => {
+    it('keeps integer values as raw number strings', () => {
       expect(parsePriceInput('350.000.000')).toBe('350000000');
-      expect(parsePriceInput(' $1,200.50 ')).toBe('120050');
+    });
+
+    it('normalizes decimal input instead of concatenating digits across the separator', () => {
+      expect(parsePriceInput(' $1,200.50 ')).toBe('1200.50');
+      expect(parsePriceInput('1.200,50')).toBe('1200.50');
+      expect(parsePriceInput('350000.567')).toBe('350000567');
     });
 
     it('returns empty string for null or empty input', () => {

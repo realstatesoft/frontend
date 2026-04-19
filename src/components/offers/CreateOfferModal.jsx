@@ -70,7 +70,11 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
       onSuccess?.();
       onHide();
     } catch (error) {
-      console.error('Error with offer:', error);
+      console.error('Error with offer:', {
+        message: error?.message,
+        status: error?.response?.status,
+        apiMessage: error?.response?.data?.message,
+      });
       Swal.fire('Error', error.response?.data?.message || 'No se pudo procesar la oferta. Intenta de nuevo.', 'error');
     } finally {
       setLoading(false);

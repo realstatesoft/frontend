@@ -102,16 +102,14 @@ describe('OfferManagementPage', () => {
   });
 
   it('oculta Generar Contrato cuando ya existe un contrato enviado para esa propiedad y comprador', async () => {
-    contractApi.getByProperty.mockResolvedValue({
-      data: [
-        {
-          id: 501,
-          propertyId: 11,
-          buyerName: 'Nicolas Ortiz',
-          status: 'SENT',
-        },
-      ],
-    });
+    contractApi.getByProperty.mockResolvedValue([
+      {
+        id: 501,
+        propertyId: 11,
+        buyerName: 'Nicolas Ortiz',
+        status: 'SENT',
+      },
+    ]);
 
     renderPage();
 
@@ -125,7 +123,7 @@ describe('OfferManagementPage', () => {
   });
 
   it('muestra Generar Contrato cuando no existe contrato activo para la oferta', async () => {
-    contractApi.getByProperty.mockResolvedValue({ data: [] });
+    contractApi.getByProperty.mockResolvedValue([]);
 
     renderPage();
 
@@ -135,7 +133,7 @@ describe('OfferManagementPage', () => {
   });
 
   it('muestra Contactar cuando la oferta aceptada trae un medio de contacto del comprador', async () => {
-    contractApi.getByProperty.mockResolvedValue({ data: [] });
+    contractApi.getByProperty.mockResolvedValue([]);
 
     renderPage();
 
@@ -144,7 +142,7 @@ describe('OfferManagementPage', () => {
   });
 
   it('no muestra Contactar cuando la oferta aceptada no tiene número de WhatsApp', async () => {
-    contractApi.getByProperty.mockResolvedValue({ data: [] });
+    contractApi.getByProperty.mockResolvedValue([]);
     offerApi.getReceivedOffers.mockResolvedValueOnce({
       data: {
         data: {
