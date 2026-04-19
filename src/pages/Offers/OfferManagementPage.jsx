@@ -403,14 +403,13 @@ export default function OfferManagementPage() {
                         {isReceived && offer.status === 'ACCEPTED' && contactLink && (
                           <Button
                             as="a"
-                            variant="outline-primary"
-                            size="sm"
+                            variant="success"
                             className={styles.offersPage__btnContact}
                             href={contactLink.href}
                             target={contactLink.external ? '_blank' : undefined}
                             rel={contactLink.external ? 'noopener noreferrer' : undefined}
                           >
-                            <Whatsapp size={15} />
+                            <Whatsapp size={18} />
                             Contactar
                           </Button>
                         )}

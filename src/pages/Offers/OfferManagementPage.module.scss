@@ -182,8 +182,20 @@
 
 .offersPage__btnContract {
   min-width: 152px;
-  font-weight: 600;
+  min-height: 40px;
+  @include flex-center;
+  padding: 0 20px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.85rem;
   white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+  }
 }
 
 .offersPage__btnAction {
@@ -200,21 +212,44 @@
 }
 
 .offersPage__btnContact {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: 124px;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 10px;
-  font-weight: 600;
+  gap: 10px; // Increased gap for a more airy feel
+  min-width: 140px;
+  min-height: 42px;
+  padding: 0 20px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.875rem;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  background: #25d366 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
+  text-decoration: none;
+  line-height: 1; // Helps with vertical centering
 
   &:hover {
-    transform: translateY(-1px);
+    background: #128c7e !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+    color: #ffffff !important;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    font-size: 1.2rem;
+    // Subtle nudge for visual center if needed (common for icons with text)
+    position: relative;
+    top: -1px; 
+    margin: 0;
   }
 }
 
