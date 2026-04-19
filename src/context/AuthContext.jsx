@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useCallback } from "react";
 import {
   getAccessToken,
   setAccessToken,
@@ -10,19 +10,40 @@ import {
   removeAccessToken,
 } from "../utils/authToken";
 import api from "../services/api";
+import { getUserPreferences } from "../services/preferencesService";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => getAccessToken());
   const [user, setUser] = useState(() => getUserInfo());
+  // null = no verificado aún, true/false = valor real del backend
+  const [preferencesCompleted, setPreferencesCompleted] = useState(null);
+
+  /**
+   * Carga el estado de onboarding en background tras login/register.
+   * @param {number} userId
+   */
+  const loadPreferencesStatus = useCallback(async (userId) => {
+    if (!userId) return;
+    try {
+      const prefs = await getUserPreferences(userId);
+      setPreferencesCompleted(prefs?.onboardingCompleted ?? false);
+    } catch (err) {
+      // 404 → el usuario no tiene preferencias todavía
+      if (err?.response?.status === 404) {
+        setPreferencesCompleted(false);
+      }
+      // Otros errores: dejamos null para no bloquear al usuario
+    }
+  }, []);
 
   /**
    * Llamar con el response del login/register.
-   * Espera: { accessToken, refreshToken, email, role }
+   * Espera: { accessToken, refreshToken, email, role, id, agentProfileId }
    */
   function login(responseData) {
-    const { accessToken, refreshToken, email, role, id } = responseData ?? {};
+    const { accessToken, refreshToken, email, role, id, agentProfileId } = responseData ?? {};
 
     if (!accessToken || typeof accessToken !== "string") {
       throw new Error("login(): accessToken inválido o ausente en el response");
@@ -31,7 +52,8 @@ export function AuthProvider({ children }) {
       throw new Error("login(): refreshToken inválido o ausente en el response");
     }
 
-    const userInfo = { email, role, userId: id };
+    // Integramos agentProfileId (de la rama OR-42-Contratos)
+    const userInfo = { email, role, userId: id, agentProfileId: agentProfileId ?? null };
 
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
@@ -39,6 +61,9 @@ export function AuthProvider({ children }) {
 
     setToken(accessToken);
     setUser(userInfo);
+
+    // Cargar estado de preferencias en background (de la rama dev)
+    loadPreferencesStatus(id);
   }
 
   /**
@@ -50,6 +75,7 @@ export function AuthProvider({ children }) {
     clearSession();
     setToken(null);
     setUser(null);
+    setPreferencesCompleted(null);
   }
 
   // --- FUNCIÓN DE REGISTRO ---
@@ -71,10 +97,30 @@ export function AuthProvider({ children }) {
     }
   }
 
+  /**
+   * Actualiza el campo preferencesCompleted en el estado global.
+   * Llamar tras guardar preferencias exitosamente.
+   * @param {boolean} value
+   */
+  function updatePreferencesCompleted(value) {
+    setPreferencesCompleted(value);
+  }
+
   const isAuthenticated = Boolean(token);
 
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated, login, logout, register }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        isAuthenticated,
+        preferencesCompleted,
+        login,
+        logout,
+        register,
+        updatePreferencesCompleted,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

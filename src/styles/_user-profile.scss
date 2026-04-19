@@ -77,6 +77,24 @@
     margin-bottom: 0;
 }
 
+.uprofile-badge {
+    font-size: 0.65em;
+    vertical-align: middle;
+    padding: 0.35em 0.6em;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.uprofile-badge--verified {
+    background-color: #198754; // bg-success
+    color: #fff;
+}
+
+.uprofile-badge--pending {
+    background-color: #ffc107; // bg-warning
+    color: #212529; // text-dark
+}
+
 .uprofile-email-icon {
     flex-shrink: 0;
 }

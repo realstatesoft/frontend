@@ -4,11 +4,15 @@ import OwnerQuickActions from '../../components/widgets/OwnerQuickActions/OwnerQ
 import UpsellBanner from '../../components/widgets/UpsellBanner/UpsellBanner';
 import PropertyViewsChart from '../../components/widgets/PropertyViewsChart/PropertyViewsChart';
 import useOwnerStats from '../../hooks/useOwnerStats';
+import { OWNER_TOUR_STEPS } from '../../data/tourSteps';
+import { useAutoStartTour } from '../../hooks/useAutoStartTour';
 import styles from './OwnerDashboardPage.module.scss';
 
 export default function OwnerDashboardPage() {
   const { data: response } = useOwnerStats();
   const stats = response?.data || {};
+
+  useAutoStartTour('owner', OWNER_TOUR_STEPS, 400);
 
   return (
     <div className={styles.dashboard}>
@@ -19,7 +23,7 @@ export default function OwnerDashboardPage() {
         </div>
       </div>
 
-      <div className={styles.dashboard__stats}>
+      <div className={styles.dashboard__stats} data-tour="dashboard-stats">
         <StatCard
           label="Mis Propiedades"
           value={stats.myProperties?.value ?? 0}
@@ -50,7 +54,9 @@ export default function OwnerDashboardPage() {
         />
       </div>
 
-      <OwnerQuickActions />
+      <div data-tour="quick-actions">
+        <OwnerQuickActions />
+      </div>
 
       <div className={styles.dashboard__grid}>
         <PropertyViewsChart />

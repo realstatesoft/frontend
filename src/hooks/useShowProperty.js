@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useAuth } from "./useAuth";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -12,6 +12,7 @@ import {
   PROPERTY_VISIBILITY_OPTIONS,
 } from "../constants/propertyEnums";
 import { PLACEHOLDER_IMAGES } from "../constants/showPropertyConstants";
+import propertyFlagsApi from "../services/propertyFlagsApi";
 
 const getErrorMessage = (err) =>
   err.response?.data?.message ??
@@ -42,6 +43,8 @@ export function useShowProperty() {
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmData, setConfirmData] = useState({});
+
+  const [activeFlagCount, setActiveFlagCount] = useState(0);
 
   const { user, isAuthenticated } = useAuth();
   const propertyOwnerId = property?.ownerId ?? property?.userId ?? null;
@@ -113,10 +116,28 @@ export function useShowProperty() {
       });
   }, [id]);
 
+  const fetchActiveFlagCount = useCallback(() => {
+    if (!id) {
+      setActiveFlagCount(0);
+      return;
+    }
+    propertyFlagsApi.getActiveFlagCount(id)
+      .then((data) => {
+         // data could be directly the number or JSON with data field
+         const count = typeof data === 'number' ? data : (data?.data ?? data?.count ?? 0);
+         setActiveFlagCount(count);
+      })
+      .catch(() => {
+        // Ignorar si falla el conteo
+        setActiveFlagCount(0);
+      });
+  }, [id]);
+
   useEffect(() => {
     fetchProperty();
     fetchSimilar();
-  }, [fetchProperty, fetchSimilar]);
+    fetchActiveFlagCount();
+  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -265,11 +286,13 @@ export function useShowProperty() {
   };
 
   // Valores derivados para la UI
-  const images = property?.media?.length
-    ? property.media
-        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
-        .map((m) => m.url)
-    : PLACEHOLDER_IMAGES;
+  const images = useMemo(() => {
+    const filtered = property?.media?.filter((m) => m.type === "IMAGE") || [];
+    if (filtered.length === 0) return PLACEHOLDER_IMAGES;
+    return filtered
+      .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
+      .map((m) => m.url);
+  }, [property?.media]);
 
   const features = buildFeaturesFromProperty(property);
   const priceFormatted = property?.price != null ? `₲ ${formatPrice(String(property.price))}` : "";
@@ -285,6 +308,7 @@ export function useShowProperty() {
     actionLoading,
     error,
     isOwner,
+    isAuthenticated,
     status,
     visibility,
     showConfirm,
@@ -305,6 +329,8 @@ export function useShowProperty() {
     loadingSimilar,
     similarProperties,
     similarError,
-    copyLink
+    copyLink,
+    activeFlagCount,
+    fetchActiveFlagCount
   };
 }

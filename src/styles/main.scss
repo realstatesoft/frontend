@@ -30,11 +30,20 @@
 // User Profile
 @import "./user-profile";
 
+// Documents Section
+@import "./documents-section";
+
 // CRM client interactions
 @import "./client-interactions";
 
 // Admin Notifications
 @import "./AdminNotifications";
+
+// User Preferences Module
+@import "./preferences";
+
+// Admin KYC
+@import "./admin-kyc";
 
 body {
   text-align: left;

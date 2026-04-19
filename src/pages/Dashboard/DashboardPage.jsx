@@ -5,11 +5,15 @@ import SalesPerformanceChart from '../../components/widgets/SalesPerformanceChar
 import UpcomingAppointments from '../../components/widgets/UpcomingAppointments/UpcomingAppointments';
 import useAgentStats from '../../hooks/useAgentStats';
 import { formatCurrency } from '../../utils/formatters';
+import { AGENT_TOUR_STEPS } from '../../data/tourSteps';
+import { useAutoStartTour } from '../../hooks/useAutoStartTour';
 import styles from './DashboardPage.module.scss';
 
 export default function DashboardPage() {
   const { data: response } = useAgentStats();
   const stats = response?.data || {};
+
+  useAutoStartTour('agent', AGENT_TOUR_STEPS, 400);
 
   return (
     <div className={styles.dashboard}>
@@ -20,7 +24,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className={styles.dashboard__stats}>
+      <div className={styles.dashboard__stats} data-tour="dashboard-stats">
         <StatCard
           label="Clientes Activos"
           value={stats.activeClients?.value ?? 0}
@@ -51,7 +55,9 @@ export default function DashboardPage() {
         />
       </div>
 
-      <QuickActions />
+      <div data-tour="quick-actions">
+        <QuickActions />
+      </div>
 
       <div className={styles.dashboard__grid}>
         <SalesPerformanceChart />

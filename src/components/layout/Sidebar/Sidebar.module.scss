@@ -100,6 +100,11 @@
   transition: opacity 0.2s ease;
 }
 
+.sidebar__logo-img {
+  height: 106px;
+  width: auto;
+}
+
 .sidebar__nav {
   @include flex-column;
   flex: 1;
