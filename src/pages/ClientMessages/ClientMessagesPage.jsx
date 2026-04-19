@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FiSend, FiUser, FiPlus } from 'react-icons/fi';
+import { FiSend, FiUser, FiPlus, FiArrowLeft } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
 import Button from '../../components/common/Button/Button';
 import NewConversationModal from '../../components/messages/NewConversationModal';
+import CustomNavbar from '../../components/Landing/Navbar';
 import styles from './ClientMessagesPage.module.scss';
 
 function InboxList({ conversations, activeId, onSelect }) {
@@ -131,45 +133,60 @@ export default function ClientMessagesPage() {
   const conversations = response?.data || [];
   const [activeConversation, setActiveConversation] = useState(null);
   const [showNewConvModal, setShowNewConvModal] = useState(false);
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.page__loading}>Cargando mensajes...</div>
+      <div className={styles.wrapper}>
+        <CustomNavbar />
+        <div className={styles.page}>
+          <div className={styles.page__loading}>Cargando mensajes...</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.page__header}>
-        <div>
-          <h1 className={styles.page__title}>Mensajes</h1>
-          <p className={styles.page__subtitle}>Comunicación con agentes</p>
+    <div className={styles.wrapper}>
+      <CustomNavbar />
+      <div className={styles.page}>
+        <div className={styles.page__header}>
+          <button
+            type="button"
+            className={styles.page__back}
+            onClick={() => navigate(-1)}
+            aria-label="Volver"
+          >
+            <FiArrowLeft size={18} />
+          </button>
+          <div className={styles.page__headerText}>
+            <h1 className={styles.page__title}>Mensajes</h1>
+            <p className={styles.page__subtitle}>Comunicación con agentes</p>
+          </div>
+          <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={() => setShowNewConvModal(true)}
+          >
+            <FiPlus className="me-1" /> Nueva conversación
+          </Button>
         </div>
-        <Button
-          variant="outline-primary"
-          size="sm"
-          onClick={() => setShowNewConvModal(true)}
-        >
-          <FiPlus className="me-1" /> Nueva conversación
-        </Button>
-      </div>
 
-      <div className={styles.page__body}>
-        <InboxList
-          conversations={conversations}
-          activeId={activeConversation?.id}
-          onSelect={setActiveConversation}
+        <div className={styles.page__body}>
+          <InboxList
+            conversations={conversations}
+            activeId={activeConversation?.id}
+            onSelect={setActiveConversation}
+          />
+          <ConversationPanel conversation={activeConversation} />
+        </div>
+
+        <NewConversationModal
+          isOpen={showNewConvModal}
+          onClose={() => setShowNewConvModal(false)}
+          onSuccess={() => refetch()}
         />
-        <ConversationPanel conversation={activeConversation} />
       </div>
-
-      <NewConversationModal
-        isOpen={showNewConvModal}
-        onClose={() => setShowNewConvModal(false)}
-        onSuccess={() => refetch()}
-      />
     </div>
   );
 }

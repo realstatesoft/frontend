@@ -23,6 +23,7 @@ import {
   IoShieldOutline,
   IoNotificationsOutline,
   IoCheckmarkDoneOutline,
+  IoChatbubblesOutline,
 } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -184,6 +185,16 @@ function CustomNavbar() {
                   <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> Mis preferencias
                   </Link>
+                  {!isAgent && !isAdmin && (
+                    <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> Mis mensajes
+                      {messagesUnread > 0 && (
+                        <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
+                          {messagesUnread}
+                        </span>
+                      )}
+                    </Link>
+                  )}
                   {user?.role?.toUpperCase() === "ADMIN" && (
                     <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> Panel de administración
