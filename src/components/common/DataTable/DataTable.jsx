@@ -73,7 +73,7 @@ export default function DataTable({
             </tr>
           ) : (
             data.map((row, idx) => (
-              <tr key={rowKey ? rowKey(row) : (row.id ?? idx)} className={styles.dataTable__row}>
+              <tr key={rowKey ? rowKey(row) : `row-${row.id || idx}-${idx}`} className={styles.dataTable__row}>
                 {columns.map((col) => (
                   <td key={col.key} className={styles.dataTable__td}>
                     {col.render ? col.render(row[col.key], row) : row[col.key]}

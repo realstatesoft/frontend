@@ -85,6 +85,16 @@ export async function createExternalClient(data) {
 }
 
 /**
+ * Vincula un usuario existente como cliente del agente.
+ * @param {Object} data - Datos con agentId, userId, y preferencias
+ * @returns {Promise<Object>} AgentClient creado
+ */
+export async function createAgentClient(data) {
+  const response = await api.post("/agent-clients", data);
+  return response.data?.data ?? response.data;
+}
+
+/**
  * Elimina un cliente externo.
  * @param {number} id - ID del ExternalClient
  * @returns {Promise<void>}
@@ -110,6 +120,7 @@ export default {
   getExternalClientProfile,
   updateExternalClientProfile,
   createExternalClient,
+  createAgentClient,
   deleteExternalClient,
   searchClients,
   deleteClient,

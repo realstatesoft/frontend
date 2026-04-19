@@ -2,11 +2,13 @@
 
 .page {
   @include flex-column;
+
   gap: var(--spacing-xl);
 }
 
 .page__header {
   @include flex-between;
+
   flex-wrap: wrap;
   gap: var(--spacing-md);
 }
@@ -25,8 +27,12 @@
 
 .page__stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-md);
+
+  @include responsive(tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   @include responsive(mobile) {
     grid-template-columns: 1fr;
@@ -35,5 +41,132 @@
 
 .page__card {
   @include glass-card;
+
   padding: var(--spacing-lg);
+}
+
+.page__toolbar {
+  @include flex-between;
+
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.page__sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.page__filter {
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-surface, #fff);
+  color: var(--color-text-primary);
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: var(--color-accent);
+  }
+}
+
+// ─── Chart ────────────────────────────────────────────────────────────────────
+
+.chart {
+  @include glass-card;
+
+  padding: var(--spacing-lg);
+}
+
+.chart__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md);
+}
+
+.chart__bars {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--spacing-sm);
+  align-items: end;
+  min-height: 180px;
+
+  @include responsive(mobile) {
+    grid-template-columns: repeat(3, 1fr);
+    min-height: 140px;
+  }
+}
+
+.chart__col {
+  @include flex-column;
+
+  align-items: center;
+  gap: 4px;
+}
+
+.chart__barWrap {
+  width: 100%;
+  max-width: 48px;
+  height: 140px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  @include responsive(mobile) {
+    height: 100px;
+  }
+}
+
+.chart__bar {
+  width: 100%;
+  background: var(--color-accent);
+  border-radius: 6px 6px 0 0;
+  min-height: 3px;
+  transition: height 0.4s ease;
+}
+
+.chart__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.chart__value {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.chart__comm {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-success, #22c55e);
+}
+
+// ─── Table cell helpers ───────────────────────────────────────────────────────
+
+.sales__propName {
+  font-weight: 500;
+  color: var(--color-text-primary);
+
+  @include text-ellipsis;
+
+  max-width: 140px;
+  display: block;
+}
+
+.sales__amount {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.sales__commission {
+  font-weight: 600;
+  color: var(--color-success, #22c55e);
 }
