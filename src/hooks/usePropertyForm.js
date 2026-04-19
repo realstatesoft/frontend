@@ -71,6 +71,7 @@ export function usePropertyForm(propertyId) {
   const userId = user?.userId ?? getUserInfo()?.userId;
 
   const [form, setForm] = useState(getInitialForm);
+  const [ownerClientId, setOwnerClientId] = useState(null); // Long: userId del cliente propietario (solo agentes)
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(isEditMode);
   const [error, setError] = useState(null);
@@ -540,7 +541,13 @@ export function usePropertyForm(propertyId) {
             });
           }
         } else {
-          const payload = buildCreatePropertyPayload(form, { ownerId: userId });
+          // Si el agente seleccionó un cliente propietario, se usa su userId; si no, usa el suyo propio.
+          const effectiveOwnerId = ownerClientId ?? userId;
+          const agentProfileId = user?.agentProfileId ?? getUserInfo()?.agentProfileId ?? undefined;
+          const payload = buildCreatePropertyPayload(form, {
+            ownerId: effectiveOwnerId,
+            agentId: agentProfileId,
+          });
           const { data } = await propertyApi.create(payload);
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -569,7 +576,7 @@ export function usePropertyForm(propertyId) {
         setLoading(false);
       }
     },
-    [form, isEditMode, propertyId, navigate, userId, validateForm]
+    [form, ownerClientId, isEditMode, propertyId, navigate, userId, user, validateForm]
   );
 
   const dismissError = useCallback(() => setError(null), []);
@@ -580,6 +587,8 @@ export function usePropertyForm(propertyId) {
     fetchLoading,
     error,
     isEditMode,
+    ownerClientId,
+    setOwnerClient: setOwnerClientId,
     set,
     setArr,
     setFloorsCount,

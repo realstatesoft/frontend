@@ -40,10 +40,10 @@ export function AuthProvider({ children }) {
 
   /**
    * Llamar con el response del login/register.
-   * Espera: { accessToken, refreshToken, email, role, id }
+   * Espera: { accessToken, refreshToken, email, role, id, agentProfileId }
    */
   function login(responseData) {
-    const { accessToken, refreshToken, email, role, id } = responseData ?? {};
+    const { accessToken, refreshToken, email, role, id, agentProfileId } = responseData ?? {};
 
     if (!accessToken || typeof accessToken !== "string") {
       throw new Error("login(): accessToken inválido o ausente en el response");
@@ -52,7 +52,8 @@ export function AuthProvider({ children }) {
       throw new Error("login(): refreshToken inválido o ausente en el response");
     }
 
-    const userInfo = { email, role, userId: id };
+    // Integramos agentProfileId (de la rama OR-42-Contratos)
+    const userInfo = { email, role, userId: id, agentProfileId: agentProfileId ?? null };
 
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
@@ -61,7 +62,7 @@ export function AuthProvider({ children }) {
     setToken(accessToken);
     setUser(userInfo);
 
-    // Cargar estado de preferencias en background
+    // Cargar estado de preferencias en background (de la rama dev)
     loadPreferencesStatus(id);
   }
 
@@ -92,7 +93,7 @@ export function AuthProvider({ children }) {
       if (error.response) {
         throw new Error(error.response.data?.message || "Error al registrar el usuario");
       }
-      throw error;
+      throw error; // Lanzamos el error para que el SignUp.jsx lo atrape y muestre un alert
     }
   }
 
@@ -123,4 +124,4 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-}
+}

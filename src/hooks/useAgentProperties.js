@@ -4,7 +4,7 @@ import propertyService from '../services/propertyService';
 export default function useAgentProperties(params = {}) {
   return useQuery({
     queryKey: ['agentProperties', params],
-    queryFn: () => propertyService.getAll(params),
+    queryFn: () => propertyService.getAgentScope(params),
     staleTime: 1000 * 60 * 3,
     retry: 1,
     select: (response) => {
