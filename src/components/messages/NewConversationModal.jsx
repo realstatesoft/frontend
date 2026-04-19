@@ -136,7 +136,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
                   <ListGroup.Item
                     key={agent.id}
                     action
-                    onClick={() => handleSelectContact({ id: agent.userId, ...agent })}
+                    onClick={() => handleSelectContact({ ...agent, id: agent.userId })}
                     className={styles.contactItem}
                   >
                     <div className={styles.avatar}>{getContactInitials(agent)}</div>
@@ -164,7 +164,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
                   <ListGroup.Item
                     key={client.id}
                     action
-                    onClick={() => handleSelectContact({ id: client.userId || client.id, ...client })}
+                    onClick={() => handleSelectContact({ ...client, id: client.userId || client.id })}
                     className={styles.contactItem}
                   >
                     <div className={styles.avatar}>{getContactInitials(client)}</div>
