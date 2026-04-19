@@ -5,8 +5,8 @@ export function useConversations() {
   return useQuery({
     queryKey: ['conversations'],
     queryFn: messageService.getConversations,
-    staleTime: 1000 * 30,
-    refetchInterval: 30000,
+    staleTime: 1000 * 5,
+    refetchInterval: 8000,
   });
 }
 
@@ -15,8 +15,8 @@ export function useMessages(conversationId) {
     queryKey: ['messages', conversationId],
     queryFn: () => messageService.getMessages(conversationId),
     enabled: !!conversationId,
-    staleTime: 1000 * 15,
-    refetchInterval: 30000,
+    staleTime: 1000 * 2,
+    refetchInterval: 3000,
   });
 }
 
@@ -46,8 +46,8 @@ export function useUnreadMessagesCount() {
   return useQuery({
     queryKey: ['conversations', 'unread-count'],
     queryFn: messageService.getUnreadCount,
-    staleTime: 1000 * 30,
-    refetchInterval: 30000,
+    staleTime: 1000 * 5,
+    refetchInterval: 8000,
   });
 }
 
