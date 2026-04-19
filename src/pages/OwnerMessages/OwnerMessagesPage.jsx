@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { FiSend, FiUser } from 'react-icons/fi';
+import { FiSend, FiUser, FiPlus } from 'react-icons/fi';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
 import Button from '../../components/common/Button/Button';
+import NewConversationModal from '../../components/messages/NewConversationModal';
 import styles from './OwnerMessagesPage.module.scss';
 
 function InboxList({ conversations, activeId, onSelect }) {
@@ -126,9 +127,10 @@ function ConversationPanel({ conversation }) {
 }
 
 export default function OwnerMessagesPage() {
-  const { data: response, isLoading } = useConversations();
+  const { data: response, isLoading, refetch } = useConversations();
   const conversations = response?.data || [];
   const [activeConversation, setActiveConversation] = useState(null);
+  const [showNewConvModal, setShowNewConvModal] = useState(false);
 
   if (isLoading) {
     return (
@@ -143,6 +145,13 @@ export default function OwnerMessagesPage() {
       <div className={styles.page__header}>
         <h1 className={styles.page__title}>Mensajes</h1>
         <p className={styles.page__subtitle}>Comunicación con tu agente</p>
+        <Button 
+          variant="outline-primary" 
+          size="sm"
+          onClick={() => setShowNewConvModal(true)}
+        >
+          <FiPlus className="me-1" /> Nueva conversación
+        </Button>
       </div>
 
       <div className={styles.page__body}>
@@ -153,6 +162,12 @@ export default function OwnerMessagesPage() {
         />
         <ConversationPanel conversation={activeConversation} />
       </div>
+
+      <NewConversationModal
+        isOpen={showNewConvModal}
+        onClose={() => setShowNewConvModal(false)}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

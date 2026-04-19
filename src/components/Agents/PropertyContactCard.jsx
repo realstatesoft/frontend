@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Button, Image, Spinner } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
+import { FiMessageSquare } from "react-icons/fi";
 import agentApi from "../../services/agents/agentApi";
 import { getWhatsAppLink } from "../../utils/whatsapp";
 import CreateVisitModal from "../visits/CreateVisitModal";
+import NewConversationModal from "../messages/NewConversationModal";
 import Swal from "sweetalert2";
 
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
@@ -17,6 +19,7 @@ export default function PropertyContactCard({ property }) {
   const [agent, setAgent] = useState(null);
   const [loadingAgent, setLoadingAgent] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
   const hasAgent = Boolean(property?.agentId);
 
@@ -161,6 +164,16 @@ export default function PropertyContactCard({ property }) {
         </Button>
 
         <Button
+          variant="outline-primary"
+          className="w-100 mb-2"
+          style={{ borderRadius: "8px" }}
+          onClick={() => setShowMessageModal(true)}
+        >
+          <FiMessageSquare className="me-2" />
+          Enviar mensaje
+        </Button>
+
+        <Button
           variant="dark"
           className="w-100"
           style={{ borderRadius: "8px" }}
@@ -184,6 +197,25 @@ export default function PropertyContactCard({ property }) {
             showConfirmButton: false,
           })
         }
+      />
+
+      <NewConversationModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        preSelectedAgent={{
+          id: agent?.userId || property?.agentId,
+          name: name,
+          email: agent?.userEmail,
+        }}
+        onSuccess={() => {
+          Swal.fire({
+            icon: "success",
+            title: "¡Mensaje enviado!",
+            text: "Tu mensaje ha sido enviado correctamente.",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }}
       />
     </>
   );
