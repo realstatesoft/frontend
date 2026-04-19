@@ -75,7 +75,7 @@ export default function AppRouter() {
                 <Route path="/clients/register" element={<RegisterClient />} />
                 <Route path="/clients/:id" element={<ClientProfilePage />} />
                 <Route path="/clients/:id/edit" element={<EditClient />} />
-                <Route path="/mensajes" element={<ClientMessagesPage />} />
+                <Route path="mensajes" element={<ClientMessagesPage />} />
 
             </Route>
 
