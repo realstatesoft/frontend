@@ -83,9 +83,9 @@ function ConversationPanel({ conversation }) {
           <div
             key={msg.id}
             className={`${styles.conversation__bubble} ${
-              msg.sender === 'agent'
-                ? styles['conversation__bubble--agent']
-                : styles['conversation__bubble--client']
+              msg.ownMessage
+                ? styles['conversation__bubble--own']
+                : styles['conversation__bubble--other']
             }`}
           >
             {msg.text}
