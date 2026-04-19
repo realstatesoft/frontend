@@ -145,9 +145,9 @@
   }
 
   &--active {
-    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
 
-    border-left: 3px solid var(--color-primary);
+    border-left: 3px solid var(--color-accent);
   }
 }
 
@@ -160,7 +160,7 @@
 
   border-radius: 50%;
 
-  background: var(--color-primary);
+  background: var(--color-accent);
 
   color: #fff;
 
@@ -214,7 +214,7 @@
 
   border-radius: 50%;
 
-  background: var(--color-primary);
+  background: var(--color-accent);
 
   color: #fff;
 
@@ -282,7 +282,7 @@
 
   &--own {
     align-self: flex-end;
-    background: var(--color-primary);
+    background: var(--color-accent);
     color: #fff;
     border-bottom-right-radius: 4px;
   }
@@ -345,7 +345,7 @@
   }
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-accent);
   }
 
   &:disabled {
