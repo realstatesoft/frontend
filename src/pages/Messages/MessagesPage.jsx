@@ -21,7 +21,9 @@ function InboxList({ conversations, activeId, onSelect }) {
             <div className={styles.inbox__avatar}>{conv.avatar}</div>
             <div className={styles.inbox__info}>
               <p className={styles.inbox__name}>{conv.contactName}</p>
-              <p className={styles.inbox__preview}>{conv.lastMessage}</p>
+              <p className={styles.inbox__preview}>
+                {conv.lastMessageOwn ? `Tu: ${conv.lastMessage}` : conv.lastMessage}
+              </p>
             </div>
             <div className={styles.inbox__meta}>
               <span className={styles.inbox__time}>{formatTime(conv.timestamp)}</span>
