@@ -47,6 +47,7 @@ import PropertyApprovalPage from "../pages/Admin/PropertyApprovalPage";
 import AdminDashboardPage from "../pages/Admin/AdminDashboardPage";
 import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
 import AdminNotificationsPage from "../pages/Admin/AdminNotificationsPage";
+import AdminAuditLogsPage from "../pages/Admin/AdminAuditLogsPage";
 import FlagsPage from "../pages/Admin/Flags/FlagsPage";
 import PreferencesPage from "../pages/PreferencesPage";
 
@@ -129,6 +130,7 @@ export default function AppRouter() {
                     <Route path="dashboard" element={<AdminDashboardPage />} />
                     <Route path="approval" element={<PropertyApprovalPage />} />
                     <Route path="notifications" element={<AdminNotificationsPage />} />
+                    <Route path="audit-logs" element={<AdminAuditLogsPage />} />
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
                 </Route>

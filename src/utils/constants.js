@@ -22,6 +22,7 @@ export const OWNER_ROUTES = {
 export const ADMIN_ROUTES = {
   DASHBOARD: '/admin/dashboard',
   APPROVAL: '/admin/approval',
+  AUDIT_LOGS: '/admin/audit-logs',
   FLAGS: '/admin/flags',
   DOCUMENTS: '/admin/documents',
 };
