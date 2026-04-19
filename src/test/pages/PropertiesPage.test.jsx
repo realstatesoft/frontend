@@ -18,7 +18,7 @@ vi.mock('../../services/properties/propertyApi', () => ({
 }));
 
 describe('PropertiesPage', () => {
-  it('renders the properties search section', () => {
+  it('renders the properties search section', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -27,6 +27,6 @@ describe('PropertiesPage', () => {
       </QueryClientProvider>
     );
 
-    expect(screen.getByPlaceholderText(/Buscar por ubicación/i)).toBeInTheDocument();
+    expect(await screen.findByPlaceholderText(/Buscar por ubicación/i)).toBeInTheDocument();
   });
 });

@@ -46,10 +46,10 @@ describe('QuickActions', () => {
   });
 
   describe('rutas de navegación', () => {
-    it('el enlace "Nuevo Cliente" apunta a /clients/register', () => {
+    it('el enlace "Nuevo Cliente" apunta a /clientes/registrar', () => {
       renderQuickActions();
       const link = screen.getByRole('link', { name: /nuevo cliente/i });
-      expect(link).toHaveAttribute('href', '/clients/register');
+      expect(link).toHaveAttribute('href', '/clientes/registrar');
     });
 
     it('el enlace "Nueva Propiedad" apunta a /create-property', () => {

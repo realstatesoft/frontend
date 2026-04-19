@@ -66,7 +66,8 @@ export default function ContractEditPage() {
       contractType:              contract.contractType ?? 'SALE',
       listingAgentId:            contract.listingAgentId ?? '',
       buyerAgentId:              contract.buyerAgentId ?? '',
-      amount:                    contract.amount ?? '',
+      amount:                    contract.amount ? Math.floor(contract.amount) : '', // PriceInput expects integer values
+
       commissionPct:             contract.commissionPct ?? '3.00',
       listingAgentCommissionPct: contract.listingAgentCommissionPct ?? '3.00',
       buyerAgentCommissionPct:   contract.buyerAgentCommissionPct ?? '0.00',
@@ -293,6 +294,7 @@ export default function ContractEditPage() {
                   name="amount"
                   className={styles.form__input}
                   value={form.amount}
+                  // PriceInput handles formatting; we ensure the value passed to handleChange is what we want to store/submit
                   onChange={(e) => handleChange({ target: { name: 'amount', value: e.target.value } })}
                   placeholder="0"
                 />

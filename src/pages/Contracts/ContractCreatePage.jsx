@@ -454,7 +454,7 @@ export default function ContractCreatePage() {
   };
 
   const availableClauses = getClausesForType(form.contractType);
-  const isPending = createContract.isPending || updateStatus.isPending;
+  const isPending = createContract.isPending || updateContract.isPending || updateStatus.isPending;
 
   const pageContent = (
     <div className={`${styles.page} ${isPublicContractsFlow ? styles['page--public'] : ''}`}>

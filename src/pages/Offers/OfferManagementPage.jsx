@@ -240,7 +240,7 @@ export default function OfferManagementPage() {
 
   useEffect(() => {
     fetchOffers();
-  }, []);
+  }, [role]);
 
   const handlePageChange = (tab, newPage) => {
     setActiveTab(tab);
