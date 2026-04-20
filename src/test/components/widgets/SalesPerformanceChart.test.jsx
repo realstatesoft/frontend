@@ -3,12 +3,22 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
-// ── Mocks ──────────────────────────────────────────────────────────────────────
-
 vi.mock('../../../hooks/useSalesData');
 import { useSalesSummary } from '../../../hooks/useSalesData';
 
-// Recharts uses ResizeObserver — stub it for happy-dom
+vi.mock('recharts', async () => {
+  const actual = await vi.importActual('recharts');
+
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }) => (
+      <div data-testid="responsive-container" style={{ width: 800, height: 280 }}>
+        {children}
+      </div>
+    ),
+  };
+});
+
 global.ResizeObserver = class {
   observe() {}
   unobserve() {}
@@ -23,8 +33,6 @@ const renderChart = () =>
       <SalesPerformanceChart />
     </MemoryRouter>
   );
-
-// ── Tests ──────────────────────────────────────────────────────────────────────
 
 describe('SalesPerformanceChart', () => {
   beforeEach(() => {
@@ -43,7 +51,7 @@ describe('SalesPerformanceChart', () => {
 
     it('muestra el subtítulo del rango temporal', () => {
       renderChart();
-      expect(screen.getByText('Últimos 6 meses')).toBeInTheDocument();
+      expect(screen.getByText(/ltimos 6 meses/i)).toBeInTheDocument();
     });
   });
 

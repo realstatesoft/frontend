@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiSave, FiSend } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import { getAllAgents } from '../../services/agents/agentApi';
+import PriceInput from '../../components/commons/PriceInput';
 import { useContractDetail, useUpdateContract, useUpdateContractStatus } from '../../hooks/useContracts';
 import {
   CONTRACT_TYPE_OPTIONS,
@@ -70,7 +71,8 @@ export default function ContractEditPage() {
       contractType:              contract.contractType ?? 'SALE',
       listingAgentId:            contract.listingAgentId ?? '',
       buyerAgentId:              contract.buyerAgentId ?? '',
-      amount:                    contract.amount ?? '',
+      amount:                    contract.amount ? Math.floor(contract.amount) : '', // PriceInput expects integer values
+
       commissionPct:             contract.commissionPct ?? '3.00',
       listingAgentCommissionPct: contract.listingAgentCommissionPct ?? '3.00',
       buyerAgentCommissionPct:   contract.buyerAgentCommissionPct ?? '0.00',
@@ -342,15 +344,14 @@ export default function ContractEditPage() {
                 <label className={styles.form__label} htmlFor="ce-amount">
                   Monto (USD) <span className={styles.form__required}>*</span>
                 </label>
-                <input
+                <PriceInput
                   id="ce-amount"
-                  type="number"
                   name="amount"
                   className={styles.form__input}
                   value={form.amount}
-                  onChange={handleChange}
-                  min="0"
-                  step="0.01"
+                  // PriceInput handles formatting; we ensure the value passed to handleChange is what we want to store/submit
+                  onChange={(e) => handleChange({ target: { name: 'amount', value: e.target.value } })}
+                  placeholder="0"
                 />
               </div>
             </div>

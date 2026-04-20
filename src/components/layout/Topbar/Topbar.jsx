@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { FiBell, FiHome, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
 import { CiUser } from 'react-icons/ci';
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline } from 'react-icons/io5';
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoCashOutline } from 'react-icons/io5';
 import { MdFavoriteBorder } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
@@ -43,6 +43,12 @@ export default function Topbar({ extraActions }) {
     styles.topbar,
     sidebarCollapsed && styles['topbar--collapsed'],
   ].filter(Boolean).join(' ');
+
+  const getOffersLink = () => {
+    if (user?.role === 'AGENT') return '/agent/ofertas';
+    if (user?.role === 'OWNER') return '/owner/ofertas';
+    return '/ofertas';
+  };
 
   return (
     <header className={topbarClass}>
@@ -96,6 +102,9 @@ export default function Topbar({ extraActions }) {
             <div className="profile-dropdown-menu">
               <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <CiUser size={17} style={{ flexShrink: 0 }} /> Mi perfil
+              </Link>
+              <Link to={getOffersLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <IoCashOutline size={16} style={{ flexShrink: 0 }} /> Mis Ofertas
               </Link>
               <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <IoHomeOutline size={16} style={{ flexShrink: 0 }} /> Mis propiedades

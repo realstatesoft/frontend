@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { FiHome, FiEye, FiMessageSquare } from 'react-icons/fi';
+import { FiHome, FiEye, FiMessageSquare, FiDollarSign } from 'react-icons/fi';
 import { OWNER_ROUTES } from '../../../utils/constants';
 import styles from './OwnerQuickActions.module.scss';
 
@@ -7,6 +6,7 @@ const ACTIONS = [
   { label: 'Nueva Propiedad', icon: <FiHome />, to: '/create-property' },
   { label: 'Ver Visitas', icon: <FiEye />, to: OWNER_ROUTES.VISITS },
   { label: 'Mensajes', icon: <FiMessageSquare />, to: OWNER_ROUTES.MESSAGES },
+  { label: 'Ver Ofertas', icon: <FiDollarSign />, to: OWNER_ROUTES.OFFERS },
 ];
 
 export default function OwnerQuickActions() {

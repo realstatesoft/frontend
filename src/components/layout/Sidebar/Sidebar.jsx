@@ -4,10 +4,14 @@ import {
 import Logotipo from '../../../assets/Logotipo.png';
 import SidebarItem from './SidebarItem';
 import useUIStore from '../../../store/useUIStore';
+import { useConversations } from '../../../hooks/useMessagesData';
 import styles from './Sidebar.module.scss';
 
 export default function Sidebar({ navItems = [] }) {
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { data: convResponse } = useConversations();
+  const conversations = Array.isArray(convResponse?.data) ? convResponse.data : Array.isArray(convResponse?.data?.content) ? convResponse.data.content : [];
+  const unreadCount = conversations.reduce((sum, c) => sum + (Number(c?.unread) || 0), 0);
 
   const sidebarClass = [
     styles.sidebar,
@@ -38,6 +42,9 @@ export default function Sidebar({ navItems = [] }) {
                 icon={item.icon}
                 label={item.label}
                 collapsed={sidebarCollapsed}
+                badge={item.showBadge && unreadCount > 0 ? (
+                  <span className={styles.sidebar__badge}>{unreadCount}</span>
+                ) : null}
               />
             )
           )}

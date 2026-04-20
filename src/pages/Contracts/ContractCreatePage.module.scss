@@ -8,6 +8,20 @@
   min-height: 100%;
 }
 
+.page--public {
+  gap: var(--spacing-xl);
+}
+
+.pageShell {
+  min-height: calc(100vh - 90px);
+  background: var(--color-bg-page, #f8fafc);
+  padding: 24px 0 40px;
+}
+
+.pageShell__container {
+  max-width: 1440px;
+}
+
 .page__header {
   @include flex-column;
   gap: 4px;
@@ -103,6 +117,12 @@
   margin: 0;
 }
 
+.page__helper {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, var(--color-text-muted));
+  margin: 6px 0 0;
+}
+
 // ─── Two-column layout ────────────────────────────────────────────────────────
 
 .page__content {
@@ -137,7 +157,7 @@
   padding: 16px 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: var(--spacing-md);
   position: sticky;
   bottom: 0;
@@ -152,6 +172,28 @@
 .page__footerActions {
   display: flex;
   gap: 10px;
+  justify-content: flex-end;
+
+  @include responsive(mobile) {
+    width: 100%;
+    flex-direction: column;
+  }
+}
+
+.page__footer--public {
+  position: static;
+  justify-content: flex-end;
+  padding: 20px 24px;
+}
+
+.page__footerActions--public {
+  width: 100%;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  @include responsive(mobile) {
+    justify-content: stretch;
+  }
 }
 
 // ─── Form sections ────────────────────────────────────────────────────────────
@@ -271,6 +313,39 @@
   font-size: 0.8rem;
   color: var(--color-danger, #ef4444);
   margin-top: 6px;
+}
+
+.form__summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form__summaryItem {
+  @include flex-column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-surface-hover, rgba(0, 0, 0, 0.02));
+}
+
+.form__summaryLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.form__summaryValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 .form__loadingNote {
@@ -441,6 +516,7 @@
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 10px 20px;
   font-size: 0.875rem;
