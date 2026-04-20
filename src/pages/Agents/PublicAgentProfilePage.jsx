@@ -8,7 +8,7 @@ import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
 import "./AgentProfilePage.scss";
 
-const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/men/32.jpg";
+// No external avatar URL — missing avatars fall back to rendered initials.
 
 export default function PublicAgentProfilePage() {
   const { id } = useParams();
@@ -70,13 +70,20 @@ export default function PublicAgentProfilePage() {
   const name = agent.userName || "Agente Inmobiliario";
   const email = agent.userEmail || "Sin registro";
   const phone = agent.userPhone || "No especificado";
-  const avatarUrl = agent.userAvatarUrl || DEFAULT_AVATAR;
+  const avatarUrl = agent.userAvatarUrl || null;
   const companyName = agent.companyName || "No especificado";
   const licenseNumber = agent.licenseNumber || "No especificado";
   const experienceYears = agent.experienceYears || 0;
   const bio = agent.bio || "El agente no cuenta con una biografía registrada.";
-  const specialties =
-    agent.specialties && agent.specialties.length > 0 ? agent.specialties : [];
+
+  // Normalise specialties: the API may return [{id,name}] objects or plain strings.
+  const rawSpecialties = agent.specialties && agent.specialties.length > 0 ? agent.specialties : [];
+  const specialties = rawSpecialties
+    .map((s, idx) => {
+      if (typeof s === "string") return { id: `spec-${idx}-${s}`, name: s };
+      return { id: s.id ?? `spec-${idx}`, name: s.name ?? "" };
+    })
+    .filter((s) => Boolean(s.name));
   const stats = agent.stats;
 
   const rating = agent.avgRating;
@@ -115,7 +122,17 @@ export default function PublicAgentProfilePage() {
           <div className="profile-top-section d-flex justify-content-between align-items-end flex-wrap gap-3">
             <div className="d-flex align-items-center gap-4">
               <div className="avatar-wrapper">
-                <img src={avatarUrl} alt={name} className="profile-avatar" />
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={name} className="profile-avatar" />
+                ) : (
+                  <div
+                    className="profile-avatar d-flex align-items-center justify-content-center bg-secondary text-white fw-bold"
+                    style={{ fontSize: "2rem", userSelect: "none" }}
+                    aria-label={name}
+                  >
+                    {name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
+                  </div>
+                )}
               </div>
               <div className="profile-names-wrapper pb-2">
                 <h2 className="mb-1 profile-name">{name}</h2>
@@ -239,10 +256,8 @@ export default function PublicAgentProfilePage() {
                 <div className="d-flex flex-wrap gap-2">
                   {specialties.length > 0 ? (
                     specialties.map((s) => {
-                      const displayName = s.name
-                        ? s.name.charAt(0).toUpperCase() +
-                          s.name.slice(1).toLowerCase()
-                        : "";
+                      const displayName =
+                        s.name.charAt(0).toUpperCase() + s.name.slice(1).toLowerCase();
                       return (
                         <span key={s.id} className="custom-badge badge-blue">
                           {displayName}

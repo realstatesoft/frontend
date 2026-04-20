@@ -114,8 +114,11 @@ describe('AgentSearchPage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/agents/1');
   });
 
-  it('behaves in wizard mode: shows Seleccionar buttons when wizardReturnStep is in sessionStorage', async () => {
-    mockSessionStorage.getItem.mockReturnValue('12'); // Simulate coming from wizard
+  it('behaves in wizard mode: shows Seleccionar buttons when wizardSearchMode is in sessionStorage', async () => {
+    mockSessionStorage.getItem.mockImplementation((key) => {
+      if (key === 'wizardSearchMode') return '1'; // Simulate coming from wizard
+      return null;
+    });
 
     renderComponent();
 

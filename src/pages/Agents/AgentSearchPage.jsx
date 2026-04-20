@@ -52,7 +52,11 @@ export default function AgentSearchPage() {
   }, []);
 
   // ── Fetch from backend ──────────────────────────
+  // Monotonic request counter — only commit state for the latest in-flight call
+  const fetchIdRef = React.useRef(0);
+
   const fetchAgents = useCallback(async (filters, page = 0) => {
+    const requestId = ++fetchIdRef.current;
     try {
       setLoading(true);
       setError(null);
@@ -66,6 +70,9 @@ export default function AgentSearchPage() {
         params
       );
 
+      // Discard stale responses
+      if (requestId !== fetchIdRef.current) return;
+
       // Spring Boot 3.3+: { content, page: { totalPages, totalElements, number } }
       const pageObj  = res?.data ?? res;
       const pageMeta = pageObj?.page ?? pageObj;
@@ -75,10 +82,11 @@ export default function AgentSearchPage() {
       setTotalElements(pageMeta?.totalElements ?? 0);
       setCurrentPage(pageMeta?.number       ?? page);
     } catch (err) {
+      if (requestId !== fetchIdRef.current) return;
       console.error("Error fetching agents:", err);
       setError("No se pudieron cargar los agentes.");
     } finally {
-      setLoading(false);
+      if (requestId === fetchIdRef.current) setLoading(false);
     }
   }, []);
 
@@ -133,9 +141,14 @@ export default function AgentSearchPage() {
   const handleContactar = (agent) => navigate(`/agents/${agent.id}`);
 
   // ── Wizard mode: came from SellWizard step ───────
-  // Detect synchronously so it never changes during the page lifecycle
+  // Read and immediately consume the one-time flag so stale values from
+  // previous abandoned sessions never incorrectly activate wizard mode.
   const isWizardMode = React.useRef(
-    !!sessionStorage.getItem("wizardReturnStep")
+    (() => {
+      const flag = sessionStorage.getItem("wizardSearchMode");
+      if (flag) sessionStorage.removeItem("wizardSearchMode");
+      return !!flag;
+    })()
   ).current;
 
   const handleSeleccionar = (agent) => {
@@ -212,6 +225,7 @@ export default function AgentSearchPage() {
             className="search-action-btn"
             onClick={applyFilters}
             title="Buscar"
+            aria-label="Buscar"
           >
             <Search size={16} />
           </button>
@@ -223,6 +237,7 @@ export default function AgentSearchPage() {
               className="filter-reset-btn"
               onClick={handleClearFilters}
               title="Limpiar filtros"
+              aria-label="Limpiar filtros"
             >
               <XLg size={14} />
             </button>
@@ -236,19 +251,19 @@ export default function AgentSearchPage() {
             {applied.keyword && (
               <span className="filter-chip">
                 &quot;{applied.keyword}&quot;
-                <button className="chip-remove" onClick={() => removeFilter("keyword")}>✕</button>
+                <button className="chip-remove" aria-label={`Eliminar filtro: "${applied.keyword}"`} onClick={() => removeFilter("keyword")}>✕</button>
               </span>
             )}
             {applied.specialty && (
               <span className="filter-chip">
                 {applied.specialty.charAt(0).toUpperCase() + applied.specialty.slice(1).toLowerCase()}
-                <button className="chip-remove" onClick={() => removeFilter("specialty")}>✕</button>
+                <button className="chip-remove" aria-label={`Eliminar filtro de especialidad: ${applied.specialty}`} onClick={() => removeFilter("specialty")}>✕</button>
               </span>
             )}
             {applied.minRating && (
               <span className="filter-chip">
                 ★ ≥ {applied.minRating}
-                <button className="chip-remove" onClick={() => removeFilter("minRating")}>✕</button>
+                <button className="chip-remove" aria-label={`Eliminar filtro de puntuación mínima: ${applied.minRating}`} onClick={() => removeFilter("minRating")}>✕</button>
               </span>
             )}
           </div>
@@ -337,26 +352,50 @@ export default function AgentSearchPage() {
                   className="pagination-btn"
                   disabled={currentPage === 0}
                   onClick={() => handlePageChange(currentPage - 1)}
+                  aria-label="Página anterior"
                 >
                   <ChevronLeft size={16} /> Anterior
                 </button>
                 <div className="pagination-pages">
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className={`pagination-page${i === currentPage ? " pagination-page--active" : ""}`}
-                      onClick={() => handlePageChange(i)}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
+                  {/* Windowed pagination: avoids rendering hundreds of buttons */}
+                  {(() => {
+                    const WINDOW = 2;
+                    const indices = [];
+                    for (let i = 0; i < totalPages; i++) {
+                      if (
+                        i === 0 ||
+                        i === totalPages - 1 ||
+                        (i >= currentPage - WINDOW && i <= currentPage + WINDOW)
+                      ) indices.push(i);
+                    }
+                    const items = [];
+                    for (let j = 0; j < indices.length; j++) {
+                      if (j > 0 && indices[j] - indices[j - 1] > 1) {
+                        items.push(<span key={`ellipsis-${j}`} className="pagination-ellipsis">…</span>);
+                      }
+                      const i = indices[j];
+                      items.push(
+                        <button
+                          key={i}
+                          type="button"
+                          className={`pagination-page${i === currentPage ? " pagination-page--active" : ""}`}
+                          onClick={() => handlePageChange(i)}
+                          aria-label={`Página ${i + 1}`}
+                          aria-current={i === currentPage ? "page" : undefined}
+                        >
+                          {i + 1}
+                        </button>
+                      );
+                    }
+                    return items;
+                  })()}
                 </div>
                 <button
                   type="button"
                   className="pagination-btn"
                   disabled={currentPage >= totalPages - 1}
                   onClick={() => handlePageChange(currentPage + 1)}
+                  aria-label="Página siguiente"
                 >
                   Siguiente <ChevronRight size={16} />
                 </button>

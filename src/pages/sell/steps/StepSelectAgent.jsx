@@ -19,7 +19,8 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
   const [submitting, setSubmitting] = useState(false);
 
   // Capture sessionStorage value synchronously on first render (before effects)
-  // This prevents React Strict Mode double-execution from losing the data
+  // This prevents React Strict Mode double-execution from losing the data.
+  // Only the READ happens here; mutations are deferred to the effect below.
   const searchAgentRef = React.useRef(null);
   if (searchAgentRef.current === null) {
     const raw = sessionStorage.getItem("selectedAgentFromSearch");
@@ -29,12 +30,18 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
       } catch (e) {
         searchAgentRef.current = undefined;
       }
-      sessionStorage.removeItem("selectedAgentFromSearch");
-      sessionStorage.removeItem("wizardReturnStep");
     } else {
       searchAgentRef.current = undefined;
     }
   }
+
+  // Clean up sessionStorage keys after commit (not during render)
+  useEffect(() => {
+    if (searchAgentRef.current) {
+      sessionStorage.removeItem("selectedAgentFromSearch");
+      sessionStorage.removeItem("wizardReturnStep");
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -254,6 +261,7 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
                     className="suggested-agents__action-btn suggested-agents__action-btn--outline"
                     onClick={() => {
                       sessionStorage.setItem("wizardReturnStep", "12");
+                      sessionStorage.setItem("wizardSearchMode", "1");
                       navigate("/AgentSearch");
                     }}
                   >
@@ -282,6 +290,7 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
                   className="suggested-agents__action-btn suggested-agents__action-btn--primary"
                   onClick={() => {
                     sessionStorage.setItem("wizardReturnStep", "12");
+                    sessionStorage.setItem("wizardSearchMode", "1");
                     navigate("/AgentSearch");
                   }}
                 >

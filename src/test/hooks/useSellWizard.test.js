@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { useSellWizard } from '../../../hooks/useSellWizard';
+import { useSellWizard } from '../../hooks/useSellWizard';
 
 describe('useSellWizard Hook', () => {
   // Mock sessionStorage
@@ -23,7 +23,7 @@ describe('useSellWizard Hook', () => {
   beforeEach(() => {
     vi.stubGlobal('sessionStorage', mockSessionStorage);
     mockSessionStorage.clear();
-    vi.clearAllMocks();
+    vi.resetAllMocks(); // reset both calls AND implementations so tests don't bleed into each other
   });
 
   afterEach(() => {

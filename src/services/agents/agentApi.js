@@ -43,8 +43,9 @@ export async function getAgentById(id) {
  * @returns {Promise<Object>} Página de agentes
  */
 export async function searchAgents(keyword, params = {}) {
+  const q = keyword?.trim() || undefined;
   const response = await api.get("/agents/search", {
-    params: { q: keyword || undefined, ...params }
+    params: { ...(q ? { q } : {}), ...params }
   });
   return response.data;
 }
