@@ -60,7 +60,6 @@ function isPlaceholderClient(client) {
 export default function ContractCreatePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams();
   const prefillRanRef = useRef(false);
   const locationSearch = location.search;
 
@@ -126,13 +125,13 @@ export default function ContractCreatePage() {
       setSellerName(c.sellerName || '');
       setCustomTerms(plainTextToTipTapHtml(c.terms || ''));
     }
-  }, [isEditing, existingContract, properties.length === 0]);
+  }, [isEditing, existingContract, properties]);
 
   // ─── Pre-llenado desde Oferta (Query Params) ──────────────────────────────
   useEffect(() => {
     if (isEditing || prefillRanRef.current) return;
 
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(locationSearch);
     const pId = params.get('propertyId');
     const bId = params.get('buyerId');
     const bName = params.get('buyerName');
@@ -898,14 +897,6 @@ export default function ContractCreatePage() {
               })}
             </div>
             <div className={styles.terms__custom}>
-              <label className={styles.form__label}>Condiciones adicionales</label>
-              <textarea
-                className={`${styles.form__input} ${styles['form__input--textarea']}`}
-                value={customTerms}
-                onChange={(e) => setCustomTerms(e.target.value)}
-                rows={8}
-              />
-            </div>
               <label className={styles.form__label}>
                 Condiciones adicionales
               </label>
