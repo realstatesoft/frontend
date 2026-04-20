@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Badge,
@@ -41,6 +41,7 @@ export default function AdminContractTemplatesPage() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const isSavingRef = useRef(false);
 
   const fetchList = useCallback(async () => {
     setLoading(true);
@@ -89,6 +90,8 @@ export default function AdminContractTemplatesPage() {
   };
 
   const handleSave = async () => {
+    if (isSavingRef.current) return;
+
     if (!form.name.trim()) {
       Swal.fire({ icon: 'warning', title: 'Nombre obligatorio' });
       return;
@@ -97,6 +100,7 @@ export default function AdminContractTemplatesPage() {
       Swal.fire({ icon: 'warning', title: 'Contenido obligatorio' });
       return;
     }
+    isSavingRef.current = true;
     setSaving(true);
     try {
       if (editingId) {
@@ -123,6 +127,7 @@ export default function AdminContractTemplatesPage() {
     } catch (e) {
       Swal.fire({ icon: 'error', title: 'Error al guardar', text: unwrapError(e) });
     } finally {
+      isSavingRef.current = false;
       setSaving(false);
     }
   };
