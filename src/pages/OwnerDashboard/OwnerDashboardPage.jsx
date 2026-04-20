@@ -24,11 +24,11 @@ export default function OwnerDashboardPage() {
   const hasUrgentContracts = urgentContracts.length > 0;
   const hasPendingVisits = pendingVisits.length > 0;
 
+  useAutoStartTour('owner', OWNER_TOUR_STEPS, 400);
+
   if (isLoading) {
     return <div className={styles.empty}>Cargando dashboard...</div>;
   }
-
-  useAutoStartTour('owner', OWNER_TOUR_STEPS, 400);
 
   return (
     <div className={styles.dashboard}>
@@ -117,9 +117,9 @@ export default function OwnerDashboardPage() {
         <div className={styles.section}>
           <div className={styles.section__header}>
             <h2 className={styles.section__title}>Propiedades recientes</h2>
-            <span className={styles.section__link} onClick={() => navigate('/owner/propiedades')}>
+            <button type="button" className={styles.section__link} onClick={() => navigate('/owner/propiedades')}>
               Ver todas <FiArrowRight />
-            </span>
+            </button>
           </div>
 
           {recentProperties.length === 0 ? (
@@ -194,9 +194,9 @@ export default function OwnerDashboardPage() {
         <div className={styles.section}>
           <div className={styles.section__header}>
             <h2 className={styles.section__title}>Visitas pendientes</h2>
-            <span className={styles.section__link} onClick={() => navigate('/owner/visitas')}>
+            <button type="button" className={styles.section__link} onClick={() => navigate('/owner/visitas')}>
               Ver todas <FiArrowRight />
-            </span>
+            </button>
           </div>
 
           {pendingVisits.length === 0 ? (

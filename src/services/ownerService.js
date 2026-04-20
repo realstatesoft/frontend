@@ -2,11 +2,11 @@ import api from './api';
 
 const ownerService = {
   getStats() {
-    return api.get('/dashboard/owner/stats').then((res) => res.data);
+    return api.get('/dashboard/owner/stats').then((res) => res.data.data);
   },
 
   getOverview() {
-    return api.get('/dashboard/owner/overview').then((res) => res.data);
+    return api.get('/dashboard/owner/overview').then((res) => res.data.data);
   },
 
   getMyProperties(params = {}) {
