@@ -32,14 +32,13 @@ export default function PriceInput({
   const handleBlur = useCallback(
     (e) => {
       const normalizedValue = parsePriceInput(e.target.value);
+      let targetValue = normalizedValue;
       if (normalizedValue.includes(".")) {
         const [integerPart, decimalPart = ""] = normalizedValue.split(".");
-        const normalizedWithTwoDecimals = `${integerPart}.${decimalPart
-          .padEnd(2, "0")
-          .slice(0, 2)}`;
-        onChange?.({ target: { value: normalizedWithTwoDecimals } });
+        targetValue = `${integerPart}.${decimalPart.padEnd(2, "0").slice(0, 2)}`;
+        onChange?.({ target: { value: targetValue } });
       }
-      onBlur?.(e);
+      onBlur?.({ ...e, target: { ...e.target, value: targetValue } });
     },
     [onBlur, onChange]
   );

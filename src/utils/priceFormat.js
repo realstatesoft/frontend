@@ -1,6 +1,19 @@
 const THOUSANDS_SEP = ".";
 const DECIMAL_SEP = ",";
 
+/**
+ * Parses a numeric input string into integer and decimal parts.
+ *
+ * Heuristic:
+ * - If both '.' and ',' are present, the last one is treated as the decimal separator.
+ * - If only one type of separator is present:
+ *    - It is treated as a decimal separator ONLY if it appears exactly once AND
+ *      is followed by 1 or 2 digits.
+ *    - Otherwise (e.g., "1.234", "1.234.567", "1,500"), it is treated as a thousand separator.
+ *
+ * Callers should pre-normalize values (e.g., using Number(x).toFixed(2)) to ensure 
+ * consistent behavior for values with more than 2 fractional digits.
+ */
 function getNormalizedPriceParts(input) {
   if (input == null || input === "") return null;
 

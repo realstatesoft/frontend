@@ -144,4 +144,11 @@ describe("parsePriceInput", () => {
     expect(parsePriceInput("$ 1,200.50")).toBe("1200.50");
     expect(parsePriceInput("1.200,50")).toBe("1200.50");
   });
+
+  it("treats single or double dots in large numbers as thousand separators (heuristic)", () => {
+    // These should be treated as integers by getNormalizedPriceParts heuristic
+    expect(parsePriceInput("1.234")).toBe("1234");
+    expect(parsePriceInput("1.234.567")).toBe("1234567");
+    expect(parsePriceInput("1,500")).toBe("1500");
+  });
 });

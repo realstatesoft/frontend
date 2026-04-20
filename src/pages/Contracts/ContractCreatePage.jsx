@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FiArrowLeft, FiSave, FiSend } from 'react-icons/fi';
 import { Container } from 'react-bootstrap';
@@ -56,6 +56,10 @@ function isPlaceholderClient(client) {
 export default function ContractCreatePage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
+  const prefillRanRef = useRef(false);
+  const locationSearch = location.search;
+
   const [form, setForm] = useState(INITIAL_FORM);
   const [sellerName, setSellerName] = useState('');
   const [selectedClauses, setSelectedClauses] = useState([]);
@@ -119,7 +123,7 @@ export default function ContractCreatePage() {
 
   // ─── Pre-llenado desde Oferta (Query Params) ──────────────────────────────
   useEffect(() => {
-    if (isEditing || isPreFilling) return;
+    if (isEditing || prefillRanRef.current) return;
 
     const params = new URLSearchParams(location.search);
     const pId = params.get('propertyId');
@@ -145,7 +149,7 @@ export default function ContractCreatePage() {
     }
 
     if (pId) {
-      setIsPreFilling(true);
+      prefillRanRef.current = true;
       propertyApi.getById(pId)
         .then(res => {
           const prop = res?.data?.data ?? res?.data;
@@ -169,10 +173,9 @@ export default function ContractCreatePage() {
             setSellerName(prop.ownerName || '');
           }
         })
-        .catch(err => console.error("Error al pre-cargar oferta:", err))
-        .finally(() => setIsPreFilling(false));
+        .catch(err => console.error("Error al pre-cargar oferta:", err));
     }
-  }, [location.search, isEditing, isPreFilling]);
+  }, [locationSearch, isEditing]);
 
   // ─── Cargar datos para los selects ──────────────────────────────────────────
   useEffect(() => {

@@ -215,7 +215,7 @@ export const propertyToForm = (property) => {
     locationId: property.locationId ?? null,
     description: property.description || "",
     propertyType: PROPERTY_TYPE_LABELS[property.propertyType] ?? "Casa",
-    price: property.price != null ? parsePriceInput(String(property.price)) : "",
+    price: property.price != null ? parsePriceInput(Number(property.price).toFixed(2)) : "",
     surfaceArea: property.surfaceArea != null ? String(property.surfaceArea) : "",
     builtArea: property.builtArea != null ? String(property.builtArea) : "",
     availability: AVAILABILITY_LABELS[property.availability] ?? "Inmediata",
