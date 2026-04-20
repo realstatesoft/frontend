@@ -161,6 +161,7 @@ export default function ContractEditPage() {
       setCommissionError(validateCommission(updated));
       return updated;
     });
+    setCustomTerms('');
     setSelectedClauses([]);
   };
 

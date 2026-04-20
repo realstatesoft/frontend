@@ -8,9 +8,19 @@ export function htmlToPlainText(html) {
   if (!s) return '';
   if (!/<[a-z][\s\S]*>/i.test(s)) return s;
   try {
-    const doc = new DOMParser().parseFromString(s, 'text/html');
-    const text = doc.body?.innerText ?? '';
-    return text.replace(/\n{3,}/g, '\n\n').trim();
+    // Normalize block-level boundaries before parsing so output is deterministic in tests.
+    const normalizedHtml = s
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/(p|div|li|h[1-6]|blockquote|pre|section|article|tr|ul|ol)>/gi, '\n')
+      .replace(/<(p|div|li|h[1-6]|blockquote|pre|section|article|tr|ul|ol)(\s[^>]*)?>/gi, '\n');
+    const doc = new DOMParser().parseFromString(normalizedHtml, 'text/html');
+    const text = doc.body?.textContent ?? '';
+    return text
+      .replace(/\r\n?/g, '\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n[ \t]+/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
   } catch {
     return s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
