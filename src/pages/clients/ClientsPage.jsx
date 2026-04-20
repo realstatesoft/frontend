@@ -31,7 +31,7 @@ const COLUMNS = [
     key: 'id',
     label: '',
     render: (_, row) => (
-      <Link to={`/clients/${row.id}`} className="btn btn-sm btn-outline-primary">
+      <Link to={`/clientes/${row.id}`} className="btn btn-sm btn-outline-primary">
         <FiEye className="me-1" /> Ver Cliente
       </Link>
     ),
@@ -86,7 +86,7 @@ export default function ClientsPage() {
           <h1 className={styles.page__title}>Clientes</h1>
           <p className={styles.page__subtitle}>Gestiona tu cartera de clientes</p>
         </div>
-        <Link to="/clients/register">
+        <Link to="/clientes/registrar">
           <Button variant="primary" size="sm">
             <FiUserPlus /> Nuevo Cliente
           </Button>
