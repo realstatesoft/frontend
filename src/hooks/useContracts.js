@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import contractApi from '../services/contracts/contractApi';
 
-export function useContractsAsListingAgent() {
+export function useContractsAsListingAgent(enabled = true) {
   return useQuery({
     queryKey: ['contracts', 'listing-agent'],
     queryFn: contractApi.getAsListingAgent,
+    enabled,
     staleTime: 1000 * 60 * 3,
   });
 }
@@ -17,10 +18,11 @@ export function useContractsAsBuyerAgent() {
   });
 }
 
-export function useContractsAsSeller() {
+export function useContractsAsSeller(enabled = true) {
   return useQuery({
     queryKey: ['contracts', 'as-seller'],
     queryFn: contractApi.getAsSeller,
+    enabled,
     staleTime: 1000 * 60 * 3,
   });
 }

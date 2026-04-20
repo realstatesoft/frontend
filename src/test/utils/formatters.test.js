@@ -1,141 +1,154 @@
-import { describe, it, expect } from 'vitest';
-import { formatCurrency, formatDate, formatDateTime, formatTime, formatPercentage } from '../../utils/formatters';
-import { formatPrice, parsePriceInput } from '../../utils/priceFormat';
+import { describe, it, expect } from "vitest";
+import {
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+  formatTime,
+  formatPercentage,
+} from "../../utils/formatters";
+import { formatPrice, parsePriceInput } from "../../utils/priceFormat";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// formatters.js
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe('formatCurrency', () => {
-  it('formatea un número a moneda MXN', () => {
+describe("formatCurrency", () => {
+  it("formats a number as currency", () => {
     const result = formatCurrency(1500000);
-    expect(result).toContain('1');
-    expect(result).toContain('500');
+    expect(result).toContain("1");
+    expect(result).toContain("500");
   });
 
-  it('retorna $0 cuando el valor es null', () => {
-    expect(formatCurrency(null)).toBe('$0');
+  it("returns $0 when the value is null", () => {
+    expect(formatCurrency(null)).toBe("$0");
   });
 
-  it('retorna $0 cuando el valor es undefined', () => {
-    expect(formatCurrency(undefined)).toBe('$0');
+  it("returns $0 when the value is undefined", () => {
+    expect(formatCurrency(undefined)).toBe("$0");
   });
 
-  it('formatea 0 correctamente', () => {
+  it("formats 0 correctly", () => {
     const result = formatCurrency(0);
-    expect(result).toContain('0');
+    expect(result).toContain("0");
   });
 });
 
-describe('formatDate', () => {
-  it('retorna string vacío para valor falsy', () => {
-    expect(formatDate('')).toBe('');
-    expect(formatDate(null)).toBe('');
-    expect(formatDate(undefined)).toBe('');
+describe("formatDate", () => {
+  it("returns an empty string for falsy values", () => {
+    expect(formatDate("")).toBe("");
+    expect(formatDate(null)).toBe("");
+    expect(formatDate(undefined)).toBe("");
   });
 
-  it('formatea una fecha ISO válida', () => {
-    const result = formatDate('2024-06-15T00:00:00Z');
+  it("formats a valid ISO date", () => {
+    const result = formatDate("2024-06-15T00:00:00Z");
     expect(result).toBeTruthy();
-    expect(typeof result).toBe('string');
+    expect(typeof result).toBe("string");
   });
 });
 
-describe('formatDateTime', () => {
-  it('retorna string vacío para valor falsy', () => {
-    expect(formatDateTime('')).toBe('');
+describe("formatDateTime", () => {
+  it("returns an empty string for falsy values", () => {
+    expect(formatDateTime("")).toBe("");
   });
 
-  it('formatea una fecha-hora ISO válida con hora', () => {
-    const result = formatDateTime('2024-06-15T10:30:00Z');
+  it("formats a valid ISO datetime", () => {
+    const result = formatDateTime("2024-06-15T10:30:00Z");
     expect(result).toBeTruthy();
-    // Debe contener algún separador de hora
     expect(result.length).toBeGreaterThan(8);
   });
 });
 
-describe('formatTime', () => {
-  it('retorna string vacío para valor falsy', () => {
-    expect(formatTime('')).toBe('');
-    expect(formatTime(null)).toBe('');
+describe("formatTime", () => {
+  it("returns an empty string for falsy values", () => {
+    expect(formatTime("")).toBe("");
+    expect(formatTime(null)).toBe("");
   });
 
-  it('formatea solo la hora de una fecha ISO', () => {
-    const result = formatTime('2024-06-15T14:30:00Z');
+  it("formats only the time portion of an ISO datetime", () => {
+    const result = formatTime("2024-06-15T14:30:00Z");
     expect(result).toBeTruthy();
   });
 });
 
-describe('formatPercentage', () => {
-  it('retorna "0%" para null', () => {
-    expect(formatPercentage(null)).toBe('0%');
-    expect(formatPercentage(undefined)).toBe('0%');
+describe("formatPercentage", () => {
+  it('returns "0%" for nullish values', () => {
+    expect(formatPercentage(null)).toBe("0%");
+    expect(formatPercentage(undefined)).toBe("0%");
   });
 
-  it('incluye signo "+" para valores positivos', () => {
-    expect(formatPercentage(5.5)).toBe('+5.5%');
+  it('includes a "+" sign for positive values', () => {
+    expect(formatPercentage(5.5)).toBe("+5.5%");
   });
 
-  it('no incluye signo "+" para valores negativos', () => {
-    expect(formatPercentage(-3.2)).toBe('-3.2%');
+  it('does not include a "+" sign for negative values', () => {
+    expect(formatPercentage(-3.2)).toBe("-3.2%");
   });
 
-  it('formatea 0 correctamente', () => {
-    expect(formatPercentage(0)).toBe('+0.0%');
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// priceFormat.js
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe('formatPrice', () => {
-  it('retorna string vacío para null o undefined', () => {
-    expect(formatPrice(null)).toBe('');
-    expect(formatPrice(undefined)).toBe('');
-  });
-
-  it('retorna string vacío para string vacío', () => {
-    expect(formatPrice('')).toBe('');
-  });
-
-  it('formatea un número con separadores de miles (punto)', () => {
-    expect(formatPrice(350000000)).toBe('350.000.000');
-  });
-
-  it('formatea un número pequeño sin separadores', () => {
-    expect(formatPrice(500)).toBe('500');
-  });
-
-  it('formatea correctamente strings numéricos', () => {
-    expect(formatPrice('1000000')).toBe('1.000.000');
-  });
-
-  it('elimina caracteres no numéricos del input', () => {
-    expect(formatPrice('1.000.000')).toBe('1.000.000');
-  });
-
-  it('formatea el valor 0 como "0"', () => {
-    expect(formatPrice(0)).toBe('0');
+  it("formats 0 correctly", () => {
+    expect(formatPercentage(0)).toBe("+0.0%");
   });
 });
 
-describe('parsePriceInput', () => {
-  it('retorna string vacío para null o string vacío', () => {
-    expect(parsePriceInput(null)).toBe('');
-    expect(parsePriceInput('')).toBe('');
-    expect(parsePriceInput(undefined)).toBe('');
+describe("formatPrice", () => {
+  it("returns an empty string for null or undefined", () => {
+    expect(formatPrice(null)).toBe("");
+    expect(formatPrice(undefined)).toBe("");
   });
 
-  it('extrae solo dígitos del input', () => {
-    expect(parsePriceInput('350.000.000')).toBe('350000000');
+  it("returns an empty string for an empty string", () => {
+    expect(formatPrice("")).toBe("");
   });
 
-  it('mantiene números sin modificar', () => {
-    expect(parsePriceInput('123456')).toBe('123456');
+  it("formats a number with dot thousands separators", () => {
+    expect(formatPrice(350000000)).toBe("350.000.000");
   });
 
-  it('elimina espacios y caracteres especiales', () => {
-    expect(parsePriceInput('$ 1,500,000')).toBe('1500000');
+  it("formats a small number without separators", () => {
+    expect(formatPrice(500)).toBe("500");
+  });
+
+  it("formats numeric strings correctly", () => {
+    expect(formatPrice("1000000")).toBe("1.000.000");
+  });
+
+  it("preserves already formatted integer values", () => {
+    expect(formatPrice("1.000.000")).toBe("1.000.000");
+  });
+
+  it("preserves decimals when the input represents a valid amount", () => {
+    expect(formatPrice("1200.50")).toBe("1.200,50");
+  });
+
+  it('formats the value 0 as "0"', () => {
+    expect(formatPrice(0)).toBe("0");
+  });
+});
+
+describe("parsePriceInput", () => {
+  it("returns an empty string for nullish or empty values", () => {
+    expect(parsePriceInput(null)).toBe("");
+    expect(parsePriceInput("")).toBe("");
+    expect(parsePriceInput(undefined)).toBe("");
+  });
+
+  it("extracts integer digits from formatted values", () => {
+    expect(parsePriceInput("350.000.000")).toBe("350000000");
+  });
+
+  it("keeps plain integer values unchanged", () => {
+    expect(parsePriceInput("123456")).toBe("123456");
+  });
+
+  it("removes spaces and non-numeric symbols from integer inputs", () => {
+    expect(parsePriceInput("$ 1,500,000")).toBe("1500000");
+  });
+
+  it("normalizes decimals using a dot as the internal separator", () => {
+    expect(parsePriceInput("$ 1,200.50")).toBe("1200.50");
+    expect(parsePriceInput("1.200,50")).toBe("1200.50");
+  });
+
+  it("treats single or double dots in large numbers as thousand separators (heuristic)", () => {
+    // These should be treated as integers by getNormalizedPriceParts heuristic
+    expect(parsePriceInput("1.234")).toBe("1234");
+    expect(parsePriceInput("1.234.567")).toBe("1234567");
+    expect(parsePriceInput("1,500")).toBe("1500");
   });
 });

@@ -4,8 +4,10 @@ import { StarFill } from "react-bootstrap-icons";
 import { FiMessageSquare } from "react-icons/fi";
 import agentApi from "../../services/agents/agentApi";
 import { getWhatsAppLink } from "../../utils/whatsapp";
+import { useAuth } from "../../hooks/useAuth";
 import CreateVisitModal from "../visits/CreateVisitModal";
 import NewConversationModal from "../messages/NewConversationModal";
+import CreateOfferModal from "../offers/CreateOfferModal";
 import Swal from "sweetalert2";
 
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
@@ -16,12 +18,19 @@ const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
  * Si la propiedad tiene agentId, obtiene los datos del agente. Si no, muestra el owner.
  */
 export default function PropertyContactCard({ property }) {
+  const { user, isAuthenticated } = useAuth();
   const [agent, setAgent] = useState(null);
   const [loadingAgent, setLoadingAgent] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const [showOfferModal, setShowOfferModal] = useState(false);
 
   const hasAgent = Boolean(property?.agentId);
+  
+  // Lógica para ocultar el botón de oferta
+  const isOwner = user?.userId === property?.ownerId;
+  const isAgent = user?.agentProfileId === property?.agentId;
+  const hideOfferButton = !isAuthenticated || isOwner || isAgent;
 
   useEffect(() => {
     if (!hasAgent || !property.agentId) return;
@@ -62,6 +71,10 @@ export default function PropertyContactCard({ property }) {
   const totalReviews = agent?.totalReviews ?? 0;
 
   const whatsappUrl = getWhatsAppLink(phone);
+
+  const handleOfferSuccess = () => {
+    setShowOfferModal(false);
+  };
 
   if (loadingAgent) {
     return (
@@ -175,12 +188,23 @@ export default function PropertyContactCard({ property }) {
 
         <Button
           variant="dark"
-          className="w-100"
+          className="w-100 mb-2"
           style={{ borderRadius: "8px" }}
           onClick={() => setShowVisitModal(true)}
         >
           Agendar Visita
         </Button>
+
+        {!hideOfferButton && (
+          <Button
+            variant="success"
+            className="w-100"
+            style={{ borderRadius: "8px", backgroundColor: "#28a745", borderColor: "#28a745" }}
+            onClick={() => setShowOfferModal(true)}
+          >
+            Realizar Oferta
+          </Button>
+        )}
       </div>
 
       <CreateVisitModal
@@ -216,6 +240,12 @@ export default function PropertyContactCard({ property }) {
             showConfirmButton: false,
           });
         }}
+      />
+      <CreateOfferModal
+        show={showOfferModal}
+        onHide={() => setShowOfferModal(false)}
+        property={property}
+        onSuccess={handleOfferSuccess}
       />
     </>
   );

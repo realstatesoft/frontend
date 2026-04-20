@@ -122,7 +122,7 @@ export default function AgentProfilePage() {
           <div className="pb-2">
             <button 
               className="btn btn-primary px-4 py-2 custom-edit-btn" 
-              onClick={() => navigate(`/agent/AgentEdit/${agent.id || agentIdLocal}`)}
+              onClick={() => navigate(`/agent/editar-perfil/${agent.id || agentIdLocal}`)}
             >
               Editar Perfil
             </button>

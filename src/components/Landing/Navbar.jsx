@@ -24,6 +24,7 @@ import {
   IoNotificationsOutline,
   IoCheckmarkDoneOutline,
   IoChatbubblesOutline,
+  IoCashOutline,
 } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -108,6 +109,13 @@ function CustomNavbar() {
     navigate("/login");
   }
 
+  const getOffersLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'AGENT') return '/agent/ofertas';
+    if (role === 'OWNER') return '/owner/ofertas';
+    return '/ofertas';
+  };
+
   return (
     <Navbar expand="lg" className="bg-light py-3">
       <Container className="bg-white rounded-pill shadow-sm px-4 py-2">
@@ -172,6 +180,9 @@ function CustomNavbar() {
                   {/* Seccion 1: navegacion personal */}
                   <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Person size={17} style={{ flexShrink: 0 }} /> Mi perfil
+                  </Link>
+                  <Link to={getOffersLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoCashOutline size={16} style={{ flexShrink: 0 }} /> Mis Ofertas
                   </Link>
                   <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <HouseDoor size={16} style={{ flexShrink: 0 }} /> Mis propiedades
