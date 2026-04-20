@@ -19,7 +19,7 @@ export default function OwnerDashboardPage() {
   const navigate = useNavigate();
   const [signContract, setSignContract] = useState(null);
 
-  const { stats = {}, recentProperties = [], urgentContracts = [], pendingVisits = [] } = response?.data || {};
+  const { stats = {}, recentProperties = [], urgentContracts = [], pendingVisits = [] } = response || {};
 
   const hasUrgentContracts = urgentContracts.length > 0;
   const hasPendingVisits = pendingVisits.length > 0;

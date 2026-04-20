@@ -38,7 +38,7 @@ describe('OwnerDashboardPage', () => {
     };
     
     useOwnerOverview.mockReturnValue({ 
-      data: { data: mockData.data }, 
+      data: mockData.data, 
       isLoading: false 
     });
 
@@ -71,7 +71,7 @@ describe('OwnerDashboardPage', () => {
     };
     
     useOwnerOverview.mockReturnValue({ 
-      data: { data: mockData.data }, 
+      data: mockData.data, 
       isLoading: false 
     });
 
@@ -95,7 +95,7 @@ describe('OwnerDashboardPage', () => {
     };
     
     useOwnerOverview.mockReturnValue({ 
-      data: { data: mockData.data }, 
+      data: mockData.data, 
       isLoading: false 
     });
 
