@@ -6,6 +6,7 @@ import SuggestTimeModal from '../components/visits/SuggestTimeModal';
 import ActionMessageModal from '../components/visits/ActionMessageModal';
 import {
   getMyVisitRequestsAsAgent,
+  getMyVisitRequestsAsOwner,
   acceptVisitRequest,
   rejectVisitRequest,
   counterProposeVisitRequest,
@@ -20,7 +21,7 @@ const FILTER_OPTIONS = [
   { label: 'Canceladas', value: 'CANCELLED' },
 ];
 
-const VisitRequests = () => {
+const VisitRequests = ({ mode = 'AGENT' }) => {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,7 +39,9 @@ const VisitRequests = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getMyVisitRequestsAsAgent();
+      const data = mode === 'OWNER' 
+        ? await getMyVisitRequestsAsOwner()
+        : await getMyVisitRequestsAsAgent();
       setVisits(data);
     } catch (err) {
       console.error('Error al cargar solicitudes:', err);
@@ -47,7 +50,7 @@ const VisitRequests = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mode]);
 
   useEffect(() => {
     fetchVisits();

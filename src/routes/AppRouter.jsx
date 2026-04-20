@@ -39,8 +39,6 @@ import OfferManagementPage from "../pages/Offers/OfferManagementPage";
 // Owner Dashboard
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
 import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
-import OwnerPropertiesPage from "../pages/OwnerProperties/OwnerPropertiesPage";
-import OwnerVisitsPage from "../pages/OwnerVisits/OwnerVisitsPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
@@ -111,13 +109,13 @@ export default function AppRouter() {
                 </Route>
             </Route>
 
-            {/* ── Rutas protegidas (Owner) ───────────────────────── */}
-            <Route element={<ProtectedRoute requiredRole="OWNER" />}>
+            {/* ── Rutas protegidas (Owner / User) ───────────────────────── */}
+            <Route element={<ProtectedRoute requiredRole="USER" />}>
                 <Route path="/owner" element={<OwnerLayout />}>
                     <Route index element={<Navigate to="/owner/dashboard" replace />} />
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
-                    <Route path="propiedades" element={<OwnerPropertiesPage />} />
-                    <Route path="visitas" element={<OwnerVisitsPage />} />
+                    <Route path="propiedades" element={<MyProperties hideNavbar={true} />} />
+                    <Route path="visitas" element={<VisitRequests mode="OWNER" />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                 </Route>
