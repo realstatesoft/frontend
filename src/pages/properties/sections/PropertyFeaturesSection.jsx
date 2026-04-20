@@ -43,12 +43,17 @@ export function PropertyFeaturesSection({
       .filter(m => ['PHOTO', 'IMAGE', 'MODEL_3D', 'IMAGE_360'].includes(m.type));
   }, [form.media]);
 
-  const canAddMore = galleryMedia.length < MAX_IMAGES;
+  const photoCount = useMemo(() => 
+    galleryMedia.filter(m => m.type === 'PHOTO' || m.type === 'IMAGE').length, 
+    [galleryMedia]
+  );
+  const canAddMore = photoCount < MAX_IMAGES;
 
   const handleFileChange = (e) => {
     const files = e.target.files;
     if (!files?.length) return;
-    for (let i = 0; i < files.length && galleryMedia.length + i < MAX_IMAGES; i++) {
+    const remainingSlots = MAX_IMAGES - photoCount;
+    for (let i = 0; i < files.length && i < remainingSlots; i++) {
       addMedia(files[i]);
     }
     e.target.value = "";
@@ -61,7 +66,7 @@ export function PropertyFeaturesSection({
     const files = Array.from(e.dataTransfer.files).filter((f) =>
       f.type.startsWith("image/")
     );
-    files.slice(0, MAX_IMAGES - galleryMedia.length).forEach((f) => addMedia(f));
+    files.slice(0, MAX_IMAGES - photoCount).forEach((f) => addMedia(f));
   };
 
   const handleDragOver = (e) => {
@@ -224,18 +229,20 @@ export function PropertyFeaturesSection({
                       />
                     )}
                     
-                    <Badge
-                      className="position-absolute top-0 start-0 m-1"
-                      style={{
-                        background: item.isPrimary ? "#3B6BF5" : "rgba(0,0,0,0.5)",
-                        fontSize: 9,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setPrimaryMedia(item.originalIndex)}
-                    >
-                      <i className={`bi bi-star${item.isPrimary ? "-fill" : ""} me-1`} />
-                      {item.isPrimary ? "Portada" : "Marcar portada"}
-                    </Badge>
+                    {(item.type === 'PHOTO' || item.type === 'IMAGE') && (
+                      <Badge
+                        className="position-absolute top-0 start-0 m-1"
+                        style={{
+                          background: item.isPrimary ? "#3B6BF5" : "rgba(0,0,0,0.5)",
+                          fontSize: 9,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setPrimaryMedia(item.originalIndex)}
+                      >
+                        <i className={`bi bi-star${item.isPrimary ? "-fill" : ""} me-1`} />
+                        {item.isPrimary ? "Portada" : "Marcar portada"}
+                      </Badge>
+                    )}
 
                     {item.type === 'IMAGE_360' && (
                       <Badge bg="info" className="position-absolute bottom-0 start-0 m-1" style={{ fontSize: 8 }}>

@@ -354,11 +354,19 @@ export default function AdminDocumentsPage() {
           last = true;
         }
       }
+
+      if (page >= MAX_PAGES) {
+        throw new Error("Se alcanzó el límite máximo de páginas. Hay demasiados documentos para mostrar en una sola carga.");
+      }
       
       setDocuments(allDocs);
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || "Error desconocido";
-      Swal.fire("Error", "No se pudieron cargar los documentos: " + errorMsg, "error");
+      Swal.fire({
+        title: "Error",
+        text: "No se pudieron cargar los documentos: " + errorMsg,
+        icon: "error"
+      });
     } finally {
       setLoading(false);
     }
@@ -410,7 +418,11 @@ export default function AdminDocumentsPage() {
       );
       await fetchDocuments();
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || err.message, "error");
+      Swal.fire({
+        title: "Error",
+        text: err.response?.data?.message || err.message,
+        icon: "error"
+      });
     } finally {
       setProcessingId(null);
     }
