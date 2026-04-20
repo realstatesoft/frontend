@@ -14,13 +14,16 @@ export function htmlToPlainText(html) {
       .replace(/<\/(p|div|li|h[1-6]|blockquote|pre|section|article|tr|ul|ol)>/gi, '\n')
       .replace(/<(p|div|li|h[1-6]|blockquote|pre|section|article|tr|ul|ol)(\s[^>]*)?>/gi, '\n');
     const doc = new DOMParser().parseFromString(normalizedHtml, 'text/html');
+    const BLOCK_TAGS = 'p,div,br,li,tr,h1,h2,h3,h4,h5,h6,section,article,header,footer,hr';
+    doc.body?.querySelectorAll(BLOCK_TAGS).forEach((el) => {
+      if (el.tagName === 'BR' || el.tagName === 'HR') {
+        el.replaceWith(doc.createTextNode('\n'));
+      } else {
+        el.append(doc.createTextNode('\n'));
+      }
+    });
     const text = doc.body?.textContent ?? '';
-    return text
-      .replace(/\r\n?/g, '\n')
-      .replace(/[ \t]+\n/g, '\n')
-      .replace(/\n[ \t]+/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
+    return text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
   } catch {
     return s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
