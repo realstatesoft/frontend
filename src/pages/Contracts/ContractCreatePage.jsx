@@ -17,6 +17,9 @@ import {
   CONTRACT_TYPE,
 } from '../../constants/contractConstants';
 import { getClausesForType } from './contractClauses';
+import contractTemplateApi from '../../services/contracts/contractTemplateApi';
+import { htmlToPlainText, hasMeaningfulHtmlContent, plainTextToTipTapHtml } from '../../utils/htmlToPlainText';
+import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
 
 /* ─── Formulario inicial ─────────────────────────────────────────────────────── */
@@ -35,6 +38,7 @@ const INITIAL_FORM = {
   startDate: '',
   endDate: '',
   terms: '',
+  templateId: '',
 };
 
 const PROPERTY_SOURCE_OPTIONS = [
@@ -53,6 +57,8 @@ export default function ContractCreatePage() {
   const [agents, setAgents] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [commissionError, setCommissionError] = useState('');
+  const [activeTemplates, setActiveTemplates] = useState([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
   const { user } = useAuth();
   const isAgent = user?.role === 'AGENT';
@@ -94,9 +100,10 @@ export default function ContractCreatePage() {
         startDate:                 c.startDate || '',
         endDate:                   c.endDate || '',
         terms:                     c.terms || '',
+        templateId:                c.templateId != null ? String(c.templateId) : '',
       });
       setSellerName(c.sellerName || '');
-      setCustomTerms(c.terms || '');
+      setCustomTerms(plainTextToTipTapHtml(c.terms || ''));
     }
   }, [isEditing, existingContract, properties.length === 0]);
 
@@ -132,6 +139,25 @@ export default function ContractCreatePage() {
     load();
     return () => { cancelled = true; };
   }, [isAgent, user?.agentProfileId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingTemplates(true);
+    contractTemplateApi
+      .listActive(form.contractType)
+      .then((list) => {
+        if (!cancelled) setActiveTemplates(Array.isArray(list) ? list : []);
+      })
+      .catch(() => {
+        if (!cancelled) setActiveTemplates([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingTemplates(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [form.contractType]);
 
   // ─── Buscar por MLS-ID (Prop ID) ──────────────────────────────────────────
   const [mlsSearch, setMlsSearch] = useState('');
@@ -176,7 +202,14 @@ export default function ContractCreatePage() {
   // ─── Auto-fill al seleccionar propiedad ────────────────────────────────────
   const handlePropertyChange = async (e) => {
     const propId = e.target.value;
-    setForm((prev) => ({ ...prev, propertyId: propId, sellerId: '', listingAgentId: '', amount: '' }));
+    setForm((prev) => ({
+      ...prev,
+      propertyId: propId,
+      sellerId: '',
+      listingAgentId: '',
+      amount: '',
+      templateId: '',
+    }));
     setSellerName('');
     if (!propId) return;
     try {
@@ -192,6 +225,7 @@ export default function ContractCreatePage() {
         listingAgentCommissionPct: prop.agentId ? (prop.commissionPct ?? '0.00') : '0.00',
         buyerAgentCommissionPct: '0.00',
         contractType: prop.category === 'RENT' ? 'RENT' : prev.contractType,
+        templateId: '',
       }));
       setSellerName(prop.ownerName ?? '');
     } catch {
@@ -226,6 +260,33 @@ export default function ContractCreatePage() {
     });
   };
 
+  const handleContractTypeChange = (e) => {
+    const value = e.target.value;
+    setForm((prev) => {
+      const updated = { ...prev, contractType: value, templateId: '' };
+      setCommissionError(validateCommission(updated));
+      return updated;
+    });
+    setSelectedClauses([]);
+  };
+
+  const handleTemplateChange = (e) => {
+    const id = e.target.value;
+    setForm((prev) => ({ ...prev, templateId: id }));
+    if (!id) return;
+    const tpl = activeTemplates.find((t) => String(t.id) === id);
+    if (tpl?.content) {
+      setCustomTerms(tpl.content);
+      Swal.fire({
+        icon: 'info',
+        title: 'Plantilla aplicada',
+        text: 'El contenido de la plantilla se ha copiado en condiciones adicionales; puedes editarlo con el mismo editor que en administración.',
+        timer: 2600,
+        showConfirmButton: false,
+      });
+    }
+  };
+
   // ─── Toggle cláusulas ──────────────────────────────────────────────────────
   const toggleClause = (clauseId) => {
     setSelectedClauses((prev) =>
@@ -247,8 +308,9 @@ export default function ContractCreatePage() {
     const clauses = getClausesForType(form.contractType);
     const selected = clauses.filter((c) => selectedClauses.includes(c.id));
     const parts = selected.map((c, i) => `${i + 1}. ${c.label.toUpperCase()}\n${c.text}`);
-    if (customTerms.trim()) {
-      parts.push(`${parts.length + 1}. CONDICIONES ADICIONALES\n${customTerms.trim()}`);
+    if (hasMeaningfulHtmlContent(customTerms)) {
+      const block = htmlToPlainText(customTerms).trim();
+      parts.push(`${parts.length + 1}. CONDICIONES ADICIONALES\n${block}`);
     }
     return parts.join('\n\n');
   }, [form.contractType, selectedClauses, customTerms]);
@@ -293,6 +355,7 @@ export default function ContractCreatePage() {
       startDate:                 form.startDate || null,
       endDate:                   form.endDate || null,
       terms:                     terms || null,
+      templateId:                form.templateId ? parseInt(form.templateId, 10) : null,
     };
 
     try {
@@ -447,10 +510,7 @@ export default function ContractCreatePage() {
                   name="contractType"
                   className={styles.form__select}
                   value={form.contractType}
-                  onChange={(e) => {
-                    handleChange(e);
-                    setSelectedClauses([]);
-                  }}
+                  onChange={handleContractTypeChange}
                   required
                 >
                   {CONTRACT_TYPE_OPTIONS.map((label) => (
@@ -460,6 +520,32 @@ export default function ContractCreatePage() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            <div className={styles.form__row}>
+              <label className={styles.form__label} htmlFor="cc-template">
+                Plantilla base (opcional)
+              </label>
+              <select
+                id="cc-template"
+                className={styles.form__select}
+                value={form.templateId}
+                onChange={handleTemplateChange}
+                disabled={loadingTemplates}
+              >
+                <option value="">
+                  {loadingTemplates ? 'Cargando plantillas…' : '— Sin plantilla (solo cláusulas del sistema) —'}
+                </option>
+                {activeTemplates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                    {t.templateVersion ? ` (v${t.templateVersion})` : ''}
+                  </option>
+                ))}
+              </select>
+              <p className={styles.form__hint}>
+                Si eliges una plantilla, su texto se copia en condiciones adicionales para que puedas editarlo.
+              </p>
             </div>
 
             <div className={styles.form__row}>
@@ -721,21 +807,21 @@ export default function ContractCreatePage() {
 
             {/* ── Condiciones adicionales libres ── */}
             <div className={styles.terms__custom}>
-              <label className={styles.form__label} htmlFor="cc-custom-terms">
+              <label className={styles.form__label}>
                 Condiciones adicionales
               </label>
-              <textarea
-                id="cc-custom-terms"
-                className={`${styles.form__input} ${styles['form__input--textarea']} ${styles['form__input--jumbo']}`}
-                value={customTerms}
-                onChange={(e) => setCustomTerms(e.target.value)}
-                rows={12}
-                placeholder="Escribe aquí todas las cláusulas personalizadas, acuerdos específicos o condiciones legales adicionales…"
-              />
+              <div className={styles.terms__customEditor}>
+                <ContractTemplateRichEditor
+                  value={customTerms}
+                  onChange={setCustomTerms}
+                  placeholder="Cláusulas personalizadas, acuerdos específicos o condiciones adicionales…"
+                  disabled={loadingData || isLoadingContract}
+                />
+              </div>
             </div>
 
             {/* ── Vista previa ── */}
-            {(selectedClauses.length > 0 || customTerms.trim()) && (
+            {(selectedClauses.length > 0 || hasMeaningfulHtmlContent(customTerms)) && (
               <div className={styles.terms__preview}>
                 <h3 className={styles.terms__previewTitle}>
                   Vista previa ({selectedClauses.length} cláusula{selectedClauses.length !== 1 ? 's' : ''})
