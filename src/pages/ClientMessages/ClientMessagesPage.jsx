@@ -29,7 +29,7 @@ function InboxList({ conversations, activeId, onSelect }) {
               <div className={styles.inbox__info}>
                 <p className={styles.inbox__name}>{conv.contactName}</p>
                 <p className={styles.inbox__preview}>
-                {conv.lastMessageOwn ? `Tu: ${conv.lastMessage}` : conv.lastMessage}
+                {conv.lastMessageOwn ? `Tú: ${conv.lastMessage}` : conv.lastMessage}
               </p>
               </div>
               <div className={styles.inbox__meta}>
@@ -57,17 +57,17 @@ function ConversationPanel({ conversation }) {
     e.preventDefault();
     if (!message.trim() || !conversation) return;
     await sendMessage.mutateAsync({
-      receiverId: conversation.id,
+      receiverId: conversation.userId || conversation.recipientId || conversation.id,
       content: message.trim()
     });
     setMessage('');
   };
 
   useEffect(() => {
-    if (conversation?.id && messages.some(m => !m.ownMessage)) {
+    if (conversation?.id && messages?.length > 0 && messages.some(m => !m.ownMessage)) {
       markAsRead.mutate(conversation.id);
     }
-  }, [conversation?.id]);
+  }, [conversation?.id, messages]);
 
   if (!conversation) {
     return (

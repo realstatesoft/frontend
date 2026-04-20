@@ -147,9 +147,9 @@ function CustomNavbar() {
         )}
 
         {isAuthenticated && messagesUnread > 0 && (
-          <Link to="/mensajes" className="navbar-notification-bell" aria-label="Mensajes">
-            <IoNotificationsOutline size={20} />
-            <span className="bell-badge">{messagesUnread > 99 ? '99+' : messagesUnread}</span>
+          <Link to="/mensajes" className="navbar-messages-link" aria-label="Mensajes">
+            <IoChatbubblesOutline size={20} />
+            <span className="bell-badge">{Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}</span>
           </Link>
         )}
 
@@ -190,7 +190,7 @@ function CustomNavbar() {
                       <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> Mis mensajes
                       {messagesUnread > 0 && (
                         <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
-                          {messagesUnread}
+                          {Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}
                         </span>
                       )}
                     </Link>

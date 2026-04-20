@@ -24,15 +24,8 @@ export function useContacts() {
   const { user } = useAuth();
   const role = user?.role;
   
-  const isAgent = role === 'AGENT';
-  const isAdmin = role === 'ADMIN';
-  const isUser = role === 'USER';
-  
   return useMemo(() => ({
-    isAgent,
-    isAdmin,
-    isUser,
-    canSeeAgents: isUser || isAdmin,
-    canSeeClients: isAgent,
+    canSeeAgents: role === 'USER' || role === 'ADMIN',
+    canSeeClients: role === 'AGENT',
   }), [role]);
 }

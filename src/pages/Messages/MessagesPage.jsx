@@ -49,7 +49,7 @@ function ConversationPanel({ conversation }) {
     e.preventDefault();
     if (!message.trim() || !conversation) return;
     await sendMessage.mutateAsync({
-      receiverId: conversation.id,
+      receiverId: conversation.userId || conversation.contactId || conversation.id,
       content: message.trim()
     });
     setMessage('');

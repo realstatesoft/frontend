@@ -10,7 +10,8 @@ import styles from './Sidebar.module.scss';
 export default function Sidebar({ navItems = [] }) {
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
   const { data: convResponse } = useConversations();
-  const unreadCount = convResponse?.data?.reduce((sum, c) => sum + c.unread, 0) || 0;
+  const conversations = Array.isArray(convResponse?.data) ? convResponse.data : Array.isArray(convResponse?.data?.content) ? convResponse.data.content : [];
+  const unreadCount = conversations.reduce((sum, c) => sum + (Number(c?.unread) || 0), 0);
 
   const sidebarClass = [
     styles.sidebar,

@@ -9,6 +9,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const [search, setSearch] = useState('');
   const [selectedContact, setSelectedContact] = useState(null);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
   
   const { canSeeAgents, canSeeClients } = useContacts();
   const { data: agentsData, isLoading: agentsLoading } = useAgents(search);
@@ -16,11 +17,11 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const sendMessage = useSendMessage();
 
   useEffect(() => {
-    if (preSelectedAgent) {
+    if (isOpen && preSelectedAgent) {
       setSelectedContact(preSelectedAgent);
       setStep('compose');
     }
-  }, [preSelectedAgent]);
+  }, [isOpen, preSelectedAgent]);
 
   useEffect(() => {
     if (canSeeClients && isOpen) {
@@ -32,6 +33,11 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const clients = clientsData?.data?.content || clientsData || [];
 
   const handleSelectContact = (contact) => {
+    if (!contact?.id) {
+      setError('No se puede enviar mensaje: contacto inválido');
+      return;
+    }
+    setError('');
     setSelectedContact(contact);
     setStep('compose');
   };
@@ -39,16 +45,21 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const handleSend = async () => {
     if (!message.trim() || !selectedContact) return;
     
-    await sendMessage.mutateAsync({
-      receiverId: selectedContact.id,
-      content: message.trim()
-    });
-    
-    setMessage('');
-    setSelectedContact(null);
-    setStep('select');
-    onSuccess?.();
-    onClose();
+    setError('');
+    try {
+      await sendMessage.mutateAsync({
+        receiverId: selectedContact.id,
+        content: message.trim()
+      });
+      
+      setMessage('');
+      setSelectedContact(null);
+      setStep('select');
+      onSuccess?.();
+      onClose();
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Error al enviar el mensaje');
+    }
   };
 
   const handleClose = () => {
@@ -56,6 +67,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     setSelectedContact(null);
     setMessage('');
     setSearch('');
+    setError('');
     onClose();
   };
 
@@ -81,6 +93,11 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
             </div>
             <span className={styles.contactName}>{getContactName(selectedContact)}</span>
           </div>
+          {error && (
+            <div className="alert alert-danger mb-3" role="alert">
+              {error}
+            </div>
+          )}
           <Form.Group className="mt-3">
             <Form.Control
               as="textarea"
@@ -136,7 +153,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
                   <ListGroup.Item
                     key={agent.id}
                     action
-                    onClick={() => handleSelectContact({ ...agent, id: agent.userId })}
+                    onClick={() => handleSelectContact({ ...agent, id: agent.userId || agent.id })}
                     className={styles.contactItem}
                   >
                     <div className={styles.avatar}>{getContactInitials(agent)}</div>
