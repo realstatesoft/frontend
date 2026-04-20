@@ -1,10 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FiArrowLeft, FiSave, FiSend } from 'react-icons/fi';
+import { Container } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import propertyApi from '../../services/properties/propertyApi';
 import { searchClients } from '../../services/clients/clientApi';
 import { getAllAgents } from '../../services/agents/agentApi';
+import PriceInput from '../../components/commons/PriceInput';
+import CustomNavbar from '../../components/Landing/Navbar';
+import Footer from '../../components/Landing/Footer';
 import { 
   useCreateContract, 
   useUpdateContract,
@@ -37,13 +41,25 @@ const INITIAL_FORM = {
   terms: '',
 };
 
-const PROPERTY_SOURCE_OPTIONS = [
-  { value: 'ASSIGNED', label: 'Mis propiedades asignadas' },
-  { value: 'ALL', label: 'Todas las propiedades públicas' },
-];
+function formatClientOptionLabel(client) {
+  const displayName = client?.name ?? client?.userName ?? (client?.userId != null ? `Cliente #${client.userId}` : 'Cliente');
+  const email = client?.email ?? client?.userEmail ?? '';
+  return email ? `${displayName} (${email})` : displayName;
+}
+
+function isPlaceholderClient(client) {
+  const displayName = client?.name ?? client?.userName ?? '';
+  const email = client?.email ?? client?.userEmail ?? '';
+  return displayName.startsWith('Cliente #') && !email;
+}
 
 export default function ContractCreatePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
+  const prefillRanRef = useRef(false);
+  const locationSearch = location.search;
+
   const [form, setForm] = useState(INITIAL_FORM);
   const [sellerName, setSellerName] = useState('');
   const [selectedClauses, setSelectedClauses] = useState([]);
@@ -53,9 +69,15 @@ export default function ContractCreatePage() {
   const [agents, setAgents] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [commissionError, setCommissionError] = useState('');
+  const [isPreFilling, setIsPreFilling] = useState(false);
 
   const { user } = useAuth();
-  const isAgent = user?.role === 'AGENT';
+  const role = user?.role?.toUpperCase();
+  const isAgent = role === 'AGENT';
+  const isPublicContractsFlow = !isAgent;
+  const isGuidedSellerFlow = !isAgent;
+  const contractsHomePath = isAgent ? '/agent/contratos' : (role === 'OWNER' ? '/owner/ofertas' : '/ofertas');
+  const backLabel = isAgent ? 'Volver a contratos' : 'Volver a ofertas';
 
   const { id: contractIdFromUrl } = useParams();
   const isEditing = Boolean(contractIdFromUrl);
@@ -70,7 +92,6 @@ export default function ContractCreatePage() {
   useEffect(() => {
     if (isEditing && existingContract?.data) {
       const c = existingContract.data;
-      console.log('Cargando contrato para edición:', c);
       
       // Si la propiedad no está en la lista de 'properties', traerla
       if (c.propertyId && !properties.find(p => p.id === c.propertyId)) {
@@ -100,6 +121,62 @@ export default function ContractCreatePage() {
     }
   }, [isEditing, existingContract, properties.length === 0]);
 
+  // ─── Pre-llenado desde Oferta (Query Params) ──────────────────────────────
+  useEffect(() => {
+    if (isEditing || prefillRanRef.current) return;
+
+    const params = new URLSearchParams(location.search);
+    const pId = params.get('propertyId');
+    const bId = params.get('buyerId');
+    const bName = params.get('buyerName');
+    const bEmail = params.get('buyerEmail');
+    const amt = params.get('amount');
+
+    if (bId) {
+      setClients((prev) => {
+        if (prev.some((c) => c?.userId?.toString() === bId)) return prev;
+
+        return [
+          {
+            id: `offer-buyer-${bId}`,
+            userId: bId,
+            name: bName || `Cliente #${bId}`,
+            email: bEmail || '',
+          },
+          ...prev,
+        ];
+      });
+    }
+
+    if (pId) {
+      prefillRanRef.current = true;
+      propertyApi.getById(pId)
+        .then(res => {
+          const prop = res?.data?.data ?? res?.data;
+          if (prop) {
+            setProperties(prev => {
+              if (prev.find(p => p.id.toString() === pId)) return prev;
+              return [prop, ...prev];
+            });
+            
+            setForm(prev => ({
+              ...prev,
+              propertyId: pId,
+              buyerId: bId || prev.buyerId,
+              amount: amt || prop.price?.toString() || prev.amount,
+              sellerId: prop.ownerId || '',
+              listingAgentId: prop.agentId || '',
+              commissionPct: prop.commissionPct || '0.00',
+              listingAgentCommissionPct: prop.agentId ? (prop.commissionPct || '0.00') : '0.00',
+              contractType: prop.category === 'RENT' ? 'RENT' : prev.contractType,
+            }));
+            setSellerName(prop.ownerName || '');
+          }
+        })
+        .catch(err => console.error("Error al pre-cargar oferta:", err));
+    }
+  }, [locationSearch, isEditing]);
+
   // ─── Cargar datos para los selects ──────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
@@ -118,9 +195,52 @@ export default function ContractCreatePage() {
         if (cancelled) return;
 
         const raw = propsRes?.data?.data?.content ?? propsRes?.data?.data ?? propsRes?.data ?? [];
-        setProperties(Array.isArray(raw) ? raw : []);
+        setProperties(prev => {
+           // Combinar con las propiedades ya cargadas (por el pre-llenado)
+           const combined = [...prev, ...raw];
+           const unique = [];
+           const ids = new Set();
+           for (const p of combined) {
+             if (!ids.has(p.id)) {
+               ids.add(p.id);
+               unique.push(p);
+             }
+           }
+           return unique;
+        });
 
-        setClients(clientsRes?.content ?? []);
+        setClients(prev => {
+          const incoming = clientsRes?.content ?? [];
+          const byUserId = new Map();
+          const withoutUserId = new Map();
+
+          for (const client of prev) {
+            const userKey = client?.userId != null ? client.userId.toString() : null;
+            const idKey = client?.id != null ? client.id.toString() : null;
+
+            if (userKey) {
+              byUserId.set(userKey, client);
+            } else if (idKey) {
+              withoutUserId.set(idKey, client);
+            }
+          }
+
+          for (const client of incoming) {
+            const userKey = client?.userId != null ? client.userId.toString() : null;
+            const idKey = client?.id != null ? client.id.toString() : null;
+
+            if (userKey) {
+              const existing = byUserId.get(userKey);
+              if (!existing || isPlaceholderClient(existing)) {
+                byUserId.set(userKey, client);
+              }
+            } else if (idKey && !withoutUserId.has(idKey)) {
+              withoutUserId.set(idKey, client);
+            }
+          }
+
+          return [...byUserId.values(), ...withoutUserId.values()];
+        });
         const agentsRaw = agentsRes?.data ?? agentsRes ?? {};
         setAgents(agentsRaw.content ?? []);
       } catch {
@@ -145,12 +265,10 @@ export default function ContractCreatePage() {
       const prop = res?.data?.data ?? res?.data ?? null;
       
       if (prop) {
-        // Añadir a la lista si no está
         setProperties(prev => {
           if (prev.find(p => p.id === prop.id)) return prev;
           return [prop, ...prev];
         });
-        // Seleccionarla
         handlePropertyChange({ target: { value: prop.id } });
         Swal.fire({
           icon: 'success',
@@ -199,7 +317,6 @@ export default function ContractCreatePage() {
     }
   };
 
-  // ─── Validar comisiones ────────────────────────────────────────────────────
   const validateCommission = useCallback((updated) => {
     const total   = parseFloat(updated.commissionPct) || 0;
     const listing = parseFloat(updated.listingAgentCommissionPct) || 0;
@@ -226,7 +343,6 @@ export default function ContractCreatePage() {
     });
   };
 
-  // ─── Toggle cláusulas ──────────────────────────────────────────────────────
   const toggleClause = (clauseId) => {
     setSelectedClauses((prev) =>
       prev.includes(clauseId)
@@ -242,7 +358,6 @@ export default function ContractCreatePage() {
 
   const clearAllClauses = () => setSelectedClauses([]);
 
-  // ─── Compilar términos finales ─────────────────────────────────────────────
   const buildTermsText = useCallback(() => {
     const clauses = getClausesForType(form.contractType);
     const selected = clauses.filter((c) => selectedClauses.includes(c.id));
@@ -253,9 +368,7 @@ export default function ContractCreatePage() {
     return parts.join('\n\n');
   }, [form.contractType, selectedClauses, customTerms]);
 
-  // ─── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async (sendAfterCreate = false) => {
-    // 1. Validaciones de campos obligatorios
     if (!form.propertyId) {
       Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'La propiedad es obligatoria.' });
       return;
@@ -273,7 +386,6 @@ export default function ContractCreatePage() {
       return;
     }
 
-    // 2. Validaciones de comisiones
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
 
@@ -334,7 +446,7 @@ export default function ContractCreatePage() {
         });
       }
 
-      navigate('/agent/contratos');
+      navigate(contractsHomePath);
     } catch (err) {
       Swal.fire({
         icon: 'error',
@@ -344,22 +456,20 @@ export default function ContractCreatePage() {
     }
   };
 
-  // ─── Cláusulas disponibles ─────────────────────────────────────────────────
   const availableClauses = getClausesForType(form.contractType);
-  const isPending = createContract.isPending || updateStatus.isPending;
+  const isPending = createContract.isPending || updateContract.isPending || updateStatus.isPending;
 
-  return (
-    <div className={styles.page}>
-      {/* ── Header ── */}
+  const pageContent = (
+    <div className={`${styles.page} ${isPublicContractsFlow ? styles['page--public'] : ''}`}>
       <div className={styles.page__header}>
         <div className={styles.page__headerTitleRow}>
           <div className={styles.page__headerTexts}>
             <button
               type="button"
               className={styles.page__back}
-              onClick={() => navigate('/agent/contratos')}
+              onClick={() => navigate(contractsHomePath)}
             >
-              <FiArrowLeft /> Volver a contratos
+              <FiArrowLeft /> {backLabel}
             </button>
             <h1 className={styles.page__title}>
               {isEditing ? `Editando Contrato #${contractIdFromUrl}` : 'Nuevo Contrato'}
@@ -369,29 +479,27 @@ export default function ContractCreatePage() {
                 ? 'Modifica los datos del borrador antes de enviarlo.' 
                 : 'Completa la información del contrato. Se guardará como borrador hasta que lo envíes.'}
             </p>
+            {isGuidedSellerFlow && (
+              <p className={styles.page__helper}>
+                Tu propiedad y comisiones se completan automáticamente para que solo confirmes los datos esenciales del acuerdo.
+              </p>
+            )}
           </div>
 
-          {(loadingData || isLoadingContract) && (
+          {(loadingData || isLoadingContract || isPreFilling) && (
             <div className={styles.page__loadingBadge}>
               <div className={styles.page__loadingPulse}></div>
-              {isLoadingContract ? 'Cargando contrato...' : 'Cargando datos maestros...'}
+              {isPreFilling ? 'Pre-cargando oferta...' : isLoadingContract ? 'Cargando contrato...' : 'Cargando datos maestros...'}
             </div>
           )}
         </div>
       </div>
 
       <div className={styles.page__content}>
-
-
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        {/* COLUMNA IZQUIERDA — Datos del contrato */}
-        {/* ══════════════════════════════════════════════════════════════════ */}
         <div className={styles.page__main}>
-          {/* ── Propiedad y tipo ── */}
           <fieldset className={styles.form__section}>
             <legend className={styles.form__sectionTitle}>Propiedad y tipo</legend>
 
-            {/* Buscador de MLS */}
             <div className={styles.form__row} style={{ marginBottom: '1.5rem' }}>
               <label className={styles.form__label}>
                 Buscar por MLS-ID (ID de propiedad)
@@ -466,21 +574,18 @@ export default function ContractCreatePage() {
               <label className={styles.form__label} htmlFor="cc-amount">
                 Monto (USD) <span className={styles.form__required}>*</span>
               </label>
-              <input
+              <PriceInput
                 id="cc-amount"
-                type="number"
                 name="amount"
                 className={styles.form__input}
                 value={form.amount}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
+                onChange={(e) => handleChange({ target: { name: 'amount', value: e.target.value } })}
+                placeholder="0"
                 required
               />
             </div>
           </fieldset>
 
-          {/* ── Partes del contrato ── */}
           <fieldset className={styles.form__section}>
             <legend className={styles.form__sectionTitle}>Partes del contrato</legend>
 
@@ -516,7 +621,7 @@ export default function ContractCreatePage() {
                     .filter((c) => c.userId != null)
                     .map((c) => (
                       <option key={c.id} value={c.userId}>
-                        {c.name ?? c.userName} ({c.email ?? c.userEmail})
+                        {formatClientOptionLabel(c)}
                       </option>
                     ))}
                 </select>
@@ -524,118 +629,131 @@ export default function ContractCreatePage() {
             </div>
           </fieldset>
 
-          {/* ── Agentes ── */}
-          <fieldset className={styles.form__section}>
-            <legend className={styles.form__sectionTitle}>Agentes (opcionales)</legend>
+          {isAgent ? (
+            <>
+              <fieldset className={styles.form__section}>
+                <legend className={styles.form__sectionTitle}>Agentes (opcionales)</legend>
+                <div className={styles.form__grid2}>
+                  <div className={styles.form__row}>
+                    <label className={styles.form__label} htmlFor="cc-listing-agent">
+                      Agente listador
+                    </label>
+                    <select
+                      id="cc-listing-agent"
+                      name="listingAgentId"
+                      className={styles.form__select}
+                      value={form.listingAgentId}
+                      onChange={handleChange}
+                    >
+                      <option value="">— Sin agente listador —</option>
+                      {agents.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.userName} ({a.licenseNumber ?? ''})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.form__row}>
+                    <label className={styles.form__label} htmlFor="cc-buyer-agent">
+                      Agente del comprador
+                    </label>
+                    <select
+                      id="cc-buyer-agent"
+                      name="buyerAgentId"
+                      className={styles.form__select}
+                      value={form.buyerAgentId}
+                      onChange={handleChange}
+                    >
+                      <option value="">— Sin agente del comprador —</option>
+                      {agents.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.userName} ({a.licenseNumber ?? ''})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </fieldset>
 
-            <div className={styles.form__grid2}>
-              <div className={styles.form__row}>
-                <label className={styles.form__label} htmlFor="cc-listing-agent">
-                  Agente listador
-                </label>
-                <select
-                  id="cc-listing-agent"
-                  name="listingAgentId"
-                  className={styles.form__select}
-                  value={form.listingAgentId}
-                  onChange={handleChange}
-                >
-                  <option value="">— Sin agente listador —</option>
-                  {agents.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.userName} ({a.licenseNumber ?? ''})
-                    </option>
-                  ))}
-                </select>
+              <fieldset className={styles.form__section}>
+                <legend className={styles.form__sectionTitle}>Comisiones (%)</legend>
+                <div className={styles.form__grid3}>
+                  <div className={styles.form__row}>
+                    <label className={styles.form__label} htmlFor="cc-comm">
+                      Total comisión
+                    </label>
+                    <input
+                      id="cc-comm"
+                      type="number"
+                      name="commissionPct"
+                      className={styles.form__input}
+                      value={form.commissionPct}
+                      onChange={handleChange}
+                      min="0"
+                      max="100"
+                      step="0.01"
+                    />
+                  </div>
+                  <div className={styles.form__row}>
+                    <label className={styles.form__label} htmlFor="cc-comm-listing">
+                      Agente listador
+                    </label>
+                    <input
+                      id="cc-comm-listing"
+                      type="number"
+                      name="listingAgentCommissionPct"
+                      className={styles.form__input}
+                      value={form.listingAgentCommissionPct}
+                      onChange={handleChange}
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      disabled={!form.listingAgentId}
+                    />
+                  </div>
+                  <div className={styles.form__row}>
+                    <label className={styles.form__label} htmlFor="cc-comm-buyer">
+                      Agente comprador
+                    </label>
+                    <input
+                      id="cc-comm-buyer"
+                      type="number"
+                      name="buyerAgentCommissionPct"
+                      className={styles.form__input}
+                      value={form.buyerAgentCommissionPct}
+                      onChange={handleChange}
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      disabled={!form.buyerAgentId}
+                    />
+                  </div>
+                </div>
+                {commissionError && <p className={styles.form__error}>{commissionError}</p>}
+              </fieldset>
+            </>
+          ) : (
+            <fieldset className={styles.form__section}>
+              <legend className={styles.form__sectionTitle}>Intermediación</legend>
+              <div className={styles.form__summaryGrid}>
+                <div className={styles.form__summaryItem}>
+                  <span className={styles.form__summaryLabel}>Agente asignado</span>
+                  <span className={styles.form__summaryValue}>
+                    {agents.find((a) => String(a.id) === String(form.listingAgentId))?.userName
+                      || (form.listingAgentId ? `Agente asignado #${form.listingAgentId}` : 'Sin agente asignado')}
+                  </span>
+                </div>
+                <div className={styles.form__summaryItem}>
+                  <span className={styles.form__summaryLabel}>Comisión de la operación</span>
+                  <span className={styles.form__summaryValue}>{form.commissionPct || '0.00'}%</span>
+                </div>
               </div>
+              {commissionError && <p className={styles.form__error}>{commissionError}</p>}
+            </fieldset>
+          )}
 
-              <div className={styles.form__row}>
-                <label className={styles.form__label} htmlFor="cc-buyer-agent">
-                  Agente del comprador
-                </label>
-                <select
-                  id="cc-buyer-agent"
-                  name="buyerAgentId"
-                  className={styles.form__select}
-                  value={form.buyerAgentId}
-                  onChange={handleChange}
-                >
-                  <option value="">— Sin agente del comprador —</option>
-                  {agents.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.userName} ({a.licenseNumber ?? ''})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </fieldset>
-
-          {/* ── Comisiones ── */}
-          <fieldset className={styles.form__section}>
-            <legend className={styles.form__sectionTitle}>Comisiones (%)</legend>
-
-            <div className={styles.form__grid3}>
-              <div className={styles.form__row}>
-                <label className={styles.form__label} htmlFor="cc-comm">
-                  Total comisión
-                </label>
-                <input
-                  id="cc-comm"
-                  type="number"
-                  name="commissionPct"
-                  className={styles.form__input}
-                  value={form.commissionPct}
-                  onChange={handleChange}
-                  min="0"
-                  max="100"
-                  step="0.01"
-                />
-              </div>
-              <div className={styles.form__row}>
-                <label className={styles.form__label} htmlFor="cc-comm-listing">
-                  Agente listador
-                </label>
-                <input
-                  id="cc-comm-listing"
-                  type="number"
-                  name="listingAgentCommissionPct"
-                  className={styles.form__input}
-                  value={form.listingAgentCommissionPct}
-                  onChange={handleChange}
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  disabled={!form.listingAgentId}
-                />
-              </div>
-              <div className={styles.form__row}>
-                <label className={styles.form__label} htmlFor="cc-comm-buyer">
-                  Agente comprador
-                </label>
-                <input
-                  id="cc-comm-buyer"
-                  type="number"
-                  name="buyerAgentCommissionPct"
-                  className={styles.form__input}
-                  value={form.buyerAgentCommissionPct}
-                  onChange={handleChange}
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  disabled={!form.buyerAgentId}
-                />
-              </div>
-            </div>
-            {commissionError && (
-              <p className={styles.form__error}>{commissionError}</p>
-            )}
-          </fieldset>
-
-          {/* ── Fechas ── */}
           <fieldset className={styles.form__section}>
             <legend className={styles.form__sectionTitle}>Vigencia</legend>
-
             <div className={styles.form__grid2}>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="cc-start">
@@ -668,48 +786,22 @@ export default function ContractCreatePage() {
           </fieldset>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        {/* COLUMNA DERECHA — Términos y condiciones */}
-        {/* ══════════════════════════════════════════════════════════════════ */}
         <div className={styles.page__sidebar}>
           <div className={styles.terms}>
             <div className={styles.terms__header}>
               <h2 className={styles.terms__title}>Términos y Condiciones</h2>
-              <p className={styles.terms__subtitle}>
-                Selecciona las cláusulas que aplican a este contrato
-              </p>
+              <p className={styles.terms__subtitle}>Selecciona las cláusulas aplicables</p>
               <div className={styles.terms__actions}>
-                <button
-                  type="button"
-                  className={styles.terms__actionBtn}
-                  onClick={selectAllClauses}
-                >
-                  Seleccionar todas
-                </button>
-                <button
-                  type="button"
-                  className={styles.terms__actionBtn}
-                  onClick={clearAllClauses}
-                >
-                  Limpiar
-                </button>
+                <button type="button" className={styles.terms__actionBtn} onClick={selectAllClauses}>Todas</button>
+                <button type="button" className={styles.terms__actionBtn} onClick={clearAllClauses}>Limpiar</button>
               </div>
             </div>
-
             <div className={styles.terms__list}>
               {availableClauses.map((clause) => {
                 const checked = selectedClauses.includes(clause.id);
                 return (
-                  <label
-                    key={clause.id}
-                    className={`${styles.terms__clause} ${checked ? styles['terms__clause--active'] : ''}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleClause(clause.id)}
-                      className={styles.terms__checkbox}
-                    />
+                  <label key={clause.id} className={`${styles.terms__clause} ${checked ? styles['terms__clause--active'] : ''}`}>
+                    <input type="checkbox" checked={checked} onChange={() => toggleClause(clause.id)} className={styles.terms__checkbox} />
                     <div className={styles.terms__clauseContent}>
                       <span className={styles.terms__clauseLabel}>{clause.label}</span>
                       <p className={styles.terms__clauseText}>{clause.text}</p>
@@ -718,66 +810,67 @@ export default function ContractCreatePage() {
                 );
               })}
             </div>
-
-            {/* ── Condiciones adicionales libres ── */}
             <div className={styles.terms__custom}>
-              <label className={styles.form__label} htmlFor="cc-custom-terms">
-                Condiciones adicionales
-              </label>
+              <label className={styles.form__label}>Condiciones adicionales</label>
               <textarea
-                id="cc-custom-terms"
-                className={`${styles.form__input} ${styles['form__input--textarea']} ${styles['form__input--jumbo']}`}
+                className={`${styles.form__input} ${styles['form__input--textarea']}`}
                 value={customTerms}
                 onChange={(e) => setCustomTerms(e.target.value)}
-                rows={12}
-                placeholder="Escribe aquí todas las cláusulas personalizadas, acuerdos específicos o condiciones legales adicionales…"
+                rows={8}
               />
             </div>
-
-            {/* ── Vista previa ── */}
-            {(selectedClauses.length > 0 || customTerms.trim()) && (
-              <div className={styles.terms__preview}>
-                <h3 className={styles.terms__previewTitle}>
-                  Vista previa ({selectedClauses.length} cláusula{selectedClauses.length !== 1 ? 's' : ''})
-                </h3>
-                <pre className={styles.terms__previewText}>{buildTermsText()}</pre>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      {/* ── Footer con acciones ── */}
-      <div className={styles.page__footer}>
-        <button
-          type="button"
-          className={`${styles.btn} ${styles['btn--ghost']}`}
-          onClick={() => navigate('/agent/contratos')}
-          disabled={isPending}
-        >
-          Cancelar
-        </button>
-        <div className={styles.page__footerActions}>
+      <div className={`${styles.page__footer} ${isPublicContractsFlow ? styles['page__footer--public'] : ''}`}>
+        <div className={`${styles.page__footerActions} ${isPublicContractsFlow ? styles['page__footerActions--public'] : ''}`}>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles['btn--ghost']}`}
+            onClick={() => navigate(contractsHomePath)}
+            disabled={isPending}
+          >
+            Cancelar
+          </button>
           <button
             type="button"
             className={`${styles.btn} ${styles['btn--secondary']}`}
             onClick={() => handleSubmit(false)}
-            disabled={isPending || !!commissionError}
+            disabled={isPending}
           >
-            <FiSave />
-            {isPending ? 'Guardando…' : 'Guardar borrador'}
+            <FiSave /> Guardar borrador
           </button>
           <button
             type="button"
             className={`${styles.btn} ${styles['btn--primary']}`}
             onClick={() => handleSubmit(true)}
-            disabled={isPending || !!commissionError}
+            disabled={isPending}
           >
-            <FiSend />
-            {isPending ? 'Enviando…' : 'Crear y enviar'}
+            <FiSend /> {isPending ? 'Enviando...' : 'Crear y enviar'}
           </button>
         </div>
       </div>
     </div>
+  );
+
+  if (isPublicContractsFlow) {
+    return (
+      <>
+        <CustomNavbar />
+        <div className={styles.pageShell}>
+          <Container className={styles.pageShell__container}>
+            {pageContent}
+          </Container>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {pageContent}
+    </>
   );
 }
