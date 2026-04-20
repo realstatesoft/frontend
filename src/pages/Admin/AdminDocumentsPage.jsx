@@ -334,20 +334,39 @@ export default function AdminDocumentsPage() {
       let allDocs = [];
       let page = 0;
       let last = false;
+      const MAX_PAGES = 50; 
 
-      while (!last) {
-        const { data } = await api.get(`/users/documents?page=${page}&size=100`);
+      while (!last && page < MAX_PAGES) {
+        const response = await api.get(`/users/documents?page=${page}&size=100`);
+        const data = response.data;
+
         if (data?.success && data?.data) {
-          allDocs = [...allDocs, ...(data.data.content || [])];
-          last = data.data.last;
-          page++;
+          const content = data.data.content || [];
+          allDocs = [...allDocs, ...content];
+          
+          last = data.data.last === true;
+          if (last || content.length === 0) {
+            last = true;
+          } else {
+            page++;
+          }
         } else {
           last = true;
         }
       }
+
+      if (page >= MAX_PAGES) {
+        throw new Error("Se alcanzó el límite máximo de páginas. Hay demasiados documentos para mostrar en una sola carga.");
+      }
+      
       setDocuments(allDocs);
     } catch (err) {
-      Swal.fire("Error", "No se pudieron cargar los documentos " + (err.response?.data?.message || ""), "error");
+      const errorMsg = err.response?.data?.message || err.message || "Error desconocido";
+      Swal.fire({
+        title: "Error",
+        text: "No se pudieron cargar los documentos: " + errorMsg,
+        icon: "error"
+      });
     } finally {
       setLoading(false);
     }
@@ -399,7 +418,11 @@ export default function AdminDocumentsPage() {
       );
       await fetchDocuments();
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || err.message, "error");
+      Swal.fire({
+        title: "Error",
+        text: err.response?.data?.message || err.message,
+        icon: "error"
+      });
     } finally {
       setProcessingId(null);
     }
@@ -417,7 +440,7 @@ export default function AdminDocumentsPage() {
       {/* Header */}
       <div className="kyc-page__header">
         <div>
-          <h2>Verificación de Identidad (KYC)</h2>
+          <h2>Verificación de Identidad</h2>
           <p>Revisión de solicitudes de usuarios</p>
         </div>
         <Form.Select
