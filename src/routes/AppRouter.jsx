@@ -21,6 +21,8 @@ import PropertyManagementOptions from "../pages/PropertyManagementOptions/Proper
 import ClientList from "../pages/ClientList/ClientList";
 import AgentProfilePage from "../pages/Agents/AgentProfilePage";
 import AgentEditPage from "../pages/Agents/AgentEditPage";
+import AgentSearchPage from "../pages/Agents/AgentSearchPage";
+import PublicAgentProfilePage from "../pages/Agents/PublicAgentProfilePage";
 // Agent Dashboard
 import AgentLayout from "../components/layout/AgentLayout/AgentLayout";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
@@ -66,6 +68,8 @@ export default function AppRouter() {
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/agents/:id" element={<PublicAgentProfilePage />} />
+            <Route path="/AgentSearch" element={<AgentSearchPage />} />
 
             {/* ── Rutas protegidas (requieren autenticación) ────────── */}
             <Route element={<ProtectedRoute />}>
