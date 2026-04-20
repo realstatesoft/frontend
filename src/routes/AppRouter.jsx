@@ -52,6 +52,7 @@ import FlagsPage from "../pages/Admin/Flags/FlagsPage";
 import PreferencesPage from "../pages/PreferencesPage";
 
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
+import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
 
 export default function AppRouter() {
     return (
@@ -137,6 +138,7 @@ export default function AppRouter() {
                     <Route path="audit-logs" element={<AdminAuditLogsPage />} />
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
+                    <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                 </Route>
             </Route>
 

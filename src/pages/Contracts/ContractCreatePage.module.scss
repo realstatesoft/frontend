@@ -255,6 +255,13 @@
   color: var(--color-danger, #ef4444);
 }
 
+.form__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+
 .form__input,
 .form__select {
   width: 100%;
@@ -467,6 +474,10 @@
   gap: 6px;
   padding-top: var(--spacing-sm);
   border-top: 1px solid var(--color-border);
+}
+
+.terms__customEditor {
+  width: 100%;
 }
 
 // ─── Preview ──────────────────────────────────────────────────────────────────
