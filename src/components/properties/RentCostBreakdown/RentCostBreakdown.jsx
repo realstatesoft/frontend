@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, Spinner, Alert } from 'react-bootstrap';
-import rentService from '../../services/rentService';
-import { formatPrice } from '../../utils/priceFormat';
+import rentService from '../../../services/rentService';
+import { formatPrice } from '../../../utils/priceFormat';
 import styles from './RentCostBreakdown.module.scss';
 
 export default function RentCostBreakdown({ propertyId }) {
