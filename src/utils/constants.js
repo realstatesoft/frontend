@@ -28,6 +28,7 @@ export const ADMIN_ROUTES = {
   FLAGS: '/admin/flags',
   DOCUMENTS: '/admin/documents',
   RENT_CONFIG: '/admin/rent-config',
+  CONTRACT_TEMPLATES: '/admin/contract-templates',
 };
 
 export const STATUS_COLORS = {

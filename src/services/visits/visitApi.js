@@ -37,6 +37,15 @@ export async function getMyVisitRequestsAsBuyer() {
 }
 
 /**
+ * Obtiene las solicitudes de visita del propietario logueado (recibidas).
+ * GET /visit-requests/me/owner
+ */
+export async function getMyVisitRequestsAsOwner() {
+  const response = await api.get("/visit-requests/me/owner");
+  return response.data?.data ?? [];
+}
+
+/**
  * Obtiene las solicitudes de visita de una propiedad.
  * GET /visit-requests/property/{propertyId}
  */
@@ -99,6 +108,7 @@ export default {
   getAgentAvailability,
   getMyVisitRequestsAsAgent,
   getMyVisitRequestsAsBuyer,
+  getMyVisitRequestsAsOwner,
   getVisitRequestsByProperty,
   createVisitRequest,
   acceptVisitRequest,

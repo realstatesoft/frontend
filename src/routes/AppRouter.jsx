@@ -21,6 +21,8 @@ import PropertyManagementOptions from "../pages/PropertyManagementOptions/Proper
 import ClientList from "../pages/ClientList/ClientList";
 import AgentProfilePage from "../pages/Agents/AgentProfilePage";
 import AgentEditPage from "../pages/Agents/AgentEditPage";
+import AgentSearchPage from "../pages/Agents/AgentSearchPage";
+import PublicAgentProfilePage from "../pages/Agents/PublicAgentProfilePage";
 // Agent Dashboard
 import AgentLayout from "../components/layout/AgentLayout/AgentLayout";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
@@ -39,8 +41,6 @@ import OfferManagementPage from "../pages/Offers/OfferManagementPage";
 // Owner Dashboard
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
 import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
-import OwnerPropertiesPage from "../pages/OwnerProperties/OwnerPropertiesPage";
-import OwnerVisitsPage from "../pages/OwnerVisits/OwnerVisitsPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
@@ -55,11 +55,12 @@ import PreferencesPage from "../pages/PreferencesPage";
 
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
 import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
+import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
 
 export default function AppRouter() {
     return (
         <Routes>
-            {/* -- Rutas públicas ------------------------------??-------- */}
+            {/* -- Rutas pï¿½blicas ------------------------------??-------- */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/login" element={<LogIn />} />
@@ -68,8 +69,10 @@ export default function AppRouter() {
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/agents/:id" element={<PublicAgentProfilePage />} />
+            <Route path="/AgentSearch" element={<AgentSearchPage />} />
 
-            {/* -- Rutas protegidas (requieren autenticación) ---------- */}
+            {/* -- Rutas protegidas (requieren autenticaciï¿½n) ---------- */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<UserProfilePage />} />
                 <Route path="/create-property" element={<CreateProperty />} />
@@ -117,8 +120,8 @@ export default function AppRouter() {
                 <Route path="/owner" element={<OwnerLayout />}>
                     <Route index element={<Navigate to="/owner/dashboard" replace />} />
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
-                    <Route path="propiedades" element={<OwnerPropertiesPage />} />
-                    <Route path="visitas" element={<OwnerVisitsPage />} />
+                    <Route path="propiedades" element={<MyProperties hideNavbar={true} />} />
+                    <Route path="visitas" element={<VisitRequests mode="OWNER" />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                 </Route>
@@ -141,6 +144,7 @@ export default function AppRouter() {
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
                     <Route path="rent-config" element={<RentConfigPage />} />
+                    <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                 </Route>
             </Route>
 
