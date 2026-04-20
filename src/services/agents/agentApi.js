@@ -37,14 +37,14 @@ export async function getAgentById(id) {
 }
 
 /**
- * Busca agentes por keyword.
+ * Busca agentes por keyword (paginado desde el backend).
  * @param {string} keyword - Palabra clave de búsqueda
- * @param {Object} params - Parámetros de paginación
+ * @param {Object} params - Parámetros de paginación (page, size)
  * @returns {Promise<Object>} Página de agentes
  */
 export async function searchAgents(keyword, params = {}) {
   const response = await api.get("/agents/search", {
-    params: { q: keyword, ...params }
+    params: { q: keyword || undefined, ...params }
   });
   return response.data;
 }
