@@ -5,6 +5,10 @@ const ownerService = {
     return api.get('/dashboard/owner/stats').then((res) => res.data);
   },
 
+  getOverview() {
+    return api.get('/dashboard/owner/overview').then((res) => res.data);
+  },
+
   getMyProperties(params = {}) {
     return api.get('/properties/me', { params }).then((res) => {
       // Backend returns ApiResponse<Page<...>>, extract content array
@@ -17,7 +21,7 @@ const ownerService = {
   },
 
   getVisitRequests() {
-    return api.get('/visit-requests/me/buyer').then((res) => {
+    return api.get('/visit-requests/me/owner').then((res) => {
       // Map backend VisitRequestResponse to the shape expected by OwnerVisitsPage
       const visits = res.data?.data;
       if (Array.isArray(visits)) {

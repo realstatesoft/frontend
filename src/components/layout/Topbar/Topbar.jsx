@@ -106,15 +106,13 @@ export default function Topbar({ extraActions }) {
               <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
               </Link>
+              <Link to="/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Panel de Control
+              </Link>
               {user?.role === 'AGENT' && (
-                <>
-                  <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
-                  </Link>
-                  <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Dashboard
-                  </Link>
-                </>
+                <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
+                </Link>
               )}
               <hr className="profile-dropdown-divider" />
               <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
