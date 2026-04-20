@@ -125,7 +125,7 @@ const ProfileHeader = ({ client }) => {
               variant="primary"
               className="rounded-pill px-4 d-flex align-items-center border-0"
               style={{ backgroundColor: '#0D6EFD' }}
-              onClick={() => navigate(`/clients/${client.id}/edit`)}
+              onClick={() => navigate(`/clientes/${client.id}/editar`)}
             >
               <SendFill className="me-2" style={{ transform: 'rotate(45deg)', fontSize: '0.8rem' }} />
               Editar

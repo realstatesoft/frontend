@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiUserPlus, FiHome, FiCalendar } from 'react-icons/fi';
+import { FiUserPlus, FiHome, FiCalendar, FiDollarSign } from 'react-icons/fi';
 import { AGENT_ROUTES } from '../../../utils/constants';
 import styles from './QuickActions.module.scss';
 
@@ -7,6 +7,7 @@ const ACTIONS = [
   { label: 'Nuevo Cliente', icon: <FiUserPlus />, to: AGENT_ROUTES.REGISTER_CLIENT },
   { label: 'Nueva Propiedad', icon: <FiHome />, to: AGENT_ROUTES.CREATE_PROPERTY },
   { label: 'Agendar Visita', icon: <FiCalendar />, to: AGENT_ROUTES.AGENDA },
+  { label: 'Ver Ofertas', icon: <FiDollarSign />, to: AGENT_ROUTES.OFFERS },
 ];
 
 export default function QuickActions() {

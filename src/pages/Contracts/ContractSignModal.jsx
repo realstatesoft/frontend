@@ -113,7 +113,7 @@ export default function ContractSignModal({ contract, onClose, onSuccess }) {
   if (!contract || loadingSigs) return null;
 
   return (
-    <div className={styles.modal__backdrop} onClick={onClose}>
+    <div className={styles.modal__backdrop} onClick={onClose} role="dialog" aria-modal="true">
       <div
         className={styles.modal__box}
         onClick={(e) => e.stopPropagation()}

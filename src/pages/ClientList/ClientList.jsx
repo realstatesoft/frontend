@@ -152,7 +152,7 @@ export default function ClientList() {
                         </div>
                         <div className="d-flex gap-2">
                             {canEdit && (
-                                <Link to="/clients/register" className="btn btn-primary">
+                                <Link to="/clientes/registrar" className="btn btn-primary">
                                     <i className="bi bi-person-plus me-2"></i>
                                     Nuevo Prospecto
                                 </Link>
@@ -385,7 +385,7 @@ export default function ClientList() {
                                                     </td>
                                                     <td className="text-end">
                                                         <Link
-                                                            to={`/clients/${client.id}?type=${client.internalType || 'AGENT'}`}
+                                                            to={`/clientes/${client.id}?type=${client.internalType || 'AGENT'}`}
                                                             className="btn btn-sm btn-light me-1"
                                                             title="Ver Perfil"
                                                         >
@@ -394,7 +394,7 @@ export default function ClientList() {
                                                         {canEdit && (
                                                             <>
                                                                 <Link
-                                                                    to={`/clients/${client.id}/edit?type=${client.internalType || 'AGENT'}`}
+                                                                    to={`/clientes/${client.id}/editar?type=${client.internalType || 'AGENT'}`}
                                                                     className="btn btn-sm btn-light me-1"
                                                                     title="Editar"
                                                                 >

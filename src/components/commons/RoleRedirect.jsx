@@ -8,13 +8,20 @@ export default function RoleRedirect() {
     return <Navigate to="/login" replace />;
   }
 
-  if (user?.role === 'AGENT') {
+  const role = user?.role?.toUpperCase();
+
+  if (role === 'AGENT') {
     return <Navigate to="/agent/dashboard" replace />;
   }
 
-  if (user?.role?.toUpperCase() === 'ADMIN') {
+  if (role === 'ADMIN') {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
-  return <Navigate to="/owner/dashboard" replace />;
+  if (role === 'USER') {
+    return <Navigate to="/owner/dashboard" replace />;
+  }
+
+  // Fallback to home page for unrecognized roles
+  return <Navigate to="/" replace />;
 }
