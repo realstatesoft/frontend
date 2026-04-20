@@ -105,7 +105,7 @@ export default function AppRouter() {
             </Route>
 
             {/* ── Rutas protegidas (Owner / User) ───────────────────────── */}
-            <Route element={<ProtectedRoute requiredRole={['OWNER', 'USER']} />}>
+            <Route element={<ProtectedRoute requiredRole="USER" />}>
                 <Route path="/owner" element={<OwnerLayout />}>
                     <Route index element={<Navigate to="/owner/dashboard" replace />} />
                     <Route path="dashboard" element={<OwnerDashboardPage />} />

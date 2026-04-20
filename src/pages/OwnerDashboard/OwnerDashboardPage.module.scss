@@ -2,11 +2,13 @@
 
 .dashboard {
   @include flex-column;
+
   gap: var(--spacing-xl);
 }
 
 .dashboard__header {
   @include flex-between;
+
   flex-wrap: wrap;
   gap: var(--spacing-md);
 }
@@ -53,6 +55,7 @@
 
 .dashboard__alert {
   @include glass-card;
+
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
@@ -82,6 +85,7 @@
 
   &_action {
     @include flex-center;
+
     padding: 8px 16px;
     background: var(--color-warning);
     color: #fff;
@@ -111,12 +115,15 @@
 
 .section {
   @include glass-card;
+
   padding: var(--spacing-lg);
   @include flex-column;
+
   gap: var(--spacing-md);
 
   &__header {
     @include flex-between;
+
     margin-bottom: var(--spacing-xs);
   }
 
@@ -144,6 +151,7 @@
 
 .list {
   @include flex-column;
+
   gap: var(--spacing-sm);
 }
 
@@ -164,6 +172,21 @@
     height: 45px;
     border-radius: 6px;
     object-fit: cover;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+
+    &--placeholder {
+      background: rgba(var(--color-accent-rgb), 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "🏠";
+        opacity: 0.5;
+        font-size: 1.2rem;
+      }
+    }
   }
 
   &_info {

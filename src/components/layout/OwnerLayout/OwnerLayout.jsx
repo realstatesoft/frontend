@@ -28,7 +28,7 @@ export default function OwnerLayout() {
   const { sidebarCollapsed } = useUIStore();
   const location = useLocation();
 
-  if (user?.role !== 'OWNER') return <RoleRedirect />;
+  if (user?.role !== 'USER') return <RoleRedirect />;
 
   const isDashboard = location.pathname === OWNER_ROUTES.DASHBOARD;
 
