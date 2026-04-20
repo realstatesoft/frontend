@@ -1,15 +1,53 @@
 @use "../../styles/mixins" as *;
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-bg-primary);
+}
+
 .page {
   @include flex-column;
 
   gap: var(--spacing-xl);
 
-  height: calc(100vh - var(--topbar-height) - var(--spacing-xl) * 2);
+  flex: 1;
+
+  padding: var(--spacing-xl);
+
+  min-height: 0;
 }
 
 .page__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
   flex-shrink: 0;
+}
+
+.page__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 6px 8px;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--color-bg-surface-hover);
+    color: var(--color-text-primary);
+  }
+}
+
+.page__headerText {
+  flex: 1;
 }
 
 .page__title {
@@ -22,6 +60,13 @@
   font-size: 0.875rem;
   color: var(--color-text-muted);
   margin-top: 4px;
+}
+
+.page__loading {
+  @include flex-center;
+  flex: 1;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
 }
 
 .page__body {
@@ -41,11 +86,14 @@
   }
 }
 
-// Inbox sidebar
 .inbox {
-  @include glass-card;
-
   @include flex-column;
+
+  background: var(--color-bg-surface);
+
+  border: 1px solid var(--color-border);
+
+  border-radius: var(--radius-md);
 
   overflow: hidden;
 }
@@ -63,6 +111,13 @@
   overflow-y: auto;
   @include scrollbar-dark;
   flex: 1;
+}
+
+.inbox__empty {
+  @include flex-center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
 }
 
 .inbox__item {
@@ -85,7 +140,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-primary);
     outline-offset: -2px;
     background: var(--color-bg-surface-hover);
   }
@@ -169,11 +224,14 @@
   font-weight: 700;
 }
 
-// Conversation panel
 .conversation {
-  @include glass-card;
-
   @include flex-column;
+
+  background: var(--color-bg-surface);
+
+  border: 1px solid var(--color-border);
+
+  border-radius: var(--radius-md);
 
   overflow: hidden;
 }
@@ -238,15 +296,19 @@
   }
 }
 
+.conversation__bubbleText {
+  overflow-wrap: break-word;
+}
+
 .conversation__bubbleTime {
   font-size: 0.6875rem;
-  color: var(--color-text-muted);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 4px;
   text-align: right;
 
   .conversation__bubble--other & {
-    text-align: left;
     color: var(--color-text-muted);
+    text-align: left;
   }
 }
 
@@ -285,6 +347,11 @@
 
   &:focus {
     border-color: var(--color-accent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 

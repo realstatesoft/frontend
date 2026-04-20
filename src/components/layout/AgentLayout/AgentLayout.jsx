@@ -28,7 +28,7 @@ const AGENT_NAV_ITEMS = [
   { to: AGENT_ROUTES.CONTRACTS, icon: <FiFileText />, label: 'Contratos' },
   { to: AGENT_ROUTES.REPORTS, icon: <FiBarChart2 />, label: 'Reportes' },
   { section: 'Comunicación' },
-  { to: AGENT_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes' },
+  { to: AGENT_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes', showBadge: true },
 ];
 
 export default function AgentLayout() {

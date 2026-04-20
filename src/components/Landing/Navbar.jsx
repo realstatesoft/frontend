@@ -23,6 +23,7 @@ import {
   IoShieldOutline,
   IoNotificationsOutline,
   IoCheckmarkDoneOutline,
+  IoChatbubblesOutline,
   IoCashOutline,
 } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
@@ -30,6 +31,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
 import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
+import { useUnreadMessagesCount } from "../../hooks/useMessagesData";
 
 function CustomNavbar() {
   const navigate = useNavigate();
@@ -45,6 +47,9 @@ function CustomNavbar() {
 
   // ── Notification badge count for ADMIN ──────────────────────
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // ── Messages unread count ──────────────────────────────
+  const { data: messagesUnread = 0 } = useUnreadMessagesCount();
 
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
@@ -149,6 +154,13 @@ function CustomNavbar() {
           </Link>
         )}
 
+        {isAuthenticated && messagesUnread > 0 && (
+          <Link to="/mensajes" className="navbar-messages-link" aria-label="Mensajes">
+            <IoChatbubblesOutline size={20} />
+            <span className="bell-badge">{Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}</span>
+          </Link>
+        )}
+
         <div className="profile-dropdown-wrapper" ref={dropdownRef}>
           <button
             className="profile-avatar-btn"
@@ -184,6 +196,16 @@ function CustomNavbar() {
                   <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> Mis preferencias
                   </Link>
+                  {!isAgent && !isAdmin && (
+                    <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> Mis mensajes
+                      {messagesUnread > 0 && (
+                        <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
+                          {Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}
+                        </span>
+                      )}
+                    </Link>
+                  )}
                   {user?.role?.toUpperCase() === "ADMIN" && (
                     <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> Panel de administración

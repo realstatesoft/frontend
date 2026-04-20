@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { FiSend } from 'react-icons/fi';
-import { useConversations, useMessages } from '../../hooks/useMessagesData';
+import { useState, useEffect } from 'react';
+import { FiSend, FiPlus } from 'react-icons/fi';
+import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
 import Button from '../../components/common/Button/Button';
+import NewConversationModal from '../../components/messages/NewConversationModal';
 import styles from './MessagesPage.module.scss';
 
 function InboxList({ conversations, activeId, onSelect }) {
@@ -20,7 +21,9 @@ function InboxList({ conversations, activeId, onSelect }) {
             <div className={styles.inbox__avatar}>{conv.avatar}</div>
             <div className={styles.inbox__info}>
               <p className={styles.inbox__name}>{conv.contactName}</p>
-              <p className={styles.inbox__preview}>{conv.lastMessage}</p>
+              <p className={styles.inbox__preview}>
+                {conv.lastMessageOwn ? `Tu: ${conv.lastMessage}` : conv.lastMessage}
+              </p>
             </div>
             <div className={styles.inbox__meta}>
               <span className={styles.inbox__time}>{formatTime(conv.timestamp)}</span>
@@ -39,13 +42,24 @@ function ConversationPanel({ conversation }) {
   const [message, setMessage] = useState('');
   const { data: response } = useMessages(conversation?.id);
   const messages = response?.data || [];
+  const sendMessage = useSendMessage();
+  const markAsRead = useMarkAsRead();
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    // Note: Send mutation to be implemented
+    if (!message.trim() || !conversation) return;
+    await sendMessage.mutateAsync({
+      receiverId: conversation.userId || conversation.contactId || conversation.id,
+      content: message.trim()
+    });
     setMessage('');
   };
+
+  useEffect(() => {
+    if (conversation?.id && messages.some(m => !m.ownMessage)) {
+      markAsRead.mutate(conversation.id);
+    }
+  }, [conversation?.id, messages]);
 
   if (!conversation) {
     return (
@@ -71,9 +85,9 @@ function ConversationPanel({ conversation }) {
           <div
             key={msg.id}
             className={`${styles.conversation__bubble} ${
-              msg.sender === 'agent'
-                ? styles['conversation__bubble--agent']
-                : styles['conversation__bubble--client']
+              msg.ownMessage
+                ? styles['conversation__bubble--own']
+                : styles['conversation__bubble--other']
             }`}
           >
             {msg.text}
@@ -96,7 +110,7 @@ function ConversationPanel({ conversation }) {
           variant="primary"
           size="sm"
           type="submit"
-          disabled={!message.trim()}
+          disabled={!message.trim() || sendMessage.isPending}
         >
           <FiSend />
         </Button>
@@ -106,9 +120,10 @@ function ConversationPanel({ conversation }) {
 }
 
 export default function MessagesPage() {
-  const { data: response, isLoading } = useConversations();
+  const { data: response, isLoading, refetch } = useConversations();
   const conversations = response?.data || [];
   const [activeConversation, setActiveConversation] = useState(null);
+  const [showNewConvModal, setShowNewConvModal] = useState(false);
 
   if (isLoading) return <p>Cargando mensajes...</p>;
 
@@ -119,6 +134,13 @@ export default function MessagesPage() {
           <h1 className={styles.page__title}>Mensajes</h1>
           <p className={styles.page__subtitle}>Centro de comunicación</p>
         </div>
+        <Button 
+          variant="outline-primary" 
+          size="sm"
+          onClick={() => setShowNewConvModal(true)}
+        >
+          <FiPlus className="me-1" /> Nueva conversación
+        </Button>
       </div>
 
       <div className={styles.page__body}>
@@ -129,6 +151,12 @@ export default function MessagesPage() {
         />
         <ConversationPanel conversation={activeConversation} />
       </div>
+
+      <NewConversationModal
+        isOpen={showNewConvModal}
+        onClose={() => setShowNewConvModal(false)}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

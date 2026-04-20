@@ -21,7 +21,7 @@ const OWNER_NAV_ITEMS = [
   { to: OWNER_ROUTES.VISITS, icon: <FiEye />, label: 'Visitas' },
   { to: OWNER_ROUTES.OFFERS, icon: <FiDollarSign />, label: 'Ofertas' },
   { section: 'Comunicación' },
-  { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes' },
+  { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes', showBadge: true },
 ];
 
 export default function OwnerLayout() {
