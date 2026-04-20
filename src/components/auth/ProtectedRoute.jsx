@@ -19,9 +19,11 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     }
 
     // 2. If a specific role is required and user doesn't have it
-    if (requiredRole && user?.role?.toUpperCase() !== requiredRole.toUpperCase()) {
-        // Redirect to a neutral page or 404 if they don't have permission
-        return <Navigate to="/" replace />;
+    if (requiredRole) {
+        const roles = Array.isArray(requiredRole) ? requiredRole.map(r => r.toUpperCase()) : [requiredRole.toUpperCase()];
+        if (!roles.includes(user?.role?.toUpperCase())) {
+            return <Navigate to="/" replace />;
+        }
     }
 
     // 3. Authorized - return children if provided, otherwise Outlet

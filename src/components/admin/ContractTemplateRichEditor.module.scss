@@ -128,7 +128,6 @@
     box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
   }
 
-  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- CSS Modules :global usage */
   :global(p.is-editor-empty:first-child::before) {
     content: attr(data-placeholder);
     float: left;

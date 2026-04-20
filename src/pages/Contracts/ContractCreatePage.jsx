@@ -60,7 +60,6 @@ function isPlaceholderClient(client) {
 export default function ContractCreatePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams();
   const prefillRanRef = useRef(false);
   const locationSearch = location.search;
 
@@ -76,6 +75,8 @@ export default function ContractCreatePage() {
   const [activeTemplates, setActiveTemplates] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [isPreFilling, setIsPreFilling] = useState(false);
+  const [activeTemplates, setActiveTemplates] = useState([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
   const { user } = useAuth();
   const role = user?.role?.toUpperCase();
@@ -126,13 +127,13 @@ export default function ContractCreatePage() {
       setSellerName(c.sellerName || '');
       setCustomTerms(plainTextToTipTapHtml(c.terms || ''));
     }
-  }, [isEditing, existingContract, properties.length === 0]);
+  }, [isEditing, existingContract, properties]);
 
   // ─── Pre-llenado desde Oferta (Query Params) ──────────────────────────────
   useEffect(() => {
     if (isEditing || prefillRanRef.current) return;
 
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(locationSearch);
     const pId = params.get('propertyId');
     const bId = params.get('buyerId');
     const bName = params.get('buyerName');

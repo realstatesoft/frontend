@@ -8,7 +8,7 @@ import Navbar from "../../components/Landing/Navbar";
 
 const PAGE_SIZE = 12;
 
-export default function MyProperties() {
+export default function MyProperties({ hideNavbar = false }) {
     const { properties, loading, error, refetch } = useMyProperties({
         page: 1,
         size: PAGE_SIZE,
@@ -16,7 +16,7 @@ export default function MyProperties() {
 
     return (
         <>
-            <Navbar />
+            {!hideNavbar && <Navbar />}
 
             <Container className="py-5">
                 {/* Encabezado: título + botón Agregar */}
