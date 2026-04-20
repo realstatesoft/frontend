@@ -27,6 +27,7 @@ export const ADMIN_ROUTES = {
   AUDIT_LOGS: '/admin/audit-logs',
   FLAGS: '/admin/flags',
   DOCUMENTS: '/admin/documents',
+  CONTRACT_TEMPLATES: '/admin/contract-templates',
 };
 
 export const STATUS_COLORS = {
