@@ -920,14 +920,6 @@ export default function ContractCreatePage() {
                 <pre className={styles.terms__previewText}>{buildTermsText()}</pre>
               </div>
             )}
-              <label className={styles.form__label}>Condiciones adicionales</label>
-              <textarea
-                className={`${styles.form__input} ${styles['form__input--textarea']}`}
-                value={customTerms}
-                onChange={(e) => setCustomTerms(e.target.value)}
-                rows={8}
-              />
-            </div>
           </div>
         </div>
       </div>
