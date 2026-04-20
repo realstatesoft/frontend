@@ -25,6 +25,7 @@ export const ADMIN_ROUTES = {
   AUDIT_LOGS: '/admin/audit-logs',
   FLAGS: '/admin/flags',
   DOCUMENTS: '/admin/documents',
+  RENT_CONFIG: '/admin/rent-config',
 };
 
 export const STATUS_COLORS = {
