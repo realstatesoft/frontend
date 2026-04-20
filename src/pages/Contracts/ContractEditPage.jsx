@@ -9,6 +9,9 @@ import {
   CONTRACT_TYPE,
 } from '../../constants/contractConstants';
 import { getClausesForType } from './contractClauses';
+import contractTemplateApi from '../../services/contracts/contractTemplateApi';
+import { htmlToPlainText, hasMeaningfulHtmlContent, plainTextToTipTapHtml } from '../../utils/htmlToPlainText';
+import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
 
 export default function ContractEditPage() {
@@ -25,6 +28,8 @@ export default function ContractEditPage() {
   const [commissionError, setCommissionError] = useState('');
   const [selectedClauses, setSelectedClauses] = useState([]);
   const [customTerms, setCustomTerms] = useState('');
+  const [activeTemplates, setActiveTemplates] = useState([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
   const updateContract = useUpdateContract();
   const updateStatus   = useUpdateContractStatus();
@@ -71,6 +76,7 @@ export default function ContractEditPage() {
       buyerAgentCommissionPct:   contract.buyerAgentCommissionPct ?? '0.00',
       startDate:                 contract.startDate ?? '',
       endDate:                   contract.endDate ?? '',
+      templateId:                contract.templateId != null ? String(contract.templateId) : '',
     });
 
     // Restaurar términos: separar cláusulas detectables del texto libre
@@ -91,10 +97,10 @@ export default function ContractEditPage() {
     // Intentar extraer solo las condiciones adicionales si existen
     const additionalMatch = fullTerms.match(/CONDICIONES ADICIONALES\n([\s\S]*)$/i);
     if (additionalMatch && additionalMatch[1]) {
-      setCustomTerms(additionalMatch[1].trim());
+      setCustomTerms(plainTextToTipTapHtml(additionalMatch[1].trim()));
     } else if (detectedIds.length === 0) {
       // Si no detectamos ninguna cláusula estándar, asumimos que todo es custom
-      setCustomTerms(fullTerms);
+      setCustomTerms(plainTextToTipTapHtml(fullTerms));
     } else {
       setCustomTerms('');
     }
@@ -115,6 +121,26 @@ export default function ContractEditPage() {
     return '';
   }, []);
 
+  useEffect(() => {
+    if (!form?.contractType) return;
+    let cancelled = false;
+    setLoadingTemplates(true);
+    contractTemplateApi
+      .listActive(form.contractType)
+      .then((list) => {
+        if (!cancelled) setActiveTemplates(Array.isArray(list) ? list : []);
+      })
+      .catch(() => {
+        if (!cancelled) setActiveTemplates([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingTemplates(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [form?.contractType]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => {
@@ -124,6 +150,33 @@ export default function ContractEditPage() {
       setCommissionError(validateCommission(updated));
       return updated;
     });
+  };
+
+  const handleContractTypeChange = (e) => {
+    const value = e.target.value;
+    setForm((prev) => {
+      const updated = { ...prev, contractType: value, templateId: '' };
+      setCommissionError(validateCommission(updated));
+      return updated;
+    });
+    setSelectedClauses([]);
+  };
+
+  const handleTemplateChange = (e) => {
+    const tplId = e.target.value;
+    setForm((prev) => ({ ...prev, templateId: tplId }));
+    if (!tplId) return;
+    const tpl = activeTemplates.find((t) => String(t.id) === tplId);
+    if (tpl?.content) {
+      setCustomTerms(tpl.content);
+      Swal.fire({
+        icon: 'info',
+        title: 'Plantilla aplicada',
+        text: 'El contenido de la plantilla se ha copiado en condiciones adicionales; puedes editarlo con el mismo editor que en administración.',
+        timer: 2600,
+        showConfirmButton: false,
+      });
+    }
   };
 
   const toggleClause = (clauseId) => {
@@ -136,10 +189,11 @@ export default function ContractEditPage() {
     const clauses = getClausesForType(form?.contractType);
     const selected = clauses.filter((c) => selectedClauses.includes(c.id));
     const parts = selected.map((c, i) => `${i + 1}. ${c.label.toUpperCase()}\n${c.text}`);
-    if (customTerms.trim()) {
-      parts.push(`${parts.length + 1}. CONDICIONES ADICIONALES\n${customTerms.trim()}`);
+    if (hasMeaningfulHtmlContent(customTerms)) {
+      const block = htmlToPlainText(customTerms).trim();
+      parts.push(`${parts.length + 1}. CONDICIONES ADICIONALES\n${block}`);
     }
-    return parts.join('\n\n') || customTerms;
+    return parts.join('\n\n');
   }, [form?.contractType, selectedClauses, customTerms]);
 
   const handleSubmit = async (sendAfterSave = false) => {
@@ -164,6 +218,7 @@ export default function ContractEditPage() {
       startDate:  form.startDate || null,
       endDate:    form.endDate   || null,
       terms:      terms          || null,
+      templateId: form.templateId ? parseInt(form.templateId, 10) : null,
     };
 
     try {
@@ -276,7 +331,7 @@ export default function ContractEditPage() {
                   name="contractType"
                   className={styles.form__select}
                   value={form.contractType}
-                  onChange={(e) => { handleChange(e); setSelectedClauses([]); }}
+                  onChange={handleContractTypeChange}
                 >
                   {CONTRACT_TYPE_OPTIONS.map((label) => (
                     <option key={label} value={CONTRACT_TYPE[label]}>{label}</option>
@@ -298,6 +353,31 @@ export default function ContractEditPage() {
                   step="0.01"
                 />
               </div>
+            </div>
+            <div className={styles.form__row}>
+              <label className={styles.form__label} htmlFor="ce-template">
+                Plantilla base (opcional)
+              </label>
+              <select
+                id="ce-template"
+                className={styles.form__select}
+                value={form.templateId}
+                onChange={handleTemplateChange}
+                disabled={loadingTemplates}
+              >
+                <option value="">
+                  {loadingTemplates ? 'Cargando plantillas…' : '— Sin plantilla —'}
+                </option>
+                {activeTemplates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                    {t.templateVersion ? ` (v${t.templateVersion})` : ''}
+                  </option>
+                ))}
+              </select>
+              <p className={styles.form__hint}>
+                Al elegir una plantilla activa, su texto sustituye el bloque de condiciones adicionales para que lo revises.
+              </p>
             </div>
           </fieldset>
 
@@ -468,17 +548,17 @@ export default function ContractEditPage() {
             </div>
 
             <div className={styles.terms__custom}>
-              <label className={styles.form__label} htmlFor="ce-custom-terms">
+              <label className={styles.form__label}>
                 Condiciones adicionales
               </label>
-              <textarea
-                id="ce-custom-terms"
-                className={`${styles.form__input} ${styles['form__input--textarea']} ${styles['form__input--jumbo']}`}
-                value={customTerms}
-                onChange={(e) => setCustomTerms(e.target.value)}
-                rows={12}
-                placeholder="Escribe aquí todas las cláusulas personalizadas, acuerdos específicos o condiciones legales adicionales…"
-              />
+              <div className={styles.terms__customEditor}>
+                <ContractTemplateRichEditor
+                  value={customTerms}
+                  onChange={setCustomTerms}
+                  placeholder="Cláusulas personalizadas, acuerdos específicos o condiciones adicionales…"
+                  disabled={loadingContract || loadingData}
+                />
+              </div>
             </div>
           </div>
         </div>
