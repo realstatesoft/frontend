@@ -86,6 +86,12 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) {
+         redirectToLogin();
+         return Promise.reject(error);
+      }
+
       // POST /auth/refresh-token con el refreshToken actual
       const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, {
         refreshToken,

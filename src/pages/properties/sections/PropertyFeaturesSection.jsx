@@ -36,11 +36,12 @@ export function PropertyFeaturesSection({
 
   const media = form.media || [];
   // Filtrar solo las fotos convencionales para la galería, pero guardando el índice original
+  // Filtrar fotos, modelos 3D e imágenes 360 para la galería, guardando el índice original
   const galleryMedia = useMemo(() => {
-    return media
+    return (form.media || [])
       .map((item, idx) => ({ ...item, originalIndex: idx }))
-      .filter(m => m.type === 'PHOTO' || m.type === 'IMAGE');
-  }, [media]);
+      .filter(m => ['PHOTO', 'IMAGE', 'MODEL_3D', 'IMAGE_360'].includes(m.type));
+  }, [form.media]);
 
   const canAddMore = galleryMedia.length < MAX_IMAGES;
 
@@ -60,7 +61,7 @@ export function PropertyFeaturesSection({
     const files = Array.from(e.dataTransfer.files).filter((f) =>
       f.type.startsWith("image/")
     );
-    files.slice(0, MAX_IMAGES - media.length).forEach((f) => addMedia(f));
+    files.slice(0, MAX_IMAGES - galleryMedia.length).forEach((f) => addMedia(f));
   };
 
   const handleDragOver = (e) => {
@@ -209,12 +210,20 @@ export function PropertyFeaturesSection({
                     className="position-relative rounded overflow-hidden"
                     style={{ aspectRatio: "1" }}
                   >
-                    <img
-                      src={item.url}
-                      alt=""
-                      className="w-100 h-100"
-                      style={{ objectFit: "cover" }}
-                    />
+                    {item.type === 'MODEL_3D' ? (
+                      <div className="w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-light text-primary border">
+                        <i className="bi bi-box" style={{ fontSize: 24 }} />
+                        <span style={{ fontSize: 8, marginTop: 4 }}>PLANO 3D</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={item.url}
+                        alt=""
+                        className="w-100 h-100"
+                        style={{ objectFit: "cover" }}
+                      />
+                    )}
+                    
                     <Badge
                       className="position-absolute top-0 start-0 m-1"
                       style={{
@@ -227,6 +236,13 @@ export function PropertyFeaturesSection({
                       <i className={`bi bi-star${item.isPrimary ? "-fill" : ""} me-1`} />
                       {item.isPrimary ? "Portada" : "Marcar portada"}
                     </Badge>
+
+                    {item.type === 'IMAGE_360' && (
+                      <Badge bg="info" className="position-absolute bottom-0 start-0 m-1" style={{ fontSize: 8 }}>
+                        360°
+                      </Badge>
+                    )}
+
                     <button
                       type="button"
                       className="position-absolute top-0 end-0 m-1 rounded-circle border-0 d-flex align-items-center justify-content-center"
