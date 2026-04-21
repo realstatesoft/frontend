@@ -26,6 +26,11 @@ const contractApi = {
     return api.get(`/contracts/${id}`).then((res) => res.data);
   },
 
+  /** Obtener contratos asociados a una propiedad */
+  getByProperty(propertyId) {
+    return api.get(`/contracts/property/${propertyId}`).then((res) => res.data);
+  },
+
   /**
    * Crear un contrato nuevo (queda en DRAFT).
    * @param {Object} payload - ContractRequest

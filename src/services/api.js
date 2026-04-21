@@ -115,3 +115,14 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// ─── Agentes ───────────────────────────────────────────────────────────────────
+export const getAgents = (page = 0, size = 20) =>
+  api.get('/agents', { params: { page, size } }).then((res) => res.data);
+
+export const searchAgents = (query) =>
+  api.get('/agents/search', { params: { q: query } }).then((res) => res.data);
+
+// ─── Clientes (solo para agentes) ─────────────────────────────────────────────
+export const getClients = (page = 0, size = 50) =>
+  api.get('/clients', { params: { page, size } }).then((res) => res.data);

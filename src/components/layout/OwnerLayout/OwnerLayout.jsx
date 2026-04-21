@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
-  FiGrid, FiHome, FiEye, FiMessageSquare,
+  FiGrid, FiHome, FiEye, FiMessageSquare, FiDollarSign
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -19,8 +19,9 @@ const OWNER_NAV_ITEMS = [
   { to: OWNER_ROUTES.PROPERTIES, icon: <FiHome />, label: 'Mis Propiedades' },
   { section: 'Gestión' },
   { to: OWNER_ROUTES.VISITS, icon: <FiEye />, label: 'Visitas' },
+  { to: OWNER_ROUTES.OFFERS, icon: <FiDollarSign />, label: 'Ofertas' },
   { section: 'Comunicación' },
-  { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes' },
+  { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes', showBadge: true },
 ];
 
 export default function OwnerLayout() {
@@ -28,7 +29,7 @@ export default function OwnerLayout() {
   const { sidebarCollapsed } = useUIStore();
   const location = useLocation();
 
-  if (user?.role !== 'OWNER') return <RoleRedirect />;
+  if (user?.role !== 'USER') return <RoleRedirect />;
 
   const isDashboard = location.pathname === OWNER_ROUTES.DASHBOARD;
 

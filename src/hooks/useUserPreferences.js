@@ -94,9 +94,16 @@ export function useUserPreferences(userId) {
         return saved;
       } catch (err) {
         console.error("[useUserPreferences] Error al guardar:", err);
-        const msg =
-          err?.response?.data?.message ??
-          "No se pudieron guardar las preferencias. Intentá de nuevo.";
+        let msg = "No se pudieron guardar las preferencias. Intentá de nuevo.";
+        if (err?.response?.data) {
+          const { message, errors } = err.response.data;
+          if (Array.isArray(errors) && errors.length > 0) {
+            // Si hay errores de validación específicos (ej: Spring Validator)
+            msg = errors.map(e => e.defaultMessage || e.message).join(". ");
+          } else if (message) {
+            msg = message;
+          }
+        }
         throw new Error(msg);
       } finally {
         setIsSaving(false);

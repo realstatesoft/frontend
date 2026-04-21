@@ -37,19 +37,19 @@ describe('QuickActions', () => {
       expect(screen.getByText('Agendar Visita')).toBeInTheDocument();
     });
 
-    it('renderiza exactamente 3 acciones', () => {
+    it('renderiza exactamente 4 acciones', () => {
       renderQuickActions();
       // Each action is a Link rendered as an anchor
       const links = screen.getAllByRole('link');
-      expect(links).toHaveLength(3);
+      expect(links).toHaveLength(4);
     });
   });
 
   describe('rutas de navegación', () => {
-    it('el enlace "Nuevo Cliente" apunta a /clients/register', () => {
+    it('el enlace "Nuevo Cliente" apunta a /clientes/registrar', () => {
       renderQuickActions();
       const link = screen.getByRole('link', { name: /nuevo cliente/i });
-      expect(link).toHaveAttribute('href', '/clients/register');
+      expect(link).toHaveAttribute('href', '/clientes/registrar');
     });
 
     it('el enlace "Nueva Propiedad" apunta a /create-property', () => {
