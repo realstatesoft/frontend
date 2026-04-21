@@ -32,6 +32,7 @@ import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
 import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
+import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -76,21 +77,20 @@ export default function ShowProperty() {
     canDelete,
     canFeature,
     isOwner: isPropertyOwner,
-    isAdmin,
   } = usePropertyPermissions(property);
 
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
 
-  // Resetear estados cuando cambia la propiedad (navegación entre propiedades similares)
+  // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
   useEffect(() => {
     setTourSubTab(null);
     setTourConfig(null);
     setLoadingConfig(false);
   }, [property?.id]);
 
-  // Determinar pestañas disponibles y subpestaña inicial
+  // Determinar pestanas disponibles y subpestana inicial
   const hasModel = property?.media?.some(m => m.type === 'MODEL_3D');
   const scenes360 = useMemo(() => {
     return property?.media?.filter(m => m.type === 'IMAGE_360') || [];
@@ -104,7 +104,7 @@ export default function ShowProperty() {
     }
   }, [hasModel, hasTour360]);
 
-  // Cargar configuración de tour 360 si aplica
+  // Cargar configuracion de tour 360 si aplica
   useEffect(() => {
     const configMedia = property?.media?.find(m => m.type === 'VIRTUAL_TOUR_CONFIG');
     if (configMedia?.url) {
@@ -112,14 +112,14 @@ export default function ShowProperty() {
       fetch(configMedia.url)
         .then(res => res.json())
         .then(data => setTourConfig(data))
-        .catch(err => console.error("Error al cargar configuración 360:", err))
+        .catch(err => console.error("Error al cargar configuracion 360:", err))
         .finally(() => setLoadingConfig(false));
     } else {
       setTourConfig(null);
     }
   }, [property?.id, property?.media]);
 
-  // Generar config de respaldo si no hay una oficial pero sí hay fotos 360
+  // Generar config de respaldo si no hay una oficial pero si hay fotos 360
   // Usamos useMemo para evitar que el visor se reinicie en cada render del padre
   const finalTourConfig = useMemo(() => {
     if (tourConfig) return tourConfig;
@@ -128,7 +128,7 @@ export default function ShowProperty() {
         nodes: scenes360.map((m, idx) => ({
           id: `media_${m.id || idx}`,
           panorama: m.url,
-          name: m.title || `Habitación ${idx + 1}`,
+          name: m.title || `Habitacion ${idx + 1}`,
           links: []
         }))
       };
@@ -161,6 +161,9 @@ export default function ShowProperty() {
 
   if (!property) return null;
 
+  // Determinar si es una propiedad para alquilar
+  const showRentCost = property.category === 'RENT' || property.category === 'SALE_OR_RENT';
+
   return (
     <>
       <CustomNavbar />
@@ -177,7 +180,7 @@ export default function ShowProperty() {
           {activeFlagCount > 0 && (
             <Alert variant="warning" className="d-flex align-items-center mb-4">
               <Flag size={20} className="me-2" />
-              <span>Esta propiedad tiene reportes activos de otros usuarios. Procedé con precaución.</span>
+              <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.</span>
             </Alert>
           )}
 
@@ -267,14 +270,14 @@ export default function ShowProperty() {
                   <Share size={16} className="property__icon-button"/> Compartir
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                 <Dropdown.Item onClick={copyLink}>
+                  <Dropdown.Item onClick={copyLink}>
                     <Link45deg size={16} className="property__icon-button"/> Copiar enlace
                   </Dropdown.Item>
 
                   <Dropdown.Item
                     as="a"
                     href={`https://wa.me/?text=${encodeURIComponent(
-                      `Encontré esta propiedad: ${BASE_URL}/properties/${property.id}`
+                      `Encontre esta propiedad: ${BASE_URL}/properties/${property.id}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -348,7 +351,7 @@ export default function ShowProperty() {
                     },
                     {
                       value: String(property.bathrooms ?? "-"),
-                      label: "baños",
+                      label: "banos",
                     },
                     {
                       value: String(
@@ -374,7 +377,7 @@ export default function ShowProperty() {
                     `Construido en ${property.constructionYear}`,
                   property.surfaceArea &&
                     property.price &&
-                    `₲ ${formatPrice(
+                    `~ ${formatPrice(
                       String(Math.round(property.price / property.surfaceArea)),
                     )}/m²`,
                 ]
@@ -400,11 +403,11 @@ export default function ShowProperty() {
               <Tab.Container defaultActiveKey="descripcion">
                 <Nav variant="tabs" className="mb-4 border-bottom-soft">
                   {[
-                    { key: "descripcion", label: "Descripción" },
+                    { key: "descripcion", label: "Descripcion" },
                     { key: "tours", label: "Tours y Planos" },
                     {
                       key: "caracteristicas",
-                      label: "Datos y Características",
+                      label: "Datos y Caracteristicas",
                     },
                   ].map((tab) => (
                     <Nav.Item key={tab.key}>
@@ -420,9 +423,9 @@ export default function ShowProperty() {
 
                 <Tab.Content>
                   <Tab.Pane eventKey="descripcion">
-                    <h5 className="property__section-title">Descripción</h5>
+                    <h5 className="property__section-title">Descripcion</h5>
                     <p className="property__description">
-                      {property.description || "Sin descripción."}
+                      {property.description || "Sin descripcion."}
                     </p>
 
                     <div
@@ -447,14 +450,14 @@ export default function ShowProperty() {
                         <>
                           {property.createdAt && (
                             <>
-                              Publicado{" "}
+                            Publicado{" "}
                               <strong>
                                 {formatTimeAgo(property.createdAt)}
                               </strong>
                             </>
                           )}
                           {property.viewCount != null && (
-                            <> &nbsp;|&nbsp; {property.viewCount} vistas</> //componente que diga el padding que vas a usar etc
+                            <> &nbsp;|&nbsp; {property.viewCount} vistas</>
                           )}
                           {property.favoriteCount != null && (
                             <>
@@ -467,7 +470,7 @@ export default function ShowProperty() {
                       )}
                       {property.updatedAt && (
                         <>
-                          Revisado por última vez:{" "}
+                          Revisado por ultima vez:{" "}
                           {formatTimeAgo(property.updatedAt)}
                           <br />
                           Actualizado hace: {formatTimeAgo(property.updatedAt)}
@@ -486,7 +489,7 @@ export default function ShowProperty() {
 
                   <Tab.Pane eventKey="tours">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                      <h5 className="property__section-title mb-0">Recorridos e Interacción</h5>
+                      <h5 className="property__section-title mb-0">Recorridos e Interaccion</h5>
                       {(hasModel || hasTour360) && (
                         <ButtonGroup size="sm">
                           {hasTour360 && (
@@ -541,7 +544,7 @@ export default function ShowProperty() {
                           <div className="property__empty-3d-box">
                             <CameraVideo size={48} className="mb-3 text-muted" />
                             <p className="mb-1 fw-bold">No hay recorridos disponibles</p>
-                            <p className="text-muted small">Esta propiedad aún no cuenta con contenido 360 o modelos 3D.</p>
+                            <p className="text-muted small">Esta propiedad aun no cuenta con contenido 360 o modelos 3D.</p>
                           </div>
                         </div>
                       )}
@@ -555,7 +558,7 @@ export default function ShowProperty() {
                               <FileText size={28} color="#555" />
                             </div>
                             <p className="property__tour-label">Planos de la propiedad</p>
-                            <span className="text-muted small">Próximamente disponible</span>
+                            <span className="text-muted small">Proximamente disponible</span>
                           </div>
                         </Col>
                       </Row>
@@ -564,7 +567,7 @@ export default function ShowProperty() {
 
                   <Tab.Pane eventKey="caracteristicas">
                     <h5 className="property__section-title">
-                      Datos y Características
+                      Datos y Caracteristicas
                     </h5>
                     <Row className="g-4">
                       {features.length ? (
@@ -585,7 +588,7 @@ export default function ShowProperty() {
                       ) : (
                         <Col>
                           <p className="text-muted">
-                            No hay características cargadas.
+                            No hay caracteristicas cargadas.
                           </p>
                         </Col>
                       )}
@@ -597,6 +600,12 @@ export default function ShowProperty() {
 
             <Col lg={4} className="mt-4 mt-lg-0">
               <PropertyContactCard property={property} />
+
+              {showRentCost && (
+                <div className="mt-4">
+                  <RentCostBreakdown propertyId={property.id} />
+                </div>
+              )}
 
               {isAuthenticated && (
                 <div className="mt-4 text-center d-flex flex-column align-items-center gap-2">
