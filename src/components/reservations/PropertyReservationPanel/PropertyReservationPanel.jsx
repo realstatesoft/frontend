@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Card, Alert, Spinner, Badge } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 import reservationApi from '../../../services/reservations/reservationApi';
+import { formatCurrency } from '../../../utils/formatters';
 import ReserveModal from '../ReserveModal/ReserveModal';
 import styles from './PropertyReservationPanel.module.scss';
 
@@ -96,7 +98,18 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
           property={property}
           defaultPercent={defaultPercent}
           onClose={() => setShowModal(false)}
-          onCreated={() => refresh()}
+          onCreated={async (created) => {
+            await Swal.fire({
+              icon: 'success',
+              title: 'Reserva enviada',
+              text: created?.amount != null
+                ? `Tu reserva por ${formatCurrency(created.amount)} quedó en estado ${created.status}.`
+                : 'Tu reserva fue registrada y está pendiente de confirmación.',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            refresh();
+          }}
         />
       </Card.Body>
     </Card>
