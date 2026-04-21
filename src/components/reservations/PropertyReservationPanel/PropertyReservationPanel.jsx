@@ -12,11 +12,15 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const isOwner = Boolean(currentUser?.id) && Boolean(property?.owner?.id)
-    && currentUser.id === property.owner.id;
-  const canManage = Boolean(currentUser?.id) && Boolean(property?.id)
+  const isOwner = Boolean(currentUser?.userId) && Boolean(property?.ownerId)
+    && currentUser.userId === property.ownerId;
+  const canManage = Boolean(currentUser?.userId) && Boolean(property?.id)
     && (isOwner || currentUser.role === 'ADMIN');
   const canReserve = currentUser?.role === 'USER' && !isOwner && property?.status === 'PUBLISHED';
+
+  if (property?.status !== 'PUBLISHED') {
+    return null;
+  }
 
   const refresh = useCallback(async () => {
     if (!canManage) return;
