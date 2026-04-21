@@ -33,7 +33,8 @@ export default function AgentReservationsPage() {
       const data = res.data?.data ?? {};
       setItems(data.content ?? []);
       setTotalPages(data.totalPages ?? 0);
-    } catch {
+    } catch (err) {
+      console.error('getAssignedReservations failed', err);
       setError('No se pudieron cargar las reservas.');
     } finally {
       setLoading(false);
