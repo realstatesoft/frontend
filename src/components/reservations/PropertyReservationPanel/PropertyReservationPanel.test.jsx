@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import Swal from 'sweetalert2';
 import PropertyReservationPanel from './PropertyReservationPanel';
 import reservationApi from '../../../services/reservations/reservationApi';
@@ -28,7 +28,7 @@ describe('PropertyReservationPanel', () => {
   });
 
   it('shows reservar button to USER who is not owner', async () => {
-    render(<PropertyReservationPanel property={property} currentUser={{ id: 99, role: 'USER' }} defaultPercent={1} />);
+    render(<PropertyReservationPanel property={property} currentUser={{ userId: 99, role: 'USER' }} defaultPercent={1} />);
     expect(await screen.findByRole('button', { name: /reservar/i })).toBeInTheDocument();
   });
 
@@ -53,14 +53,12 @@ describe('PropertyReservationPanel', () => {
     reservationApi.createReservation.mockResolvedValueOnce({ data: { data: { id: 77, amount: 1000, status: 'PENDING' } } });
     fireEvent.submit(screen.getByRole('button', { name: /^confirmar$/i }).closest('form'));
 
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 100));
+    await waitFor(() => {
+      expect(reservationApi.createReservation).toHaveBeenCalled();
+      expect(Swal.fire).toHaveBeenCalledWith(
+        expect.objectContaining({ icon: 'success', title: expect.stringMatching(/reserva enviada/i) })
+      );
     });
-
-    expect(reservationApi.createReservation).toHaveBeenCalled();
-    expect(Swal.fire).toHaveBeenCalledWith(
-      expect.objectContaining({ icon: 'success', title: expect.stringMatching(/reserva enviada/i) })
-    );
   });
 
   it('hides the Reservar button and shows the already-reserved card when buyer has an active reservation', async () => {
