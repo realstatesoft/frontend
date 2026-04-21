@@ -13,16 +13,13 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [myReservation, setMyReservation] = useState(null);
 
   const isOwner = Boolean(currentUser?.userId) && Boolean(property?.ownerId)
     && currentUser.userId === property.ownerId;
   const canManage = Boolean(currentUser?.userId) && Boolean(property?.id)
     && (isOwner || currentUser.role === 'ADMIN');
   const canReserve = currentUser?.role === 'USER' && !isOwner && property?.status === 'PUBLISHED';
-
-  if (property?.status !== 'PUBLISHED') {
-    return null;
-  }
 
   const refresh = useCallback(async () => {
     if (!canManage) return;
@@ -42,6 +39,22 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
 
   useEffect(() => { refresh(); }, [refresh]);
 
+  useEffect(() => {
+    if (!canReserve || !property?.id) return;
+    let cancelled = false;
+    reservationApi.getMyForProperty(property.id)
+      .then((res) => {
+        if (cancelled) return;
+        setMyReservation(res.data?.data ?? null);
+      })
+      .catch(() => { if (!cancelled) setMyReservation(null); });
+    return () => { cancelled = true; };
+  }, [canReserve, property?.id]);
+
+  if (property?.status !== 'PUBLISHED') {
+    return null;
+  }
+
   const pending = reservations.find((r) => BLOCKING.has(r.status));
   const hasBlocking = Boolean(pending);
 
@@ -60,12 +73,18 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
       <Card.Body>
         <h5>Reserva online</h5>
 
-        {canReserve && !hasBlocking && (
+        {canReserve && myReservation && (
+          <Alert variant="success" className="mb-0">
+            Ya reservaste esta propiedad por <strong>{formatCurrency(myReservation.amount)}</strong>.
+            Estado actual: <Badge bg={myReservation.status === 'ACTIVE' ? 'success' : 'warning'}>{myReservation.status}</Badge>
+          </Alert>
+        )}
+        {canReserve && !myReservation && !hasBlocking && (
           <Button variant="primary" onClick={() => setShowModal(true)}>
             Reservar propiedad
           </Button>
         )}
-        {canReserve && hasBlocking && (
+        {canReserve && !myReservation && hasBlocking && (
           <Alert variant="info" className="mb-0">
             Esta propiedad tiene una reserva activa.
           </Alert>
@@ -99,6 +118,7 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
           defaultPercent={defaultPercent}
           onClose={() => setShowModal(false)}
           onCreated={async (created) => {
+            setMyReservation(created ?? null);
             await Swal.fire({
               icon: 'success',
               title: 'Reserva enviada',

@@ -29,4 +29,10 @@ describe('reservationApi', () => {
     await reservationApi.cancel(9, { reason: 'no' });
     expect(api.post).toHaveBeenCalledWith('/reservations/9/cancel', { reason: 'no' });
   });
+
+  it('getMyForProperty GETs /reservations/my/property/:id', async () => {
+    api.get.mockResolvedValueOnce({ data: { data: null } });
+    await reservationApi.getMyForProperty(7);
+    expect(api.get).toHaveBeenCalledWith('/reservations/my/property/7');
+  });
 });

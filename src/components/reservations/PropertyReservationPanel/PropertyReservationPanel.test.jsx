@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import Swal from 'sweetalert2';
 import PropertyReservationPanel from './PropertyReservationPanel';
 import reservationApi from '../../../services/reservations/reservationApi';
@@ -12,6 +11,7 @@ vi.mock('sweetalert2', () => ({
 vi.mock('../../../services/reservations/reservationApi', () => ({
   default: {
     getByProperty: vi.fn(),
+    getMyForProperty: vi.fn(),
     confirm: vi.fn(),
     cancel: vi.fn(),
     createReservation: vi.fn(),
@@ -24,6 +24,7 @@ describe('PropertyReservationPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     reservationApi.getByProperty.mockResolvedValue({ data: { data: [] } });
+    reservationApi.getMyForProperty.mockResolvedValue({ data: { data: null } });
   });
 
   it('shows reservar button to USER who is not owner', async () => {
@@ -60,5 +61,18 @@ describe('PropertyReservationPanel', () => {
     expect(Swal.fire).toHaveBeenCalledWith(
       expect.objectContaining({ icon: 'success', title: expect.stringMatching(/reserva enviada/i) })
     );
+  });
+
+  it('hides the Reservar button and shows the already-reserved card when buyer has an active reservation', async () => {
+    const property = { id: 1, title: 'Casa', price: 100000, status: 'PUBLISHED', ownerId: 2 };
+    reservationApi.getMyForProperty.mockResolvedValueOnce({
+      data: { data: { id: 55, amount: 1500, status: 'PENDING' } },
+    });
+
+    render(<PropertyReservationPanel property={property} currentUser={{ userId: 99, role: 'USER' }} defaultPercent={1} />);
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: /reservar/i })).not.toBeInTheDocument());
+    expect(screen.getByText(/ya reservaste/i)).toBeInTheDocument();
+    expect(screen.getByText(/\$1,500/)).toBeInTheDocument();
   });
 });

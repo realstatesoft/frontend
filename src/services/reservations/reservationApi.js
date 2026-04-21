@@ -6,6 +6,7 @@ const reservationApi = {
   getMyReservations: (page = 0, size = 10) =>
     api.get(`/reservations/my?page=${page}&size=${size}`),
   getByProperty: (propertyId) => api.get(`/reservations/property/${propertyId}`),
+  getMyForProperty: (propertyId) => api.get(`/reservations/my/property/${propertyId}`),
   confirm: (id) => api.post(`/reservations/${id}/confirm`),
   cancel: (id, payload) => api.post(`/reservations/${id}/cancel`, payload),
   convert: (id) => api.post(`/reservations/${id}/convert`),
