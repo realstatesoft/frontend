@@ -28,7 +28,7 @@ const renderPage = () => render(
 
 describe('MyReservationsPage', () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders the navbar and a back button that calls navigate(-1)', async () => {
@@ -54,14 +54,13 @@ describe('MyReservationsPage', () => {
     expect(screen.getByRole('cell', { name: 'Cancelada' })).toBeInTheDocument();
   });
 
-  it('navigates to the property show page when a row is clicked', async () => {
+  it('shows a link to the property page in the title cell', async () => {
     reservationApi.getMyReservations.mockResolvedValue(pageResponse([
       { id: 1, propertyId: 42, propertyTitle: 'Casa A', amount: 1500, status: 'ACTIVE' },
     ]));
     renderPage();
-    const row = await screen.findByText('Casa A');
-    fireEvent.click(row.closest('tr'));
-    expect(navigateMock).toHaveBeenCalledWith('/properties/42');
+    const link = await screen.findByRole('link', { name: 'Casa A' });
+    expect(link).toHaveAttribute('href', '/properties/42');
   });
 
   it('navigates to the property show page when the "Ver" button is clicked', async () => {
