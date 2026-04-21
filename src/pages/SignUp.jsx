@@ -105,6 +105,7 @@ export default function SignUp() {
   };
 
   const handlePreferencesSubmit = async ({ selectedOptionIds, ranges }) => {
+    setErrorMessage('');
     try {
       await savePreferences({
         userId: registeredUserId,

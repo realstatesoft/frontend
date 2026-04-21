@@ -56,15 +56,27 @@
 }
 
 .editorContent {
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- CSS Modules :global usage */
   :global(.ProseMirror) {
     min-height: 280px;
     max-height: 420px;
     overflow-y: auto;
     padding: 12px 14px;
-    outline: none;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
     font-size: 0.9375rem;
     line-height: 1.55;
     color: #212529;
+
+    &:focus-visible {
+      outline-color: #0d6efd;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    }
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+      box-shadow: none;
+    }
 
     p {
       margin: 0 0 0.5em;
@@ -110,8 +122,10 @@
     }
   }
 
-  :global(.ProseMirror-focused) {
-    outline: none;
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- CSS Modules :global usage */
+  :global(.ProseMirror-focused:focus-visible) {
+    outline-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
   }
 
   :global(p.is-editor-empty:first-child::before) {

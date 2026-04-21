@@ -156,12 +156,16 @@ export default function ContractEditPage() {
 
   const handleContractTypeChange = (e) => {
     const value = e.target.value;
+    const hadAppliedTemplate = Boolean(form?.templateId);
     setForm((prev) => {
       const updated = { ...prev, contractType: value, templateId: '' };
       setCommissionError(validateCommission(updated));
       return updated;
     });
     setSelectedClauses([]);
+    if (hadAppliedTemplate) {
+      setCustomTerms('');
+    }
   };
 
   const handleTemplateChange = (e) => {

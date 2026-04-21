@@ -72,9 +72,9 @@ export default function ContractCreatePage() {
   const [agents, setAgents] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [commissionError, setCommissionError] = useState('');
-  const [isPreFilling, setIsPreFilling] = useState(false);
   const [activeTemplates, setActiveTemplates] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [isPreFilling, setIsPreFilling] = useState(false);
 
   const { user } = useAuth();
   const role = user?.role?.toUpperCase();
@@ -156,6 +156,7 @@ export default function ContractCreatePage() {
 
     if (pId) {
       prefillRanRef.current = true;
+      setIsPreFilling(true);
       propertyApi.getById(pId)
         .then(res => {
           const prop = res?.data?.data ?? res?.data;
@@ -179,7 +180,8 @@ export default function ContractCreatePage() {
             setSellerName(prop.ownerName || '');
           }
         })
-        .catch(err => console.error("Error al pre-cargar oferta:", err));
+        .catch(err => console.error("Error al pre-cargar oferta:", err))
+        .finally(() => setIsPreFilling(false));
     }
   }, [locationSearch, isEditing]);
 

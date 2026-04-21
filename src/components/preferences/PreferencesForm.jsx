@@ -3,6 +3,7 @@ import { Spinner } from "react-bootstrap";
 import { IoWarning } from "react-icons/io5";
 import SelectableChip from "./SelectableChip";
 import RangeInputRow from "./RangeInputRow";
+import ValidationError from "./ValidationError";
 
 // Códigos de categorías que tienen selección única
 const SINGLE_SELECT_CODES = ["WATER_CONNECTION", "SANITARY_INSTALLATION"];
@@ -73,6 +74,7 @@ export default function PreferencesForm({
   const [ranges, setRanges] = useState(
     () => initRanges(initialPreferences?.ranges)
   );
+  const [validationError, setValidationError] = useState(null);
 
   // ── Handlers de chips ──────────────────────────────────────────────────────
 
@@ -82,6 +84,7 @@ export default function PreferencesForm({
       next.has(optionId) ? next.delete(optionId) : next.add(optionId);
       return next;
     });
+    setValidationError(null);
   }, []);
 
   const toggleSingle = useCallback((categoryOptions, optionId) => {
@@ -93,6 +96,7 @@ export default function PreferencesForm({
       if (!prev.has(optionId)) next.add(optionId);
       return next;
     });
+    setValidationError(null);
   }, []);
 
   // ── Handlers de rangos ─────────────────────────────────────────────────────
@@ -107,6 +111,13 @@ export default function PreferencesForm({
   // ── Submit ─────────────────────────────────────────────────────────────────
 
   const handleSubmit = async () => {
+    if (selectedIds.size === 0) {
+      setValidationError("Debe seleccionar al menos una opción de preferencia");
+      return;
+    }
+
+    setValidationError(null);
+
     const rangesPayload = Object.entries(ranges)
       .map(([fieldName, { min, max }]) => ({
         fieldName,
@@ -209,6 +220,8 @@ export default function PreferencesForm({
           );
         })}
       </div>
+
+      <ValidationError message={validationError} />
 
       {/* Sticky footer con acciones */}
       <div className="pref-form__footer">
