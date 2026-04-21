@@ -17,6 +17,7 @@ import {
   IoSettingsOutline,
   IoLogOutOutline,
   IoLogInOutline,
+  IoBookmarkOutline,
   IoCalendarClearOutline,
   IoCalendarOutline,
   IoSpeedometerOutline,
@@ -189,7 +190,7 @@ function CustomNavbar() {
                     <HouseDoor size={16} style={{ flexShrink: 0 }} /> Mis propiedades
                   </Link>
                   <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Mis reservas
+                    <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> Mis reservas
                   </Link>
                   <Link to="/reservations/owner" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
