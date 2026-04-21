@@ -18,7 +18,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
     setAmount(initialAmount);
     setNotes('');
     setError(null);
-  }, [show, property?.id]);
+  }, [show, property?.id, initialAmount]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,8 +37,8 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
         amount: numericAmount,
         notes: notes ?? '',
       });
-      onCreated(res.data?.data);
-      onClose();
+      onCreated?.(res.data?.data);
+      onClose?.();
     } catch (err) {
       setError(err?.response?.data?.message || 'No se pudo crear la reserva.');
     } finally {
