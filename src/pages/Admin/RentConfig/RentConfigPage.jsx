@@ -24,7 +24,7 @@ export default function RentConfigPage() {
         }
       } catch (err) {
         console.error('Error fetching rent config:', err);
-        setError('No se pudo cargar la configuraci髇.');
+        setError('No se pudo cargar la configuraci贸n.');
       } finally {
         setLoading(false);
       }
@@ -44,10 +44,10 @@ export default function RentConfigPage() {
         depositMonths: Number(depositMonths),
         commissionPercent: Number(commissionPercent),
       });
-      setSuccessMsg('Configuraci髇 guardada exitosamente.');
+      setSuccessMsg('Configuraci贸n guardada exitosamente.');
     } catch (err) {
       console.error('Error saving rent config:', err);
-      setError('No se pudo guardar la configuraci髇. Verifica los valores e intenta nuevamente.');
+      setError('No se pudo guardar la configuraci贸n. Verifica los valores e intenta nuevamente.');
     } finally {
       setSaving(false);
     }
@@ -63,9 +63,9 @@ export default function RentConfigPage() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Configuraci髇 de Alquiler</h2>
+      <h2 className={styles.title}>Configuraci贸n de Alquiler</h2>
       <p className={styles.subtitle}>
-        Configura los par醡etros utilizados para calcular el costo inicial de alquiler.
+        Configura los par谩metros utilizados para calcular el costo inicial de alquiler.
       </p>
 
       <Card className={styles.card}>
@@ -73,7 +73,7 @@ export default function RentConfigPage() {
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-4">
               <Form.Label className={styles.label}>
-                Meses de dep髎ito
+                Meses de dep贸sito
               </Form.Label>
               <Form.Control
                 type="number"
@@ -84,13 +84,13 @@ export default function RentConfigPage() {
                 className={styles.input}
               />
               <Form.Text className="text-muted">
-                Cantidad de meses de alquiler que se requieren como dep髎ito de garant韆.
+                Cantidad de meses de alquiler que se requieren como dep贸sito de garant铆a.
               </Form.Text>
             </Form.Group>
 
             <Form.Group className="mb-4">
               <Form.Label className={styles.label}>
-                Porcentaje de comisi髇 (%)
+                Porcentaje de comisi贸n (%)
               </Form.Label>
               <Form.Control
                 type="number"
@@ -101,7 +101,7 @@ export default function RentConfigPage() {
                 className={styles.input}
               />
               <Form.Text className="text-muted">
-                Porcentaje del alquiler mensual que se cobra como comisi髇 por gesti髇.
+                Porcentaje del alquiler mensual que se cobra como comisi贸n por gesti贸n.
               </Form.Text>
             </Form.Group>
 
