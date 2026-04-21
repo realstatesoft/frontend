@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Container, Card, Spinner, Alert, Button, Badge, Table, Form, Pagination } from 'react-bootstrap';
 import { ArrowLeft, Eye } from 'react-bootstrap-icons';
 import CustomNavbar from '../../components/Landing/Navbar';
@@ -51,9 +51,10 @@ export default function MyReservationsPage() {
   };
 
   const handleCancel = async (id) => {
-    const reason = window.prompt('Motivo:') ?? '';
+    const reasonResult = window.prompt('Motivo:');
+    if (reasonResult === null) return;
     try {
-      await reservationApi.cancel(id, { reason });
+      await reservationApi.cancel(id, { reason: reasonResult });
       load(page, status);
     } catch {
       setError('No se pudo cancelar la reserva.');
@@ -112,17 +113,17 @@ export default function MyReservationsPage() {
                 </thead>
                 <tbody>
                   {items.map((r) => (
-                    <tr
-                      key={r.id}
-                      onClick={() => goToProperty(r.propertyId)}
-                      style={{ cursor: r.propertyId ? 'pointer' : 'default' }}
-                    >
-                      <td>{r.propertyTitle}</td>
+                    <tr key={r.id}>
+                      <td>
+                        {r.propertyId
+                          ? <Link to={`/properties/${r.propertyId}`}>{r.propertyTitle}</Link>
+                          : r.propertyTitle}
+                      </td>
                       <td>{formatCurrency(r.amount)}</td>
                       <td>
                         <Badge bg={statusVariant(r.status)}>{statusLabel(r.status)}</Badge>
                       </td>
-                      <td onClick={(e) => e.stopPropagation()}>
+                      <td>
                         <div className="d-flex gap-2">
                           <Button
                             size="sm"
