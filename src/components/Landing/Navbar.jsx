@@ -11,6 +11,7 @@ import {
   Trash,
 } from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
+import useHasPublishedProperties from "../../hooks/useHasPublishedProperties";
 import { CiUser } from "react-icons/ci";
 import {
   IoHomeOutline,
@@ -56,6 +57,8 @@ function CustomNavbar() {
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
   const isAgent = user?.role?.toUpperCase() === "AGENT";
+
+  const hasPublishedProperties = useHasPublishedProperties();
 
   useEffect(() => {
     const fetchCount = () => {
@@ -192,9 +195,11 @@ function CustomNavbar() {
                   <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> Mis reservas
                   </Link>
-                  <Link to="/owner/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
-                  </Link>
+                  {hasPublishedProperties && (
+                    <Link to="/owner/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
+                    </Link>
+                  )}
                   <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Trash size={14} style={{ flexShrink: 0 }} /> Papelera
                   </Link>
@@ -222,9 +227,11 @@ function CustomNavbar() {
 
                   {isAgent && (
                     <>
-                      <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
-                      </Link>
+                      {hasPublishedProperties && (
+                        <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                          <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
+                        </Link>
+                      )}
                       <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
                       </Link>
