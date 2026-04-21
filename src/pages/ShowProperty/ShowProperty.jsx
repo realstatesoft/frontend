@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -63,8 +63,7 @@ export default function ShowProperty() {
     copyLink,
     activeFlagCount,
     isAuthenticated,
-    fetchActiveFlagCount,
-    viewCount,
+    fetchActiveFlagCount
   } = useShowProperty();
 
   const [showReportModal, setShowReportModal] = useState(false);
@@ -83,7 +82,6 @@ export default function ShowProperty() {
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
-  const displayedViewCount = viewCount ?? property?.viewCount ?? 0;
 
   // Resetear estados cuando cambia la propiedad (navegación entre propiedades similares)
   useEffect(() => {
@@ -304,17 +302,11 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <div className="property__main-image-wrapper h-100">
-                <img
-                  src={images[0]}
-                  alt="Fachada"
-                  className="property__main-image"
-                />
-                <div className="property__views-badge" aria-label={`${displayedViewCount} han visto esta propiedad`}>
-                  <Eye className="property__views-badge-icon" size={16} />
-                  <span>{displayedViewCount} han visto esta propiedad</span>
-                </div>
-              </div>
+              <img
+                src={images[0]}
+                alt="Fachada"
+                className="property__main-image"
+              />
             </Col>
             <Col xs={6}>
               <Row className="g-1 h-100">
@@ -461,8 +453,8 @@ export default function ShowProperty() {
                               </strong>
                             </>
                           )}
-                          {displayedViewCount != null && (
-                            <> &nbsp;|&nbsp; {displayedViewCount} vistas</>
+                          {property.viewCount != null && (
+                            <> &nbsp;|&nbsp; {property.viewCount} vistas</> //componente que diga el padding que vas a usar etc
                           )}
                           {property.favoriteCount != null && (
                             <>

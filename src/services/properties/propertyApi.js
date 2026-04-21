@@ -7,10 +7,6 @@ const propertyApi = {
 
   getById: (id) => api.get(`${BASE}/${id}`),
 
-  registerView: (id) => api.post(`${BASE}/${id}/views`),
-
-  getViewCount: (id) => api.get(`${BASE}/${id}/views/count`),
-
   getAll: (params) => api.get(BASE, { params }),
 
   getByOwner: (ownerId, params) => api.get(`${BASE}/owner/${ownerId}`, { params }),

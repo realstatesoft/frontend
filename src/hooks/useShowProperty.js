@@ -29,10 +29,8 @@ export function useShowProperty() {
   const navigate = useNavigate();
 
   const similarRequestRef = useRef(0);
-  const viewSyncRequestRef = useRef(0);
 
   const [property, setProperty] = useState(null);
-  const [viewCount, setViewCount] = useState(null);
   const [similarProperties, setSimilarProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingSimilar, setLoadingSimilar] = useState(true);
@@ -52,52 +50,6 @@ export function useShowProperty() {
   const propertyOwnerId = property?.ownerId ?? property?.userId ?? null;
   const isOwner = isAuthenticated && propertyOwnerId !== null && propertyOwnerId === user?.userId;
 
-  const syncViewCount = useCallback((propertyId, fallbackCount = 0) => {
-    if (!propertyId) return;
-
-    const requestId = ++viewSyncRequestRef.current;
-    let registerSucceeded = false;
-
-    const applyCount = (value) => {
-      if (requestId !== viewSyncRequestRef.current) return;
-
-      const nextCount = Number.isFinite(value) ? value : fallbackCount;
-      setViewCount(nextCount);
-      setProperty((current) =>
-        current && String(current.id) === String(propertyId)
-          ? { ...current, viewCount: nextCount }
-          : current
-      );
-    };
-
-    propertyApi
-      .getViewCount(propertyId)
-      .then(({ data }) => {
-        if (requestId !== viewSyncRequestRef.current) return;
-        if (data?.success && !registerSucceeded) {
-          applyCount(Number(data.data ?? fallbackCount));
-        }
-      })
-      .catch(() => {
-        if (requestId === viewSyncRequestRef.current && !registerSucceeded) {
-          applyCount(fallbackCount);
-        }
-      });
-
-    propertyApi
-      .registerView(propertyId)
-      .then(({ data }) => {
-        if (requestId !== viewSyncRequestRef.current) return;
-        if (data?.success) {
-          registerSucceeded = true;
-          applyCount(Number(data.data ?? fallbackCount));
-        }
-      })
-      .catch(() => {
-        // Si falla el registro, no bloqueamos la pantalla ni el conteo.
-      });
-  }, []);
-
   const fetchProperty = useCallback(() => {
     if (!id) return;
     setLoading(true);
@@ -108,12 +60,10 @@ export function useShowProperty() {
         if (data?.success && data?.data) {
           const p = data.data;
           setProperty(p);
-          setViewCount(p.viewCount ?? 0);
           const statusOpt = PROPERTY_STATUS_OPTIONS.find((o) => o.value === p.status) ?? PROPERTY_STATUS_OPTIONS[0];
           const visOpt = PROPERTY_VISIBILITY_OPTIONS.find((o) => o.value === p.visibility) ?? PROPERTY_VISIBILITY_OPTIONS[0];
           setStatus(statusOpt);
           setVisibility(visOpt);
-          syncViewCount(id, p.viewCount ?? 0);
         } else {
           setError("No se pudo cargar la propiedad.");
         }
@@ -164,7 +114,7 @@ export function useShowProperty() {
           setLoadingSimilar(false);
         }
       });
-  }, [id, syncViewCount]);
+  }, [id]);
 
   const fetchActiveFlagCount = useCallback(() => {
     if (!id) {
@@ -366,7 +316,6 @@ export function useShowProperty() {
     hideConfirm,
     images,
     features,
-    viewCount,
     priceFormatted,
     propertyTypeLabel,
     mapUrl,
