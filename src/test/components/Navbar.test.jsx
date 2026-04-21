@@ -109,7 +109,12 @@ describe('CustomNavbar', () => {
       expect(screen.getByText(/ver dashboard/i)).toBeInTheDocument();
     });
 
-    it('muestra "Reservas recibidas" si tiene propiedades publicadas', () => {
+    it('muestra "Reservas recibidas" si tiene propiedades publicadas y es OWNER', () => {
+      useAuth.mockReturnValue({
+        isAuthenticated: true,
+        user: { email: 'owner@example.com', role: 'OWNER', userId: 42 },
+        logout: mockLogout,
+      });
       useHasPublishedProperties.mockReturnValue(true);
       renderNavbar();
       const profileBtn = screen.getByRole('button', { name: /menu de perfil/i });
@@ -119,6 +124,14 @@ describe('CustomNavbar', () => {
 
     it('no muestra "Reservas recibidas" si no tiene propiedades publicadas', () => {
       useHasPublishedProperties.mockReturnValue(false);
+      renderNavbar();
+      const profileBtn = screen.getByRole('button', { name: /menu de perfil/i });
+      fireEvent.click(profileBtn);
+      expect(screen.queryByText(/reservas recibidas/i)).not.toBeInTheDocument();
+    });
+
+    it('no muestra "Reservas recibidas" si es USER aunque tenga propiedades publicadas', () => {
+      useHasPublishedProperties.mockReturnValue(true);
       renderNavbar();
       const profileBtn = screen.getByRole('button', { name: /menu de perfil/i });
       fireEvent.click(profileBtn);
