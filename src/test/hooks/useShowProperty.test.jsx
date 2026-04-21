@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 
 const mockedNavigate = vi.fn();
+let mockedPropertyId = '123';
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: vi.fn(),
@@ -29,7 +30,7 @@ vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useParams: () => ({ id: '123' }),
+    useParams: () => ({ id: mockedPropertyId }),
     useNavigate: () => mockedNavigate,
   };
 });
@@ -37,11 +38,16 @@ vi.mock('react-router-dom', async () => {
 import { useAuth } from '../../hooks/useAuth';
 import propertyApi from '../../services/properties/propertyApi';
 import propertyFlagsApi from '../../services/propertyFlagsApi';
-import { useShowProperty } from '../../hooks/useShowProperty';
+import {
+  __resetShowPropertyViewRegistrationForTests,
+  useShowProperty,
+} from '../../hooks/useShowProperty';
 
 describe('useShowProperty', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    __resetShowPropertyViewRegistrationForTests();
+    mockedPropertyId = '123';
     useAuth.mockReturnValue({
       user: { userId: 1, role: 'USER' },
       isAuthenticated: true,
@@ -105,6 +111,86 @@ describe('useShowProperty', () => {
     await waitFor(() => {
       expect(propertyApi.registerView).toHaveBeenCalledTimes(1);
       expect(result.current.viewCount).toBeNull();
+    });
+  });
+
+  it('no vuelve a registrar la vista al remount para la misma propiedad', async () => {
+    propertyApi.registerView.mockResolvedValue({
+      data: { success: true, data: 7 },
+    });
+    propertyApi.getViewCount.mockResolvedValue({
+      data: { success: true, data: 7 },
+    });
+
+    const firstRender = renderHook(() => useShowProperty());
+
+    await waitFor(() => {
+      expect(propertyApi.registerView).toHaveBeenCalledTimes(1);
+    });
+
+    firstRender.unmount();
+
+    renderHook(() => useShowProperty());
+
+    await waitFor(() => {
+      expect(propertyApi.registerView).toHaveBeenCalledTimes(1);
+      expect(propertyApi.getViewCount).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('ignora respuestas viejas del conteo cuando cambia la propiedad', async () => {
+    let resolveFirstCount;
+    let resolveSecondCount;
+
+    propertyApi.registerView.mockResolvedValue({
+      data: { success: true, data: 1 },
+    });
+    propertyApi.getById.mockImplementation(async (id) => ({
+      data: {
+        success: true,
+        data: {
+          id: Number(id),
+          title: `Casa ${id}`,
+          ownerId: 1,
+          status: 'PUBLISHED',
+          visibility: 'PUBLIC',
+          media: [],
+        },
+      },
+    }));
+    propertyApi.getSimilar.mockResolvedValue({
+      data: { success: true, data: [] },
+    });
+    propertyApi.getViewCount.mockImplementation((id) => new Promise((resolve) => {
+      if (id === '123') {
+        resolveFirstCount = resolve;
+      } else {
+        resolveSecondCount = resolve;
+      }
+    }));
+
+    const { result, rerender } = renderHook(() => useShowProperty());
+
+    await waitFor(() => {
+      expect(propertyApi.getViewCount).toHaveBeenCalledWith('123');
+    });
+
+    mockedPropertyId = '456';
+    rerender();
+
+    await waitFor(() => {
+      expect(propertyApi.getViewCount).toHaveBeenCalledWith('456');
+    });
+
+    resolveFirstCount({
+      data: { success: true, data: 3 },
+    });
+    resolveSecondCount({
+      data: { success: true, data: 9 },
+    });
+
+    await waitFor(() => {
+      expect(result.current.viewCount).toBe(9);
     });
   });
 });

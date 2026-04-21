@@ -83,6 +83,12 @@ export default function ShowProperty() {
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
+  const viewBadgeText =
+    viewCount === 1
+      ? "1 ha visto esta propiedad"
+      : viewCount > 1
+      ? `${viewCount} han visto esta propiedad`
+      : null;
 
   // Resetear estados cuando cambia la propiedad (navegación entre propiedades similares)
   useEffect(() => {
@@ -309,10 +315,10 @@ export default function ShowProperty() {
                   alt="Fachada"
                   className="property__main-image"
                 />
-                {viewCount != null && (
+                {viewBadgeText && (
                   <div className="property__views-badge">
                     <Eye size={20} className="property__views-icon" />
-                    <span>{viewCount} han visto esta propiedad</span>
+                    <span>{viewBadgeText}</span>
                   </div>
                 )}
               </div>

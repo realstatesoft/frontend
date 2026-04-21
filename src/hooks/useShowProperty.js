@@ -20,6 +20,12 @@ const getErrorMessage = (err) =>
   "No se pudo conectar con el servidor. Verificá que el backend esté activo.";
 
 const SIMILAR_LIMIT = 6
+const registeredViewIds = new Set();
+
+export function __resetShowPropertyViewRegistrationForTests() {
+  registeredViewIds.clear();
+}
+
 /**
  * Hook con toda la lógica de la página ShowProperty:
  * fetch de propiedad, estado, visibilidad, changeStatus, changeVisibility, delete.
@@ -29,6 +35,8 @@ export function useShowProperty() {
   const navigate = useNavigate();
 
   const similarRequestRef = useRef(0);
+  const viewCountRequestRef = useRef(0);
+  const registeredViewRef = useRef(registeredViewIds);
 
   const [property, setProperty] = useState(null);
   const [similarProperties, setSimilarProperties] = useState([]);
@@ -140,14 +148,29 @@ export function useShowProperty() {
       return Promise.resolve(null);
     }
 
+    const requestId = ++viewCountRequestRef.current;
+    const currentId = String(id);
+
     return propertyApi
       .getViewCount(id)
       .then(({ data }) => {
+        if (
+          requestId !== viewCountRequestRef.current ||
+          String(id) !== currentId
+        ) {
+          return null;
+        }
         const count = typeof data === "number" ? data : (data?.data ?? data?.count ?? data);
         setViewCount(Number.isFinite(Number(count)) ? Number(count) : null);
         return count;
       })
       .catch(() => {
+        if (
+          requestId !== viewCountRequestRef.current ||
+          String(id) !== currentId
+        ) {
+          return null;
+        }
         setViewCount(null);
         return null;
       });
@@ -155,7 +178,15 @@ export function useShowProperty() {
 
   const registerPropertyView = useCallback(() => {
     if (!id) return Promise.resolve(null);
-    return propertyApi.registerView(id).catch(() => null);
+    const propertyId = String(id);
+    if (registeredViewRef.current.has(propertyId)) {
+      return Promise.resolve(null);
+    }
+    registeredViewRef.current.add(propertyId);
+    return propertyApi.registerView(id).catch(() => {
+      registeredViewRef.current.delete(propertyId);
+      return null;
+    });
   }, [id]);
 
   useEffect(() => {

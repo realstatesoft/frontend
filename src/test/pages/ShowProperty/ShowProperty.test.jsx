@@ -47,6 +47,47 @@ import ShowProperty from '../../../pages/ShowProperty/ShowProperty';
 import { useShowProperty } from '../../../hooks/useShowProperty';
 import { usePropertyPermissions } from '../../../hooks/usePropertyPermissions';
 
+const createShowPropertyHookValue = (overrides = {}) => ({
+  property: {
+    id: 123,
+    title: 'Casa Test',
+    description: 'Descripción',
+    address: 'Calle 1',
+    ownerName: 'Ana',
+    media: [{ url: 'https://example.com/property.jpg' }],
+    createdAt: '2026-04-01T10:00:00',
+    updatedAt: '2026-04-01T10:00:00',
+    favoriteCount: 0,
+  },
+  loading: false,
+  actionLoading: false,
+  error: null,
+  status: { label: 'Publicado' },
+  visibility: { label: 'Pública' },
+  showConfirm: false,
+  confirmData: {},
+  hideConfirm: vi.fn(),
+  images: ['https://example.com/property.jpg'],
+  features: [],
+  priceFormatted: '₲ 100.000',
+  propertyTypeLabel: 'Casa',
+  mapUrl: 'about:blank',
+  formatTimeAgo: () => 'hace poco',
+  openChangeStatusConfirm: vi.fn(),
+  openChangeVisibilityConfirm: vi.fn(),
+  openDeleteConfirm: vi.fn(),
+  PROPERTY_STATUS_OPTIONS: [],
+  PROPERTY_VISIBILITY_OPTIONS: [],
+  similarProperties: [],
+  loadingSimilar: false,
+  copyLink: vi.fn(),
+  activeFlagCount: 0,
+  viewCount: 7,
+  isAuthenticated: false,
+  fetchActiveFlagCount: vi.fn(),
+  ...overrides,
+});
+
 describe('ShowProperty', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -61,48 +102,10 @@ describe('ShowProperty', () => {
       isAdmin: false,
     });
 
-    useShowProperty.mockReturnValue({
-      property: {
-        id: 123,
-        title: 'Casa Test',
-        description: 'Descripción',
-        address: 'Calle 1',
-        ownerName: 'Ana',
-        media: [{ url: 'https://example.com/property.jpg' }],
-        createdAt: '2026-04-01T10:00:00',
-        updatedAt: '2026-04-01T10:00:00',
-        favoriteCount: 0,
-      },
-      loading: false,
-      actionLoading: false,
-      error: null,
-      status: { label: 'Publicado' },
-      visibility: { label: 'Pública' },
-      showConfirm: false,
-      confirmData: {},
-      hideConfirm: vi.fn(),
-      images: ['https://example.com/property.jpg'],
-      features: [],
-      priceFormatted: '₲ 100.000',
-      propertyTypeLabel: 'Casa',
-      mapUrl: 'about:blank',
-      formatTimeAgo: () => 'hace poco',
-      openChangeStatusConfirm: vi.fn(),
-      openChangeVisibilityConfirm: vi.fn(),
-      openDeleteConfirm: vi.fn(),
-      PROPERTY_STATUS_OPTIONS: [],
-      PROPERTY_VISIBILITY_OPTIONS: [],
-      similarProperties: [],
-      loadingSimilar: false,
-      copyLink: vi.fn(),
-      activeFlagCount: 0,
-      viewCount: 7,
-      isAuthenticated: false,
-      fetchActiveFlagCount: vi.fn(),
-    });
+    useShowProperty.mockReturnValue(createShowPropertyHookValue());
   });
 
-  it('muestra el overlay de visualizaciones sobre la imagen principal', () => {
+  it('muestra el overlay de visualizaciones en plural sobre la imagen principal', () => {
     render(
       <MemoryRouter>
         <ShowProperty />
@@ -110,5 +113,30 @@ describe('ShowProperty', () => {
     );
 
     expect(screen.getByText('7 han visto esta propiedad')).toBeInTheDocument();
+  });
+
+  it('muestra el overlay de visualizaciones en singular cuando hay una visita', () => {
+    useShowProperty.mockReturnValue(createShowPropertyHookValue({ viewCount: 1 }));
+
+    render(
+      <MemoryRouter>
+        <ShowProperty />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('1 ha visto esta propiedad')).toBeInTheDocument();
+  });
+
+  it('oculta el overlay de visualizaciones cuando no hay visitas', () => {
+    useShowProperty.mockReturnValue(createShowPropertyHookValue({ viewCount: 0 }));
+
+    render(
+      <MemoryRouter>
+        <ShowProperty />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText(/ha visto esta propiedad/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/han visto esta propiedad/i)).not.toBeInTheDocument();
   });
 });
