@@ -1,46 +1,60 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Card, Spinner, Alert, Button, Badge, Table } from 'react-bootstrap';
+import { Container, Card, Spinner, Alert, Button, Badge, Table, Form, Pagination } from 'react-bootstrap';
 import { ArrowLeft, Eye } from 'react-bootstrap-icons';
 import CustomNavbar from '../../components/Landing/Navbar';
 import reservationApi from '../../services/reservations/reservationApi';
 import { formatCurrency } from '../../utils/formatters';
+import { statusVariant, statusLabel } from '../../utils/reservationStatus';
 import styles from './MyReservationsPage.module.scss';
 
-const statusVariant = (status) => ({
-  PENDING: 'warning',
-  ACTIVE: 'success',
-  CANCELLED: 'secondary',
-  EXPIRED: 'dark',
-  CONVERTED_TO_CONTRACT: 'info',
-}[status] ?? 'secondary');
+const STATUS_OPTIONS = [
+  { value: '', label: 'Todos los estados' },
+  { value: 'PENDING',               label: 'Pendiente' },
+  { value: 'ACTIVE',                label: 'Activa' },
+  { value: 'CANCELLED',             label: 'Cancelada' },
+  { value: 'EXPIRED',               label: 'Expirada' },
+  { value: 'CONVERTED_TO_CONTRACT', label: 'Convertida a contrato' },
+];
+
+const PAGE_SIZE = 10;
 
 export default function MyReservationsPage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState([]);
+  const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
+  const [status, setStatus]   = useState('');
+  const [page, setPage]       = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (currentPage, currentStatus) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await reservationApi.getMyReservations(0, 50);
-      setItems(res.data?.data?.content ?? []);
-    } catch (err) {
+      const res = await reservationApi.getMyReservations(currentPage, PAGE_SIZE, currentStatus || null);
+      const data = res.data?.data ?? {};
+      setItems(data.content ?? []);
+      setTotalPages(data.totalPages ?? 0);
+    } catch {
       setError('No se pudieron cargar tus reservas.');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(page, status); }, [load, page, status]);
+
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+    setPage(0);
+  };
 
   const handleCancel = async (id) => {
     const reason = window.prompt('Motivo:') ?? '';
     try {
       await reservationApi.cancel(id, { reason });
-      load();
+      load(page, status);
     } catch {
       setError('No se pudo cancelar la reserva.');
     }
@@ -65,54 +79,84 @@ export default function MyReservationsPage() {
           </Button>
           <h2 className="mb-0 ms-2">Mis reservas</h2>
         </div>
+
+        <div className="mb-3" style={{ maxWidth: 260 }}>
+          <Form.Select
+            size="sm"
+            value={status}
+            onChange={handleStatusChange}
+            aria-label="Filtrar por estado"
+          >
+            {STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </Form.Select>
+        </div>
+
         {loading && <Spinner animation="border" />}
         {error && <Alert variant="danger">{error}</Alert>}
         {!loading && !error && items.length === 0 && (
           <Alert variant="info">Aún no tienes reservas.</Alert>
         )}
         {!loading && items.length > 0 && (
-          <Card>
-            <Table responsive hover className="mb-0">
-              <thead>
-                <tr>
-                  <th>Propiedad</th>
-                  <th>Monto</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((r) => (
-                  <tr
-                    key={r.id}
-                    onClick={() => goToProperty(r.propertyId)}
-                    style={{ cursor: r.propertyId ? 'pointer' : 'default' }}
-                  >
-                    <td>{r.propertyTitle}</td>
-                    <td>{formatCurrency(r.amount)}</td>
-                    <td><Badge bg={statusVariant(r.status)}>{r.status}</Badge></td>
-                    <td onClick={(e) => e.stopPropagation()}>
-                      <div className="d-flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline-primary"
-                          onClick={() => goToProperty(r.propertyId)}
-                          aria-label="Ver propiedad"
-                        >
-                          <Eye size={14} /> Ver
-                        </Button>
-                        {(r.status === 'PENDING' || r.status === 'ACTIVE') && (
-                          <Button size="sm" variant="outline-danger" onClick={() => handleCancel(r.id)}>
-                            Cancelar
-                          </Button>
-                        )}
-                      </div>
-                    </td>
+          <>
+            <Card>
+              <Table responsive hover className="mb-0">
+                <thead>
+                  <tr>
+                    <th>Propiedad</th>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {items.map((r) => (
+                    <tr
+                      key={r.id}
+                      onClick={() => goToProperty(r.propertyId)}
+                      style={{ cursor: r.propertyId ? 'pointer' : 'default' }}
+                    >
+                      <td>{r.propertyTitle}</td>
+                      <td>{formatCurrency(r.amount)}</td>
+                      <td>
+                        <Badge bg={statusVariant(r.status)}>{statusLabel(r.status)}</Badge>
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <div className="d-flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline-primary"
+                            onClick={() => goToProperty(r.propertyId)}
+                            aria-label="Ver propiedad"
+                          >
+                            <Eye size={14} /> Ver
+                          </Button>
+                          {(r.status === 'PENDING' || r.status === 'ACTIVE') && (
+                            <Button size="sm" variant="outline-danger" onClick={() => handleCancel(r.id)}>
+                              Cancelar
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card>
+
+            {totalPages > 1 && (
+              <Pagination className="mt-3 justify-content-center">
+                <Pagination.Prev disabled={page === 0} onClick={() => setPage((p) => p - 1)} />
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <Pagination.Item key={i} active={i === page} onClick={() => setPage(i)}>
+                    {i + 1}
+                  </Pagination.Item>
                 ))}
-              </tbody>
-            </Table>
-          </Card>
+                <Pagination.Next disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} />
+              </Pagination>
+            )}
+          </>
         )}
       </Container>
     </>

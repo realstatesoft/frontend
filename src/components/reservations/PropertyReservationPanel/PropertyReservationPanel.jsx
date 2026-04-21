@@ -3,6 +3,7 @@ import { Button, Card, Alert, Spinner, Badge } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import reservationApi from '../../../services/reservations/reservationApi';
 import { formatCurrency } from '../../../utils/formatters';
+import { statusVariant, statusLabel } from '../../../utils/reservationStatus';
 import ReserveModal from '../ReserveModal/ReserveModal';
 import styles from './PropertyReservationPanel.module.scss';
 
@@ -76,7 +77,7 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
         {canReserve && myReservation && (
           <Alert variant="success" className="mb-0">
             Ya reservaste esta propiedad por <strong>{formatCurrency(myReservation.amount)}</strong>.
-            Estado actual: <Badge bg={myReservation.status === 'ACTIVE' ? 'success' : 'warning'}>{myReservation.status}</Badge>
+            Estado actual: <Badge bg={statusVariant(myReservation.status)}>{statusLabel(myReservation.status)}</Badge>
           </Alert>
         )}
         {canReserve && !myReservation && !hasBlocking && (
@@ -96,7 +97,7 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
           <div className={styles.pendingRow}>
             <div>
               <strong>{pending.buyerName}</strong> ({pending.buyerEmail})
-              <Badge bg="warning" className="ms-2">{pending.status}</Badge>
+              <Badge bg={statusVariant(pending.status)} className="ms-2">{statusLabel(pending.status)}</Badge>
               <div className="text-muted">Monto: {pending.amount}</div>
             </div>
             <div className="d-flex gap-2">

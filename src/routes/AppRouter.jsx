@@ -44,6 +44,7 @@ import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
 import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
 import OwnerReservationsPage from "../pages/OwnerReservations/OwnerReservationsPage";
+import AgentReservationsPage from "../pages/AgentReservations/AgentReservationsPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import UserProfilePage from "../pages/UserProfilePage";
@@ -114,6 +115,7 @@ export default function AppRouter() {
                     <Route path="reportes" element={<ReportsPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
+                    <Route path="reservas" element={<AgentReservationsPage />} />
                 </Route>
             </Route>
 

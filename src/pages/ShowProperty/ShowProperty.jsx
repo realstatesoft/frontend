@@ -186,11 +186,14 @@ export default function ShowProperty() {
             </Alert>
           )}
 
-          <PropertyReservationPanel
-            property={property}
-            currentUser={authUser}
-            defaultPercent={1}
-          />
+          {/* Panel de reserva solo para owner/agent/admin — buyer lo ve en el sidebar */}
+          {(isPropertyOwner || isAdmin || authUser?.role?.toUpperCase() === 'AGENT') && (
+            <PropertyReservationPanel
+              property={property}
+              currentUser={authUser}
+              defaultPercent={1}
+            />
+          )}
 
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -607,6 +610,17 @@ export default function ShowProperty() {
             </Col>
 
             <Col lg={4} className="mt-4 mt-lg-0">
+              {/* Panel de reserva para comprador (sticky en desktop) */}
+              {!isPropertyOwner && !isAdmin && authUser?.role?.toUpperCase() !== 'AGENT' && (
+                <div style={{ position: 'sticky', top: '1.5rem' }}>
+                  <PropertyReservationPanel
+                    property={property}
+                    currentUser={authUser}
+                    defaultPercent={1}
+                  />
+                </div>
+              )}
+
               <PropertyContactCard property={property} />
 
               {isAuthenticated && (

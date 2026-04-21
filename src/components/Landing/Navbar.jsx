@@ -222,10 +222,12 @@ function CustomNavbar() {
 
                   {isAgent && (
                     <>
+                      <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
+                      </Link>
                       <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
                       </Link>
-                    
                       <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
                       </Link>

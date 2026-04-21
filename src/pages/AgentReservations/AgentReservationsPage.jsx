@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import reservationApi from '../../services/reservations/reservationApi';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { statusVariant, statusLabel } from '../../utils/reservationStatus';
-import styles from './OwnerReservationsPage.module.scss';
+import styles from './AgentReservationsPage.module.scss';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Todos los estados' },
@@ -17,7 +17,7 @@ const STATUS_OPTIONS = [
 
 const PAGE_SIZE = 10;
 
-export default function OwnerReservationsPage() {
+export default function AgentReservationsPage() {
   const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
@@ -29,12 +29,12 @@ export default function OwnerReservationsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await reservationApi.getOwnerReservations(currentPage, PAGE_SIZE, currentStatus || null);
+      const res = await reservationApi.getAssignedReservations(currentPage, PAGE_SIZE, currentStatus || null);
       const data = res.data?.data ?? {};
       setItems(data.content ?? []);
       setTotalPages(data.totalPages ?? 0);
     } catch {
-      setError('No se pudieron cargar las reservas recibidas.');
+      setError('No se pudieron cargar las reservas.');
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export default function OwnerReservationsPage() {
   return (
     <Container className={styles.container}>
       <h2>Reservas recibidas</h2>
-      <p className="text-muted">Reservas enviadas por usuarios sobre tus propiedades publicadas.</p>
+      <p className="text-muted">Reservas sobre las propiedades que tenés asignadas.</p>
 
       <div className="mb-3" style={{ maxWidth: 260 }}>
         <Form.Select
@@ -68,7 +68,7 @@ export default function OwnerReservationsPage() {
       {loading && <Spinner animation="border" />}
       {error && <Alert variant="danger">{error}</Alert>}
       {!loading && !error && items.length === 0 && (
-        <Alert variant="info">No hay reservas sobre tus propiedades.</Alert>
+        <Alert variant="info">No hay reservas sobre tus propiedades asignadas.</Alert>
       )}
       {!loading && items.length > 0 && (
         <>
@@ -77,7 +77,7 @@ export default function OwnerReservationsPage() {
               <thead>
                 <tr>
                   <th>Propiedad</th>
-                  <th>Comprador</th>
+                  <th>Interesado</th>
                   <th>Monto</th>
                   <th>Estado</th>
                   <th>Fecha</th>
