@@ -192,7 +192,7 @@ function CustomNavbar() {
                   <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> Mis reservas
                   </Link>
-                  <Link to="/reservations/owner" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to="/owner/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
                   </Link>
                   <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
