@@ -81,6 +81,7 @@ export default function ShowProperty() {
     canDelete,
     canFeature,
     isOwner: isPropertyOwner,
+    isAdmin,
   } = usePropertyPermissions(property);
 
   const [tourSubTab, setTourSubTab] = useState(null);
