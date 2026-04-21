@@ -17,6 +17,7 @@ import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
 import ClientMessagesPage from "../pages/ClientMessages/ClientMessagesPage";
+import MyReservationsPage from "../pages/MyReservations/MyReservationsPage";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
 import AgentProfilePage from "../pages/Agents/AgentProfilePage";
@@ -79,6 +80,7 @@ export default function AppRouter() {
                 <Route path="/properties/me" element={<MyProperties />} />
                 <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
                 <Route path="/preferences" element={<PreferencesPage />} />
+                <Route path="/reservations" element={<MyReservationsPage />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />

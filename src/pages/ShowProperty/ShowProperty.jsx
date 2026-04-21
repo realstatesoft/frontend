@@ -24,8 +24,10 @@ import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
+import { useAuth } from "../../hooks/useAuth";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
+import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
@@ -66,6 +68,8 @@ export default function ShowProperty() {
     fetchActiveFlagCount
   } = useShowProperty();
 
+  const { user: authUser } = useAuth();
+
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
 
@@ -76,6 +80,7 @@ export default function ShowProperty() {
     canDelete,
     canFeature,
     isOwner: isPropertyOwner,
+    currentUser,
     isAdmin,
   } = usePropertyPermissions(property);
 
@@ -180,6 +185,12 @@ export default function ShowProperty() {
               <span>Esta propiedad tiene reportes activos de otros usuarios. Procedé con precaución.</span>
             </Alert>
           )}
+
+          <PropertyReservationPanel
+            property={property}
+            currentUser={authUser}
+            defaultPercent={1}
+          />
 
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
