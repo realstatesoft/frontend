@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, vi, expect, beforeEach } from 'vitest';
 import OwnerReservationsPage from './OwnerReservationsPage';
@@ -57,6 +57,9 @@ describe('OwnerReservationsPage', () => {
     ], 3));
     renderPage();
     await waitFor(() => expect(screen.getByText('Casa A')).toBeInTheDocument());
-    expect(await screen.findByText('2')).toBeInTheDocument();
+    const paginationList = screen.getByRole('list');
+    const pageButtons = within(paginationList).getAllByRole('button');
+    const pageTwoButton = pageButtons.find((btn) => btn.textContent.trim() === '2');
+    expect(pageTwoButton).toBeInTheDocument();
   });
 });
