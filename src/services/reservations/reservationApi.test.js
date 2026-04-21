@@ -41,4 +41,22 @@ describe('reservationApi', () => {
     await reservationApi.getOwnerReservations(1, 20);
     expect(api.get).toHaveBeenCalledWith('/reservations/owner?page=1&size=20');
   });
+
+  it('getMyReservations appends status param when provided', async () => {
+    api.get.mockResolvedValue({ data: { data: { content: [] } } });
+    await reservationApi.getMyReservations(0, 10, 'PENDING');
+    expect(api.get).toHaveBeenCalledWith('/reservations/my?page=0&size=10&status=PENDING');
+  });
+
+  it('getOwnerReservations appends status param when provided', async () => {
+    api.get.mockResolvedValue({ data: { data: { content: [] } } });
+    await reservationApi.getOwnerReservations(0, 10, 'ACTIVE');
+    expect(api.get).toHaveBeenCalledWith('/reservations/owner?page=0&size=10&status=ACTIVE');
+  });
+
+  it('getAssignedReservations appends status param when provided', async () => {
+    api.get.mockResolvedValue({ data: { data: { content: [] } } });
+    await reservationApi.getAssignedReservations(1, 5, 'CANCELLED');
+    expect(api.get).toHaveBeenCalledWith('/reservations/assigned?page=1&size=5&status=CANCELLED');
+  });
 });
