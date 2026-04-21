@@ -297,7 +297,7 @@ export function PropertyFeaturesSection({
                 const handlePlanClick = () => {
                   if (!plan.url) return;
                   if (isPdf) {
-                    window.open(plan.url, "_blank", "noreferrer");
+                    window.open(plan.url, "_blank", "noopener,noreferrer");
                   } else {
                     setPreviewPlan({ url: plan.url, title: filename });
                   }
@@ -355,11 +355,16 @@ export function PropertyFeaturesSection({
                 );
               })}
             </Row>
-            {galleryMedia.length > 0 && (
-              <small className="text-muted d-block mb-2">
-                {galleryMedia.length} imagen{galleryMedia.length !== 1 ? "es" : ""}. Cliqueá en la estrella para marcar como portada.
-              </small>
-            )}
+            {(() => {
+              const totalCount = galleryMedia.length + floorPlanItems.length;
+              return totalCount > 0 ? (
+                <small className="text-muted d-block mb-2">
+                  {totalCount} elemento{totalCount !== 1 ? "s" : ""} en la galería.
+                  {galleryMedia.some(m => m.type === 'PHOTO' || m.type === 'IMAGE') &&
+                    " Cliqueá en la estrella para marcar la portada."}
+                </small>
+              ) : null;
+            })()}
             <Stack direction="horizontal" gap={2} className="flex-wrap">
               <input
                 type="file"

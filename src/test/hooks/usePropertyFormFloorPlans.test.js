@@ -21,7 +21,7 @@ vi.mock('sweetalert2', () => ({
   },
 }));
 
-// Mock de floorPlanApi (el foco principal de este test)
+// Mock de floorPlanApi (foco principal de este test)
 vi.mock('../../services/properties/floorPlanApi', () => ({
   default: {
     uploadFloorPlan:        vi.fn(),
@@ -74,33 +74,83 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
   // ─── removeFloorPlan ─────────────────────────────────────────────────────
 
   describe('removeFloorPlan(index)', () => {
-    it('elimina el plano en el índice indicado', async () => {
+    it('elimina plano pendiente (sin id) directamente del estado sin llamar API', async () => {
       const { result } = renderHook(() => usePropertyForm(), { wrapper });
 
-      // Precargamos dos planos directamente en el estado del form
       act(() => {
         result.current.setArr('floorPlans')([
-          { url: 'https://s.t/a.pdf', type: 'FLOOR_PLAN', title: 'a.pdf' },
-          { url: 'https://s.t/b.jpg', type: 'FLOOR_PLAN', title: 'b.jpg' },
+          { url: 'https://s.t/a.pdf', type: 'FLOOR_PLAN', title: 'a.pdf' }, // sin id
+          { url: 'https://s.t/b.jpg', type: 'FLOOR_PLAN', title: 'b.jpg' }, // sin id
         ]);
       });
 
-      act(() => {
-        result.current.removeFloorPlan(0);
+      await act(async () => {
+        await result.current.removeFloorPlan(0);
       });
 
+      expect(floorPlanApi.deleteFloorPlan).not.toHaveBeenCalled();
       expect(result.current.form.floorPlans).toHaveLength(1);
       expect(result.current.form.floorPlans[0].title).toBe('b.jpg');
     });
 
-    it('no falla si el array estaba vacío', () => {
+    it('no falla si el array estaba vacío', async () => {
       const { result } = renderHook(() => usePropertyForm(), { wrapper });
 
-      act(() => {
-        result.current.removeFloorPlan(0);
+      await act(async () => {
+        await result.current.removeFloorPlan(0);
       });
 
       expect(result.current.form.floorPlans).toEqual([]);
+    });
+
+    it('llama a deleteFloorPlan y elimina el estado si el plano tiene id (persistido)', async () => {
+      // Necesita propertyId para poder llamar al API
+      propertyApi.getById.mockResolvedValue({
+        data: { success: true, data: { id: 5, title: 'Test', media: [], floorPlans: [] } },
+      });
+      const { result } = renderHook(() => usePropertyForm('5'), { wrapper });
+      await waitFor(() => expect(propertyApi.getById).toHaveBeenCalled());
+
+      act(() => {
+        result.current.setArr('floorPlans')([
+          { id: 10, url: 'https://s.t/persistido.pdf', type: 'FLOOR_PLAN', title: 'persistido.pdf' },
+        ]);
+      });
+
+      floorPlanApi.deleteFloorPlan.mockResolvedValue({ data: { success: true } });
+
+      await act(async () => {
+        await result.current.removeFloorPlan(0);
+      });
+
+      expect(floorPlanApi.deleteFloorPlan).toHaveBeenCalledWith('5', 10);
+      expect(result.current.form.floorPlans).toHaveLength(0);
+    });
+
+    it('hace rollback del estado si deleteFloorPlan lanza un error', async () => {
+      propertyApi.getById.mockResolvedValue({
+        data: { success: true, data: { id: 5, title: 'Test', media: [], floorPlans: [] } },
+      });
+      const { result } = renderHook(() => usePropertyForm('5'), { wrapper });
+      await waitFor(() => expect(propertyApi.getById).toHaveBeenCalled());
+
+      act(() => {
+        result.current.setArr('floorPlans')([
+          { id: 10, url: 'https://s.t/p.pdf', type: 'FLOOR_PLAN', title: 'p.pdf' },
+        ]);
+      });
+
+      floorPlanApi.deleteFloorPlan.mockRejectedValue({
+        message: 'Server error',
+      });
+
+      await act(async () => {
+        await result.current.removeFloorPlan(0);
+      });
+
+      // Rollback: el plano debe seguir en el estado
+      expect(result.current.form.floorPlans).toHaveLength(1);
+      expect(Swal.fire).toHaveBeenCalledWith('Error', expect.stringContaining('Server error'), 'error');
     });
   });
 
@@ -131,6 +181,29 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
         await result.current.addFloorPlan(null);
       });
 
+      expect(floorPlanApi.uploadFloorPlanGeneric).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─── addFloorPlan – validación de tamaño ─────────────────────────────────
+
+  describe('addFloorPlan(file) – validación de tamaño', () => {
+    it('rechaza archivos mayores a 10 MB con alerta', async () => {
+      const { result } = renderHook(() => usePropertyForm(), { wrapper });
+
+      // Creamos un File con size > 10MB usando Object.defineProperty
+      const bigFile = new File(['x'], 'grande.pdf', { type: 'application/pdf' });
+      Object.defineProperty(bigFile, 'size', { value: 11 * 1024 * 1024 }); // 11 MB
+
+      await act(async () => {
+        await result.current.addFloorPlan(bigFile);
+      });
+
+      expect(Swal.fire).toHaveBeenCalledWith(
+        'Archivo demasiado grande',
+        expect.stringContaining('10'),
+        'warning'
+      );
       expect(floorPlanApi.uploadFloorPlanGeneric).not.toHaveBeenCalled();
     });
   });
@@ -194,6 +267,27 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
       });
     });
 
+    it('muestra alerta de error si la API retorna success: false', async () => {
+      const { result } = renderHook(() => usePropertyForm(), { wrapper });
+
+      floorPlanApi.uploadFloorPlanGeneric.mockResolvedValue({
+        data: { success: false, message: 'Tipo de archivo no permitido' },
+      });
+
+      const pdfFile = new File(['pdf'], 'plano.pdf', { type: 'application/pdf' });
+
+      await act(async () => {
+        await result.current.addFloorPlan(pdfFile);
+      });
+
+      expect(Swal.fire).toHaveBeenCalledWith(
+        'Error',
+        expect.stringContaining('Tipo de archivo no permitido'),
+        'error'
+      );
+      expect(result.current.form.floorPlans).toHaveLength(0);
+    });
+
     it('muestra alerta de error si la API lanza una excepción', async () => {
       const { result } = renderHook(() => usePropertyForm(), { wrapper });
 
@@ -236,14 +330,10 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
 
   describe('addFloorPlan(file) – upload con propertyId', () => {
     it('llama a uploadFloorPlan con el propertyId correcto', async () => {
-      // Stub para que la carga de la propiedad no falle durante el montaje del hook
       propertyApi.getById.mockResolvedValue({
         data: { success: true, data: { id: 99, title: 'Test property', media: [], floorPlans: [] } },
       });
-
       const { result } = renderHook(() => usePropertyForm('99'), { wrapper });
-
-      // Esperamos a que el efecto de carga resuelva
       await waitFor(() => expect(propertyApi.getById).toHaveBeenCalledWith('99'));
 
       floorPlanApi.uploadFloorPlan.mockResolvedValue({

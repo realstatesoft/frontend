@@ -467,6 +467,11 @@ export function usePropertyForm(propertyId) {
       await Swal.fire("Formato no permitido", "Los planos deben ser PDF, JPG, PNG o WebP.", "warning");
       return;
     }
+    const MAX_FLOOR_PLAN_BYTES = 10 * 1024 * 1024; // 10 MB (igual que el backend)
+    if (file.size > MAX_FLOOR_PLAN_BYTES) {
+      await Swal.fire("Archivo demasiado grande", "El plano no puede superar los 10 MB.", "warning");
+      return;
+    }
     const MAX_FLOOR_PLANS = 5;
     const currentPlans = form.floorPlans || [];
     if (currentPlans.length >= MAX_FLOOR_PLANS) {
@@ -482,14 +487,12 @@ export function usePropertyForm(propertyId) {
 
       if (targetId) {
         const { data } = await floorPlanApi.uploadFloorPlan(targetId, file);
-        if (data?.success) {
-          newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name, id: data.data.id };
-        }
+        if (!data?.success) throw new Error(data?.message || "Error al subir el plano");
+        newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name, id: data.data.id };
       } else {
         const { data } = await floorPlanApi.uploadFloorPlanGeneric(file);
-        if (data?.success) {
-          newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name };
-        }
+        if (!data?.success) throw new Error(data?.message || "Error al subir el plano");
+        newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name };
       }
 
       if (newItem) {
@@ -503,9 +506,30 @@ export function usePropertyForm(propertyId) {
     }
   }, [propertyId, form.id, form.floorPlans]);
 
-  const removeFloorPlan = useCallback((index) => {
+  const removeFloorPlan = useCallback(async (index) => {
+    const plan = (form.floorPlans || [])[index];
+    if (!plan) return;
+
+    // Para planos persistidos (tienen id del backend), llamamos a la API primero.
+    // Si falla, hacemos rollback (no se modifica el estado).
+    if (plan.id) {
+      const targetId = propertyId || form.id;
+      if (targetId) {
+        try {
+          await floorPlanApi.deleteFloorPlan(targetId, plan.id);
+        } catch (err) {
+          await Swal.fire(
+            "Error",
+            "No se pudo eliminar el plano: " + (err.response?.data?.message || err.message),
+            "error"
+          );
+          return; // rollback: no se modifica el estado local
+        }
+      }
+    }
+    // Para planos pendientes (sin id, aún no persistidos) solo limpiamos el estado local.
     setForm(f => ({ ...f, floorPlans: (f.floorPlans || []).filter((_, i) => i !== index) }));
-  }, []);
+  }, [propertyId, form.id, form.floorPlans]);
 
   const validateForm = useCallback(() => {
     const dataToValidate = {

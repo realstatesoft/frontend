@@ -20,18 +20,19 @@ describe('floorPlanApi', () => {
   // ─── uploadFloorPlan ───────────────────────────────────────────────────────
 
   describe('uploadFloorPlan(propertyId, file)', () => {
-    it('envía FormData con el archivo a la ruta correcta', async () => {
-      const file = new File(['pdf content'], 'plano.pdf', { type: 'application/pdf' });
+    it('envía FormData a la ruta correcta con Content-Type limpiado (undefined)', async () => {
+      const file = new File(['pdf'], 'plano.pdf', { type: 'application/pdf' });
       api.post.mockResolvedValue({ data: { success: true, data: { url: 'https://s.test/plano.pdf' } } });
 
       await floorPlanApi.uploadFloorPlan(42, file);
 
+      // Verifica ruta, cuerpo FormData, y que Content-Type se pase como undefined
+      // para limpiar el default 'application/json' de la instancia de Axios.
       expect(api.post).toHaveBeenCalledWith(
         '/properties/42/floor-plans',
         expect.any(FormData),
-        expect.objectContaining({ headers: { 'Content-Type': 'multipart/form-data' } })
+        expect.objectContaining({ headers: expect.objectContaining({ 'Content-Type': undefined }) })
       );
-      // Verifica que el FormData contiene el campo "file"
       const formData = api.post.mock.calls[0][1];
       expect(formData.get('file')).toBeDefined();
     });
@@ -47,7 +48,7 @@ describe('floorPlanApi', () => {
   // ─── uploadFloorPlanGeneric ────────────────────────────────────────────────
 
   describe('uploadFloorPlanGeneric(file)', () => {
-    it('envía FormData a la ruta genérica /floor-plans/upload', async () => {
+    it('envía FormData a /floor-plans/upload con Content-Type limpiado', async () => {
       const file = new File(['img'], 'plano.jpg', { type: 'image/jpeg' });
       api.post.mockResolvedValue({ data: { success: true, data: { url: 'https://s.test/pending/plano.jpg' } } });
 
@@ -56,7 +57,7 @@ describe('floorPlanApi', () => {
       expect(api.post).toHaveBeenCalledWith(
         '/properties/floor-plans/upload',
         expect.any(FormData),
-        expect.objectContaining({ headers: { 'Content-Type': 'multipart/form-data' } })
+        expect.objectContaining({ headers: expect.objectContaining({ 'Content-Type': undefined }) })
       );
     });
 
@@ -114,6 +115,12 @@ describe('floorPlanApi', () => {
       api.delete.mockRejectedValue(new Error('Forbidden'));
 
       await expect(floorPlanApi.deleteFloorPlan(5, 99)).rejects.toThrow('Forbidden');
+    });
+
+    it('propaga errores de red', async () => {
+      api.delete.mockRejectedValue(new Error('Network error'));
+
+      await expect(floorPlanApi.deleteFloorPlan(5, 99)).rejects.toThrow('Network error');
     });
   });
 });

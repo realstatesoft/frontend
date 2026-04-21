@@ -5,8 +5,11 @@ const BASE = "/properties";
 const postMultipart = (url, file) => {
   const formData = new FormData();
   formData.append("file", file);
+  // Set Content-Type to undefined for this request to clear the instance-level
+  // "application/json" default, allowing the browser to set multipart/form-data
+  // with the correct boundary automatically.
   return api.post(url, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { "Content-Type": undefined },
   });
 };
 
