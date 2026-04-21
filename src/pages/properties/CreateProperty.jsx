@@ -55,6 +55,9 @@ export default function CreateProperty() {
     addTour360Image,
     addTourConfig,
     uploadingTour,
+    addFloorPlan,
+    removeFloorPlan,
+    uploadingFloorPlan,
     handleSubmit,
     dismissError,
   } = usePropertyForm(id);
@@ -183,6 +186,10 @@ export default function CreateProperty() {
               addTour360Image={addTour360Image}
               addTourConfig={addTourConfig}
               uploadingTour={uploadingTour}
+              floorPlans={form.floorPlans}
+              addFloorPlan={addFloorPlan}
+              removeFloorPlan={removeFloorPlan}
+              uploadingFloorPlan={uploadingFloorPlan}
             />
             <ConstructionSection form={form} set={set} />
             <InteriorAndRoomsSection
