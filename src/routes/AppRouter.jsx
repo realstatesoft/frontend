@@ -54,12 +54,13 @@ import FlagsPage from "../pages/Admin/Flags/FlagsPage";
 import PreferencesPage from "../pages/PreferencesPage";
 
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
+import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
 import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
 
 export default function AppRouter() {
     return (
         <Routes>
-            {/* ── Rutas públicas ─────────────────────────────────────── */}
+            {/* -- Rutas públicas -------------------------------------- */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/login" element={<LogIn />} />
@@ -71,7 +72,7 @@ export default function AppRouter() {
             <Route path="/agents/:id" element={<PublicAgentProfilePage />} />
             <Route path="/AgentSearch" element={<AgentSearchPage />} />
 
-            {/* ── Rutas protegidas (requieren autenticación) ────────── */}
+            {/* -- Rutas protegidas (requieren autenticación) ---------- */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<UserProfilePage />} />
                 <Route path="/create-property" element={<CreateProperty />} />
@@ -92,7 +93,7 @@ export default function AppRouter() {
                 <Route path="/ofertas" element={<OfferManagementPage />} />
             </Route>
 
-            {/* ── Rutas protegidas (Agent) ───────────────────────── */}
+            {/* -- Rutas protegidas (Agent) ------------------------- */}
             <Route element={<ProtectedRoute requiredRole="AGENT" />}>
                 <Route path="/agent" element={<AgentLayout />}>
                     <Route index element={<Navigate to="/agent/dashboard" replace />} />
@@ -114,8 +115,8 @@ export default function AppRouter() {
                 </Route>
             </Route>
 
-            {/* ── Rutas protegidas (Owner / User) ───────────────────────── */}
-            <Route element={<ProtectedRoute requiredRole="USER" />}>
+            {/* -- Rutas protegidas (Owner) ------------------------- */}
+            <Route element={<ProtectedRoute requiredRole="OWNER" />}>
                 <Route path="/owner" element={<OwnerLayout />}>
                     <Route index element={<Navigate to="/owner/dashboard" replace />} />
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
@@ -142,6 +143,7 @@ export default function AppRouter() {
                     <Route path="audit-logs" element={<AdminAuditLogsPage />} />
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
+                    <Route path="rent-config" element={<RentConfigPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                 </Route>
             </Route>
