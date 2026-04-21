@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Container, Card, Spinner, Alert, Button, Badge, Table } from 'react-bootstrap';
 import reservationApi from '../../services/reservations/reservationApi';
+import { formatCurrency } from '../../utils/formatters';
 import styles from './MyReservationsPage.module.scss';
 
 const statusVariant = (status) => ({
@@ -64,7 +65,7 @@ export default function MyReservationsPage() {
               {items.map((r) => (
                 <tr key={r.id}>
                   <td>{r.propertyTitle}</td>
-                  <td>{r.amount}</td>
+                  <td>{formatCurrency(r.amount)}</td>
                   <td><Badge bg={statusVariant(r.status)}>{r.status}</Badge></td>
                   <td>
                     {(r.status === 'PENDING' || r.status === 'ACTIVE') && (
