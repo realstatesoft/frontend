@@ -8,41 +8,70 @@ export default function RentConfigPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
-  
+
   const [depositMonths, setDepositMonths] = useState(2);
   const [commissionPercent, setCommissionPercent] = useState(50);
 
   useEffect(() => {
+    let active = true;
+
     const fetchConfig = async () => {
       setLoading(true);
       setError(null);
       try {
         const result = await rentService.getRentConfig();
+        if (!active) return;
         if (result?.data) {
-          setDepositMonths(result.data.depositMonths || 2);
-          setCommissionPercent(result.data.commissionPercent || 50);
+          setDepositMonths(result.data.depositMonths ?? 2);
+          setCommissionPercent(result.data.commissionPercent ?? 50);
         }
       } catch (err) {
+        if (!active) return;
         console.error('Error fetching rent config:', err);
         setError('No se pudo cargar la configuración.');
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     fetchConfig();
+    return () => {
+      active = false;
+    };
   }, []);
+
+  const handleDepositChange = (e) => {
+    setDepositMonths(e.target.value);
+    setSuccessMsg(null);
+  };
+
+  const handleCommissionChange = (e) => {
+    setCommissionPercent(e.target.value);
+    setSuccessMsg(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
     setError(null);
     setSuccessMsg(null);
 
+    const dm = Number(depositMonths);
+    const cp = Number(commissionPercent);
+
+    if (!Number.isFinite(dm) || dm < 1 || dm > 12) {
+      setError('Los meses de depósito deben ser un número entre 1 y 12.');
+      return;
+    }
+    if (!Number.isFinite(cp) || cp < 0 || cp > 100) {
+      setError('El porcentaje de comisión debe ser un número entre 0 y 100.');
+      return;
+    }
+
+    setSaving(true);
     try {
       await rentService.updateRentConfig({
-        depositMonths: Number(depositMonths),
-        commissionPercent: Number(commissionPercent),
+        depositMonths: dm,
+        commissionPercent: cp,
       });
       setSuccessMsg('Configuración guardada exitosamente.');
     } catch (err) {
@@ -71,7 +100,7 @@ export default function RentConfigPage() {
       <Card className={styles.card}>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-4">
+            <Form.Group className="mb-4" controlId="depositMonths">
               <Form.Label className={styles.label}>
                 Meses de depósito
               </Form.Label>
@@ -80,7 +109,7 @@ export default function RentConfigPage() {
                 min="1"
                 max="12"
                 value={depositMonths}
-                onChange={(e) => setDepositMonths(e.target.value)}
+                onChange={handleDepositChange}
                 className={styles.input}
               />
               <Form.Text className="text-muted">
@@ -88,7 +117,7 @@ export default function RentConfigPage() {
               </Form.Text>
             </Form.Group>
 
-            <Form.Group className="mb-4">
+            <Form.Group className="mb-4" controlId="commissionPercent">
               <Form.Label className={styles.label}>
                 Porcentaje de comisión (%)
               </Form.Label>
@@ -97,7 +126,7 @@ export default function RentConfigPage() {
                 min="0"
                 max="100"
                 value={commissionPercent}
-                onChange={(e) => setCommissionPercent(e.target.value)}
+                onChange={handleCommissionChange}
                 className={styles.input}
               />
               <Form.Text className="text-muted">
@@ -106,7 +135,7 @@ export default function RentConfigPage() {
             </Form.Group>
 
             {error && (
-              <Alert variant="danger" className="mb-3">
+              <Alert variant="danger" role="alert" className="mb-3">
                 {error}
               </Alert>
             )}

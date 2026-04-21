@@ -60,7 +60,7 @@ import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPag
 export default function AppRouter() {
     return (
         <Routes>
-            {/* -- Rutas p�blicas ------------------------------??-------- */}
+            {/* -- Rutas públicas -------------------------------------- */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/login" element={<LogIn />} />
@@ -72,7 +72,7 @@ export default function AppRouter() {
             <Route path="/agents/:id" element={<PublicAgentProfilePage />} />
             <Route path="/AgentSearch" element={<AgentSearchPage />} />
 
-            {/* -- Rutas protegidas (requieren autenticaci�n) ---------- */}
+            {/* -- Rutas protegidas (requieren autenticación) ---------- */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<UserProfilePage />} />
                 <Route path="/create-property" element={<CreateProperty />} />

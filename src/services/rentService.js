@@ -11,7 +11,7 @@ const rentService = {
   },
 
   /**
-   * Obtiene la configuraci髇 de alquiler (meses de dep髎ito y porcentaje de comisi髇)
+   * Obtiene la configuraci贸n de alquiler (meses de dep贸sito y porcentaje de comisi贸n)
    * @returns {Promise<{data: {depositMonths: number, commissionPercent: number}}>}
    */
   getRentConfig() {
@@ -19,7 +19,7 @@ const rentService = {
   },
 
   /**
-   * Actualiza la configuraci髇 de alquiler (solo ADMIN)
+   * Actualiza la configuraci贸n de alquiler (solo ADMIN)
    * @param {{depositMonths: number, commissionPercent: number}} payload
    * @returns {Promise<{data: {depositMonths: number, commissionPercent: number}}>}
    */

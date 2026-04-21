@@ -17,10 +17,14 @@ export default function RentCostBreakdown({ propertyId }) {
       setError(null);
       try {
         const result = await rentService.getRentCost(propertyId);
-        setData(result.data);
+        setData(result?.data ?? null);
       } catch (err) {
-        console.error('Error fetching rent cost:', err);
-        setError('No se pudo cargar el desglose de costos.');
+        if (err?.response?.status === 404) {
+          setData(null);
+        } else {
+          console.error('Error fetching rent cost:', err);
+          setError('No se pudo cargar el desglose de costos.');
+        }
       } finally {
         setLoading(false);
       }

@@ -180,7 +180,7 @@ export default function ShowProperty() {
           {activeFlagCount > 0 && (
             <Alert variant="warning" className="d-flex align-items-center mb-4">
               <Flag size={20} className="me-2" />
-              <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaution.</span>
+              <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precauciÃ³n.</span>
             </Alert>
           )}
 
@@ -188,7 +188,7 @@ export default function ShowProperty() {
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h1>{property.title}</h1>
             <div className="d-flex gap-2 align-items-center mt-2">
-              {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
+              {/* Estado general â€” ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
               {(canChangeStatus || canEdit) && (
                 canChangeStatus ? (
                   <Dropdown as={ButtonGroup}>
@@ -211,7 +211,7 @@ export default function ShowProperty() {
                 )
               )}
 
-              {/* Visibilidad — owner o ADMIN */}
+              {/* Visibilidad â€” owner o ADMIN */}
               {canChangeVisibility && (
                 <Dropdown as={ButtonGroup}>
                   <Dropdown.Toggle size="sm" variant="secondary">
@@ -230,7 +230,7 @@ export default function ShowProperty() {
                 </Dropdown>
               )}
 
-              {/* Editar — owner o ADMIN  */}
+              {/* Editar â€” owner o ADMIN  */}
               {canEdit && (
                 <Button
                   size="sm"
@@ -243,7 +243,7 @@ export default function ShowProperty() {
                 </Button>
               )}
 
-              {/* Destacar — cualquier usuario autenticado */}
+              {/* Destacar â€” cualquier usuario autenticado */}
               {canFeature && (
                 <Button
                   size="sm"
@@ -254,7 +254,7 @@ export default function ShowProperty() {
                 </Button>
               )}
 
-              {/* Eliminar — owner o ADMIN */}
+              {/* Eliminar â€” owner o ADMIN */}
               {canDelete && (
                 <Button
                   size="sm"
@@ -357,7 +357,7 @@ export default function ShowProperty() {
                       value: String(
                         property.surfaceArea ?? property.builtArea ?? "-",
                       ),
-                      label: "metros²",
+                      label: "metrosÂ²",
                     },
                   ].map((stat) => (
                     <div key={stat.label} className="text-center">
@@ -377,9 +377,9 @@ export default function ShowProperty() {
                     `Construido en ${property.constructionYear}`,
                   property.surfaceArea &&
                     property.price &&
-                    `? ${formatPrice(
+                    `~ ${formatPrice(
                       String(Math.round(property.price / property.surfaceArea)),
-                    )}/m²`,
+                    )}/mÂ²`,
                 ]
                   .filter(Boolean)
                   .map((label) => (
@@ -497,7 +497,7 @@ export default function ShowProperty() {
                               variant={tourSubTab === 'tour360' ? 'primary' : 'outline-primary'}
                               onClick={() => setTourSubTab('tour360')}
                             >
-                              Tour 360°
+                              Tour 360Â°
                             </Button>
                           )}
                           {hasModel && (
@@ -512,7 +512,7 @@ export default function ShowProperty() {
                       )}
                     </div>
                     
-                    {/* Contenedor de Subpestañas */}
+                    {/* Contenedor de SubpestaÃ±as */}
                     <div className="property__tour-viewport">
                       {tourSubTab === 'tour360' && (
                         loadingConfig ? (
@@ -523,7 +523,7 @@ export default function ShowProperty() {
                         ) : finalTourConfig ? (
                           <Property360Tour config={finalTourConfig} />
                         ) : (
-                          <Alert variant="info">Cargando configuracion del recorrido...</Alert>
+                          <Alert variant="info">Cargando configuraciÃ³n del recorrido...</Alert>
                         )
                       )}
 
