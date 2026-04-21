@@ -43,6 +43,7 @@ import OfferManagementPage from "../pages/Offers/OfferManagementPage";
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
 import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
+import OwnerReservationsPage from "../pages/OwnerReservations/OwnerReservationsPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import UserProfilePage from "../pages/UserProfilePage";
@@ -123,6 +124,7 @@ export default function AppRouter() {
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
                     <Route path="propiedades" element={<MyProperties hideNavbar={true} />} />
                     <Route path="visitas" element={<VisitRequests mode="OWNER" />} />
+                    <Route path="reservas" element={<OwnerReservationsPage />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                 </Route>

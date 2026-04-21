@@ -35,4 +35,10 @@ describe('reservationApi', () => {
     await reservationApi.getMyForProperty(7);
     expect(api.get).toHaveBeenCalledWith('/reservations/my/property/7');
   });
+
+  it('getOwnerReservations GETS /reservations/owner with pagination', async () => {
+    api.get.mockResolvedValueOnce({ data: { data: { content: [] } } });
+    await reservationApi.getOwnerReservations(1, 20);
+    expect(api.get).toHaveBeenCalledWith('/reservations/owner?page=1&size=20');
+  });
 });
