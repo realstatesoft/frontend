@@ -16,4 +16,10 @@ describe('ReserveModal', () => {
     render(<ReserveModal show property={property} defaultPercent={1} onClose={() => {}} onCreated={() => {}} />);
     expect(screen.getByLabelText(/monto/i)).toHaveValue(1000);
   });
+
+  it('shows the amount formatted as MXN currency below the input', () => {
+    const property = { id: 5, title: 'Casa', price: 100000, status: 'PUBLISHED' };
+    render(<ReserveModal show property={property} defaultPercent={1} onClose={() => {}} onCreated={() => {}} />);
+    expect(screen.getByTestId('reserve-amount-formatted')).toHaveTextContent('$1,000');
+  });
 });

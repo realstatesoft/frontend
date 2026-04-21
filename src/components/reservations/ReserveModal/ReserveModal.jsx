@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Modal, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import reservationApi from '../../../services/reservations/reservationApi';
+import { formatCurrency } from '../../../utils/formatters';
 import styles from './ReserveModal.module.scss';
 
 export default function ReserveModal({ show, property, defaultPercent, onClose, onCreated }) {
@@ -65,9 +66,12 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <Form.Text className="text-muted">
+            <Form.Text className="text-muted d-block">
               Sugerencia: {defaultPercent}% del precio publicado.
             </Form.Text>
+            <div className="fw-semibold mt-2" data-testid="reserve-amount-formatted">
+              {formatCurrency(Number(amount) || 0)}
+            </div>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="reserveNotes">
