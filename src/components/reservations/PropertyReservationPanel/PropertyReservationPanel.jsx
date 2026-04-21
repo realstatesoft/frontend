@@ -60,13 +60,23 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
   const hasBlocking = Boolean(pending);
 
   const handleConfirm = async (id) => {
-    await reservationApi.confirm(id);
-    refresh();
+    try {
+      await reservationApi.confirm(id);
+      refresh();
+    } catch {
+      setError('No se pudo confirmar la reserva.');
+    }
   };
+
   const handleReject = async (id) => {
-    const reason = window.prompt('Motivo de cancelación:') ?? '';
-    await reservationApi.cancel(id, { reason });
-    refresh();
+    const reasonResult = window.prompt('Motivo de cancelación:');
+    if (reasonResult === null) return;
+    try {
+      await reservationApi.cancel(id, { reason: reasonResult });
+      refresh();
+    } catch {
+      setError('No se pudo rechazar la reserva.');
+    }
   };
 
   return (
@@ -98,7 +108,7 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
             <div>
               <strong>{pending.buyerName}</strong> ({pending.buyerEmail})
               <Badge bg={statusVariant(pending.status)} className="ms-2">{statusLabel(pending.status)}</Badge>
-              <div className="text-muted">Monto: {pending.amount}</div>
+              <div className="text-muted">Monto: {formatCurrency(pending.amount)}</div>
             </div>
             <div className="d-flex gap-2">
               {pending.status === 'PENDING' && (
