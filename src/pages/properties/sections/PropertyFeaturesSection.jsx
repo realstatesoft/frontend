@@ -292,7 +292,9 @@ export function PropertyFeaturesSection({
               {/* Floor plan thumbnails */}
               {floorPlanItems.map((plan) => {
                 const filename = plan.title?.split("/").pop() || `plano-${plan.floorPlanIndex + 1}`;
-                const isPdf = filename.toLowerCase().endsWith(".pdf");
+                const isPdf =
+                  filename.toLowerCase().endsWith(".pdf") ||
+                  plan.url?.toLowerCase().endsWith(".pdf");
 
                 const handlePlanClick = () => {
                   if (!plan.url) return;
@@ -307,9 +309,21 @@ export function PropertyFeaturesSection({
                   <Col xs={3} key={plan.url ?? plan.floorPlanIndex}>
                     <div
                       className="position-relative rounded overflow-hidden"
-                      style={{ aspectRatio: "1", cursor: plan.url ? "pointer" : "default" }}
+                      role="button"
+                      tabIndex={0}
+                      style={{
+                        aspectRatio: "1",
+                        cursor: plan.url ? "pointer" : "default",
+                        outline: "none",
+                      }}
+                      onFocus={(e) => { e.currentTarget.style.boxShadow = "0 0 0 2px #3B6BF5"; }}
+                      onBlur={(e) => { e.currentTarget.style.boxShadow = "none"; }}
                       title={isPdf ? "Clic para abrir PDF" : "Clic para ver imagen"}
                       onClick={handlePlanClick}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handlePlanClick();
+                        if (e.key === " ") { e.preventDefault(); handlePlanClick(); }
+                      }}
                     >
                       {/* Vista previa */}
                       {isPdf ? (
@@ -345,7 +359,22 @@ export function PropertyFeaturesSection({
                         type="button"
                         className="position-absolute top-0 end-0 m-1 rounded-circle border-0 d-flex align-items-center justify-content-center"
                         style={{ width: 24, height: 24, background: "rgba(0,0,0,0.6)", color: "white", cursor: "pointer", fontSize: 14 }}
-                        onClick={(e) => { e.stopPropagation(); removeFloorPlan(plan.floorPlanIndex); }}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (plan.id) {
+                            const { isConfirmed } = await Swal.fire({
+                              title: "¿Eliminar plano?",
+                              text: "Esta acción eliminará el archivo del servidor y no se puede deshacer.",
+                              icon: "warning",
+                              showCancelButton: true,
+                              confirmButtonText: "Sí, eliminar",
+                              cancelButtonText: "Cancelar",
+                              confirmButtonColor: "#dc3545",
+                            });
+                            if (!isConfirmed) return;
+                          }
+                          removeFloorPlan(plan.floorPlanIndex);
+                        }}
                         aria-label="Quitar plano"
                       >
                         ×

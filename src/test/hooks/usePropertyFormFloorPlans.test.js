@@ -140,9 +140,9 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
         ]);
       });
 
-      floorPlanApi.deleteFloorPlan.mockRejectedValue({
-        message: 'Server error',
-      });
+      floorPlanApi.deleteFloorPlan.mockRejectedValue(
+        new Error('Server error')
+      );
 
       await act(async () => {
         await result.current.removeFloorPlan(0);
