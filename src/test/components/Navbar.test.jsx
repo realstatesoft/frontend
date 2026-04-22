@@ -4,9 +4,13 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────────
 vi.mock('../../hooks/useAuth');
+vi.mock('../../hooks/useHasPublishedProperties');
+vi.mock('../../hooks/useMessagesData');
 vi.mock('../../assets/Logotipo.png', () => ({ default: 'logotipo.png' }));
 
 import { useAuth } from '../../hooks/useAuth';
+import useHasPublishedProperties from '../../hooks/useHasPublishedProperties';
+import { useUnreadMessagesCount } from '../../hooks/useMessagesData';
 import CustomNavbar from '../../components/Landing/Navbar';
 
 const renderNavbar = () =>
@@ -28,6 +32,8 @@ describe('CustomNavbar', () => {
         user: null,
         logout: vi.fn(),
       });
+      useHasPublishedProperties.mockReturnValue(false);
+      useUnreadMessagesCount.mockReturnValue({ data: 0 });
     });
 
     it('renderiza el botón "Contactanos"', () => {
@@ -69,6 +75,8 @@ describe('CustomNavbar', () => {
         user: { email: 'user@example.com', role: 'USER', userId: 42 },
         logout: mockLogout,
       });
+      useHasPublishedProperties.mockReturnValue(false);
+      useUnreadMessagesCount.mockReturnValue({ data: 0 });
     });
 
     it('muestra las opciones del menú de perfil autenticado', () => {
@@ -94,10 +102,40 @@ describe('CustomNavbar', () => {
         user: { email: 'agent@example.com', role: 'AGENT', userId: 99 },
         logout: mockLogout,
       });
+      useHasPublishedProperties.mockReturnValue(false);
       renderNavbar();
       const profileBtn = screen.getByRole('button', { name: /menu de perfil/i });
       fireEvent.click(profileBtn);
       expect(screen.getByText(/ver dashboard/i)).toBeInTheDocument();
+    });
+
+    it('muestra "Reservas recibidas" si tiene propiedades publicadas y es OWNER', () => {
+      useAuth.mockReturnValue({
+        isAuthenticated: true,
+        user: { email: 'owner@example.com', role: 'OWNER', userId: 42 },
+        logout: mockLogout,
+      });
+      useHasPublishedProperties.mockReturnValue(true);
+      renderNavbar();
+      const profileBtn = screen.getByRole('button', { name: /menu de perfil/i });
+      fireEvent.click(profileBtn);
+      expect(screen.getByText(/reservas recibidas/i)).toBeInTheDocument();
+    });
+
+    it('no muestra "Reservas recibidas" si no tiene propiedades publicadas', () => {
+      useHasPublishedProperties.mockReturnValue(false);
+      renderNavbar();
+      const profileBtn = screen.getByRole('button', { name: /menu de perfil/i });
+      fireEvent.click(profileBtn);
+      expect(screen.queryByText(/reservas recibidas/i)).not.toBeInTheDocument();
+    });
+
+    it('no muestra "Reservas recibidas" si es USER aunque tenga propiedades publicadas', () => {
+      useHasPublishedProperties.mockReturnValue(true);
+      renderNavbar();
+      const profileBtn = screen.getByRole('button', { name: /menu de perfil/i });
+      fireEvent.click(profileBtn);
+      expect(screen.queryByText(/reservas recibidas/i)).not.toBeInTheDocument();
     });
 
     it('llama a logout al hacer clic en "Cerrar sesión"', () => {
