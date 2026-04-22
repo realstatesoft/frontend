@@ -61,6 +61,9 @@ export default function ShowProperty() {
     PROPERTY_VISIBILITY_OPTIONS,
     similarProperties,
     loadingSimilar,
+    recentProperties,
+    loadingRecent,
+    recentError,
     copyLink,
     activeFlagCount,
     isAuthenticated,
@@ -632,6 +635,33 @@ export default function ShowProperty() {
             </Col>
           </Row>
           
+          <h5 className="property__section-title mt-5 mb-3">
+            Propiedades vistas recientemente
+          </h5>
+
+          {loadingRecent ? (
+            <div className="d-flex justify-content-center py-4">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : recentProperties?.length > 0 ? (
+            <>
+              {recentError && (
+                <Alert variant="warning" className="mb-3">
+                  {recentError}
+                </Alert>
+              )}
+              <Row className="g-3 mx-0">
+                {recentProperties.map((recent) => (
+                  <Col key={recent.id} xs={6} sm={4} lg={2}>
+                    <PropertySummaryCard property={recent} />
+                  </Col>
+                ))}
+              </Row>
+            </>
+          ) : (
+            <p className="text-muted">Aún no hay propiedades recientes para mostrar.</p>
+          )}
+
           <h5 className="property__section-title mt-5 mb-3">
             Propiedades similares
           </h5>

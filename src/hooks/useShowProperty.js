@@ -32,11 +32,14 @@ export function useShowProperty() {
 
   const [property, setProperty] = useState(null);
   const [similarProperties, setSimilarProperties] = useState([]);
+  const [recentProperties, setRecentProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingSimilar, setLoadingSimilar] = useState(true);
+  const [loadingRecent, setLoadingRecent] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [similarError, setSimilarError] = useState(null);
+  const [recentError, setRecentError] = useState(null);
 
   const [status, setStatus] = useState(PROPERTY_STATUS_OPTIONS[0]);
   const [visibility, setVisibility] = useState(PROPERTY_VISIBILITY_OPTIONS[0]);
@@ -116,6 +119,33 @@ export function useShowProperty() {
       });
   }, [id]);
 
+  const fetchRecentProperties = useCallback(() => {
+    if (!isAuthenticated) {
+      setRecentProperties([]);
+      setRecentError(null);
+      setLoadingRecent(false);
+      return;
+    }
+
+    setLoadingRecent(true);
+    setRecentError(null);
+    propertyApi
+      .getRecentProperties()
+      .then(({ data }) => {
+        if (data?.success && Array.isArray(data?.data)) {
+          setRecentProperties(data.data);
+        } else {
+          setRecentProperties([]);
+          setRecentError("No se pudieron cargar las propiedades recientes");
+        }
+      })
+      .catch(() => {
+        setRecentProperties([]);
+        setRecentError("No se pudieron cargar las propiedades recientes");
+      })
+      .finally(() => setLoadingRecent(false));
+  }, [isAuthenticated]);
+
   const fetchActiveFlagCount = useCallback(() => {
     if (!id) {
       setActiveFlagCount(0);
@@ -138,6 +168,17 @@ export function useShowProperty() {
     fetchSimilar();
     fetchActiveFlagCount();
   }, [fetchProperty, fetchSimilar, fetchActiveFlagCount]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !id) return;
+    propertyApi.registerRecentView(id).catch(() => {
+      // No bloquear la pantalla por fallos de registro.
+    });
+  }, [id, isAuthenticated]);
+
+  useEffect(() => {
+    fetchRecentProperties();
+  }, [fetchRecentProperties, property?.id]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -329,6 +370,9 @@ export function useShowProperty() {
     loadingSimilar,
     similarProperties,
     similarError,
+    recentProperties,
+    loadingRecent,
+    recentError,
     copyLink,
     activeFlagCount,
     fetchActiveFlagCount
