@@ -16,10 +16,13 @@ import NotFoundPage from "../pages/NotFoundPage";
 import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
+import ClientMessagesPage from "../pages/ClientMessages/ClientMessagesPage";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
 import AgentProfilePage from "../pages/Agents/AgentProfilePage";
 import AgentEditPage from "../pages/Agents/AgentEditPage";
+import AgentSearchPage from "../pages/Agents/AgentSearchPage";
+import PublicAgentProfilePage from "../pages/Agents/PublicAgentProfilePage";
 // Agent Dashboard
 import AgentLayout from "../components/layout/AgentLayout/AgentLayout";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
@@ -33,12 +36,11 @@ import ContractsPage from "../pages/Contracts/ContractsPage";
 import ContractCreatePage from "../pages/Contracts/ContractCreatePage";
 import ContractEditPage from "../pages/Contracts/ContractEditPage";
 import ContractDetailPage from "../pages/Contracts/ContractDetailPage";
+import OfferManagementPage from "../pages/Offers/OfferManagementPage";
 
 // Owner Dashboard
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
 import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
-import OwnerPropertiesPage from "../pages/OwnerProperties/OwnerPropertiesPage";
-import OwnerVisitsPage from "../pages/OwnerVisits/OwnerVisitsPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
@@ -52,11 +54,13 @@ import FlagsPage from "../pages/Admin/Flags/FlagsPage";
 import PreferencesPage from "../pages/PreferencesPage";
 
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
+import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
+import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
 
 export default function AppRouter() {
     return (
         <Routes>
-            {/* ── Rutas públicas ─────────────────────────────────────── */}
+            {/* -- Rutas públicas -------------------------------------- */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/login" element={<LogIn />} />
@@ -65,8 +69,10 @@ export default function AppRouter() {
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/agents/:id" element={<PublicAgentProfilePage />} />
+            <Route path="/AgentSearch" element={<AgentSearchPage />} />
 
-            {/* ── Rutas protegidas (requieren autenticación) ────────── */}
+            {/* -- Rutas protegidas (requieren autenticación) ---------- */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<UserProfilePage />} />
                 <Route path="/create-property" element={<CreateProperty />} />
@@ -77,20 +83,22 @@ export default function AppRouter() {
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
-                <Route path="/clients" element={<ClientList />} />
-                <Route path="/clients/register" element={<RegisterClient />} />
-                <Route path="/clients/:id" element={<ClientProfilePage />} />
-                <Route path="/clients/:id/edit" element={<EditClient />} />
-
+                <Route path="/contratos/nuevo" element={<ContractCreatePage />} />
+                <Route path="/clientes" element={<ClientList />} />
+                <Route path="/clientes/registrar" element={<RegisterClient />} />
+                <Route path="/clientes/:id" element={<ClientProfilePage />} />
+                <Route path="/clientes/:id/editar" element={<EditClient />} />
+                <Route path="/mensajes" element={<ClientMessagesPage />} />
                 <Route path="/contratos/:id" element={<ContractDetailPage />} />
+                <Route path="/ofertas" element={<OfferManagementPage />} />
             </Route>
 
-            {/* ── Rutas protegidas (Agent) ───────────────────────── */}
+            {/* -- Rutas protegidas (Agent) ------------------------- */}
             <Route element={<ProtectedRoute requiredRole="AGENT" />}>
                 <Route path="/agent" element={<AgentLayout />}>
                     <Route index element={<Navigate to="/agent/dashboard" replace />} />
                     <Route path="perfil" element={<AgentProfilePage />} />
-                    <Route path="AgentEdit/:id" element={<AgentEditPage />} />
+                    <Route path="editar-perfil/:id" element={<AgentEditPage />} />
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="clientes" element={<ClientsPage />} />
                     <Route path="propiedades" element={<AgentPropertiesPage />} />
@@ -103,17 +111,19 @@ export default function AppRouter() {
                     <Route path="contratos/:id/editar" element={<ContractEditPage />} />
                     <Route path="reportes" element={<ReportsPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
+                    <Route path="ofertas" element={<OfferManagementPage />} />
                 </Route>
             </Route>
 
-            {/* ── Rutas protegidas (Owner) ───────────────────────── */}
+            {/* -- Rutas protegidas (Owner) ------------------------- */}
             <Route element={<ProtectedRoute requiredRole="OWNER" />}>
                 <Route path="/owner" element={<OwnerLayout />}>
                     <Route index element={<Navigate to="/owner/dashboard" replace />} />
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
-                    <Route path="propiedades" element={<OwnerPropertiesPage />} />
-                    <Route path="visitas" element={<OwnerVisitsPage />} />
+                    <Route path="propiedades" element={<MyProperties hideNavbar={true} />} />
+                    <Route path="visitas" element={<VisitRequests mode="OWNER" />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
+                    <Route path="ofertas" element={<OfferManagementPage />} />
                 </Route>
             </Route>
 
@@ -133,6 +143,8 @@ export default function AppRouter() {
                     <Route path="audit-logs" element={<AdminAuditLogsPage />} />
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
+                    <Route path="rent-config" element={<RentConfigPage />} />
+                    <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                 </Route>
             </Route>
 

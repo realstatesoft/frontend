@@ -18,6 +18,31 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  // Capture sessionStorage value synchronously on first render (before effects)
+  // This prevents React Strict Mode double-execution from losing the data.
+  // Only the READ happens here; mutations are deferred to the effect below.
+  const searchAgentRef = React.useRef(null);
+  if (searchAgentRef.current === null) {
+    const raw = sessionStorage.getItem("selectedAgentFromSearch");
+    if (raw) {
+      try {
+        searchAgentRef.current = JSON.parse(raw);
+      } catch (e) {
+        searchAgentRef.current = undefined;
+      }
+    } else {
+      searchAgentRef.current = undefined;
+    }
+  }
+
+  // Clean up sessionStorage keys after commit (not during render)
+  useEffect(() => {
+    if (searchAgentRef.current) {
+      sessionStorage.removeItem("selectedAgentFromSearch");
+      sessionStorage.removeItem("wizardReturnStep");
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     const fetchAgents = async () => {
       try {
@@ -26,7 +51,23 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
           category: form.category,
           limit: 6,
         });
-        setAgents(data);
+
+        const selectedFromSearch = searchAgentRef.current;
+        if (selectedFromSearch && selectedFromSearch.id) {
+          set("selectedAgentId", selectedFromSearch.id);
+          // Put selected agent first, then the rest (excluding duplicates)
+          const filtered = data.filter((a) => a.id !== selectedFromSearch.id);
+          setAgents([
+            {
+              id: selectedFromSearch.id,
+              userName: selectedFromSearch.name,
+              userAvatarUrl: selectedFromSearch.avatarUrl,
+            },
+            ...filtered,
+          ]);
+        } else {
+          setAgents(data);
+        }
       } catch (err) {
         console.error("Error fetching agents:", err);
       } finally {
@@ -34,7 +75,7 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
       }
     };
     fetchAgents();
-  }, [form.propertyType, form.category]);
+  }, [form.propertyType, form.category]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSelect = (agentId) => {
     set("selectedAgentId", agentId);
@@ -49,6 +90,11 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
     try {
       // Crear siempre el Lead en la BD con los datos del wizard
       await createLeadFromWizard(form);
+
+      // Cleanup: clear persisted wizard form so next session starts fresh
+      sessionStorage.removeItem("sellWizardForm");
+      sessionStorage.removeItem("wizardReturnStep");
+      sessionStorage.removeItem("selectedAgentFromSearch");
 
       const selectedAgent = agents.find((a) => a.id === form.selectedAgentId);
       await Swal.fire({
@@ -213,7 +259,11 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
                   <button
                     type="button"
                     className="suggested-agents__action-btn suggested-agents__action-btn--outline"
-                    onClick={() => navigate("/agents")}
+                    onClick={() => {
+                      sessionStorage.setItem("wizardReturnStep", "12");
+                      sessionStorage.setItem("wizardSearchMode", "1");
+                      navigate("/AgentSearch");
+                    }}
                   >
                     <Search /> Buscar agentes
                   </button>
@@ -238,7 +288,11 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
                 <button
                   type="button"
                   className="suggested-agents__action-btn suggested-agents__action-btn--primary"
-                  onClick={() => navigate("/agents")}
+                  onClick={() => {
+                    sessionStorage.setItem("wizardReturnStep", "12");
+                    sessionStorage.setItem("wizardSearchMode", "1");
+                    navigate("/AgentSearch");
+                  }}
                 >
                   <Search /> Buscar agentes
                 </button>

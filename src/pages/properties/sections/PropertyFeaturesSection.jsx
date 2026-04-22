@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Row, Col, Form, Button, Badge, Stack, Spinner } from "react-bootstrap";
+import { Row, Col, Form, Button, Badge, Stack, Spinner, Modal } from "react-bootstrap";
 import { FormSectionTitle, FormLabel, FormMultiSelect } from "../../../components/properties/FormComponents";
 import {
   PROPERTY_TYPE_OPTIONS,
@@ -31,23 +31,36 @@ export function PropertyFeaturesSection({
   addTour360Image,
   addTourConfig,
   uploadingTour,
+  floorPlans = [],
+  addFloorPlan,
+  removeFloorPlan,
+  uploadingFloorPlan = false,
 }) {
   const fileInputRef = useRef(null);
 
   const media = form.media || [];
   // Filtrar solo las fotos convencionales para la galería, pero guardando el índice original
+  // Filtrar fotos, modelos 3D e imágenes 360 para la galería, guardando el índice original
   const galleryMedia = useMemo(() => {
-    return media
+    return (form.media || [])
       .map((item, idx) => ({ ...item, originalIndex: idx }))
-      .filter(m => m.type === 'PHOTO' || m.type === 'IMAGE');
-  }, [media]);
+      .filter(m => ['PHOTO', 'IMAGE', 'MODEL_3D', 'IMAGE_360'].includes(m.type));
+  }, [form.media]);
 
-  const canAddMore = galleryMedia.length < MAX_IMAGES;
+  // Floor plans managed separately from form.media
+  const floorPlanItems = floorPlans.map((p, idx) => ({ ...p, floorPlanIndex: idx }));
+
+  const photoCount = useMemo(() => 
+    galleryMedia.filter(m => m.type === 'PHOTO' || m.type === 'IMAGE').length, 
+    [galleryMedia]
+  );
+  const canAddMore = photoCount < MAX_IMAGES;
 
   const handleFileChange = (e) => {
     const files = e.target.files;
     if (!files?.length) return;
-    for (let i = 0; i < files.length && galleryMedia.length + i < MAX_IMAGES; i++) {
+    const remainingSlots = MAX_IMAGES - photoCount;
+    for (let i = 0; i < files.length && i < remainingSlots; i++) {
       addMedia(files[i]);
     }
     e.target.value = "";
@@ -60,7 +73,7 @@ export function PropertyFeaturesSection({
     const files = Array.from(e.dataTransfer.files).filter((f) =>
       f.type.startsWith("image/")
     );
-    files.slice(0, MAX_IMAGES - media.length).forEach((f) => addMedia(f));
+    files.slice(0, MAX_IMAGES - photoCount).forEach((f) => addMedia(f));
   };
 
   const handleDragOver = (e) => {
@@ -80,7 +93,19 @@ export function PropertyFeaturesSection({
 
   const modelInputRef = useRef(null);
   const tour360InputRef = useRef(null);
+  const floorPlanInputRef = useRef(null);
   const [showTourEditor, setShowTourEditor] = useState(false);
+  const [previewPlan, setPreviewPlan] = useState(null); // { url, title } para el modal de imagen
+
+  const handleFloorPlanUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      await addFloorPlan(file);
+    } finally {
+      if (floorPlanInputRef.current) floorPlanInputRef.current.value = "";
+    }
+  };
 
   const handleTour360Upload = async (e) => {
     const file = e.target.files?.[0];
@@ -209,24 +234,41 @@ export function PropertyFeaturesSection({
                     className="position-relative rounded overflow-hidden"
                     style={{ aspectRatio: "1" }}
                   >
-                    <img
-                      src={item.url}
-                      alt=""
-                      className="w-100 h-100"
-                      style={{ objectFit: "cover" }}
-                    />
-                    <Badge
-                      className="position-absolute top-0 start-0 m-1"
-                      style={{
-                        background: item.isPrimary ? "#3B6BF5" : "rgba(0,0,0,0.5)",
-                        fontSize: 9,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setPrimaryMedia(item.originalIndex)}
-                    >
-                      <i className={`bi bi-star${item.isPrimary ? "-fill" : ""} me-1`} />
-                      {item.isPrimary ? "Portada" : "Marcar portada"}
-                    </Badge>
+                    {item.type === 'MODEL_3D' ? (
+                      <div className="w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-light text-primary border">
+                        <i className="bi bi-box" style={{ fontSize: 24 }} />
+                        <span style={{ fontSize: 8, marginTop: 4 }}>PLANO 3D</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={item.url}
+                        alt=""
+                        className="w-100 h-100"
+                        style={{ objectFit: "cover" }}
+                      />
+                    )}
+                    
+                    {(item.type === 'PHOTO' || item.type === 'IMAGE') && (
+                      <Badge
+                        className="position-absolute top-0 start-0 m-1"
+                        style={{
+                          background: item.isPrimary ? "#3B6BF5" : "rgba(0,0,0,0.5)",
+                          fontSize: 9,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setPrimaryMedia(item.originalIndex)}
+                      >
+                        <i className={`bi bi-star${item.isPrimary ? "-fill" : ""} me-1`} />
+                        {item.isPrimary ? "Portada" : "Marcar portada"}
+                      </Badge>
+                    )}
+
+                    {item.type === 'IMAGE_360' && (
+                      <Badge bg="info" className="position-absolute bottom-0 start-0 m-1" style={{ fontSize: 8 }}>
+                        360°
+                      </Badge>
+                    )}
+
                     <button
                       type="button"
                       className="position-absolute top-0 end-0 m-1 rounded-circle border-0 d-flex align-items-center justify-content-center"
@@ -246,54 +288,134 @@ export function PropertyFeaturesSection({
                   </div>
                 </Col>
               ))}
-              {canAddMore && (
-                <Col xs={3}>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept={ACCEPT_IMAGES}
-                    multiple
-                    className="d-none"
-                    onChange={handleFileChange}
-                  />
-                  <div
-                    className="d-flex flex-column align-items-center justify-content-center rounded border"
-                    style={{
-                      aspectRatio: "1",
-                      cursor: uploadingMedia ? "wait" : "pointer",
-                      color: "#3B6BF5",
-                      fontSize: 22,
-                      borderStyle: "dashed",
-                      borderColor: "#c0c8e0",
-                    }}
-                    onClick={() => !uploadingMedia && fileInputRef.current?.click()}
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                  >
-                    {uploadingMedia ? (
-                      <Spinner size="sm" className="mb-1" />
-                    ) : (
-                      <i className="bi bi-plus-lg mb-1" />
-                    )}
-                    <small style={{ fontSize: 10 }}>Agregar</small>
-                  </div>
-                </Col>
-              )}
+
+              {/* Floor plan thumbnails */}
+              {floorPlanItems.map((plan) => {
+                const filename = plan.title?.split("/").pop() || `plano-${plan.floorPlanIndex + 1}`;
+                const isPdf =
+                  filename.toLowerCase().endsWith(".pdf") ||
+                  plan.url?.toLowerCase().endsWith(".pdf");
+
+                const handlePlanClick = () => {
+                  if (!plan.url) return;
+                  if (isPdf) {
+                    window.open(plan.url, "_blank", "noopener,noreferrer");
+                  } else {
+                    setPreviewPlan({ url: plan.url, title: filename });
+                  }
+                };
+
+                return (
+                  <Col xs={3} key={plan.url ?? plan.floorPlanIndex}>
+                    <div
+                      className="position-relative rounded overflow-hidden"
+                      role="button"
+                      tabIndex={0}
+                      style={{
+                        aspectRatio: "1",
+                        cursor: plan.url ? "pointer" : "default",
+                        outline: "none",
+                      }}
+                      onFocus={(e) => { e.currentTarget.style.boxShadow = "0 0 0 2px #3B6BF5"; }}
+                      onBlur={(e) => { e.currentTarget.style.boxShadow = "none"; }}
+                      title={isPdf ? "Clic para abrir PDF" : "Clic para ver imagen"}
+                      onClick={handlePlanClick}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handlePlanClick();
+                        if (e.key === " ") { e.preventDefault(); handlePlanClick(); }
+                      }}
+                    >
+                      {/* Vista previa */}
+                      {isPdf ? (
+                        <div
+                          className="w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+                          style={{ background: "#fff5f5", border: "1px solid #f5c6c6" }}
+                        >
+                          <i className="bi bi-file-earmark-pdf-fill" style={{ fontSize: 32, color: "#dc3545" }} />
+                          <span style={{ fontSize: 7, marginTop: 4, textAlign: "center", padding: "0 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", color: "#6c757d" }}>
+                            {filename}
+                          </span>
+                        </div>
+                      ) : (
+                        <img
+                          src={plan.url}
+                          alt={filename}
+                          className="w-100 h-100"
+                          style={{ objectFit: "cover" }}
+                          onError={(e) => { e.target.style.display = "none"; }}
+                        />
+                      )}
+
+                      {/* Badge */}
+                      <Badge
+                        className="position-absolute top-0 start-0 m-1"
+                        style={{ background: "#dc3545", fontSize: 8 }}
+                      >
+                        PLANO
+                      </Badge>
+
+                      {/* Botón eliminar */}
+                      <button
+                        type="button"
+                        className="position-absolute top-0 end-0 m-1 rounded-circle border-0 d-flex align-items-center justify-content-center"
+                        style={{ width: 24, height: 24, background: "rgba(0,0,0,0.6)", color: "white", cursor: "pointer", fontSize: 14 }}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (plan.id) {
+                            const { isConfirmed } = await Swal.fire({
+                              title: "¿Eliminar plano?",
+                              text: "Esta acción eliminará el archivo del servidor y no se puede deshacer.",
+                              icon: "warning",
+                              showCancelButton: true,
+                              confirmButtonText: "Sí, eliminar",
+                              cancelButtonText: "Cancelar",
+                              confirmButtonColor: "#dc3545",
+                            });
+                            if (!isConfirmed) return;
+                          }
+                          removeFloorPlan(plan.floorPlanIndex);
+                        }}
+                        aria-label="Quitar plano"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </Col>
+                );
+              })}
             </Row>
-            {galleryMedia.length > 0 && (
-              <small className="text-muted d-block mb-2">
-                {galleryMedia.length} imagen{galleryMedia.length !== 1 ? "es" : ""}. Cliqueá en la estrella para marcar como portada.
-              </small>
-            )}
-            <Stack direction="horizontal" gap={2}>
+            {(() => {
+              const totalCount = galleryMedia.length + floorPlanItems.length;
+              return totalCount > 0 ? (
+                <small className="text-muted d-block mb-2">
+                  {totalCount} elemento{totalCount !== 1 ? "s" : ""} en la galería.
+                  {galleryMedia.some(m => m.type === 'PHOTO' || m.type === 'IMAGE') &&
+                    " Cliqueá en la estrella para marcar la portada."}
+                </small>
+              ) : null;
+            })()}
+            <Stack direction="horizontal" gap={2} className="flex-wrap">
+              <input
+                type="file"
+                ref={floorPlanInputRef}
+                className="d-none"
+                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                onChange={handleFloorPlanUpload}
+              />
               <Button
-                variant="outline-secondary"
+                variant="outline-primary"
                 size="sm"
                 type="button"
                 className="d-flex align-items-center gap-1"
-                disabled
+                onClick={() => floorPlanInputRef.current?.click()}
+                disabled={uploadingFloorPlan}
               >
-                <i className="bi bi-file-earmark" /> Subir planos
+                {uploadingFloorPlan ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  <i className="bi bi-file-earmark" />
+                )}
+                {uploadingFloorPlan ? "Subiendo..." : "Subir planos"}
               </Button>
               <input 
                 type="file" 
@@ -365,6 +487,35 @@ export function PropertyFeaturesSection({
         currentConfig={parsedConfig}
         onSave={handleTourSaved}
       />
+
+      {/* Lightbox para imágenes de planos */}
+      <Modal
+        show={!!previewPlan}
+        onHide={() => setPreviewPlan(null)}
+        centered
+        size="lg"
+        contentClassName="border-0 bg-transparent shadow-none"
+      >
+        <Modal.Header
+          closeButton
+          closeVariant="white"
+          style={{ background: "rgba(0,0,0,0.85)", border: "none", color: "white" }}
+        >
+          <Modal.Title style={{ fontSize: 14 }}>
+            <i className="bi bi-image me-2" />
+            {previewPlan?.title}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ background: "rgba(0,0,0,0.85)", padding: 8 }}>
+          {previewPlan && (
+            <img
+              src={previewPlan.url}
+              alt={previewPlan.title}
+              style={{ width: "100%", maxHeight: "75vh", objectFit: "contain", borderRadius: 4 }}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
     </>
   );
 }

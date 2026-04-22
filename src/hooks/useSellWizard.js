@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const INITIAL_STATE = {
   // Step 1: Address & Location
@@ -59,11 +59,49 @@ const INITIAL_STATE = {
 };
 
 const TOTAL_STEPS = 12;
+const FORM_STORAGE_KEY = "sellWizardForm";
+
+// ── Safe storage helpers ──────────────────────────────────────────────────────
+// Best-effort: never throw so the wizard keeps working when storage is blocked
+// (e.g. private browsing restrictions, quota exceeded, sandboxed iframes).
+const safeGetItem = (key) => {
+  try { return sessionStorage.getItem(key); } catch (_) { return null; }
+};
+const safeSetItem = (key, value) => {
+  try { sessionStorage.setItem(key, value); } catch (_) { /* ignore */ }
+};
+const safeRemoveItem = (key) => {
+  try { sessionStorage.removeItem(key); } catch (_) { /* ignore */ }
+};
 
 export function useSellWizard() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [form, setForm] = useState(INITIAL_STATE);
+  const [currentStep, setCurrentStep] = useState(() => {
+    const returnStep = safeGetItem("wizardReturnStep");
+    if (returnStep) {
+      const step = parseInt(returnStep, 10);
+      if (!isNaN(step) && step >= 1 && step <= TOTAL_STEPS) {
+        return step;
+      }
+    }
+    return 1;
+  });
+
+  // Restore form from sessionStorage so navigation to /AgentSearch and back
+  // doesn't wipe out the user's entered data.
+  const [form, setForm] = useState(() => {
+    try {
+      const saved = safeGetItem(FORM_STORAGE_KEY);
+      if (saved) return { ...INITIAL_STATE, ...JSON.parse(saved) };
+    } catch (_) { /* ignore parse errors */ }
+    return INITIAL_STATE;
+  });
+
   const [loading, setLoading] = useState(false);
+
+  // Persist form on every change (best-effort)
+  useEffect(() => {
+    safeSetItem(FORM_STORAGE_KEY, JSON.stringify(form));
+  }, [form]);
 
   const set = useCallback((field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -91,6 +129,9 @@ export function useSellWizard() {
   const reset = useCallback(() => {
     setForm(INITIAL_STATE);
     setCurrentStep(1);
+    safeRemoveItem(FORM_STORAGE_KEY);
+    safeRemoveItem("wizardReturnStep");
+    safeRemoveItem("selectedAgentFromSearch");
   }, []);
 
   const progress = Math.round((currentStep / TOTAL_STEPS) * 100);

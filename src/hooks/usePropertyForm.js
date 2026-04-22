@@ -20,6 +20,7 @@ import {
 } from "../constants/createPropertyConstants";
 import { createPropertySchema } from "../validation/createPropertySchema";
 import model3dApi from "../services/properties/model3dApi";
+import floorPlanApi from "../services/properties/floorPlanApi";
 
 const getInitialForm = () => ({
   title: "",
@@ -51,6 +52,7 @@ const getInitialForm = () => ({
   fullBathrooms: "",
   rooms: [],
   media: [],
+  floorPlans: [],
   agentId: null,
 });
 
@@ -452,6 +454,83 @@ export function usePropertyForm(propertyId) {
     }
   }, [propertyId, form.id, form.media]);
 
+  // ─── Floor Plans ──────────────────────────────────────────────────────────
+
+  const [uploadingFloorPlan, setUploadingFloorPlan] = useState(false);
+
+  const addFloorPlan = useCallback(async (file) => {
+    if (!file) return;
+    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+    const allowedExts = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
+    const ext = "." + (file.name?.split(".").pop()?.toLowerCase() ?? "");
+    if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
+      await Swal.fire("Formato no permitido", "Los planos deben ser PDF, JPG, PNG o WebP.", "warning");
+      return;
+    }
+    const MAX_FLOOR_PLAN_BYTES = 10 * 1024 * 1024; // 10 MB (igual que el backend)
+    if (file.size > MAX_FLOOR_PLAN_BYTES) {
+      await Swal.fire("Archivo demasiado grande", "El plano no puede superar los 10 MB.", "warning");
+      return;
+    }
+    const MAX_FLOOR_PLANS = 5;
+    const currentPlans = form.floorPlans || [];
+    if (currentPlans.length >= MAX_FLOOR_PLANS) {
+      await Swal.fire("Límite alcanzado", `Máximo ${MAX_FLOOR_PLANS} planos por propiedad.`, "warning");
+      return;
+    }
+
+    setUploadingFloorPlan(true);
+    try {
+      Swal.showLoading();
+      let newItem;
+      const targetId = propertyId || form.id;
+
+      if (targetId) {
+        const { data } = await floorPlanApi.uploadFloorPlan(targetId, file);
+        if (!data?.success) throw new Error(data?.message || "Error al subir el plano");
+        newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name, id: data.data.id };
+      } else {
+        const { data } = await floorPlanApi.uploadFloorPlanGeneric(file);
+        if (!data?.success) throw new Error(data?.message || "Error al subir el plano");
+        newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name };
+      }
+
+      if (newItem) {
+        setForm(f => ({ ...f, floorPlans: [...(f.floorPlans || []), newItem] }));
+        Swal.close();
+      }
+    } catch (err) {
+      await Swal.fire("Error", "No se pudo subir el plano: " + (err.response?.data?.message || err.message), "error");
+    } finally {
+      setUploadingFloorPlan(false);
+    }
+  }, [propertyId, form.id, form.floorPlans]);
+
+  const removeFloorPlan = useCallback(async (index) => {
+    const plan = (form.floorPlans || [])[index];
+    if (!plan) return;
+
+    // Para planos persistidos (tienen id del backend), llamamos a la API primero.
+    // Si falla, hacemos rollback (no se modifica el estado).
+    if (plan.id) {
+      const targetId = propertyId || form.id;
+      if (targetId) {
+        try {
+          await floorPlanApi.deleteFloorPlan(targetId, plan.id);
+        } catch (err) {
+          await Swal.fire(
+            "Error",
+            "No se pudo eliminar el plano: " + (err.response?.data?.message || err.message),
+            "error"
+          );
+          return; // rollback: no se modifica el estado local
+        }
+      }
+    }
+    // Para planos pendientes (sin id, aún no persistidos) solo limpiamos el estado local.
+    setForm(f => ({ ...f, floorPlans: (f.floorPlans || []).filter((_, i) => i !== index) }));
+  }, [propertyId, form.id, form.floorPlans]);
+
   const validateForm = useCallback(() => {
     const dataToValidate = {
       title: form.title,
@@ -607,6 +686,9 @@ export function usePropertyForm(propertyId) {
     addTour360Image,
     addTourConfig,
     uploadingTour,
+    addFloorPlan,
+    removeFloorPlan,
+    uploadingFloorPlan,
     handleSubmit,
     dismissError,
     fieldErrors,

@@ -1,0 +1,138 @@
+.wrap {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.menuBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #dee2e6;
+  background: #f8f9fa;
+}
+
+.menuDivider {
+  width: 1px;
+  height: 22px;
+  background: #dee2e6;
+  margin: 0 4px;
+}
+
+.menuBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #495057;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+
+  &:hover:not(:disabled) {
+    background: #e9ecef;
+    border-color: #ced4da;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.menuBtnActive {
+  background: #e7f1ff;
+  border-color: #86b7fe;
+  color: #0d6efd;
+}
+
+.editorContent {
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- CSS Modules :global usage */
+  :global(.ProseMirror) {
+    min-height: 280px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 12px 14px;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: #212529;
+
+    &:focus-visible {
+      outline-color: #0d6efd;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    }
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+      box-shadow: none;
+    }
+
+    p {
+      margin: 0 0 0.5em;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 0.5em;
+      padding-left: 1.35rem;
+    }
+
+    h2,
+    h3 {
+      margin: 0.75em 0 0.35em;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+    }
+
+    blockquote {
+      margin: 0.5em 0;
+      padding-left: 0.85rem;
+      border-left: 3px solid #adb5bd;
+      color: #495057;
+    }
+
+    a {
+      color: #0d6efd;
+      text-decoration: underline;
+    }
+
+    hr {
+      margin: 1rem 0;
+      border: 0;
+      border-top: 1px solid #dee2e6;
+    }
+  }
+
+  /* stylelint-disable-next-line selector-pseudo-class-no-unknown -- CSS Modules :global usage */
+  :global(.ProseMirror-focused:focus-visible) {
+    outline-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+  }
+
+  :global(p.is-editor-empty:first-child::before) {
+    content: attr(data-placeholder);
+    float: left;
+    color: #adb5bd;
+    pointer-events: none;
+    height: 0;
+  }
+}
