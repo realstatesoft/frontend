@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { FiHome, FiEye, FiMessageSquare, FiDollarSign } from 'react-icons/fi';
 import { OWNER_ROUTES } from '../../../utils/constants';
 import styles from './OwnerQuickActions.module.scss';

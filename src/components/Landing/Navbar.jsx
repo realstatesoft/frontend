@@ -52,7 +52,7 @@ function CustomNavbar() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   // ── Messages unread count ──────────────────────────────
-  const { data: messagesUnread = 0 } = useUnreadMessagesCount();
+  const { data: messagesUnread = 0 } = useUnreadMessagesCount({ enabled: isAuthenticated });
 
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
@@ -166,6 +166,7 @@ function CustomNavbar() {
           </Link>
         )}
 
+
         <div className="profile-dropdown-wrapper" ref={dropdownRef}>
           <button
             className="profile-avatar-btn"
@@ -209,6 +210,11 @@ function CustomNavbar() {
                   <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> Mis preferencias
                   </Link>
+                  {user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Mi Dashboard
+                    </Link>
+                  )}
                   {!isAgent && !isAdmin && (
                     <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> Mis mensajes

@@ -46,14 +46,15 @@ function isTabVisible() {
   return typeof document !== 'undefined' && document.visibilityState === 'visible';
 }
 
-export function useUnreadMessagesCount() {
+export function useUnreadMessagesCount(options = {}) {
   return useQuery({
     queryKey: ['conversations', 'unread-count'],
     queryFn: messageService.getUnreadCount,
     staleTime: 1000 * 5,
     refetchInterval: 8000,
     refetchIntervalInBackground: false,
-    enabled: isTabVisible(),
+    ...options,
+    enabled: (options.enabled !== false) && isTabVisible(),
   });
 }
 
