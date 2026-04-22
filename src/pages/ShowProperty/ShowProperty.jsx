@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -65,6 +65,7 @@ export default function ShowProperty() {
     loadingSimilar,
     copyLink,
     activeFlagCount,
+    viewCount,
     isAuthenticated,
     fetchActiveFlagCount
   } = useShowProperty();
@@ -87,6 +88,12 @@ export default function ShowProperty() {
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
+  const viewBadgeText =
+    viewCount === 1
+      ? "1 ha visto esta propiedad"
+      : viewCount > 1
+      ? `${viewCount} han visto esta propiedad`
+      : null;
 
   // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
   useEffect(() => {
@@ -319,11 +326,19 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <img
-                src={images[0]}
-                alt="Fachada"
-                className="property__main-image"
-              />
+              <div className="property__main-image-wrapper">
+                <img
+                  src={images[0]}
+                  alt="Fachada"
+                  className="property__main-image"
+                />
+                {viewBadgeText && (
+                  <div className="property__views-badge">
+                    <Eye size={20} className="property__views-icon" />
+                    <span>{viewBadgeText}</span>
+                  </div>
+                )}
+              </div>
             </Col>
             <Col xs={6}>
               <Row className="g-1 h-100">
@@ -459,7 +474,6 @@ export default function ShowProperty() {
 
                     <div className="property__meta-box mt-4">
                       {(property.createdAt ||
-                        property.viewCount != null ||
                         property.favoriteCount != null) && (
                         <>
                           {property.createdAt && (
