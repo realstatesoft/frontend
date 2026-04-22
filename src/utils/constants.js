@@ -19,6 +19,7 @@ export const OWNER_ROUTES = {
   VISITS: '/owner/visitas',
   MESSAGES: '/owner/mensajes',
   OFFERS: '/owner/ofertas',
+  CONTRACTS: '/owner/contratos',
 };
 
 export const ADMIN_ROUTES = {

@@ -130,6 +130,9 @@ export default function AppRouter() {
                     <Route path="visitas" element={<VisitRequests mode="OWNER" />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
+                    <Route path="contratos" element={<ContractsPage />} />
+                    <Route path="contratos/nuevo" element={<ContractCreatePage />} />
+                    <Route path="contratos/:id" element={<ContractDetailPage />} />
                 </Route>
             </Route>
 

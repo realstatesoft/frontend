@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
-  FiGrid, FiHome, FiEye, FiMessageSquare, FiDollarSign
+  FiGrid, FiHome, FiEye, FiMessageSquare, FiDollarSign, FiFileText
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -20,6 +20,7 @@ const OWNER_NAV_ITEMS = [
   { section: 'Gestión' },
   { to: OWNER_ROUTES.VISITS, icon: <FiEye />, label: 'Visitas' },
   { to: OWNER_ROUTES.OFFERS, icon: <FiDollarSign />, label: 'Ofertas' },
+  { to: OWNER_ROUTES.CONTRACTS, icon: <FiFileText />, label: 'Mis Contratos' },
   { section: 'Comunicación' },
   { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes', showBadge: true },
 ];

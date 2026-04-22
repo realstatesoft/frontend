@@ -12,6 +12,7 @@ import {
   useContractsAsBuyer,
   useUpdateContractStatus,
 } from '../../hooks/useContracts';
+import { useAuth } from '../../hooks/useAuth';
 import {
   CONTRACT_TYPE_LABELS,
   CONTRACT_STATUS_LABELS,
@@ -47,6 +48,7 @@ export default function ContractsPage() {
   const [statusContract, setStatusContract]     = useState(null);
   const [signContract, setSignContract]         = useState(null);
 
+  const { user }                = useAuth();
   const { data: sellerRes,  isLoading: loadingSeller  } = useContractsAsSeller();
   const { data: buyerRes,   isLoading: loadingBuyer   } = useContractsAsBuyer();
   const { data: listingRes, isLoading: loadingListing } = useContractsAsListingAgent();
@@ -189,7 +191,11 @@ export default function ContractsPage() {
           <button
             className={styles.contracts__actionBtn}
             title="Ver detalle"
-            onClick={(e) => { e.stopPropagation(); navigate(`/agent/contratos/${row.id}`); }}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+              navigate(`/${base}/contratos/${row.id}`); 
+            }}
           >
             <FiEye />
           </button>
@@ -201,7 +207,8 @@ export default function ContractsPage() {
               title="Editar borrador"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/agent/contratos/${row.id}/editar`);
+                const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+                navigate(`/${base}/contratos/${row.id}/editar`);
               }}
             >
               <FiEdit2 />
@@ -271,7 +278,10 @@ export default function ContractsPage() {
         </div>
         <button
           className={`${styles.btn} ${styles['btn--primary']}`}
-          onClick={() => navigate('/agent/contratos/nuevo')}
+          onClick={() => {
+            const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+            navigate(`/${base}/contratos/nuevo`);
+          }}
         >
           <FiPlus />
           Nuevo contrato
