@@ -110,30 +110,26 @@ describe('FlagsPage', () => {
 
     renderPage();
 
+    await waitFor(() => {
+      expect(propertyFlagsApi.getAllFlags).toHaveBeenCalledWith({ status: 'ALL' });
+    });
+
     expect(await screen.findByText('Posible estafa con el anuncio')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /pendientes/i })).toBeInTheDocument();
 
-    fireEvent.change(screen.getAllByRole('combobox')[0], {
-      target: { value: 'ALL' },
-    });
-
-    expect(await screen.findByText('Contenido repetido')).toBeInTheDocument();
-
-    fireEvent.change(screen.getAllByRole('combobox')[1], {
-      target: { value: 'SPAM' },
-    });
+    fireEvent.click(screen.getByRole('button', { name: /pendientes/i }));
+    fireEvent.click(screen.getByText('Resueltos'));
 
     await waitFor(() => {
+      expect(screen.getByRole('button', { name: /resueltos/i })).toBeInTheDocument();
       expect(screen.queryByText('Posible estafa con el anuncio')).not.toBeInTheDocument();
       expect(screen.getByText('Contenido repetido')).toBeInTheDocument();
     });
 
     fireEvent.change(screen.getAllByRole('combobox')[0], {
-      target: { value: 'RESOLVED' },
+      target: { value: 'SPAM' },
     });
 
-    expect(await screen.findByText('Contenido repetido')).toBeInTheDocument();
-    await waitFor(() => {
-      expect(screen.queryByText('Posible estafa con el anuncio')).not.toBeInTheDocument();
-    });
+    expect(screen.getByText('Contenido repetido')).toBeInTheDocument();
   });
 });

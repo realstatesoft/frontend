@@ -88,9 +88,22 @@ function buildPropertyLabel(property) {
   return property.title ? `#${property.id} · ${property.title}` : `#${property.id}`;
 }
 
-function getPropertyTitle(flag, property) {
-  if (property?.title) return property.title;
-  return `Propiedad #${flag.propertyId}`;
+function getEmptyFlagsMessage({ statusFilter, filterType, query }) {
+  const hasExtraFilters = Boolean(filterType || query.trim());
+
+  if (hasExtraFilters) {
+    return "No hay reportes que coincidan con los filtros.";
+  }
+
+  if (statusFilter === 'RESOLVED') {
+    return "No hay reportes resueltos.";
+  }
+
+  if (statusFilter === 'ALL') {
+    return "No hay reportes.";
+  }
+
+  return "No hay reportes pendientes.";
 }
 
 function MetricCard({ icon: Icon, value, label, bg, color }) {
@@ -180,7 +193,7 @@ function FlagDetailModal({ flag, property, loadingProperty, onClose, onResolve }
   );
 }
 
-function FlagCard({ flag, property, onOpenDetail, onOpenResolve }) {
+function FlagCard({ flag, onOpenDetail, onOpenResolve }) {
   const status = getFlagStatus(flag);
   const statusStyle = STATUS_STYLE[status];
   const hasResolution = Boolean(flag.resolutionNotes);
@@ -198,7 +211,7 @@ function FlagCard({ flag, property, onOpenDetail, onOpenResolve }) {
         gap: 18,
       }}
     >
-      <div className="d-flex gap-3">
+        <div className="d-flex gap-3">
         <div
           style={{
             width: 90,
@@ -219,7 +232,7 @@ function FlagCard({ flag, property, onOpenDetail, onOpenResolve }) {
         <div className="d-flex flex-column gap-1" style={{ flex: 1 }}>
           <div className="d-flex align-items-center gap-2 flex-wrap">
             <h4 className="mb-0" style={{ fontSize: 22, fontWeight: 700 }}>
-              {getPropertyTitle(flag, property)}
+              Propiedad #{flag.propertyId}
             </h4>
             <span
               style={{
@@ -239,7 +252,7 @@ function FlagCard({ flag, property, onOpenDetail, onOpenResolve }) {
           </div>
 
           <div className="text-muted" style={{ fontSize: 15 }}>
-            {buildPropertyLabel(property)}
+            {`Propiedad #${flag.propertyId}`}
           </div>
 
           <div className="d-flex flex-wrap gap-3 mt-1" style={{ fontSize: 13, color: '#475569' }}>
@@ -398,8 +411,7 @@ function PropertyFlagsTab() {
     setLoading(true);
     setError(null);
     try {
-      const params = filterStatus === 'ALL' ? { status: 'ALL' } : { status: filterStatus };
-      const data = await propertyFlagsApi.getAllFlags(params);
+      const data = await propertyFlagsApi.getAllFlags({ status: 'ALL' });
       setFlags(data?.data || data || []);
     } catch {
       setError('No se pudieron cargar los reportes pendientes.');
@@ -592,7 +604,9 @@ function PropertyFlagsTab() {
         <Alert variant="danger">{error}</Alert>
       ) : visibleFlags.length === 0 ? (
         <div className="text-center py-5 bg-light rounded shadow-sm">
-          <p className="text-muted mb-0 fs-5 mt-2">No hay reportes pendientes.</p>
+          <p className="text-muted mb-0 fs-5 mt-2">
+            {getEmptyFlagsMessage({ statusFilter: filterStatus, filterType, query })}
+          </p>
         </div>
       ) : (
         <div className="d-flex flex-column gap-4">
@@ -600,7 +614,6 @@ function PropertyFlagsTab() {
             <FlagCard
               key={flag.id}
               flag={flag}
-              property={selectedFlag?.id === flag.id ? selectedProperty : null}
               onOpenDetail={handleOpenDetail}
               onOpenResolve={handleOpenResolve}
             />
