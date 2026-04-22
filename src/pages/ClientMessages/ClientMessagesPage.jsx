@@ -165,13 +165,13 @@ export default function ClientMessagesPage() {
             <h1 className={styles.page__title}>Mensajes</h1>
             <p className={styles.page__subtitle}>Comunicación con agentes</p>
           </div>
-          <Button
+          {/*<Button
             variant="outline-primary"
             size="sm"
             onClick={() => setShowNewConvModal(true)}
           >
             <FiPlus className="me-1" /> Nueva conversación
-          </Button>
+          </Button>*/}
         </div>
 
         <div className={styles.page__body}>
