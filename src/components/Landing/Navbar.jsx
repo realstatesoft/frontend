@@ -11,13 +11,16 @@ import {
   Trash,
 } from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
+import useHasPublishedProperties from "../../hooks/useHasPublishedProperties";
 import { CiUser } from "react-icons/ci";
 import {
   IoHomeOutline,
   IoSettingsOutline,
   IoLogOutOutline,
   IoLogInOutline,
+  IoBookmarkOutline,
   IoCalendarClearOutline,
+  IoCalendarOutline,
   IoSpeedometerOutline,
   IoOptionsOutline,
   IoShieldOutline,
@@ -49,11 +52,13 @@ function CustomNavbar() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   // ── Messages unread count ──────────────────────────────
-  const { data: messagesUnread = 0 } = useUnreadMessagesCount();
+  const { data: messagesUnread = 0 } = useUnreadMessagesCount({ enabled: isAuthenticated });
 
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
   const isAgent = user?.role?.toUpperCase() === "AGENT";
+
+  const hasPublishedProperties = useHasPublishedProperties();
 
   useEffect(() => {
     const fetchCount = () => {
@@ -161,6 +166,7 @@ function CustomNavbar() {
           </Link>
         )}
 
+
         <div className="profile-dropdown-wrapper" ref={dropdownRef}>
           <button
             className="profile-avatar-btn"
@@ -187,6 +193,14 @@ function CustomNavbar() {
                   <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <HouseDoor size={16} style={{ flexShrink: 0 }} /> Mis propiedades
                   </Link>
+                  <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> Mis reservas
+                  </Link>
+                  {hasPublishedProperties && user?.role?.toUpperCase() === 'OWNER' && (
+                    <Link to="/owner/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
+                    </Link>
+                  )}
                   <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Trash size={14} style={{ flexShrink: 0 }} /> Papelera
                   </Link>
@@ -196,6 +210,11 @@ function CustomNavbar() {
                   <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> Mis preferencias
                   </Link>
+                  {user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Mi Dashboard
+                    </Link>
+                  )}
                   {!isAgent && !isAdmin && (
                     <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> Mis mensajes
@@ -214,10 +233,14 @@ function CustomNavbar() {
 
                   {isAgent && (
                     <>
+                      {hasPublishedProperties && (
+                        <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                          <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
+                        </Link>
+                      )}
                       <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
                       </Link>
-                    
                       <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
                       </Link>

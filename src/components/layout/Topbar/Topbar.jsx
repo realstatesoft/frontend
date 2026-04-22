@@ -50,6 +50,13 @@ export default function Topbar({ extraActions }) {
     return '/ofertas';
   };
 
+  const getDashboardLink = () => {
+    if (user?.role === 'USER') return '/owner/dashboard';
+    if (user?.role === 'AGENT') return '/agent/dashboard';
+    if (user?.role === 'ADMIN') return '/admin/dashboard';
+    return '/dashboard';
+  };
+
   return (
     <header className={topbarClass}>
       <div className={styles.topbar__left}>
@@ -115,7 +122,7 @@ export default function Topbar({ extraActions }) {
               <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> Favoritos
               </Link>
-              <Link to="/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Panel de Control
               </Link>
               {user?.role === 'AGENT' && (

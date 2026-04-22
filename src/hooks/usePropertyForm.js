@@ -20,6 +20,7 @@ import {
 } from "../constants/createPropertyConstants";
 import { createPropertySchema } from "../validation/createPropertySchema";
 import model3dApi from "../services/properties/model3dApi";
+import floorPlanApi from "../services/properties/floorPlanApi";
 
 const getInitialForm = () => ({
   title: "",
@@ -51,6 +52,7 @@ const getInitialForm = () => ({
   fullBathrooms: "",
   rooms: [],
   media: [],
+  floorPlans: [],
   agentId: null,
 });
 
@@ -452,6 +454,86 @@ export function usePropertyForm(propertyId) {
     }
   }, [propertyId, form.id, form.media]);
 
+  // ─── Floor Plans ──────────────────────────────────────────────────────────
+
+  const [uploadingFloorPlan, setUploadingFloorPlan] = useState(false);
+
+  const addFloorPlan = useCallback(async (file) => {
+    if (!file) return;
+    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+    const allowedExts = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
+    const ext = "." + (file.name?.split(".").pop()?.toLowerCase() ?? "");
+    if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
+      await Swal.fire("Formato no permitido", "Los planos deben ser PDF, JPG, PNG o WebP.", "warning");
+      return;
+    }
+    const MAX_FLOOR_PLAN_BYTES = 10 * 1024 * 1024;
+    if (file.size > MAX_FLOOR_PLAN_BYTES) {
+      await Swal.fire("Archivo demasiado grande", "El plano no puede superar los 10 MB.", "warning");
+      return;
+    }
+    const MAX_FLOOR_PLANS = 5;
+    const currentPlans = form.floorPlans || [];
+    if (currentPlans.length >= MAX_FLOOR_PLANS) {
+      await Swal.fire("Límite alcanzado", `Máximo ${MAX_FLOOR_PLANS} planos por propiedad.`, "warning");
+      return;
+    }
+
+    const targetId = propertyId || form.id;
+
+    if (targetId) {
+      // Propiedad ya existente → subir y persistir inmediatamente
+      setUploadingFloorPlan(true);
+      try {
+        Swal.showLoading();
+        const { data } = await floorPlanApi.uploadFloorPlan(targetId, file);
+        if (!data?.success) throw new Error(data?.message || "Error al subir el plano");
+        const newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name, id: data.data.id };
+        setForm(f => ({ ...f, floorPlans: [...(f.floorPlans || []), newItem] }));
+        Swal.close();
+      } catch (err) {
+        await Swal.fire("Error", "No se pudo subir el plano: " + (err.response?.data?.message || err.message), "error");
+      } finally {
+        setUploadingFloorPlan(false);
+      }
+    } else {
+      // Propiedad nueva → guardar File en memoria con preview local.
+      // Se subirán al backend en handleSubmit una vez obtenido el createdId.
+      const previewUrl = URL.createObjectURL(file);
+      const pendingItem = { type: "FLOOR_PLAN", url: previewUrl, title: file.name, _file: file, _isPending: true };
+      setForm(f => ({ ...f, floorPlans: [...(f.floorPlans || []), pendingItem] }));
+    }
+  }, [propertyId, form.id, form.floorPlans]);
+
+  const removeFloorPlan = useCallback(async (index) => {
+    const plan = (form.floorPlans || [])[index];
+    if (!plan) return;
+
+    // Para planos persistidos (tienen id del backend), llamamos a la API primero.
+    // Si falla, hacemos rollback (no se modifica el estado).
+    if (plan.id) {
+      const targetId = propertyId || form.id;
+      if (targetId) {
+        try {
+          await floorPlanApi.deleteFloorPlan(targetId, plan.id);
+        } catch (err) {
+          await Swal.fire(
+            "Error",
+            "No se pudo eliminar el plano: " + (err.response?.data?.message || err.message),
+            "error"
+          );
+          return; // rollback: no se modifica el estado local
+        }
+      }
+    }
+    // Revoke blob URL for pending items to prevent memory leaks
+    if (plan._isPending && plan.url) {
+      URL.revokeObjectURL(plan.url);
+    }
+    // Para planos pendientes (sin id, aún no persistidos) solo limpiamos el estado local.
+    setForm(f => ({ ...f, floorPlans: (f.floorPlans || []).filter((_, i) => i !== index) }));
+  }, [propertyId, form.id, form.floorPlans]);
+
   const validateForm = useCallback(() => {
     const dataToValidate = {
       title: form.title,
@@ -552,12 +634,40 @@ export function usePropertyForm(propertyId) {
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });
             const createdId = data.data?.id;
-            await Swal.fire({
-              icon: "success",
-              title: "¡Propiedad registrada!",
-              text: "La propiedad fue creada exitosamente.",
-            });
+
+            // Subir planos pendientes (guardados localmente durante el wizard de creación)
+            const pendingPlans = (form.floorPlans || []).filter(p => p._isPending && p._file);
+            const failedPlans = [];
+            if (createdId && pendingPlans.length > 0) {
+              for (const plan of pendingPlans) {
+                try {
+                  await floorPlanApi.uploadFloorPlan(createdId, plan._file);
+                } catch (planErr) {
+                  console.warn("No se pudo subir el plano pendiente:", plan.title, planErr);
+                  failedPlans.push(plan.title || "Plano sin nombre");
+                }
+                // Liberar la objectUrl temporal para no generar memory leaks
+                URL.revokeObjectURL(plan.url);
+              }
+            }
+
             setFieldErrors({});
+
+            if (failedPlans.length > 0) {
+              // Some uploads failed — show warning but still navigate
+              await Swal.fire({
+                icon: "warning",
+                title: "Propiedad creada con advertencias",
+                html: `La propiedad fue creada, pero no se pudieron subir los siguientes planos:<br><br><b>${failedPlans.join("<br>")}</b><br><br>Podés subirlos luego desde la página de edición.`,
+              });
+            } else {
+              await Swal.fire({
+                icon: "success",
+                title: "¡Propiedad registrada!",
+                text: "La propiedad fue creada exitosamente.",
+              });
+            }
+
             if (createdId) {
               navigate(`/properties/${createdId}`);
             }
@@ -607,6 +717,9 @@ export function usePropertyForm(propertyId) {
     addTour360Image,
     addTourConfig,
     uploadingTour,
+    addFloorPlan,
+    removeFloorPlan,
+    uploadingFloorPlan,
     handleSubmit,
     dismissError,
     fieldErrors,
