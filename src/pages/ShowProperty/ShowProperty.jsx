@@ -35,6 +35,7 @@ import PropertyModel3DViewer from "../../components/properties/PropertyModel3DVi
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
 import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
+import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -579,17 +580,10 @@ export default function ShowProperty() {
                     </div>
 
                     <div className="mt-4">
-                      <Row className="g-4">
-                        <Col sm={6}>
-                          <div className="property__tour-card property__tour-card--static">
-                            <div className="mb-2">
-                              <FileText size={28} color="#555" />
-                            </div>
-                            <p className="property__tour-label">Planos de la propiedad</p>
-                            <span className="text-muted small">Proximamente disponible</span>
-                          </div>
-                        </Col>
-                      </Row>
+                      <h6 className="property__section-title mb-3" style={{ fontSize: "0.95rem" }}>
+                        Planos de la propiedad
+                      </h6>
+                      <PropertyFloorPlansViewer propertyId={property.id} />
                     </div>
                   </Tab.Pane>
 
