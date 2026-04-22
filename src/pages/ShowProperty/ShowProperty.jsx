@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -24,8 +24,10 @@ import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
+import { useAuth } from "../../hooks/useAuth";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
+import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
@@ -33,6 +35,7 @@ import PropertyModel3DViewer from "../../components/properties/PropertyModel3DVi
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
 import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
+import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
 import "./show-property.scss";
 
 export default function ShowProperty() {
@@ -63,9 +66,12 @@ export default function ShowProperty() {
     loadingSimilar,
     copyLink,
     activeFlagCount,
+    viewCount,
     isAuthenticated,
     fetchActiveFlagCount
   } = useShowProperty();
+
+  const { user: authUser } = useAuth();
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
@@ -77,11 +83,18 @@ export default function ShowProperty() {
     canDelete,
     canFeature,
     isOwner: isPropertyOwner,
+    isAdmin,
   } = usePropertyPermissions(property);
 
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
+  const viewBadgeText =
+    viewCount === 1
+      ? "1 ha visto esta propiedad"
+      : viewCount > 1
+      ? `${viewCount} han visto esta propiedad`
+      : null;
 
   // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
   useEffect(() => {
@@ -182,6 +195,15 @@ export default function ShowProperty() {
               <Flag size={20} className="me-2" />
               <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.</span>
             </Alert>
+          )}
+
+          {/* Panel de reserva solo para owner/agent/admin — buyer lo ve en el sidebar */}
+          {(isPropertyOwner || isAdmin || authUser?.role?.toUpperCase() === 'AGENT') && (
+            <PropertyReservationPanel
+              property={property}
+              currentUser={authUser}
+              defaultPercent={1}
+            />
           )}
 
           {/* Header */}
@@ -305,11 +327,19 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <img
-                src={images[0]}
-                alt="Fachada"
-                className="property__main-image"
-              />
+              <div className="property__main-image-wrapper">
+                <img
+                  src={images[0]}
+                  alt="Fachada"
+                  className="property__main-image"
+                />
+                {viewBadgeText && (
+                  <div className="property__views-badge">
+                    <Eye size={20} className="property__views-icon" />
+                    <span>{viewBadgeText}</span>
+                  </div>
+                )}
+              </div>
             </Col>
             <Col xs={6}>
               <Row className="g-1 h-100">
@@ -445,7 +475,6 @@ export default function ShowProperty() {
 
                     <div className="property__meta-box mt-4">
                       {(property.createdAt ||
-                        property.viewCount != null ||
                         property.favoriteCount != null) && (
                         <>
                           {property.createdAt && (
@@ -551,17 +580,10 @@ export default function ShowProperty() {
                     </div>
 
                     <div className="mt-4">
-                      <Row className="g-4">
-                        <Col sm={6}>
-                          <div className="property__tour-card property__tour-card--static">
-                            <div className="mb-2">
-                              <FileText size={28} color="#555" />
-                            </div>
-                            <p className="property__tour-label">Planos de la propiedad</p>
-                            <span className="text-muted small">Proximamente disponible</span>
-                          </div>
-                        </Col>
-                      </Row>
+                      <h6 className="property__section-title mb-3" style={{ fontSize: "0.95rem" }}>
+                        Planos de la propiedad
+                      </h6>
+                      <PropertyFloorPlansViewer propertyId={property.id} />
                     </div>
                   </Tab.Pane>
 
@@ -599,6 +621,17 @@ export default function ShowProperty() {
             </Col>
 
             <Col lg={4} className="mt-4 mt-lg-0">
+              {/* Panel de reserva para comprador (sticky en desktop) */}
+              {!isPropertyOwner && !isAdmin && authUser?.role?.toUpperCase() !== 'AGENT' && (
+                <div style={{ position: 'sticky', top: '1.5rem' }}>
+                  <PropertyReservationPanel
+                    property={property}
+                    currentUser={authUser}
+                    defaultPercent={1}
+                  />
+                </div>
+              )}
+
               <PropertyContactCard property={property} />
 
               {showRentCost && (

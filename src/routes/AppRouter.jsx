@@ -17,6 +17,7 @@ import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
 import RegisterClient from "../pages/clients/RegisterClient";
 import EditClient from "../pages/clients/EditClient";
 import ClientMessagesPage from "../pages/ClientMessages/ClientMessagesPage";
+import MyReservationsPage from "../pages/MyReservations/MyReservationsPage";
 import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
 import ClientList from "../pages/ClientList/ClientList";
 import AgentProfilePage from "../pages/Agents/AgentProfilePage";
@@ -42,6 +43,8 @@ import OfferManagementPage from "../pages/Offers/OfferManagementPage";
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
 import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
+import OwnerReservationsPage from "../pages/OwnerReservations/OwnerReservationsPage";
+import AgentReservationsPage from "../pages/AgentReservations/AgentReservationsPage";
 import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import UserProfilePage from "../pages/UserProfilePage";
@@ -80,6 +83,7 @@ export default function AppRouter() {
                 <Route path="/properties/me" element={<MyProperties />} />
                 <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
                 <Route path="/preferences" element={<PreferencesPage />} />
+                <Route path="/reservations" element={<MyReservationsPage />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
@@ -112,16 +116,18 @@ export default function AppRouter() {
                     <Route path="reportes" element={<ReportsPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
+                    <Route path="reservas" element={<AgentReservationsPage />} />
                 </Route>
             </Route>
 
             {/* -- Rutas protegidas (Owner) ------------------------- */}
-            <Route element={<ProtectedRoute requiredRole="OWNER" />}>
+            <Route element={<ProtectedRoute requiredRole={["OWNER", "USER"]} />}>
                 <Route path="/owner" element={<OwnerLayout />}>
                     <Route index element={<Navigate to="/owner/dashboard" replace />} />
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
                     <Route path="propiedades" element={<MyProperties hideNavbar={true} />} />
                     <Route path="visitas" element={<VisitRequests mode="OWNER" />} />
+                    <Route path="reservas" element={<OwnerReservationsPage />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                 </Route>
