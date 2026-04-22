@@ -467,7 +467,7 @@ export function usePropertyForm(propertyId) {
       await Swal.fire("Formato no permitido", "Los planos deben ser PDF, JPG, PNG o WebP.", "warning");
       return;
     }
-    const MAX_FLOOR_PLAN_BYTES = 10 * 1024 * 1024; // 10 MB (igual que el backend)
+    const MAX_FLOOR_PLAN_BYTES = 10 * 1024 * 1024;
     if (file.size > MAX_FLOOR_PLAN_BYTES) {
       await Swal.fire("Archivo demasiado grande", "El plano no puede superar los 10 MB.", "warning");
       return;
@@ -479,30 +479,29 @@ export function usePropertyForm(propertyId) {
       return;
     }
 
-    setUploadingFloorPlan(true);
-    try {
-      Swal.showLoading();
-      let newItem;
-      const targetId = propertyId || form.id;
+    const targetId = propertyId || form.id;
 
-      if (targetId) {
+    if (targetId) {
+      // Propiedad ya existente → subir y persistir inmediatamente
+      setUploadingFloorPlan(true);
+      try {
+        Swal.showLoading();
         const { data } = await floorPlanApi.uploadFloorPlan(targetId, file);
         if (!data?.success) throw new Error(data?.message || "Error al subir el plano");
-        newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name, id: data.data.id };
-      } else {
-        const { data } = await floorPlanApi.uploadFloorPlanGeneric(file);
-        if (!data?.success) throw new Error(data?.message || "Error al subir el plano");
-        newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name };
-      }
-
-      if (newItem) {
+        const newItem = { type: "FLOOR_PLAN", url: data.data.url, storageKey: data.data.storageKey, title: file.name, id: data.data.id };
         setForm(f => ({ ...f, floorPlans: [...(f.floorPlans || []), newItem] }));
         Swal.close();
+      } catch (err) {
+        await Swal.fire("Error", "No se pudo subir el plano: " + (err.response?.data?.message || err.message), "error");
+      } finally {
+        setUploadingFloorPlan(false);
       }
-    } catch (err) {
-      await Swal.fire("Error", "No se pudo subir el plano: " + (err.response?.data?.message || err.message), "error");
-    } finally {
-      setUploadingFloorPlan(false);
+    } else {
+      // Propiedad nueva → guardar File en memoria con preview local.
+      // Se subirán al backend en handleSubmit una vez obtenido el createdId.
+      const previewUrl = URL.createObjectURL(file);
+      const pendingItem = { type: "FLOOR_PLAN", url: previewUrl, title: file.name, _file: file, _isPending: true };
+      setForm(f => ({ ...f, floorPlans: [...(f.floorPlans || []), pendingItem] }));
     }
   }, [propertyId, form.id, form.floorPlans]);
 
@@ -631,6 +630,21 @@ export function usePropertyForm(propertyId) {
           if (data?.success) {
             window.scrollTo({ top: 0, behavior: "smooth" });
             const createdId = data.data?.id;
+
+            // Subir planos pendientes (guardados localmente durante el wizard de creación)
+            const pendingPlans = (form.floorPlans || []).filter(p => p._isPending && p._file);
+            if (createdId && pendingPlans.length > 0) {
+              for (const plan of pendingPlans) {
+                try {
+                  await floorPlanApi.uploadFloorPlan(createdId, plan._file);
+                } catch (planErr) {
+                  console.warn("No se pudo subir el plano pendiente:", plan.title, planErr);
+                }
+                // Liberar la objectUrl temporal para no generar memory leaks
+                URL.revokeObjectURL(plan.url);
+              }
+            }
+
             await Swal.fire({
               icon: "success",
               title: "¡Propiedad registrada!",

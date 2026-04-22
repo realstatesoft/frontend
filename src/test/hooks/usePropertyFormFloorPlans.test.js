@@ -60,6 +60,8 @@ const wrapper = ({ children }) => React.createElement(MemoryRouter, null, childr
 describe('usePropertyForm – lógica de Floor Plans', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    global.URL.createObjectURL = vi.fn((file) => `blob:mock-url-${file.name}`);
+    global.URL.revokeObjectURL = vi.fn();
   });
 
   // ─── Estado inicial ───────────────────────────────────────────────────────
@@ -242,15 +244,8 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
   // ─── addFloorPlan – flujo SIN propertyId (genérico) ─────────────────────
 
   describe('addFloorPlan(file) – upload genérico (sin propertyId)', () => {
-    it('llama a uploadFloorPlanGeneric y agrega el plano al form', async () => {
+    it('guarda el archivo en el estado con _isPending: true y una objectURL de preview', async () => {
       const { result } = renderHook(() => usePropertyForm(), { wrapper });
-
-      floorPlanApi.uploadFloorPlanGeneric.mockResolvedValue({
-        data: {
-          success: true,
-          data: { url: 'https://s.t/pending/plano.pdf', storageKey: 'floor-plans/pending/plano.pdf' },
-        },
-      });
 
       const pdfFile = new File(['pdf'], 'plano.pdf', { type: 'application/pdf' });
 
@@ -258,63 +253,20 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
         await result.current.addFloorPlan(pdfFile);
       });
 
-      expect(floorPlanApi.uploadFloorPlanGeneric).toHaveBeenCalledWith(pdfFile);
+      expect(floorPlanApi.uploadFloorPlanGeneric).not.toHaveBeenCalled();
+      expect(global.URL.createObjectURL).toHaveBeenCalledWith(pdfFile);
       expect(result.current.form.floorPlans).toHaveLength(1);
       expect(result.current.form.floorPlans[0]).toMatchObject({
         type: 'FLOOR_PLAN',
-        url: 'https://s.t/pending/plano.pdf',
+        url: 'blob:mock-url-plano.pdf',
         title: 'plano.pdf',
+        _isPending: true,
+        _file: pdfFile,
       });
     });
 
-    it('muestra alerta de error si la API retorna success: false', async () => {
+    it('acepta archivos JPG y también los guarda localmente', async () => {
       const { result } = renderHook(() => usePropertyForm(), { wrapper });
-
-      floorPlanApi.uploadFloorPlanGeneric.mockResolvedValue({
-        data: { success: false, message: 'Tipo de archivo no permitido' },
-      });
-
-      const pdfFile = new File(['pdf'], 'plano.pdf', { type: 'application/pdf' });
-
-      await act(async () => {
-        await result.current.addFloorPlan(pdfFile);
-      });
-
-      expect(Swal.fire).toHaveBeenCalledWith(
-        'Error',
-        expect.stringContaining('Tipo de archivo no permitido'),
-        'error'
-      );
-      expect(result.current.form.floorPlans).toHaveLength(0);
-    });
-
-    it('muestra alerta de error si la API lanza una excepción', async () => {
-      const { result } = renderHook(() => usePropertyForm(), { wrapper });
-
-      floorPlanApi.uploadFloorPlanGeneric.mockRejectedValue({
-        response: { data: { message: 'Archivo demasiado grande' } },
-      });
-
-      const pdfFile = new File(['pdf'], 'plano.pdf', { type: 'application/pdf' });
-
-      await act(async () => {
-        await result.current.addFloorPlan(pdfFile);
-      });
-
-      expect(Swal.fire).toHaveBeenCalledWith(
-        'Error',
-        expect.stringContaining('Archivo demasiado grande'),
-        'error'
-      );
-      expect(result.current.form.floorPlans).toHaveLength(0);
-    });
-
-    it('acepta archivos JPG además de PDF', async () => {
-      const { result } = renderHook(() => usePropertyForm(), { wrapper });
-
-      floorPlanApi.uploadFloorPlanGeneric.mockResolvedValue({
-        data: { success: true, data: { url: 'https://s.t/p.jpg', storageKey: 'floor-plans/pending/p.jpg' } },
-      });
 
       const jpgFile = new File(['img'], 'plano.jpg', { type: 'image/jpeg' });
 
@@ -322,7 +274,12 @@ describe('usePropertyForm – lógica de Floor Plans', () => {
         await result.current.addFloorPlan(jpgFile);
       });
 
-      expect(result.current.form.floorPlans[0].url).toBe('https://s.t/p.jpg');
+      expect(result.current.form.floorPlans[0]).toMatchObject({
+        type: 'FLOOR_PLAN',
+        url: 'blob:mock-url-plano.jpg',
+        title: 'plano.jpg',
+        _isPending: true,
+      });
     });
   });
 
