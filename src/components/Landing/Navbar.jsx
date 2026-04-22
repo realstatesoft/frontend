@@ -196,8 +196,8 @@ function CustomNavbar() {
                   <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> Mis reservas
                   </Link>
-                  {hasPublishedProperties && user?.role?.toUpperCase() === 'OWNER' && (
-                    <Link to="/owner/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  {hasPublishedProperties && user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
                     </Link>
                   )}

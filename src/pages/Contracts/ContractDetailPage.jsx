@@ -74,7 +74,10 @@ export default function ContractDetailPage() {
         <div className={styles.header__content}>
           <button 
             className={styles.btnBack} 
-            onClick={() => navigate(user?.role === 'AGENT' ? '/agent/contratos' : '/')}
+            onClick={() => {
+              const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+              navigate(`/${base}/contratos`);
+            }}
           >
             <FiArrowLeft /> Volver
           </button>
@@ -88,7 +91,10 @@ export default function ContractDetailPage() {
             {contract.status === 'DRAFT' && (
               <button 
                 className={styles.btnSecondary} 
-                onClick={() => navigate(`/agent/contratos/${contract.id}/editar`)}
+                onClick={() => {
+                  const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+                  navigate(`/${base}/contratos/${contract.id}/editar`);
+                }}
               >
                 <FiEdit3 /> Editar Borrador
               </button>

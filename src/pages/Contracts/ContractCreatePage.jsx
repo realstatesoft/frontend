@@ -81,8 +81,8 @@ export default function ContractCreatePage() {
   const isAgent = role === 'AGENT';
   const isPublicContractsFlow = !isAgent;
   const isGuidedSellerFlow = !isAgent;
-  const contractsHomePath = isAgent ? '/agent/contratos' : (role === 'OWNER' ? '/owner/ofertas' : '/ofertas');
-  const backLabel = isAgent ? 'Volver a contratos' : 'Volver a ofertas';
+  const contractsHomePath = isAgent ? '/agent/contratos' : '/owner/contratos';
+  const backLabel = 'Volver a contratos';
 
   const { id: contractIdFromUrl } = useParams();
   const isEditing = Boolean(contractIdFromUrl);

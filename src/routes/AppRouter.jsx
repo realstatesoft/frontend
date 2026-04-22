@@ -95,6 +95,7 @@ export default function AppRouter() {
                 <Route path="/mensajes" element={<ClientMessagesPage />} />
                 <Route path="/contratos/:id" element={<ContractDetailPage />} />
                 <Route path="/ofertas" element={<OfferManagementPage />} />
+                <Route path="/owner/reservations" element={<OwnerReservationsPage />} />
             </Route>
 
             {/* -- Rutas protegidas (Agent) ------------------------- */}
@@ -127,9 +128,11 @@ export default function AppRouter() {
                     <Route path="dashboard" element={<OwnerDashboardPage />} />
                     <Route path="propiedades" element={<MyProperties hideNavbar={true} />} />
                     <Route path="visitas" element={<VisitRequests mode="OWNER" />} />
-                    <Route path="reservas" element={<OwnerReservationsPage />} />
                     <Route path="mensajes" element={<OwnerMessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
+                    <Route path="contratos" element={<ContractsPage />} />
+                    <Route path="contratos/nuevo" element={<ContractCreatePage />} />
+                    <Route path="contratos/:id" element={<ContractDetailPage />} />
                 </Route>
             </Route>
 
