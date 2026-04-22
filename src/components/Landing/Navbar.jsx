@@ -117,8 +117,7 @@ function CustomNavbar() {
   const getOffersLink = () => {
     const role = user?.role?.toUpperCase();
     if (role === 'AGENT') return '/agent/ofertas';
-    
-    // Si es USER (tenga propiedades o solo sea comprador), va a la vista standalone:
+    if (role === 'OWNER') return '/owner/ofertas';
     return '/ofertas';
   };
 
