@@ -117,7 +117,8 @@ function CustomNavbar() {
   const getOffersLink = () => {
     const role = user?.role?.toUpperCase();
     if (role === 'AGENT') return '/agent/ofertas';
-    if (role === 'OWNER') return '/owner/ofertas';
+    
+    // Si es USER (tenga propiedades o solo sea comprador), va a la vista standalone:
     return '/ofertas';
   };
 
@@ -195,8 +196,8 @@ function CustomNavbar() {
                   <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> Mis reservas
                   </Link>
-                  {hasPublishedProperties && user?.role?.toUpperCase() === 'OWNER' && (
-                    <Link to="/owner/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  {hasPublishedProperties && user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> Reservas recibidas
                     </Link>
                   )}
