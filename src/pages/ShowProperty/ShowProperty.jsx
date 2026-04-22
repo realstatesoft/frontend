@@ -24,8 +24,10 @@ import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
+import { useAuth } from "../../hooks/useAuth";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
+import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
@@ -67,6 +69,8 @@ export default function ShowProperty() {
     fetchActiveFlagCount
   } = useShowProperty();
 
+  const { user: authUser } = useAuth();
+
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
 
@@ -77,6 +81,7 @@ export default function ShowProperty() {
     canDelete,
     canFeature,
     isOwner: isPropertyOwner,
+    isAdmin,
   } = usePropertyPermissions(property);
 
   const [tourSubTab, setTourSubTab] = useState(null);
@@ -182,6 +187,15 @@ export default function ShowProperty() {
               <Flag size={20} className="me-2" />
               <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.</span>
             </Alert>
+          )}
+
+          {/* Panel de reserva solo para owner/agent/admin — buyer lo ve en el sidebar */}
+          {(isPropertyOwner || isAdmin || authUser?.role?.toUpperCase() === 'AGENT') && (
+            <PropertyReservationPanel
+              property={property}
+              currentUser={authUser}
+              defaultPercent={1}
+            />
           )}
 
           {/* Header */}
@@ -599,6 +613,17 @@ export default function ShowProperty() {
             </Col>
 
             <Col lg={4} className="mt-4 mt-lg-0">
+              {/* Panel de reserva para comprador (sticky en desktop) */}
+              {!isPropertyOwner && !isAdmin && authUser?.role?.toUpperCase() !== 'AGENT' && (
+                <div style={{ position: 'sticky', top: '1.5rem' }}>
+                  <PropertyReservationPanel
+                    property={property}
+                    currentUser={authUser}
+                    defaultPercent={1}
+                  />
+                </div>
+              )}
+
               <PropertyContactCard property={property} />
 
               {showRentCost && (
