@@ -58,10 +58,18 @@ const wrapper = ({ children }) => React.createElement(MemoryRouter, null, childr
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('usePropertyForm – lógica de Floor Plans', () => {
+  const originalCreateObjectURL = global.URL.createObjectURL;
+  const originalRevokeObjectURL = global.URL.revokeObjectURL;
+
   beforeEach(() => {
     vi.clearAllMocks();
     global.URL.createObjectURL = vi.fn((file) => `blob:mock-url-${file.name}`);
     global.URL.revokeObjectURL = vi.fn();
+  });
+
+  afterEach(() => {
+    global.URL.createObjectURL = originalCreateObjectURL;
+    global.URL.revokeObjectURL = originalRevokeObjectURL;
   });
 
   // ─── Estado inicial ───────────────────────────────────────────────────────

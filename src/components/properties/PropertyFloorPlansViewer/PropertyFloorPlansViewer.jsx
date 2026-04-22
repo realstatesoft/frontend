@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Spinner, Alert } from "react-bootstrap";
 import { FileEarmarkPdf, Image as ImageIcon, ZoomIn, XLg } from "react-bootstrap-icons";
 import { usePropertyFloorPlans } from "../../../hooks/usePropertyFloorPlans";
@@ -33,6 +33,15 @@ function getPlanLabel(plan, index) {
     return plan.title.replace(/\.[^.]+$/, "");
   }
   return `Plano ${index + 1}`;
+}
+
+/**
+ * Returns all tabbable elements within a container.
+ */
+function getTabbableElements(container) {
+  if (!container) return [];
+  const selector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"]), iframe';
+  return Array.from(container.querySelectorAll(selector));
 }
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
@@ -78,20 +87,67 @@ function PlanPreviewCard({ plan, index, onClick }) {
   );
 }
 
-/** Lightbox de pantalla completa */
+/** Lightbox de pantalla completa with focus trap */
 function PlanLightbox({ plan, onClose }) {
   const type = resolveFileType(plan);
+  const dialogRef = useRef(null);
+  const previousFocusRef = useRef(null);
 
   useEffect(() => {
+    // Save the previously focused element to restore on close
+    previousFocusRef.current = document.activeElement;
+
     const handleKey = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      // Focus trap: intercept Tab / Shift+Tab
+      if (e.key === "Tab") {
+        const tabbable = getTabbableElements(dialogRef.current);
+        if (tabbable.length === 0) {
+          e.preventDefault();
+          return;
+        }
+        const first = tabbable[0];
+        const last = tabbable[tabbable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     };
+
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+
+    // Move focus into the dialog (close button)
+    const tabbable = getTabbableElements(dialogRef.current);
+    if (tabbable.length > 0) {
+      tabbable[0].focus();
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      // Restore focus to the previously focused element
+      if (previousFocusRef.current && typeof previousFocusRef.current.focus === "function") {
+        previousFocusRef.current.focus();
+      }
+      previousFocusRef.current = null;
+    };
   }, [onClose]);
 
   return (
     <div
+      ref={dialogRef}
       className="floor-plans-viewer__lightbox"
       onClick={onClose}
       role="dialog"

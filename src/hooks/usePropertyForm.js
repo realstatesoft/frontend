@@ -526,6 +526,10 @@ export function usePropertyForm(propertyId) {
         }
       }
     }
+    // Revoke blob URL for pending items to prevent memory leaks
+    if (plan._isPending && plan.url) {
+      URL.revokeObjectURL(plan.url);
+    }
     // Para planos pendientes (sin id, aún no persistidos) solo limpiamos el estado local.
     setForm(f => ({ ...f, floorPlans: (f.floorPlans || []).filter((_, i) => i !== index) }));
   }, [propertyId, form.id, form.floorPlans]);
@@ -633,24 +637,37 @@ export function usePropertyForm(propertyId) {
 
             // Subir planos pendientes (guardados localmente durante el wizard de creación)
             const pendingPlans = (form.floorPlans || []).filter(p => p._isPending && p._file);
+            const failedPlans = [];
             if (createdId && pendingPlans.length > 0) {
               for (const plan of pendingPlans) {
                 try {
                   await floorPlanApi.uploadFloorPlan(createdId, plan._file);
                 } catch (planErr) {
                   console.warn("No se pudo subir el plano pendiente:", plan.title, planErr);
+                  failedPlans.push(plan.title || "Plano sin nombre");
                 }
                 // Liberar la objectUrl temporal para no generar memory leaks
                 URL.revokeObjectURL(plan.url);
               }
             }
 
-            await Swal.fire({
-              icon: "success",
-              title: "¡Propiedad registrada!",
-              text: "La propiedad fue creada exitosamente.",
-            });
             setFieldErrors({});
+
+            if (failedPlans.length > 0) {
+              // Some uploads failed — show warning but still navigate
+              await Swal.fire({
+                icon: "warning",
+                title: "Propiedad creada con advertencias",
+                html: `La propiedad fue creada, pero no se pudieron subir los siguientes planos:<br><br><b>${failedPlans.join("<br>")}</b><br><br>Podés subirlos luego desde la página de edición.`,
+              });
+            } else {
+              await Swal.fire({
+                icon: "success",
+                title: "¡Propiedad registrada!",
+                text: "La propiedad fue creada exitosamente.",
+              });
+            }
+
             if (createdId) {
               navigate(`/properties/${createdId}`);
             }
