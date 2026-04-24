@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Container, Collapse, Row, Col, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { PROPERTY_TYPE, AVAILABILITY } from "../../constants/propertyEnums";
+import useCurrencyStore from "../../store/useCurrencyStore";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -17,6 +18,7 @@ export default function PropertiesHero({
     maxPrice,
     minBedrooms,
     minBathrooms,
+    priceCurrency,
     totalResults,
     onSearch,
     onTypeChange,
@@ -29,9 +31,15 @@ export default function PropertiesHero({
 }) {
     const { t } = useTranslation("properties");
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+    const activePriceCurrency = priceCurrency || selectedCurrency || "PYG";
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
+    const priceRangeNote =
+        activePriceCurrency === "PYG"
+            ? "Los filtros de precio se envían en PYG."
+            : `Los filtros de precio se convierten a PYG según la cotización disponible de Cambios Chaco.`;
 
     return (
         <div className="bg-light py-4">
@@ -137,18 +145,22 @@ export default function PropertiesHero({
                                 </Col>
 
                                 <Col md={2}>
-                                    <span className="filter-bar__panel-label">{t("search.minPrice")}</span>
+                                    <span className="filter-bar__panel-label">
+                                        {t("search.minPrice")} ({activePriceCurrency})
+                                    </span>
                                     <Form.Control
-                                        type="number" size="sm" placeholder="0" min={0}
+                                        type="number" size="sm" placeholder={`0 ${activePriceCurrency}`} min={0}
                                         value={minPrice}
                                         onChange={(e) => onMinPriceChange(e.target.value)}
                                     />
                                 </Col>
 
                                 <Col md={2}>
-                                    <span className="filter-bar__panel-label">{t("search.maxPrice")}</span>
+                                    <span className="filter-bar__panel-label">
+                                        {t("search.maxPrice")} ({activePriceCurrency})
+                                    </span>
                                     <Form.Control
-                                        type="number" size="sm" placeholder={t("search.noLimit")} min={0}
+                                        type="number" size="sm" placeholder={`${t("search.noLimit")} (${activePriceCurrency})`} min={0}
                                         value={maxPrice}
                                         onChange={(e) => onMaxPriceChange(e.target.value)}
                                     />
@@ -168,6 +180,7 @@ export default function PropertiesHero({
                                     </Form.Select>
                                 </Col>
                             </Row>
+                            <p className="filter-bar__price-note mb-0 mt-3">{priceRangeNote}</p>
                         </div>
                     </div>
                 </Collapse>

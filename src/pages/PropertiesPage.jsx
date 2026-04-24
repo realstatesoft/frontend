@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
@@ -9,6 +9,9 @@ import useProperties from "../hooks/useProperties";
 import useFavoriteProperties from "../hooks/useFavoriteProperties";
 import { useAuth } from "../hooks/useAuth";
 import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
+import useCurrencyStore from "../store/useCurrencyStore";
+import useExchangeRates from "../hooks/useExchangeRates";
+import { convertPriceFilterToPyg } from "../utils/propertyPriceFormatter";
 
 const PAGE_SIZE = 12;
 
@@ -27,10 +30,24 @@ export default function PropertiesPage() {
     const [minBathrooms, setMinBathrooms] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);
+    const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+    const { data: exchangeRates } = useExchangeRates({ enabled: true, staleTime: 10 * 60 * 1000, retry: 1 });
 
     // Convertir labels a valores enum del backend
     const backendType = typeFilter ? PROPERTY_TYPE[typeFilter] : undefined;
     const backendAvailability = availability ? AVAILABILITY[availability] : undefined;
+
+    const convertedPriceFilters = useMemo(() => {
+        const minPriceConversion =
+            minPrice !== "" ? convertPriceFilterToPyg(minPrice, selectedCurrency, exchangeRates) : null;
+        const maxPriceConversion =
+            maxPrice !== "" ? convertPriceFilterToPyg(maxPrice, selectedCurrency, exchangeRates) : null;
+
+        return {
+            minPrice: minPriceConversion?.convertedAmount,
+            maxPrice: maxPriceConversion?.convertedAmount,
+        };
+    }, [minPrice, maxPrice, selectedCurrency, exchangeRates]);
 
     const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
         page: currentPage,
@@ -38,8 +55,8 @@ export default function PropertiesPage() {
         search,
         propertyType: backendType,
         availability: backendAvailability,
-        minPrice: minPrice ? Number(minPrice) : undefined,
-        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        minPrice: convertedPriceFilters.minPrice,
+        maxPrice: convertedPriceFilters.maxPrice,
         minBedrooms: minBedrooms ? Number(minBedrooms) : undefined,
         minBathrooms: minBathrooms ? Number(minBathrooms) : undefined,
     });
@@ -82,6 +99,7 @@ export default function PropertiesPage() {
                 availability={availability}
                 minPrice={minPrice}
                 maxPrice={maxPrice}
+                priceCurrency={selectedCurrency}
                 minBedrooms={minBedrooms}
                 minBathrooms={minBathrooms}
                 totalResults={totalElements}

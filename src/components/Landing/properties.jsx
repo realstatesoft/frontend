@@ -1,9 +1,11 @@
 import React from "react";
 import { Container, Carousel, Card, Row, Col, Badge } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 const Properties = () => {
   const { t } = useTranslation("landing");
+  const { formatPrice } = usePropertyPriceDisplay(0);
   const properties = [
     {
       id: 1, tag: t("status.available"), price: "85000",
@@ -151,7 +153,7 @@ const Properties = () => {
                           {/* Cuerpo con líneas de carga (skeleton) como en tu imagen */}
                           <Card.Body className="bg-white px-3 py-3">
                             <h5 className="fw-bold text-success mb-1">
-                              Gs {Number(property.price).toLocaleString()}
+                              {formatPrice(property.price).label || "—"}
                             </h5>
                             <p className="text-muted mb-2" style={{ fontSize: '0.85rem' }}>
                               📍 {property.location}

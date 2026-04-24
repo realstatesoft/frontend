@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { Link } from "react-router-dom";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
+import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 const DEFAULT_CENTER = [-27.3369, -55.8668];
 const DEFAULT_ZOOM = 12;
@@ -42,13 +43,6 @@ function MapBoundsController({ points }) {
   return null;
 }
 
-function formatPrice(price, t) {
-  if (price == null || price === "") return t("map.priceUnavailable");
-
-  const numericPrice = Number(price);
-  return Number.isFinite(numericPrice) ? `Gs ${numericPrice.toLocaleString()}` : t("map.priceUnavailable");
-}
-
 function formatStat(value, t, key) {
   if (value == null || value === "—") return "—";
   return t(`map.stats.${key}`, { count: value });
@@ -56,6 +50,7 @@ function formatStat(value, t, key) {
 
 export default function PropertiesMap({ properties = [] }) {
   const { t } = useTranslation("properties");
+  const { formatPrice } = usePropertyPriceDisplay(0);
 
   useEffect(() => {
     fixLeafletMarkerIcon();
@@ -80,7 +75,7 @@ export default function PropertiesMap({ properties = [] }) {
                   defaultValue: property.propertyType,
                 })
               : t("map.propertyFallback"),
-            price: formatPrice(property.price, t),
+            price: formatPrice(property.price).label || t("map.priceUnavailable"),
             image: property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE,
             bedrooms: property.bedrooms ?? "—",
             bathrooms: property.bathrooms ?? "—",
@@ -89,7 +84,7 @@ export default function PropertiesMap({ properties = [] }) {
           };
         })
         .filter(Boolean),
-    [properties, t]
+    [properties, t, formatPrice]
   );
 
   return (

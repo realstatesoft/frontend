@@ -5,6 +5,7 @@ import { Eye, EyeSlash } from "react-bootstrap-icons";
 import { tagColors, STATUS_DISPLAY_LABELS } from "../../data/propertiesData";
 import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
+import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 /**
  * MyPropertyCard
@@ -14,12 +15,9 @@ export default function MyPropertyCard({ property }) {
     const [isHidden, setIsHidden] = useState(false);
 
     const tag = STATUS_DISPLAY_LABELS[property.status] ?? property.status ?? "—";
-    const numericPrice = Number(property.price);
-    const formattedPrice = Number.isFinite(numericPrice)
-        ? `Gs. ${numericPrice.toLocaleString()}`
-        : "—";
+    const price = usePropertyPriceDisplay(property.price);
     const isRent = property.category === "RENT";
-    const priceDisplay = isRent ? `${formattedPrice} Mensual` : formattedPrice;
+    const priceDisplay = isRent ? `${price.label || "—"} Mensual` : (price.label || "—");
     const type = PROPERTY_TYPE_LABELS[property.propertyType] ?? property.propertyType ?? "";
     const address = property.address || property.locationName || "";
     const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
