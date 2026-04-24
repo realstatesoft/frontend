@@ -51,6 +51,26 @@
       "ARCHIVED": "Arquivado"
     }
   },
+  "map": {
+    "eyebrow": "Mapa dos resultados",
+    "title": "Localização dos imóveis",
+    "subtitle": "Explore no mapa os imóveis visíveis com os filtros atuais.",
+    "points_one": "{{count}} ponto",
+    "points_other": "{{count}} pontos",
+    "empty": "Não há imóveis com coordenadas disponíveis para mostrar no mapa com os filtros atuais.",
+    "details": "Ver detalhes",
+    "priceUnavailable": "Preço não disponível",
+    "propertyFallback": "Imóvel",
+    "locationUnavailable": "Localização não disponível",
+    "stats": {
+      "bedrooms_one": "{{count}} quarto",
+      "bedrooms_other": "{{count}} quartos",
+      "bathrooms_one": "{{count}} banheiro",
+      "bathrooms_other": "{{count}} banheiros",
+      "area_one": "{{count}} m²",
+      "area_other": "{{count}} m²"
+    }
+  },
   "pagination": {
     "previous": "Página anterior",
     "next": "Próxima página"

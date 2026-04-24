@@ -51,6 +51,26 @@
       "ARCHIVED": "Archived"
     }
   },
+  "map": {
+    "eyebrow": "Results map",
+    "title": "Property locations",
+    "subtitle": "Explore the visible properties on the map with the current filters.",
+    "points_one": "{{count}} point",
+    "points_other": "{{count}} points",
+    "empty": "No properties with coordinates are available to show on the map with the current filters.",
+    "details": "View details",
+    "priceUnavailable": "Price not available",
+    "propertyFallback": "Property",
+    "locationUnavailable": "Location not available",
+    "stats": {
+      "bedrooms_one": "{{count}} bed",
+      "bedrooms_other": "{{count}} beds",
+      "bathrooms_one": "{{count}} bath",
+      "bathrooms_other": "{{count}} baths",
+      "area_one": "{{count}} m²",
+      "area_other": "{{count}} m²"
+    }
+  },
   "pagination": {
     "previous": "Previous page",
     "next": "Next page"
