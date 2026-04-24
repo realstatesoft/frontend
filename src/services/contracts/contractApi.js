@@ -73,6 +73,22 @@ const contractApi = {
   getSignatures(id) {
     return api.get(`/contracts/${id}/signatures`).then((res) => res.data);
   },
+
+  /**
+   * Descargar el contrato como PDF.
+   * Retorna un objeto { url, filename } para disparar la descarga.
+   * @param {number} id
+   * @param {string} [filename] - nombre sugerido para el archivo
+   */
+  async downloadPdf(id, filename) {
+    const response = await api.get(`/contracts/${id}/pdf`, {
+      responseType: 'blob',
+    });
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url  = URL.createObjectURL(blob);
+    return { url, filename: filename ?? `contrato-${id}.pdf` };
+  },
 };
 
 export default contractApi;
+
