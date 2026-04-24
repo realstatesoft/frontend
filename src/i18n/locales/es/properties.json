@@ -1,0 +1,58 @@
+{
+  "search": {
+    "placeholder": "Buscar por ubicación...",
+    "type": "Tipo",
+    "bedrooms": "Dormitorios",
+    "moreFilters": "Más filtros",
+    "clearFilters": "Limpiar filtros",
+    "availability": "Disponibilidad",
+    "minPrice": "Precio mín. ($)",
+    "maxPrice": "Precio máx. ($)",
+    "minBathrooms": "Baños mín.",
+    "any": "Cualquiera",
+    "all": "Todos",
+    "noLimit": "Sin límite"
+  },
+  "types": {
+    "house": "Casa",
+    "apartment": "Departamento",
+    "land": "Terreno",
+    "office": "Local",
+    "warehouse": "Depósito",
+    "farm": "Campo"
+  },
+  "availabilityOptions": {
+    "immediate": "Inmediata",
+    "in30Days": "En 30 días",
+    "in60Days": "En 60 días",
+    "toNegotiate": "A negociar"
+  },
+  "results": {
+    "count": "{{count}} propiedad encontrada",
+    "count_plural": "{{count}} propiedades encontradas",
+    "loading": "Cargando propiedades...",
+    "empty": "No se encontraron propiedades con esos filtros.",
+    "retry": "Reintentar",
+    "showing": "Mostrando {{count}} propiedades"
+  },
+  "card": {
+    "details": "Ver Detalles",
+    "favoriteAdd": "Agregar a favoritos",
+    "favoriteRemove": "Quitar de favoritos",
+    "bedrooms": "{{count}} hab.",
+    "bathrooms": "{{count}} baños",
+    "status": {
+      "PENDING": "Pendiente",
+      "APPROVED": "Aprobado",
+      "REJECTED": "Rechazado",
+      "PUBLISHED": "Publicado",
+      "SOLD": "Vendido",
+      "RENTED": "Alquilado",
+      "ARCHIVED": "Archivado"
+    }
+  },
+  "pagination": {
+    "previous": "Página anterior",
+    "next": "Página siguiente"
+  }
+}

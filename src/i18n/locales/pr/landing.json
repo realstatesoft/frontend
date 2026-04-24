@@ -1,0 +1,79 @@
+{
+  "hero": {
+    "title": "A forma mais inteligente de comprar, vender ou alugar",
+    "subtitle": "Milhares de imóveis esperam por você. Encontre sua casa ideal com a tecnologia mais avançada do mercado."
+  },
+  "search": {
+    "title": "Comece a procurar seu imóvel ideal",
+    "buy": "Comprar",
+    "rent": "Alugar",
+    "location": "LOCALIZAÇÃO",
+    "propertyType": "TIPO",
+    "bedrooms": "QUARTOS",
+    "price": "PREÇO",
+    "locationPlaceholder": "Cidade, Bairro / MLS ID",
+    "typePlaceholder": "Tipo de imóvel",
+    "house": "Casa",
+    "apartment": "Apartamento",
+    "land": "Terreno",
+    "bedroomsPlaceholder": "Todos",
+    "pricePlaceholder": "Faixa de preço",
+    "button": "Pesquisar"
+  },
+  "about": {
+    "eyebrow": "Sobre nós",
+    "title": "Somos uma imobiliária boutique especializada no mercado do Paraguai.",
+    "description": "Com anos de experiência e uma equipe apaixonada, ajudamos nossos clientes a encontrar o lar perfeito. Nossa missão é tornar cada transação simples, transparente e bem-sucedida."
+  },
+  "services": {
+    "buy": {
+      "title": "Comprar uma casa",
+      "description": "Encontre a casa perfeita com nossa ferramenta avançada de busca.",
+      "link": "Explorar imóveis →"
+    },
+    "rent": {
+      "title": "Alugar uma casa",
+      "description": "Encontre seu próximo lar para alugar com preços competitivos.",
+      "link": "Ver aluguéis →"
+    },
+    "sell": {
+      "title": "Vender sua casa",
+      "description": "Publique seu imóvel e conecte-se com milhares de compradores em potencial.",
+      "link": "Publicar imóvel →"
+    }
+  },
+  "stats": {
+    "activeProperties": "Imóveis ativos",
+    "happyClients": "Clientes satisfeitos",
+    "partners": "Associados",
+    "cities": "Cidades"
+  },
+  "cta": {
+    "title": "Pronto para seu próximo lar no Paraguai?",
+    "description": "Com anos de experiência no mercado local, oferecemos as melhores opções para você. Seja para comprar, vender ou alugar, nossos corretores acompanham você em cada passo.",
+    "explore": "Explorar agora",
+    "sell": "Venda seu imóvel",
+    "sales": "Imóveis vendidos",
+    "rentals": "Imóveis alugados",
+    "agents": "Corretores"
+  },
+  "footer": {
+    "description": "Seu aliado de confiança no mercado imobiliário do Paraguai. Encontramos o lar ideal para você.",
+    "company": "Empresa",
+    "properties": "Imóveis",
+    "contact": "Contato",
+    "about": "Sobre nós",
+    "services": "Serviços",
+    "agents": "Corretores",
+    "buy": "Comprar",
+    "rent": "Alugar",
+    "sell": "Vender",
+    "rights": "© 2026 OpenRoof. Todos os direitos reservados."
+  },
+  "status": {
+    "available": "Disponível",
+    "sold": "Vendido",
+    "reserved": "Reservado",
+    "offer": "Em oferta"
+  }
+}

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import fotoSearch from "../../assets/fotoSearch.png";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 const SearchSection = () => {
+  const { t } = useTranslation("landing");
   const [activeTab, setActiveTab] = useState("comprar");
   const [hover, setHover] = useState(false);
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal({ threshold: 0.3 });
@@ -19,9 +21,9 @@ const SearchSection = () => {
           opacity: headerVisible ? 1 : 0,
           transform: headerVisible ? "translateY(0)" : "translateY(-20px)",
         }}
-      >
-        <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
-          Empieza a buscar tu propiedad ideal
+        >
+          <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
+          {t("search.title")}
         </h3>
       </div>
 
@@ -63,7 +65,7 @@ const SearchSection = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                Comprar
+                {t("search.buy")}
               </button>
               <button
                 onClick={() => setActiveTab("alquilar")}
@@ -77,7 +79,7 @@ const SearchSection = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                Alquilar
+                {t("search.rent")}
               </button>
             </div>
           </div>
@@ -95,31 +97,31 @@ const SearchSection = () => {
             <div className="row g-3 align-items-end">
               <div className="col-md-4">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  UBICACIÓN
+                  {t("search.location")}
                 </label>
                 <input
                   className="form-control border-0 bg-light rounded-3 py-2"
-                  placeholder="Ciudad, Barrio / MLS ID"
+                  placeholder={t("search.locationPlaceholder")}
                   style={{ fontSize: "0.9rem" }}
                 />
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  TIPO
+                  {t("search.propertyType")}
                 </label>
                 <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>Tipo de Propiedad</option>
-                  <option>Casa</option>
-                  <option>Departamento</option>
-                  <option>Terreno</option>
+                  <option>{t("search.typePlaceholder")}</option>
+                  <option>{t("search.house")}</option>
+                  <option>{t("search.apartment")}</option>
+                  <option>{t("search.land")}</option>
                 </select>
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  DORMITORIOS
+                  {t("search.bedrooms")}
                 </label>
                 <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>Todos</option>
+                  <option>{t("search.bedroomsPlaceholder")}</option>
                   <option>1</option>
                   <option>2</option>
                   <option>3</option>
@@ -128,10 +130,10 @@ const SearchSection = () => {
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  PRECIO
+                  {t("search.price")}
                 </label>
                 <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>Rango de Precios</option>
+                  <option>{t("search.pricePlaceholder")}</option>
                   <option>$50k - $100k</option>
                   <option>$100k - $200k</option>
                   <option>$200k+</option>
@@ -150,7 +152,7 @@ const SearchSection = () => {
                     cursor: "pointer",
                   }}
                 >
-                  Buscar
+                  {t("search.button")}
                 </button>
               </div>
             </div>

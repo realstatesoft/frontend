@@ -1,0 +1,24 @@
+{
+  "modal": {
+    "createTitle": "Fazer oferta",
+    "editTitle": "Editar oferta",
+    "propertyLabel": "Imóvel:",
+    "amountLabel": "Valor proposto",
+    "messageLabel": "Mensagem ou condições (opcional)",
+    "amountPlaceholder": "Ex.: 500.000.000",
+    "messagePlaceholder": "Escreva aqui qualquer condição adicional...",
+    "priceLabel": "Preço anunciado: {{price}}",
+    "cancel": "Cancelar",
+    "save": "Salvar alterações",
+    "send": "Enviar oferta",
+    "saving": "Salvando...",
+    "sending": "Enviando...",
+    "invalidAmountTitle": "Erro",
+    "invalidAmount": "Por favor, informe um valor válido maior que 0",
+    "updateSuccessTitle": "Oferta atualizada!",
+    "updateSuccessText": "Sua proposta foi modificada com sucesso.",
+    "createSuccessTitle": "Oferta enviada!",
+    "createSuccessText": "Sua proposta foi enviada ao proprietário/corretor.",
+    "error": "Não foi possível processar a oferta. Tente novamente."
+  }
+}

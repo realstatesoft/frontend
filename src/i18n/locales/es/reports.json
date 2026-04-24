@@ -1,0 +1,13 @@
+{
+  "title": "Reportes",
+  "subtitle": "Análisis y métricas del mercado",
+  "loading": "Cargando reportes...",
+  "priceAverage": "Precio Promedio",
+  "listedProperties": "Propiedades Listadas",
+  "avgDays": "Días Promedio al Mercado",
+  "closingRate": "Tasa de Cierre",
+  "propertiesByType": "Propiedades por Tipo",
+  "monthlyTrend": "Tendencia Mensual",
+  "sales": "Ventas",
+  "visits": "Visitas"
+}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container, Collapse, Row, Col, Form } from "react-bootstrap";
-import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
+import { useTranslation } from "react-i18next";
+import { PROPERTY_TYPE, AVAILABILITY } from "../../constants/propertyEnums";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -26,6 +27,7 @@ export default function PropertiesHero({
     onMinBathroomsChange,
     onClear,
 }) {
+    const { t } = useTranslation("properties");
     const [showAdvanced, setShowAdvanced] = useState(false);
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
@@ -41,7 +43,7 @@ export default function PropertiesHero({
                         <span className="filter-bar__search-icon"></span>
                         <input
                             type="text"
-                            placeholder="Buscar por ubicación..."
+                            placeholder={t("search.placeholder")}
                             value={search}
                             onChange={(e) => onSearch(e.target.value)}
                         />
@@ -51,14 +53,14 @@ export default function PropertiesHero({
 
                     {/* Pill: Tipo */}
                     <PillSelect
-                        label="Tipo"
+                        label={t("search.type")}
                         value={typeFilter}
                         onChange={onTypeChange}
                         active={!!typeFilter}
                     >
-                        <option value="">Todos</option>
-                        {PROPERTY_TYPE_OPTIONS.map((l) => (
-                            <option key={l} value={l}>{l}</option>
+                        <option value="">{t("search.all")}</option>
+                        {Object.entries(PROPERTY_TYPE).map(([label, value]) => (
+                            <option key={value} value={label}>{t(`types.${value.toLowerCase()}`)}</option>
                         ))}
                     </PillSelect>
 
@@ -66,12 +68,12 @@ export default function PropertiesHero({
 
                     {/* Pill: Dormitorios */}
                     <PillSelect
-                        label="Dormitorios"
+                        label={t("search.bedrooms")}
                         value={minBedrooms}
                         onChange={onMinBedroomsChange}
                         active={!!minBedrooms}
                     >
-                        <option value="">Cualquiera</option>
+                        <option value="">{t("search.any")}</option>
                         {[1, 2, 3, 4, 5].map((n) => (
                             <option key={n} value={n}>{n}+</option>
                         ))}
@@ -85,7 +87,7 @@ export default function PropertiesHero({
                         onClick={() => setShowAdvanced((v) => !v)}
                         type="button"
                     >
-                        Más filtros
+                        {t("search.moreFilters")}
                         {advancedActiveCount > 0
                             ? <span className="filter-pill__badge">{advancedActiveCount}</span>
                             : <span className={`filter-pill__chevron${showAdvanced ? " filter-pill__chevron--open" : ""}`} />
@@ -96,7 +98,7 @@ export default function PropertiesHero({
                     {hasAnyFilter && (
                         <>
                             <div className="filter-bar__divider" />
-                            <button className="filter-bar__clear" onClick={onClear} title="Limpiar filtros" type="button">
+                            <button className="filter-bar__clear" onClick={onClear} title={t("search.clearFilters")} type="button">
                                 ✕
                             </button>
                         </>
@@ -109,21 +111,33 @@ export default function PropertiesHero({
                         <div className="filter-bar__advanced-panel">
                             <Row className="g-3">
                                 <Col md={3}>
-                                    <span className="filter-bar__panel-label">Disponibilidad</span>
+                                    <span className="filter-bar__panel-label">{t("search.availability")}</span>
                                     <Form.Select
                                         value={availability}
                                         onChange={(e) => onAvailabilityChange(e.target.value)}
                                         size="sm"
                                     >
-                                        <option value="">Cualquiera</option>
-                                        {AVAILABILITY_OPTIONS.map((l) => (
-                                            <option key={l} value={l}>{l}</option>
+                                        <option value="">{t("search.any")}</option>
+                                        {Object.entries(AVAILABILITY).map(([label, value]) => (
+                                            <option key={value} value={label}>
+                                                {t(
+                                                    `availabilityOptions.${
+                                                        value === 'IMMEDIATE'
+                                                            ? 'immediate'
+                                                            : value === 'IN_30_DAYS'
+                                                              ? 'in30Days'
+                                                              : value === 'IN_60_DAYS'
+                                                                ? 'in60Days'
+                                                                : 'toNegotiate'
+                                                    }`
+                                                )}
+                                            </option>
                                         ))}
                                     </Form.Select>
                                 </Col>
 
                                 <Col md={2}>
-                                    <span className="filter-bar__panel-label">Precio mín. ($)</span>
+                                    <span className="filter-bar__panel-label">{t("search.minPrice")}</span>
                                     <Form.Control
                                         type="number" size="sm" placeholder="0" min={0}
                                         value={minPrice}
@@ -132,22 +146,22 @@ export default function PropertiesHero({
                                 </Col>
 
                                 <Col md={2}>
-                                    <span className="filter-bar__panel-label">Precio máx. ($)</span>
+                                    <span className="filter-bar__panel-label">{t("search.maxPrice")}</span>
                                     <Form.Control
-                                        type="number" size="sm" placeholder="Sin límite" min={0}
+                                        type="number" size="sm" placeholder={t("search.noLimit")} min={0}
                                         value={maxPrice}
                                         onChange={(e) => onMaxPriceChange(e.target.value)}
                                     />
                                 </Col>
 
                                 <Col md={2}>
-                                    <span className="filter-bar__panel-label">Baños mín.</span>
+                                    <span className="filter-bar__panel-label">{t("search.minBathrooms")}</span>
                                     <Form.Select
                                         value={minBathrooms}
                                         onChange={(e) => onMinBathroomsChange(e.target.value)}
                                         size="sm"
                                     >
-                                        <option value="">Cualquiera</option>
+                                        <option value="">{t("search.any")}</option>
                                         {[1, 2, 3, 4].map((n) => (
                                             <option key={n} value={n}>{n}+</option>
                                         ))}
@@ -160,7 +174,7 @@ export default function PropertiesHero({
 
                 {/* Contador de resultados */}
                 <p className="filter-bar__results">
-                    {totalResults} propiedad{totalResults !== 1 ? "es" : ""} encontrada{totalResults !== 1 ? "s" : ""}
+                    {t("results.showing", { count: totalResults })}
                 </p>
             </Container>
         </div>

@@ -1,0 +1,58 @@
+{
+  "search": {
+    "placeholder": "Search by location...",
+    "type": "Type",
+    "bedrooms": "Bedrooms",
+    "moreFilters": "More filters",
+    "clearFilters": "Clear filters",
+    "availability": "Availability",
+    "minPrice": "Min price ($)",
+    "maxPrice": "Max price ($)",
+    "minBathrooms": "Min bathrooms",
+    "any": "Any",
+    "all": "All",
+    "noLimit": "No limit"
+  },
+  "types": {
+    "house": "House",
+    "apartment": "Apartment",
+    "land": "Land",
+    "office": "Office",
+    "warehouse": "Warehouse",
+    "farm": "Farm"
+  },
+  "availabilityOptions": {
+    "immediate": "Immediate",
+    "in30Days": "In 30 days",
+    "in60Days": "In 60 days",
+    "toNegotiate": "To negotiate"
+  },
+  "results": {
+    "count": "{{count}} property found",
+    "count_plural": "{{count}} properties found",
+    "loading": "Loading properties...",
+    "empty": "No properties were found with those filters.",
+    "retry": "Retry",
+    "showing": "Showing {{count}} properties"
+  },
+  "card": {
+    "details": "View Details",
+    "favoriteAdd": "Add to favorites",
+    "favoriteRemove": "Remove from favorites",
+    "bedrooms": "{{count}} beds",
+    "bathrooms": "{{count}} baths",
+    "status": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "PUBLISHED": "Published",
+      "SOLD": "Sold",
+      "RENTED": "Rented",
+      "ARCHIVED": "Archived"
+    }
+  },
+  "pagination": {
+    "previous": "Previous page",
+    "next": "Next page"
+  }
+}

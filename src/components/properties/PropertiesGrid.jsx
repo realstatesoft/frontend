@@ -1,4 +1,5 @@
 import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import PropertyCard from "./PropertyCard";
 import Pagination from "./Pagination";
 
@@ -18,6 +19,7 @@ export default function PropertiesGrid({
     canToggleFavorite = false,
     onToggleFavorite,
 }) {
+    const { t } = useTranslation("properties");
     // Si se pasa totalPages externo (del backend), usarlo; sino calcular client-side
     const totalPages =
         externalTotalPages != null
@@ -37,7 +39,7 @@ export default function PropertiesGrid({
         return (
             <Container className="py-5 text-center">
                 <Spinner animation="border" variant="primary" />
-                <p className="text-muted mt-3">Cargando propiedades...</p>
+                <p className="text-muted mt-3">{t("results.loading")}</p>
             </Container>
         );
     }
@@ -48,7 +50,7 @@ export default function PropertiesGrid({
                 <Alert variant="danger" className="text-center">
                     <p className="mb-2">{error}</p>
                     <Button variant="outline-danger" size="sm" onClick={onRetry ?? onClear}>
-                        Reintentar
+                        {t("results.retry")}
                     </Button>
                 </Alert>
             </Container>
@@ -60,10 +62,10 @@ export default function PropertiesGrid({
             <Container className="py-5 text-center">
                 <div style={{ fontSize: "3rem" }}>🏚️</div>
                 <p className="text-muted mt-3">
-                    No se encontraron propiedades con esos filtros.
+                    {t("results.empty")}
                 </p>
                 <Button variant="outline-secondary" onClick={onClear}>
-                    Limpiar filtros
+                    {t("search.clearFilters")}
                 </Button>
             </Container>
         );
@@ -73,8 +75,7 @@ export default function PropertiesGrid({
     return (
         <Container className="pt-4 pb-2">
             <p className="text-muted mb-3" style={{ fontSize: "0.875rem" }}>
-                Mostrando{" "}
-                <strong>{paginated.length}</strong> propiedades
+                {t("results.showing", { count: paginated.length })}
             </p>
 
             <Row className="g-4">

@@ -1,37 +1,36 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 import casita from "../../assets/Home.png"
 import eye from "../../assets/Eye.png"
-const services = [
-    {
-        icon: <img src={casita} alt="CIU" style={{ width: 300, height: 30, objectFit: "contain" }} />,
-        title: "Comprar una casa",
-        description:
-            "Encuentra la casa perfecta con nuestra herramienta de búsqueda avanzada.",
-        link: "Explorar propiedades →",
-        color: "#dbeafe",
-    },
-    {
-        icon: <img src={eye} alt="Eye" style={{ width: 300, height: 30, objectFit: "contain" }} />,
-        title: "Alquilar una casa",
-        description:
-            "Encuentra tu próximo hogar en alquiler con precios competitivos.",
-        link: "Ver alquileres →",
-        color: "#fef3c7",
-    },
-    {
-        icon: <span style={{ fontSize: "1.5rem", color: "#000000" }}>$</span>,
-        title: "Vender tu casa",
-        description:
-            "Publica tu propiedad y conecta con miles de compradores potenciales.",
-        link: "Publicar propiedad →",
-        color: "#d1fae5",
-    },
-];
 
 const ServicesSection = () => {
+    const { t } = useTranslation("landing");
     const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
+    const services = [
+        {
+            icon: <img src={casita} alt="CIU" style={{ width: 300, height: 30, objectFit: "contain" }} />,
+            title: t("services.buy.title"),
+            description: t("services.buy.description"),
+            link: t("services.buy.link"),
+            color: "#dbeafe",
+        },
+        {
+            icon: <img src={eye} alt="Eye" style={{ width: 300, height: 30, objectFit: "contain" }} />,
+            title: t("services.rent.title"),
+            description: t("services.rent.description"),
+            link: t("services.rent.link"),
+            color: "#fef3c7",
+        },
+        {
+            icon: <span style={{ fontSize: "1.5rem", color: "#000000" }}>$</span>,
+            title: t("services.sell.title"),
+            description: t("services.sell.description"),
+            link: t("services.sell.link"),
+            color: "#d1fae5",
+        },
+    ];
 
     return (
         <section
