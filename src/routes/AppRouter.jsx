@@ -59,6 +59,8 @@ import PreferencesPage from "../pages/PreferencesPage";
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
 import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
 import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
+import PaymentPage from "../pages/Payment/PaymentPage";
+import MyPaymentsPage from "../pages/MyPayments/MyPaymentsPage";
 
 export default function AppRouter() {
     return (
@@ -84,6 +86,8 @@ export default function AppRouter() {
                 <Route path="/properties/favorites" element={<MyFavoriteProperties />} />
                 <Route path="/preferences" element={<PreferencesPage />} />
                 <Route path="/reservations" element={<MyReservationsPage />} />
+                <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/my-payments" element={<MyPaymentsPage />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
