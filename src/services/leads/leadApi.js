@@ -61,6 +61,17 @@ export async function createLeadFromWizard(wizardData) {
   return response.data;
 }
 
+/**
+ * Obtiene el detalle de un Lead por ID.
+ * @param {number|string} id - ID del Lead
+ * @returns {Promise<Object>} - Detalle del Lead
+ */
+export async function getLeadById(id) {
+  const response = await api.get(`/leads/${id}`);
+  return response.data.data;
+}
+
 export default {
   createLeadFromWizard,
+  getLeadById,
 };
