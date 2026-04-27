@@ -21,7 +21,6 @@
     scrollbar-width: none;
 }
 
-// Buscador de texto (zona izquierda)
 .filter-bar__search {
     display: flex;
     align-items: center;
@@ -52,7 +51,6 @@
     }
 }
 
-// Separador vertical entre pills
 .filter-bar__divider {
     width: 1px;
     height: 24px;
@@ -61,7 +59,6 @@
     margin: 0 4px;
 }
 
-// Cada pill-botón de filtro
 .filter-pill {
     display: inline-flex;
     align-items: center;
@@ -119,7 +116,6 @@
     }
 }
 
-// Botón limpiar (solo ícono)
 .filter-bar__clear {
     display: inline-flex;
     align-items: center;
@@ -142,7 +138,6 @@
     }
 }
 
-// Botón guardar búsqueda
 .filter-bar__save {
     display: inline-flex;
     align-items: center;
@@ -166,43 +161,54 @@
     }
 }
 
-// Dropdown de búsquedas guardadas
 .filter-bar__saved-dropdown {
+    position: relative;
+
     .dropdown-toggle {
         @extend .filter-pill;
-        
+
         &::after {
             display: none;
         }
     }
-    
+
     .dropdown-menu {
+        position: absolute;
+        z-index: 1000;
         border: 1px solid $border-color-soft;
         border-radius: $radius-md;
         box-shadow: $shadow-soft;
         min-width: 180px;
         max-height: 300px;
         overflow-y: auto;
+        background: #fff;
     }
-    
+
     .dropdown-item {
         font-family: $font-family-sans-serif;
         font-size: 0.875rem;
         padding: 8px 12px;
         cursor: pointer;
-        
+
         &:hover {
             background-color: $neutral-soft;
         }
-        
+
         &:disabled {
             color: $text-muted;
             cursor: default;
         }
     }
+
+    .dropdown-header {
+        font-size: 0.75rem;
+        font-weight: $font-weight-semibold;
+        color: $text-muted;
+        padding: 8px 12px;
+        border-bottom: 1px solid $border-color-soft;
+    }
 }
 
-// Dropdown panel avanzado
 .filter-bar__advanced-panel {
     background: #fff;
     border: 1px solid $border-color-soft;
@@ -238,7 +244,6 @@
     }
 }
 
-// Contador de resultados
 .filter-bar__results {
     font-family: $font-family-sans-serif;
     font-size: 0.875rem;
