@@ -59,7 +59,10 @@ export default function SaveSearchModal({
               type="text"
               placeholder="Ej: Dptos en Asunción"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+              setName(e.target.value);
+              if (error) setError(null);
+            }}
               maxLength={100}
               required
             />
