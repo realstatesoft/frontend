@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
@@ -31,6 +31,20 @@ export default function PropertiesHero({
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [savedSearches, setSavedSearches] = useState([]);
+
+    useEffect(() => {
+        const loadSavedSearches = async () => {
+            try {
+                const res = await searchPreferencesApi.getMine();
+                const pageData = res.data?.data;
+                const items = pageData?.content || [];
+                setSavedSearches(items);
+            } catch (e) {
+                console.error("Error loading saved searches:", e);
+            }
+        };
+        loadSavedSearches();
+    }, []);
 
     const filters = {
         q: search,
@@ -67,47 +81,37 @@ export default function PropertiesHero({
                     </div>
 
                     {/* Mis búsquedas dropdown */}
-                    <div className="filter-bar__saved-dropdown" style={{ position: "relative" }}>
-                        <Dropdown onToggle={async (show) => {
-                            if (show && savedSearches.length === 0) {
-                                try {
-                                    const res = await searchPreferencesApi.getMine();
-                                    const pageData = res.data?.data;
-                                    const items = pageData?.content || [];
-                                    setSavedSearches(items);
-                                } catch (e) {
-                                    console.error("Error loading saved searches:", e);
-                                }
-                            }
-                        }}>
+                    <div className="filter-bar__saved-dropdown">
+                        <Dropdown>
                             <Dropdown.Toggle
                                 className="filter-pill"
+                                id="saved-searches-dropdown"
                             >
                                 Mis búsquedas
                             </Dropdown.Toggle>
-                            <Dropdown.Menu style={{ minWidth: "200px", maxHeight: "300px", overflowY: "auto" }}>
-                                {savedSearches.length === 0 ? (
+                            <Dropdown.Menu>
+                                <Dropdown.Header>Mis búsquedas guardadas</Dropdown.Header>
+                                {savedSearches.map((s) => (
+                                    <Dropdown.Item
+                                        key={s.id}
+                                        onClick={() => {
+                                            const f = s.filters || {};
+                                            onSearch(f.q || "");
+                                            onTypeChange(f.propertyType || "");
+                                            onAvailabilityChange(f.availability || "");
+                                            onMinPriceChange(f.minPrice || "");
+                                            onMaxPriceChange(f.maxPrice || "");
+                                            onMinBedroomsChange(f.minBedrooms || "");
+                                            onMinBathroomsChange(f.minBathrooms || "");
+                                        }}
+                                    >
+                                        {s.name}
+                                    </Dropdown.Item>
+                                ))}
+                                {savedSearches.length === 0 && (
                                     <Dropdown.Item disabled>
                                         Sin búsquedas guardadas
                                     </Dropdown.Item>
-                                ) : (
-                                    savedSearches.map((s) => (
-                                        <Dropdown.Item
-                                            key={s.id}
-                                            onClick={() => {
-                                                const f = s.filters || {};
-                                                onSearch(f.q || "");
-                                                onTypeChange(f.propertyType || "");
-                                                onAvailabilityChange(f.availability || "");
-                                                onMinPriceChange(f.minPrice || "");
-                                                onMaxPriceChange(f.maxPrice || "");
-                                                onMinBedroomsChange(f.minBedrooms || "");
-                                                onMinBathroomsChange(f.minBathrooms || "");
-                                            }}
-                                        >
-                                            {s.name}
-                                        </Dropdown.Item>
-                                    ))
                                 )}
                             </Dropdown.Menu>
                         </Dropdown>
@@ -172,7 +176,7 @@ export default function PropertiesHero({
                                 title="Guardar esta búsqueda"
                                 type="button"
                             >
-                                💾 Guardar
+                                Guardar
                             </button>
                         </>
                     )}
