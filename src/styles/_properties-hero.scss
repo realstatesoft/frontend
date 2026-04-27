@@ -178,7 +178,7 @@
         border: 1px solid $border-color-soft;
         border-radius: $radius-md;
         box-shadow: $shadow-soft;
-        min-width: 180px;
+        min-width: 200px;
         max-height: 300px;
         overflow-y: auto;
         background: #fff;
@@ -206,6 +206,26 @@
         color: $text-muted;
         padding: 8px 12px;
         border-bottom: 1px solid $border-color-soft;
+    }
+
+    .filter-bar__delete-search {
+        background: none;
+        border: none;
+        color: $text-muted;
+        font-size: 1.2rem;
+        line-height: 1;
+        padding: 0 4px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.15s, color 0.15s;
+
+        &:hover {
+            color: $danger;
+        }
+    }
+
+    .dropdown-item:hover .filter-bar__delete-search {
+        opacity: 1;
     }
 }
 

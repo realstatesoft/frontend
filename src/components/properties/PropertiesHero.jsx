@@ -46,6 +46,27 @@ export default function PropertiesHero({
         loadSavedSearches();
     }, []);
 
+    const reloadSavedSearches = async () => {
+        try {
+            const res = await searchPreferencesApi.getMine();
+            const pageData = res.data?.data;
+            const items = pageData?.content || [];
+            setSavedSearches(items);
+        } catch (e) {
+            console.error("Error reloading saved searches:", e);
+        }
+    };
+
+    const handleDeleteSearch = async (id, e) => {
+        e.stopPropagation();
+        try {
+            await searchPreferencesApi.delete(id);
+            reloadSavedSearches();
+        } catch (e) {
+            console.error("Error deleting search:", e);
+        }
+    };
+
     const filters = {
         q: search,
         propertyType: typeFilter,
@@ -94,6 +115,7 @@ export default function PropertiesHero({
                                 {savedSearches.map((s) => (
                                     <Dropdown.Item
                                         key={s.id}
+                                        className="d-flex justify-content-between align-items-center"
                                         onClick={() => {
                                             const f = s.filters || {};
                                             onSearch(f.q || "");
@@ -105,7 +127,14 @@ export default function PropertiesHero({
                                             onMinBathroomsChange(f.minBathrooms || "");
                                         }}
                                     >
-                                        {s.name}
+                                        <span>{s.name}</span>
+                                        <button
+                                            className="filter-bar__delete-search"
+                                            onClick={(e) => handleDeleteSearch(s.id, e)}
+                                            title="Eliminar"
+                                        >
+                                            ×
+                                        </button>
                                     </Dropdown.Item>
                                 ))}
                                 {savedSearches.length === 0 && (
