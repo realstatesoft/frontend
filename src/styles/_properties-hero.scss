@@ -12,7 +12,7 @@
     align-items: center;
     gap: 0;
     flex-wrap: nowrap;
-    overflow-x: auto;
+    overflow-x: visible;
 
     &::-webkit-scrollbar {
         display: none;

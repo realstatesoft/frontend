@@ -65,7 +65,7 @@ export default function PropertiesHero({
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
 
     return (
-        <div className="bg-light py-4">
+        <div className="bg-light py-4" style={{ overflow: 'visible' }}>
             <Container>
                 <div className="filter-bar">
 
