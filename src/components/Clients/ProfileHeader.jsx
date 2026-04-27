@@ -8,6 +8,9 @@ import {
   ChevronDown,
   SendFill
 } from 'react-bootstrap-icons';
+import { FiMessageSquare } from 'react-icons/fi';
+import Swal from 'sweetalert2';
+import NewConversationModal from '../messages/NewConversationModal';
 import {
   CLIENT_PRIORITY_LABELS,
   CLIENT_STATUS_LABELS,
@@ -16,6 +19,7 @@ import {
 
 const ProfileHeader = ({ client }) => {
   const navigate = useNavigate();
+  const [showMessageModal, setShowMessageModal] = React.useState(false);
 
   if (!client) return null;
 
@@ -122,6 +126,14 @@ const ProfileHeader = ({ client }) => {
               {priorityLabel || 'Desconocida'} <ChevronDown className="ms-2" size={14} />
             </button>
             <Button
+              variant="outline-primary"
+              className="rounded-pill px-4 d-flex align-items-center"
+              onClick={() => setShowMessageModal(true)}
+            >
+              <FiMessageSquare className="me-2" />
+              Mensaje
+            </Button>
+            <Button
               variant="primary"
               className="rounded-pill px-4 d-flex align-items-center border-0"
               style={{ backgroundColor: '#0D6EFD' }}
@@ -133,6 +145,25 @@ const ProfileHeader = ({ client }) => {
           </Col>
         </Row>
       </Card.Body>
+
+      <NewConversationModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        preSelectedAgent={{
+          id: client?.userId || client?.id,
+          name: client.userName,
+          email: client.userEmail,
+        }}
+        onSuccess={() => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Mensaje enviado!',
+            text: 'Tu mensaje ha sido enviado correctamente.',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }}
+      />
     </Card>
   );
 };

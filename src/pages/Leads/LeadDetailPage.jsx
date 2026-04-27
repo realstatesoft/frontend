@@ -14,7 +14,9 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import Swal from 'sweetalert2';
 import { useLead } from '../../hooks/useLeads';
+import NewConversationModal from '../../components/messages/NewConversationModal';
 import styles from './LeadDetailPage.module.scss';
 
 // Fix for default leaflet marker icon
@@ -32,6 +34,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const LeadDetailPage = () => {
   const { id } = useParams();
   const { data: lead, isLoading, error } = useLead(id);
+  const [showMessageModal, setShowMessageModal] = React.useState(false);
 
   if (isLoading) {
     return (
@@ -201,6 +204,23 @@ const LeadDetailPage = () => {
               >
                 <FiMessageSquare /> Contactar por WhatsApp
               </button>
+              
+              {lead.userId ? (
+                <button 
+                  onClick={() => setShowMessageModal(true)}
+                  style={{ width: '100%', padding: '0.75rem', background: '#f59e0b', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                >
+                  <FiMessageSquare /> Mensaje Interno
+                </button>
+              ) : (
+                <div 
+                  style={{ width: '100%', padding: '0.75rem', background: '#f1f5f9', color: '#94a3b8', border: '1px dashed #cbd5e1', borderRadius: '8px', fontSize: '0.8rem', textAlign: 'center' }}
+                  title="Este prospecto no tiene una cuenta de usuario vinculada"
+                >
+                  <FiMessageSquare style={{ marginRight: '0.4rem' }} /> 
+                  Mensajería interna no disponible (Sin cuenta vinculada)
+                </div>
+              )}
               <button 
                 style={{ width: '100%', padding: '0.75rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
               >
@@ -255,6 +275,25 @@ const LeadDetailPage = () => {
           </section>
         </aside>
       </div>
+
+      <NewConversationModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        preSelectedAgent={{
+          id: lead.userId,
+          name: lead.name,
+          email: lead.email,
+        }}
+        onSuccess={() => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Mensaje enviado!',
+            text: 'Tu mensaje ha sido enviado correctamente.',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }}
+      />
     </div>
   );
 };
