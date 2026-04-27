@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container, Collapse, Row, Col, Form } from "react-bootstrap";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
+import SaveSearchModal from "./SaveSearchModal";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -27,6 +28,22 @@ export default function PropertiesHero({
     onClear,
 }) {
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const [showSaveModal, setShowSaveModal] = useState(false);
+
+    const filters = {
+        q: search,
+        propertyType: typeFilter,
+        availability,
+        minPrice: minPrice || null,
+        maxPrice: maxPrice || null,
+        minBedrooms: minBedrooms || null,
+        minBathrooms: minBathrooms || null,
+    };
+
+    const handleSaveSuccess = () => {
+        // Could add toast notification here
+        console.log("Búsqueda guardada");
+    };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
@@ -99,6 +116,15 @@ export default function PropertiesHero({
                             <button className="filter-bar__clear" onClick={onClear} title="Limpiar filtros" type="button">
                                 ✕
                             </button>
+                            <div className="filter-bar__divider" />
+                            <button
+                                className="filter-bar__save"
+                                onClick={() => setShowSaveModal(true)}
+                                title="Guardar esta búsqueda"
+                                type="button"
+                            >
+                                💾 Guardar
+                            </button>
                         </>
                     )}
                 </div>
@@ -162,6 +188,13 @@ export default function PropertiesHero({
                 <p className="filter-bar__results">
                     {totalResults} propiedad{totalResults !== 1 ? "es" : ""} encontrada{totalResults !== 1 ? "s" : ""}
                 </p>
+
+                <SaveSearchModal
+                    show={showSaveModal}
+                    onHide={() => setShowSaveModal(false)}
+                    filters={filters}
+                    onSuccess={handleSaveSuccess}
+                />
             </Container>
         </div>
     );
