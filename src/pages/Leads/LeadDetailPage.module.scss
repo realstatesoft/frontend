@@ -218,6 +218,20 @@
       }
     }
   }
+
+  .backBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #3b82f6;
+    }
+  }
 }
 
 .loading, .error {

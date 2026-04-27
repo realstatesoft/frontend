@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 import { 
   FiArrowLeft, FiUser, FiMail, FiPhone, FiMapPin, 
   FiHome, FiLayers, FiCalendar, FiBox, FiMaximize,
-  FiDroplet, FiTruck, FiZap, FiInfo, FiMessageSquare,
+  FiZap, FiInfo, FiMessageSquare,
   FiClock, FiActivity
 } from 'react-icons/fi';
 import { 
-  MdOutlineBed, MdOutlineBathtub, MdOutlineKitchen,
+  MdOutlineBed, MdOutlineBathtub,
   MdOutlineGarage, MdOutlinePool
 } from 'react-icons/md';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -75,7 +75,7 @@ const LeadDetailPage = () => {
       {/* Header */}
       <header className={styles.leadDetail__header}>
         <div>
-          <Link to="/dashboard" className={styles.backBtn} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#64748b', marginBottom: '0.5rem' }}>
+          <Link to="/dashboard" className={styles.backBtn}>
             <FiArrowLeft /> Volver
           </Link>
           <h1>{lead.name}</h1>
@@ -96,10 +96,10 @@ const LeadDetailPage = () => {
           <section className={styles.leadDetail__section}>
             <h2><FiHome /> Ficha Técnica de la Propiedad</h2>
             <div className={styles.leadDetail__infoCards}>
-              {renderMetadataCard(<FiMaximize />, "Terreno", `${metadata.surfaceArea} m²`)}
-              {renderMetadataCard(<FiLayers />, "Construido", `${metadata.builtArea} m²`)}
+              {renderMetadataCard(<FiMaximize />, "Terreno", metadata.surfaceArea ? `${metadata.surfaceArea} m²` : null)}
+              {renderMetadataCard(<FiLayers />, "Construido", metadata.builtArea ? `${metadata.builtArea} m²` : null)}
               {renderMetadataCard(<MdOutlineBed />, "Habitaciones", metadata.bedrooms)}
-              {renderMetadataCard(<MdOutlineBathtub />, "Baños", (metadata.halfBath || 0) + (metadata.threeQuarterBath || 0))}
+              {renderMetadataCard(<MdOutlineBathtub />, "Baños", (metadata.halfBath || metadata.threeQuarterBath) ? (metadata.halfBath || 0) + (metadata.threeQuarterBath || 0) : null)}
               {renderMetadataCard(<MdOutlineGarage />, "Cocheras", metadata.parkingSpaces)}
               {renderMetadataCard(<FiCalendar />, "Año Const.", metadata.yearBuilt)}
             </div>
@@ -129,12 +129,12 @@ const LeadDetailPage = () => {
             <h2><FiBox /> Características Adicionales</h2>
             <div className={styles.leadDetail__infoCards}>
               {metadata.hasPool && renderMetadataCard(<MdOutlinePool />, "Piscina", "Sí")}
-              {metadata.hasBasement && renderMetadataCard(<FiBox />, "Sótano", `${metadata.basementArea} m²`)}
+              {metadata.hasBasement && renderMetadataCard(<FiBox />, "Sótano", metadata.basementArea ? `${metadata.basementArea} m²` : 'Sí')}
               {metadata.hasSecureEntry && renderMetadataCard(<FiZap />, "Seguridad", "Sí")}
               {metadata.hasHOA && renderMetadataCard(<FiInfo />, "Expensas/HOA", "Sí")}
             </div>
             
-            {(metadata.specialConditions || metadata.address) && (
+            {(metadata.address || (Array.isArray(metadata.specialConditions) ? metadata.specialConditions.length > 0 : !!metadata.specialConditions)) && (
               <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 {metadata.address && (
                   <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e2e8f0' }}>
@@ -164,7 +164,7 @@ const LeadDetailPage = () => {
                   </div>
                 )}
                 
-                {metadata.specialConditions && (
+                {(Array.isArray(metadata.specialConditions) ? metadata.specialConditions.length > 0 : !!metadata.specialConditions) && (
                   <div>
                     <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#64748b' }}>Condiciones Especiales:</h4>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -196,7 +196,7 @@ const LeadDetailPage = () => {
             <h2><FiZap /> Acciones de Gestión</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <button 
-                onClick={() => window.open(`https://wa.me/${lead.phone.replace(/\D/g,'')}`, '_blank')}
+                onClick={() => window.open(`https://wa.me/${lead.phone.replace(/\D/g,'')}`, '_blank', 'noopener,noreferrer')}
                 style={{ width: '100%', padding: '0.75rem', background: '#25d366', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
               >
                 <FiMessageSquare /> Contactar por WhatsApp
@@ -237,8 +237,8 @@ const LeadDetailPage = () => {
             <h2><FiActivity /> Línea de Tiempo</h2>
             <div className={styles.leadDetail__timeline}>
               {lead.interactions?.length > 0 ? (
-                lead.interactions.map((event, idx) => (
-                  <div key={idx} className={styles.leadDetail__event}>
+                lead.interactions.map((event) => (
+                  <div key={event.id} className={styles.leadDetail__event}>
                     <span className={styles.date}>{new Date(event.createdAt).toLocaleString()}</span>
                     <p className={styles.type}>{event.subject || event.type}</p>
                     {event.note && <p className={styles.note}>{event.note}</p>}

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import SellWizardPage from './SellWizardPage';
@@ -36,9 +36,9 @@ describe('SellWizardPage', () => {
   it('debe renderizar el primer paso del wizard correctamente', () => {
     renderWithProviders(<SellWizardPage />);
     
-    expect(screen.getByText(/Tipo de Propiedad/i)).toBeInTheDocument();
-    expect(screen.getByText(/Vender/i)).toBeInTheDocument();
-    expect(screen.getByText(/Alquilar/i)).toBeInTheDocument();
+    expect(screen.getByText(/Contanos sobre tu propiedad/i)).toBeInTheDocument();
+    expect(screen.getByText(/Dirección de la propiedad/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Hacé clic en el mapa/i)).toBeInTheDocument();
   });
 
   it('debe mostrar el botón de navegación deshabilitado inicialmente', () => {
