@@ -13,12 +13,6 @@
     gap: 0;
     flex-wrap: nowrap;
     overflow-x: visible;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
-
-    scrollbar-width: none;
 }
 
 .filter-bar__search {
@@ -59,7 +53,7 @@
     margin: 0 4px;
 }
 
-.filter-pill {
+%filter-pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -74,6 +68,10 @@
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.filter-pill {
+    @extend %filter-pill;
 
     &:hover {
         background-color: $neutral-soft;
@@ -165,7 +163,7 @@
     position: relative;
 
     .dropdown-toggle {
-        @extend .filter-pill;
+        @extend %filter-pill;
 
         &::after {
             display: none;
