@@ -17,6 +17,9 @@ export default function PropertiesGrid({
     togglingIds = [],
     canToggleFavorite = false,
     onToggleFavorite,
+    comparedPropertyIds = [],
+    onToggleCompare,
+    compareLimitReached = false,
 }) {
     // Si se pasa totalPages externo (del backend), usarlo; sino calcular client-side
     const totalPages =
@@ -86,6 +89,9 @@ export default function PropertiesGrid({
                             isFavoriteLoading={togglingIds.includes(property.id)}
                             canToggleFavorite={canToggleFavorite}
                             onToggleFavorite={onToggleFavorite}
+                            isCompared={comparedPropertyIds.includes(property.id)}
+                            onToggleCompare={onToggleCompare}
+                            compareDisabled={compareLimitReached}
                         />
                     </Col>
                 ))}

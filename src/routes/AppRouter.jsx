@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
 import PropertiesPage from "../pages/PropertiesPage";
+import PropertyComparePage from "../pages/PropertyComparePage";
 import AgentsPage from "../pages/AgentsPage";
 import PropertiesTrashCan from "../pages/PropertiesTrashCan/PropertiesTrashCan";
 import ShowProperty from "../pages/ShowProperty/ShowProperty";
@@ -70,6 +71,7 @@ export default function AppRouter() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/properties" element={<PropertiesPage />} />
+            <Route path="/properties/compare" element={<PropertyComparePage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/agents/:id" element={<PublicAgentProfilePage />} />

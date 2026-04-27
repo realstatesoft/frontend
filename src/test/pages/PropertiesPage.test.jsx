@@ -8,7 +8,7 @@ import PropertiesPage from '../../pages/PropertiesPage';
 const queryClient = new QueryClient();
 
 vi.mock('../../hooks/useAuth', () => ({
-  useAuth: () => ({ isAuthenticated: false }),
+  useAuth: () => ({ isAuthenticated: false, preferencesCompleted: false }),
 }));
 
 vi.mock('../../services/properties/propertyApi', () => ({
@@ -28,5 +28,17 @@ describe('PropertiesPage', () => {
     );
 
     expect(await screen.findByPlaceholderText(/Buscar por ubicación/i)).toBeInTheDocument();
+  });
+
+  it('does not render the compare button before selecting properties', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <PropertiesPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.queryByRole('button', { name: /Comparar/i })).not.toBeInTheDocument();
   });
 });
