@@ -32,38 +32,27 @@ export default function PropertiesHero({
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [savedSearches, setSavedSearches] = useState([]);
 
-    useEffect(() => {
-        const loadSavedSearches = async () => {
-            try {
-                const res = await searchPreferencesApi.getMine();
-                const pageData = res.data?.data;
-                const items = pageData?.content || [];
-                setSavedSearches(items);
-            } catch (e) {
-                console.error("Error loading saved searches:", e);
-            }
-        };
-        loadSavedSearches();
-    }, []);
-
-    const reloadSavedSearches = async () => {
+    const fetchSavedSearches = async () => {
         try {
             const res = await searchPreferencesApi.getMine();
-            const pageData = res.data?.data;
-            const items = pageData?.content || [];
+            const items = res?.data?.content || [];
             setSavedSearches(items);
-        } catch (e) {
-            console.error("Error reloading saved searches:", e);
+        } catch (err) {
+            console.error("Error loading saved searches:", err);
         }
     };
 
-    const handleDeleteSearch = async (id, e) => {
-        e.stopPropagation();
+    useEffect(() => {
+        fetchSavedSearches();
+    }, []);
+
+    const handleDeleteSearch = async (id, evt) => {
+        evt.stopPropagation();
         try {
             await searchPreferencesApi.delete(id);
-            reloadSavedSearches();
-        } catch (e) {
-            console.error("Error deleting search:", e);
+            fetchSavedSearches();
+        } catch (err) {
+            console.error("Error deleting search:", err);
         }
     };
 
@@ -78,8 +67,8 @@ export default function PropertiesHero({
     };
 
     const handleSaveSuccess = () => {
-        // Could add toast notification here
         console.log("Búsqueda guardada");
+        fetchSavedSearches();
     };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
@@ -115,23 +104,25 @@ export default function PropertiesHero({
                                 {savedSearches.map((s) => (
                                     <Dropdown.Item
                                         key={s.id}
+                                        as="div"
                                         className="d-flex justify-content-between align-items-center"
                                         onClick={() => {
                                             const f = s.filters || {};
-                                            onSearch(f.q || "");
-                                            onTypeChange(f.propertyType || "");
-                                            onAvailabilityChange(f.availability || "");
-                                            onMinPriceChange(f.minPrice || "");
-                                            onMaxPriceChange(f.maxPrice || "");
-                                            onMinBedroomsChange(f.minBedrooms || "");
-                                            onMinBathroomsChange(f.minBathrooms || "");
+                                            onSearch(f.q ?? "");
+                                            onTypeChange(f.propertyType ?? "");
+                                            onAvailabilityChange(f.availability ?? "");
+                                            onMinPriceChange(f.minPrice ?? "");
+                                            onMaxPriceChange(f.maxPrice ?? "");
+                                            onMinBedroomsChange(f.minBedrooms ?? "");
+                                            onMinBathroomsChange(f.minBathrooms ?? "");
                                         }}
                                     >
                                         <span>{s.name}</span>
                                         <button
                                             className="filter-bar__delete-search"
-                                            onClick={(e) => handleDeleteSearch(s.id, e)}
+                                            onClick={(evt) => handleDeleteSearch(s.id, evt)}
                                             title="Eliminar"
+                                            type="button"
                                         >
                                             ×
                                         </button>
