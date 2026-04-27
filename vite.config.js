@@ -1,9 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+
+  server: {
+    host: true,
+    allowedHosts: ['openroof.duckdns.org'],
+  },
+
+  preview: {
+    host: true,
+    allowedHosts: ['openroof.duckdns.org'],
+  },
+
   css: {
     preprocessorOptions: {
       scss: {
@@ -11,6 +21,7 @@ export default defineConfig({
       },
     },
   },
+
   test: {
     environment: 'happy-dom',
     globals: true,
