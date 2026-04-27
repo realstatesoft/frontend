@@ -15,12 +15,18 @@ export default function SaveSearchModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!name.trim()) {
+      setError("El nombre es requerido");
+      return;
+    }
+    
     setLoading(true);
     setError(null);
 
     try {
       await searchPreferencesApi.create({
-        name: name.trim() || null,
+        name: name.trim(),
         filters,
         notificationsEnabled,
       });
@@ -48,17 +54,15 @@ export default function SaveSearchModal({
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
           <Form.Group className="mb-3">
-            <Form.Label>Nombre de la búsqueda</Form.Label>
+            <Form.Label>Nombre de la búsqueda *</Form.Label>
             <Form.Control
               type="text"
               placeholder="Ej: Dptos en Asunción"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={100}
+              required
             />
-            <Form.Text className="text-muted">
-              Opcional. Se generará automáticamente si lo dejas en blanco.
-            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mb-3">
