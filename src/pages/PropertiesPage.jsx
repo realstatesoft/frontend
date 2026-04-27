@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
@@ -18,12 +19,14 @@ const PAGE_SIZE = 12;
  */
 export default function PropertiesPage() {
     const { isAuthenticated: authCheck, preferencesCompleted } = useAuth();
-    const [search, setSearch] = useState("");
-    const [typeFilter, setTypeFilter] = useState("");
-    const [availability, setAvailability] = useState("");
-    const [minPrice, setMinPrice] = useState("");
-    const [maxPrice, setMaxPrice] = useState("");
-    const [minBedrooms, setMinBedrooms] = useState("");
+    const locationState = useLocation().state || {};
+
+    const [search, setSearch] = useState(locationState.search || "");
+    const [typeFilter, setTypeFilter] = useState(locationState.typeFilter || "");
+    const [availability, setAvailability] = useState(locationState.availability || "");
+    const [minPrice, setMinPrice] = useState(locationState.minPrice || "");
+    const [maxPrice, setMaxPrice] = useState(locationState.maxPrice || "");
+    const [minBedrooms, setMinBedrooms] = useState(locationState.minBedrooms || "");
     const [minBathrooms, setMinBathrooms] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);

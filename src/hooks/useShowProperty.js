@@ -299,6 +299,33 @@ export function useShowProperty() {
     }
   }, [id, hideConfirm, navigate]);
 
+  const handleToggleHighlight = useCallback(async () => {
+    if (!id || !property) return;
+    setActionLoading(true);
+    const newHighlightState = !property.highlighted;
+    try {
+      const { data } = await propertyApi.toggleHighlight(id, newHighlightState);
+      if (data?.success && data?.data) {
+        setProperty(data.data);
+        await Swal.fire({
+          icon: "success",
+          title: "Éxito",
+          text: newHighlightState ? "Propiedad destacada correctamente" : "Se ha quitado el destacado de la propiedad",
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id, property]);
+
   const openChangeStatusConfirm = useCallback((option) => {
     setConfirmData({
       title: `Cambiar estado a "${option.label}"`,
@@ -402,6 +429,7 @@ export function useShowProperty() {
     copyLink,
     activeFlagCount,
     viewCount,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleToggleHighlight
   };
 }
