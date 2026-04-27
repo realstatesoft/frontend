@@ -6,6 +6,7 @@ import { useScrollReveal } from "../../hooks/useScrollReveal";
 const CtaSection = () => {
     const { ref, isVisible } = useScrollReveal({ threshold: 0.15 });
 
+    
     return (
         <section ref={ref} style={{ padding: "80px 0", backgroundColor: "#f8f9fb" }}>
             <Container>
