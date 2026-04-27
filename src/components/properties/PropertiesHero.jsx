@@ -67,25 +67,25 @@ export default function PropertiesHero({
                     </div>
 
                     {/* Mis búsquedas dropdown */}
-                    <div className="filter-bar__saved-dropdown">
+                    <div className="filter-bar__saved-dropdown" style={{ position: "relative" }}>
                         <Dropdown onToggle={async (show) => {
                             if (show && savedSearches.length === 0) {
                                 try {
-                                    const { data } = await searchPreferencesApi.getMine();
-                                    setSavedSearches(data.content || []);
+                                    const res = await searchPreferencesApi.getMine();
+                                    const pageData = res.data?.data;
+                                    const items = pageData?.content || [];
+                                    setSavedSearches(items);
                                 } catch (e) {
                                     console.error("Error loading saved searches:", e);
                                 }
                             }
                         }}>
                             <Dropdown.Toggle
-                                variant="outline-secondary"
-                                size="sm"
                                 className="filter-pill"
                             >
                                 Mis búsquedas
                             </Dropdown.Toggle>
-                            <Dropdown.Menu>
+                            <Dropdown.Menu style={{ minWidth: "200px", maxHeight: "300px", overflowY: "auto" }}>
                                 {savedSearches.length === 0 ? (
                                     <Dropdown.Item disabled>
                                         Sin búsquedas guardadas
@@ -95,13 +95,14 @@ export default function PropertiesHero({
                                         <Dropdown.Item
                                             key={s.id}
                                             onClick={() => {
-                                                onSearch(s.filters?.q || "");
-                                                onTypeChange(s.filters?.propertyType || "");
-                                                onAvailabilityChange(s.filters?.availability || "");
-                                                onMinPriceChange(s.filters?.minPrice || "");
-                                                onMaxPriceChange(s.filters?.maxPrice || "");
-                                                onMinBedroomsChange(s.filters?.minBedrooms || "");
-                                                onMinBathroomsChange(s.filters?.minBathrooms || "");
+                                                const f = s.filters || {};
+                                                onSearch(f.q || "");
+                                                onTypeChange(f.propertyType || "");
+                                                onAvailabilityChange(f.availability || "");
+                                                onMinPriceChange(f.minPrice || "");
+                                                onMaxPriceChange(f.maxPrice || "");
+                                                onMinBedroomsChange(f.minBedrooms || "");
+                                                onMinBathroomsChange(f.minBathrooms || "");
                                             }}
                                         >
                                             {s.name}

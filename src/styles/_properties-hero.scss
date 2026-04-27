@@ -5,7 +5,7 @@
 .filter-bar {
     background-color: #fff;
     border: 1px solid $border-color-soft;
-    border-radius: 999px; // píldora completa
+    border-radius: 999px;
     box-shadow: $shadow-soft;
     padding: 8px 16px;
     display: flex;
@@ -14,7 +14,6 @@
     flex-wrap: nowrap;
     overflow-x: auto;
 
-    // Ocultar scrollbar en mobile
     &::-webkit-scrollbar {
         display: none;
     }
@@ -84,14 +83,12 @@
         border-color: $border-color-soft;
     }
 
-    // Estado activo (filtro seleccionado)
     &--active {
         background-color: color.adjust($primary, $lightness: 42%);
         border-color: $primary;
         color: $primary;
     }
 
-    // Chevron CSS
     .filter-pill__chevron {
         display: inline-block;
         width: 8px;
@@ -107,7 +104,6 @@
         }
     }
 
-    // Badge de cantidad
     .filter-pill__badge {
         background-color: $primary;
         color: #fff;
@@ -143,6 +139,66 @@
     &:hover {
         background-color: $neutral-soft;
         color: $text-dark;
+    }
+}
+
+// Botón guardar búsqueda
+.filter-bar__save {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1.5px solid $border-color-soft;
+    background: transparent;
+    font-family: $font-family-sans-serif;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    color: $text-dark;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+
+    &:hover {
+        background-color: $neutral-soft;
+        border-color: $border-color-soft;
+    }
+}
+
+// Dropdown de búsquedas guardadas
+.filter-bar__saved-dropdown {
+    .dropdown-toggle {
+        @extend .filter-pill;
+        
+        &::after {
+            display: none;
+        }
+    }
+    
+    .dropdown-menu {
+        border: 1px solid $border-color-soft;
+        border-radius: $radius-md;
+        box-shadow: $shadow-soft;
+        min-width: 180px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .dropdown-item {
+        font-family: $font-family-sans-serif;
+        font-size: 0.875rem;
+        padding: 8px 12px;
+        cursor: pointer;
+        
+        &:hover {
+            background-color: $neutral-soft;
+        }
+        
+        &:disabled {
+            color: $text-muted;
+            cursor: default;
+        }
     }
 }
 
