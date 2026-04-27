@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FiSend, FiUser, FiPlus, FiArrowLeft } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
 import Button from '../../components/common/Button/Button';
@@ -136,6 +136,16 @@ export default function ClientMessagesPage() {
   const [activeConversation, setActiveConversation] = useState(null);
   const [showNewConvModal, setShowNewConvModal] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [preSelectedUser, setPreSelectedUser] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.openNewConversation) {
+      setShowNewConvModal(true);
+      setPreSelectedUser(location.state.preSelectedAgent);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   if (isLoading) {
     return (
@@ -185,8 +195,9 @@ export default function ClientMessagesPage() {
 
         <NewConversationModal
           isOpen={showNewConvModal}
-          onClose={() => setShowNewConvModal(false)}
+          onClose={() => { setShowNewConvModal(false); setPreSelectedUser(null); }}
           onSuccess={() => refetch()}
+          preSelectedAgent={preSelectedUser}
         />
       </div>
     </div>

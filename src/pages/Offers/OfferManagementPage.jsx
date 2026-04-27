@@ -13,6 +13,7 @@ import { useContractsAsListingAgent, useContractsAsSeller } from '../../hooks/us
 import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import CreateOfferModal from '../../components/offers/CreateOfferModal';
+import { FiMessageSquare } from 'react-icons/fi';
 import styles from './OfferManagementPage.module.scss';
 
 export default function OfferManagementPage() {
@@ -404,13 +405,37 @@ export default function OfferManagementPage() {
                           <Button
                             as="a"
                             variant="success"
-                            className={styles.offersPage__btnContact}
+                            className={`${styles.offersPage__btnContact} d-flex align-items-center gap-1`}
+                            size="sm"
                             href={contactLink.href}
                             target={contactLink.external ? '_blank' : undefined}
                             rel={contactLink.external ? 'noopener noreferrer' : undefined}
                           >
-                            <Whatsapp size={18} />
-                            Contactar
+                            <Whatsapp size={16} />
+                            WhatsApp
+                          </Button>
+                        )}
+                        {isReceived && offer.status === 'ACCEPTED' && (
+                          <Button
+                            variant="info"
+                            className="text-white d-flex align-items-center gap-1"
+                            size="sm"
+                            onClick={() => {
+                              const messagesPath = role === 'AGENT' ? '/agent/mensajes' : role === 'OWNER' ? '/owner/mensajes' : '/mensajes';
+                              navigate(messagesPath, { 
+                                state: { 
+                                  openNewConversation: true, 
+                                  preSelectedAgent: { 
+                                    id: offer.buyerId, 
+                                    name: getOfferBuyerName(offer), 
+                                    email: getOfferBuyerEmail(offer) 
+                                  } 
+                                } 
+                              });
+                            }}
+                          >
+                            <FiMessageSquare size={16} />
+                            Mensaje
                           </Button>
                         )}
                         {!isReceived && (offer.status === 'SENT' || offer.status === 'VIEWED') && (

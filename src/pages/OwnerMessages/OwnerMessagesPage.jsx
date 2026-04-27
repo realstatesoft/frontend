@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { FiSend, FiUser, FiPlus } from 'react-icons/fi';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
@@ -131,6 +132,16 @@ export default function OwnerMessagesPage() {
   const conversations = response?.data || [];
   const [activeConversation, setActiveConversation] = useState(null);
   const [showNewConvModal, setShowNewConvModal] = useState(false);
+  const location = useLocation();
+  const [preSelectedUser, setPreSelectedUser] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.openNewConversation) {
+      setShowNewConvModal(true);
+      setPreSelectedUser(location.state.preSelectedAgent);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   if (isLoading) {
     return (
@@ -165,8 +176,9 @@ export default function OwnerMessagesPage() {
 
       <NewConversationModal
         isOpen={showNewConvModal}
-        onClose={() => setShowNewConvModal(false)}
+        onClose={() => { setShowNewConvModal(false); setPreSelectedUser(null); }}
         onSuccess={() => refetch()}
+        preSelectedAgent={preSelectedUser}
       />
     </div>
   );
