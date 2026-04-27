@@ -23,7 +23,7 @@ function validateFields({ cardholderName, cardNumber, expiry, cvv }) {
   }
 
   const rawCard = cardNumber.replace(/\s/g, '');
-  if (!rawCard || rawCard.length < 13 || rawCard.length > 19) {
+  if (!rawCard || rawCard.length < 13 || rawCard.length > 16) {
     errors.cardNumber = 'Número de tarjeta inválido.';
   } else if (!luhnCheck(rawCard)) {
     errors.cardNumber = 'Número de tarjeta inválido.';
@@ -57,7 +57,7 @@ function validateFields({ cardholderName, cardNumber, expiry, cvv }) {
 /*
 type = RESERVATION, CONTRACT, PROPERTY_HIGHLIGHT, SUBSCRIPTION
 */
-export default function usePayment({ amount, concept, type } = {}) {
+export default function usePayment({ amount, concept, type, description } = {}) {
   const [status, setStatus] = useState('idle'); // idle | processing | success | error
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
@@ -104,6 +104,7 @@ export default function usePayment({ amount, concept, type } = {}) {
         type,
         amount: parseFloat(amount) || 0,
         concept: concept ?? '',
+        description: description ?? '',
       });
 
       setStatus('success');

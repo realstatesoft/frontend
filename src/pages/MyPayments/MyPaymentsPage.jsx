@@ -35,6 +35,27 @@ const STATUS_LABEL = {
   FAILED:    'Fallido',
 };
 
+const WINDOW_SIZE = 2;
+
+function buildPageItems(current, total) {
+  const items = [];
+  let lastPushed = -1;
+
+  for (let i = 0; i < total; i++) {
+    const isFirst = i === 0;
+    const isLast = i === total - 1;
+    const inWindow = Math.abs(i - current) <= WINDOW_SIZE;
+
+    if (isFirst || isLast || inWindow) {
+      if (lastPushed !== -1 && i - lastPushed > 1) items.push('...');
+      items.push(i);
+      lastPushed = i;
+    }
+  }
+
+  return items;
+}
+
 export default function MyPaymentsPage() {
   const navigate = useNavigate();
   const {
@@ -79,7 +100,11 @@ export default function MyPaymentsPage() {
         {error && <Alert variant="danger">{error}</Alert>}
 
         {!loading && !error && items.length === 0 && (
-          <Alert variant="info">Aún no tienes pagos registrados.</Alert>
+          <Alert variant="info">
+            {statusFilter
+              ? `No hay pagos con estado "${STATUS_LABEL[statusFilter] ?? statusFilter}".`
+              : 'Aún no tienes pagos registrados.'}
+          </Alert>
         )}
 
         {!loading && items.length > 0 && (
@@ -130,15 +155,19 @@ export default function MyPaymentsPage() {
                   disabled={page === 0}
                   onClick={() => setPage((p) => p - 1)}
                 />
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <Pagination.Item
-                    key={i}
-                    active={i === page}
-                    onClick={() => setPage(i)}
-                  >
-                    {i + 1}
-                  </Pagination.Item>
-                ))}
+                {buildPageItems(page, totalPages).map((item, idx) =>
+                  item === '...' ? (
+                    <Pagination.Ellipsis key={`ellipsis-${idx}`} disabled />
+                  ) : (
+                    <Pagination.Item
+                      key={item}
+                      active={item === page}
+                      onClick={() => setPage(item)}
+                    >
+                      {item + 1}
+                    </Pagination.Item>
+                  )
+                )}
                 <Pagination.Next
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}

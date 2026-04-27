@@ -1,4 +1,5 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 import {
   Container, Row, Col, Card, Form, Button, Spinner, Alert,
 } from 'react-bootstrap';
@@ -7,7 +8,6 @@ import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import usePayment from '../../hooks/usePayment';
 import styles from './PaymentPage.module.scss';
-import { type } from '@testing-library/user-event/dist/cjs/utility/type.js';
 
 function formatDisplayAmount(raw) {
   const num = parseFloat(raw);
@@ -18,6 +18,13 @@ function formatDisplayAmount(raw) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(num);
+}
+
+function toSafeRelative(url) {
+  if (!url) return '';
+  // Allow only relative paths starting with / and not //
+  if (url.startsWith('/') && !url.startsWith('//')) return url;
+  return '';
 }
 
 function maskCardNumber(cardNumber) {
@@ -35,33 +42,25 @@ export default function PaymentPage() {
   const concept = searchParams.get('concept') ?? 'Pago';
   const type = searchParams.get('type') ?? 'OTHER';
   const description = searchParams.get('description') ?? '';
-  const redirectUrl = searchParams.get('redirectUrl') ?? '';
-  const cancelUrl = searchParams.get('cancelUrl') ?? '';
-
-  /* EJEMPLO DE USO DESDE OTRAS PAGINAS:
-    navigate('/payment?' + new URLSearchParams({
-      amount: '150000',
-      concept: 'Suscripción mensual',
-      description: 'Suscripción al plan Premium por el mes de junio',
-      redirectUrl: '/owner/reservations',  // a donde ir en éxito
-      cancelUrl: '/properties/42',         // a donde ir en cancelación
-      type: 'SUBSCRIPTION'   // tipos: RESERVATION, CONTRACT, PROPERTY_HIGHLIGHT, SUBSCRIPTION
-    }));
-  */
+  const redirectUrl = toSafeRelative(searchParams.get('redirectUrl'));
+  const cancelUrl = toSafeRelative(searchParams.get('cancelUrl'));
 
 
   const { form, setField, fieldErrors, status, errorMessage, processPayment, reset } = usePayment({
     amount,
     concept,
     description,
-    type
+    type,
   });
+
+  const redirectTimerRef = useRef(null);
+  useEffect(() => () => { if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current); }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     const ok = await processPayment();
     if (ok && redirectUrl) {
-      setTimeout(() => navigate(redirectUrl), 2000);
+      redirectTimerRef.current = setTimeout(() => navigate(redirectUrl), 2000);
     }
   }
 
@@ -97,10 +96,6 @@ export default function PaymentPage() {
                     <span className={styles.summaryValue}>{description}</span>
                   </div>
                 )}
-                <div className={styles.summaryRow}>
-                  <span className={styles.summaryLabel}>Monto</span>
-                  <span className={styles.summaryValue}>{formatDisplayAmount(amount)}</span>
-                </div>
               </div>
             </Card>
 
