@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Container, Collapse, Row, Col, Form } from "react-bootstrap";
+import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
+import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -29,6 +30,7 @@ export default function PropertiesHero({
 }) {
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
+    const [savedSearches, setSavedSearches] = useState([]);
 
     const filters = {
         q: search,
@@ -62,6 +64,52 @@ export default function PropertiesHero({
                             value={search}
                             onChange={(e) => onSearch(e.target.value)}
                         />
+                    </div>
+
+                    {/* Mis búsquedas dropdown */}
+                    <div className="filter-bar__saved-dropdown">
+                        <Dropdown onToggle={async (show) => {
+                            if (show && savedSearches.length === 0) {
+                                try {
+                                    const { data } = await searchPreferencesApi.getMine();
+                                    setSavedSearches(data.content || []);
+                                } catch (e) {
+                                    console.error("Error loading saved searches:", e);
+                                }
+                            }
+                        }}>
+                            <Dropdown.Toggle
+                                variant="outline-secondary"
+                                size="sm"
+                                className="filter-pill"
+                            >
+                                Mis búsquedas
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {savedSearches.length === 0 ? (
+                                    <Dropdown.Item disabled>
+                                        Sin búsquedas guardadas
+                                    </Dropdown.Item>
+                                ) : (
+                                    savedSearches.map((s) => (
+                                        <Dropdown.Item
+                                            key={s.id}
+                                            onClick={() => {
+                                                onSearch(s.filters?.q || "");
+                                                onTypeChange(s.filters?.propertyType || "");
+                                                onAvailabilityChange(s.filters?.availability || "");
+                                                onMinPriceChange(s.filters?.minPrice || "");
+                                                onMaxPriceChange(s.filters?.maxPrice || "");
+                                                onMinBedroomsChange(s.filters?.minBedrooms || "");
+                                                onMinBathroomsChange(s.filters?.minBathrooms || "");
+                                            }}
+                                        >
+                                            {s.name}
+                                        </Dropdown.Item>
+                                    ))
+                                )}
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </div>
 
                     <div className="filter-bar__divider" />
