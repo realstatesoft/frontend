@@ -1,8 +1,8 @@
 import Cookies from "js-cookie";
 
 const BASE_COOKIE_OPTIONS = {
-  secure: false,
-  sameSite: "Lax",
+  secure: import.meta.env.PROD,
+  sameSite: "Strict",
 };
 
 // ─── Access Token (cookie de sesión, sin expires — lo controla el JWT) ────────
