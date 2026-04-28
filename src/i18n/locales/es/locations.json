@@ -1,0 +1,18 @@
+{
+  "title": "Seleccionar ubicación",
+  "help": "Hacé clic en el mapa para elegir la ubicación exacta de la propiedad.",
+  "address": "Dirección",
+  "addressPlaceholder": "Dirección detectada por el mapa (editable)",
+  "loadingAddress": "Buscando dirección...",
+  "zone": "Zona",
+  "loadingZone": "Buscando zona...",
+  "zonePlaceholder": "Seleccioná una zona...",
+  "matchedZones": "Se encontraron {{count}} zonas para esta ciudad.",
+  "autoCreated": "Zona nueva creada automáticamente.",
+  "noZoneDetected": "No se pudo detectar la zona para esta ubicación.",
+  "cancel": "Cancelar",
+  "useLocation": "Usar esta ubicación",
+  "errors": {
+    "reverseGeocode": "No se pudo obtener la dirección automáticamente. Podés editarla manualmente."
+  }
+}

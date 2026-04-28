@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Container, Carousel, Card, Row, Col, Badge, Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import propertyService from "../../services/propertyService";
-
-const getStatusLabel = (status) => {
-  switch (status) {
-    case 'SOLD': return 'Vendido';
-    case 'RENTED': return 'Alquilado';
-    case 'RESERVED': return 'Reservado';
-    case 'PENDING': return 'Pendiente';
-    default: return 'Disponible';
-  }
-};
 
 const getStatusColor = (status) => {
   switch (status) {
-    case 'SOLD':
-    case 'RENTED':
-    case 'RESERVED': return '#d32f2f'; // red
-    case 'PENDING': return '#f57c00'; // orange
-    default: return '#388e3c'; // green
+    case "SOLD":
+    case "RENTED":
+    case "RESERVED":
+      return "#d32f2f";
+    case "PENDING":
+      return "#f57c00";
+    default:
+      return "#388e3c";
   }
 };
 
 const Properties = () => {
+  const { t } = useTranslation("landing");
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "SOLD":
+        return t("status.sold");
+      case "RENTED":
+        return "Alquilado";
+      case "RESERVED":
+        return t("status.reserved");
+      case "PENDING":
+        return "Pendiente";
+      default:
+        return t("status.available");
+    }
+  };
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -39,17 +49,26 @@ const Properties = () => {
         setLoading(false);
       }
     };
+
     fetchFeatured();
   }, []);
 
-  const propertyGroups = Array.from({ length: Math.ceil(properties.length / 4) }, (v, i) =>
-    properties.slice(i * 4, i * 4 + 4)
+  const propertyGroups = Array.from(
+    { length: Math.ceil(properties.length / 4) },
+    (_, i) => properties.slice(i * 4, i * 4 + 4)
   );
 
   return (
     <>
       <div className="text-center py-4" style={{ backgroundColor: "#fff" }}></div>
-      <div style={{ backgroundColor: "#f3f4f6", width: "100vw", marginLeft: "calc(-50vw + 50%)" }}>
+
+      <div
+        style={{
+          backgroundColor: "#f3f4f6",
+          width: "100vw",
+          marginLeft: "calc(-50vw + 50%)",
+        }}
+      >
         <Container className="py-5">
           <style>{`
             .custom-carousel .carousel-item {
@@ -85,7 +104,7 @@ const Properties = () => {
               transform: scale(1.3);
             }
           `}</style>
-          
+
           <div className="custom-carousel position-relative px-5">
             {loading ? (
               <div className="text-center py-5">
@@ -102,23 +121,35 @@ const Properties = () => {
                     <Row className="mb-5 flex-md-nowrap overflow-hidden g-3">
                       {group.map((property) => (
                         <Col xs={6} sm={6} md={3} key={property.id} className="p-1">
-                          <Link to={`/properties/${property.id}`} className="text-decoration-none text-dark d-block h-100">
-                            <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100" style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
+                          <Link
+                            to={`/properties/${property.id}`}
+                            className="text-decoration-none text-dark d-block h-100"
+                          >
+                            <Card
+                              className="border-0 shadow-sm rounded-4 overflow-hidden h-100"
+                              style={{ cursor: "pointer", transition: "transform 0.2s" }}
+                              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+                              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                            >
                               <div className="position-relative">
                                 <Badge
                                   className="position-absolute top-0 start-0 m-3 px-3 py-2"
                                   style={{
                                     backgroundColor: getStatusColor(property.status),
-                                    borderRadius: '20px',
-                                    fontSize: '0.75rem',
-                                    zIndex: 2
+                                    borderRadius: "20px",
+                                    fontSize: "0.75rem",
+                                    zIndex: 2,
                                   }}
                                 >
                                   {getStatusLabel(property.status)}
                                 </Badge>
+
                                 <Card.Img
                                   variant="top"
-                                  src={property.primaryImageUrl || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"}
+                                  src={
+                                    property.primaryImageUrl ||
+                                    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
+                                  }
                                   style={{ height: "200px", objectFit: "cover" }}
                                 />
                               </div>
@@ -127,11 +158,20 @@ const Properties = () => {
                                 <h5 className="fw-bold text-success mb-1">
                                   Gs {Number(property.price || 0).toLocaleString()}
                                 </h5>
-                                <p className="text-muted mb-2 text-truncate" style={{ fontSize: '0.85rem' }}>
+
+                                <p
+                                  className="text-muted mb-2 text-truncate"
+                                  style={{ fontSize: "0.85rem" }}
+                                >
                                   📍 {property.locationName || property.address || "Sin ubicación"}
                                 </p>
+
                                 <hr className="my-2" />
-                                <div className="d-flex justify-content-between text-muted" style={{ fontSize: '0.85rem' }}>
+
+                                <div
+                                  className="d-flex justify-content-between text-muted"
+                                  style={{ fontSize: "0.85rem" }}
+                                >
                                   <span>🛏 {property.bedrooms || 0}</span>
                                   <span>🚿 {property.bathrooms || 0}</span>
                                   <span>📐 {property.surfaceArea || 0} m²</span>

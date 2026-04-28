@@ -1,0 +1,24 @@
+{
+  "modal": {
+    "createTitle": "Make Offer",
+    "editTitle": "Edit Offer",
+    "propertyLabel": "Property:",
+    "amountLabel": "Proposed Amount",
+    "messageLabel": "Message or Conditions (Optional)",
+    "amountPlaceholder": "Example: 500,000,000",
+    "messagePlaceholder": "Write any additional condition here...",
+    "priceLabel": "Listed price: {{price}}",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "send": "Send Offer",
+    "saving": "Saving...",
+    "sending": "Sending...",
+    "invalidAmountTitle": "Error",
+    "invalidAmount": "Please enter a valid amount greater than 0",
+    "updateSuccessTitle": "Offer updated!",
+    "updateSuccessText": "Your proposal has been updated successfully.",
+    "createSuccessTitle": "Offer sent!",
+    "createSuccessText": "Your proposal has been sent to the owner/agent.",
+    "error": "The offer could not be processed. Please try again."
+  }
+}

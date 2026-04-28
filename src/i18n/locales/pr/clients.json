@@ -1,0 +1,85 @@
+{
+  "page": {
+    "title": "Clientes",
+    "subtitle": "Gerencie sua carteira de clientes",
+    "new": "Novo cliente",
+    "newProspect": "Novo prospecto",
+    "exportCsv": "Exportar CSV",
+    "selection": "{{count}} selecionado(s)",
+    "deselect": "Desmarcar tudo",
+    "search": "Buscar",
+    "searchPlaceholder": "Nome, Email...",
+    "status": "Status",
+    "origin": "Origem",
+    "type": "Tipo",
+    "order": "Ordenar por",
+    "empty": "Nenhum cliente encontrado"
+  },
+  "table": {
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefone",
+    "status": "Status",
+    "register": "Cadastro",
+    "view": "Ver cliente"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "internal": "Interno",
+    "external": "Externo",
+    "individual": "Pessoa física",
+    "company": "Empresa"
+  },
+  "interactions": {
+    "title": "Registrar interação",
+    "description": "Adicione notas comerciais manuais. Os eventos automáticos do sistema aparecerão na mesma linha do tempo.",
+    "new": "Nova interação",
+    "close": "Fechar",
+    "type": "Tipo",
+    "subject": "Assunto",
+    "dateTime": "Data e hora",
+    "note": "Nota",
+    "outcome": "Resultado",
+    "placeholders": {
+      "subject": "Ex.: Ligação de acompanhamento sobre orçamento",
+      "note": "Registre contexto, acordos, próximos passos ou detalhes relevantes.",
+      "outcome": "Ex.: FOLLOW_UP_SCHEDULED ou INFO_CAPTURED"
+    },
+    "save": "Salvar interação",
+    "saving": "Salvando...",
+    "validation": "Selecione um tipo de interação.",
+    "crmTitle": "Interações de CRM",
+    "crmSubtitle": "Acompanhe o histórico comercial do cliente com eventos manuais e automáticos em uma única linha do tempo.",
+    "all": "Todas",
+    "registered": "{{count}} registradas",
+    "refresh": "Atualizar",
+    "loading": "Carregando interações...",
+    "loadError": "Não conseguimos carregar a linha do tempo",
+    "empty": "Não há interações {{filter}}",
+    "viewAll": "Ver todas",
+    "loadMore": "Carregar mais interações",
+    "deleteTitle": "Excluir interação",
+    "deleteMessage": "Deseja excluir esta {{type}}? Esta ação não pode ser desfeita.",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "editNote": "Editar nota",
+    "result": "Resultado:",
+    "allRecords": "todas",
+    "noDetails": "Sem detalhes adicionais para esta interação.",
+    "updated": "Atualizado {{value}}",
+    "autoEvent": "Evento gerado automaticamente pelo sistema.",
+    "types": {
+      "call": "Ligação",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "visit": "Visita",
+      "meeting": "Reunião",
+      "note": "Nota"
+    },
+    "source": {
+      "manual": "Manual",
+      "system": "Automático"
+    }
+  }
+}

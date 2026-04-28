@@ -1,0 +1,27 @@
+{
+  "panel": {
+    "title": "Reserva online",
+    "loadError": "No se pudieron cargar las reservas.",
+    "confirmError": "No se pudo confirmar la reserva.",
+    "rejectError": "No se pudo rechazar la reserva.",
+    "active": "Esta propiedad tiene una reserva activa.",
+    "reserve": "Reservar propiedad",
+    "confirm": "Confirmar",
+    "reject": "Rechazar",
+    "amount": "Monto: {{amount}}",
+    "sentTitle": "Reserva enviada",
+    "sentText": "Tu reserva fue registrada y está pendiente de confirmación.",
+    "alreadyReserved": "Ya reservaste esta propiedad por"
+  },
+  "modal": {
+    "title": "Reservar propiedad",
+    "description": "Estás reservando {{title}}. Una reserva queda pendiente hasta que el propietario la confirme.",
+    "amount": "Monto de reserva",
+    "notes": "Notas (opcional)",
+    "suggestion": "Sugerencia: {{percent}}% del precio publicado.",
+    "submit": "Confirmar",
+    "submitting": "Enviando...",
+    "invalidAmount": "El monto debe ser mayor a cero.",
+    "error": "No se pudo crear la reserva."
+  }
+}
