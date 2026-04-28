@@ -23,7 +23,7 @@ export async function getSuggestedAgents(params = {}) {
  */
 export async function getAllAgents(params = {}) {
   const response = await api.get("/agents", { params });
-  return response.data;
+  return response.data?.data ?? response.data;
 }
 
 /**
@@ -32,8 +32,9 @@ export async function getAllAgents(params = {}) {
  * @returns {Promise<Object>} Datos del agente
  */
 export async function getAgentById(id) {
-  const response = await api.get(`/agents/${id}`);
-  return response.data;
+  const encodedId = encodeURIComponent(id);
+  const response = await api.get(`/agents/${encodedId}`);
+  return response.data?.data ?? response.data;
 }
 
 /**
@@ -47,7 +48,7 @@ export async function searchAgents(keyword, params = {}) {
   const response = await api.get("/agents/search", {
     params: { ...(q ? { q } : {}), ...params }
   });
-  return response.data;
+  return response.data?.data ?? response.data;
 }
 
 /**
@@ -57,8 +58,9 @@ export async function searchAgents(keyword, params = {}) {
  * @returns {Promise<Object>} Agente actualizado
  */
 export async function updateAgent(id, data) {
-  const response = await api.put(`/agents/${id}`, data);
-  return response.data;
+  const encodedId = encodeURIComponent(id);
+  const response = await api.put(`/agents/${encodedId}`, data);
+  return response.data?.data ?? response.data;
 }
 
 /**
@@ -67,7 +69,7 @@ export async function updateAgent(id, data) {
  */
 export async function getAllSpecialties() {
   const response = await api.get("/agents/specialties");
-  return response.data;
+  return response.data?.data ?? response.data;
 }
 
 export default {

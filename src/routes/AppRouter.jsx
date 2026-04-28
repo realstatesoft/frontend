@@ -38,6 +38,7 @@ import ContractCreatePage from "../pages/Contracts/ContractCreatePage";
 import ContractEditPage from "../pages/Contracts/ContractEditPage";
 import ContractDetailPage from "../pages/Contracts/ContractDetailPage";
 import OfferManagementPage from "../pages/Offers/OfferManagementPage";
+import LeadDetailPage from "../pages/Leads/LeadDetailPage";
 
 // Owner Dashboard
 import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
@@ -118,6 +119,7 @@ export default function AppRouter() {
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
+                    <Route path="prospectos/:id" element={<LeadDetailPage />} />
                 </Route>
             </Route>
 
