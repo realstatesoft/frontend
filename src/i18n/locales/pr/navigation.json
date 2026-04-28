@@ -42,6 +42,7 @@
     "admin": {
       "dashboard": "Painel",
       "approval": "Aprovação de imóveis",
+      "payments": "Gestão de pagamentos",
       "auditLogs": "Auditoria",
       "reports": "Relatórios",
       "documents": "Validação de documentos",
