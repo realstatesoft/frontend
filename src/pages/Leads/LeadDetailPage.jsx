@@ -55,12 +55,14 @@ const LeadDetailPage = () => {
       <div className={styles.error}>
         <FiInfo />
         <p>No se pudo cargar el prospecto.</p>
-        <Link to="/leads">Volver al listado</Link>
+        <Link to="/dashboard">Volver al dashboard</Link>
       </div>
     );
   }
 
   const { metadata } = lead;
+  const sanitizedPhone = lead?.phone ? String(lead.phone).replace(/\D/g, '') : null;
+  const safeEmail = lead?.email ? String(lead.email) : null;
 
   const renderMetadataCard = (icon, label, value) => (
     <motion.div 
@@ -171,9 +173,11 @@ const LeadDetailPage = () => {
                   <div>
                     <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#64748b' }}>Condiciones Especiales:</h4>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                      {(Array.isArray(metadata.specialConditions) ? metadata.specialConditions : [metadata.specialConditions]).map((cond, i) => (
+                      {(Array.isArray(metadata.specialConditions) ? metadata.specialConditions : [metadata.specialConditions])
+                        .filter(cond => cond != null)
+                        .map((cond, i) => (
                         <span key={i} style={{ padding: '0.25rem 0.75rem', background: '#dbeafe', color: '#1e40af', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 600, textTransform: 'capitalize' }}>
-                          {cond.replace(/_/g, ' ')}
+                          {String(cond).replace(/_/g, ' ')}
                         </span>
                       ))}
                     </div>
@@ -199,8 +203,24 @@ const LeadDetailPage = () => {
             <h2><FiZap /> Acciones de Gestión</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <button 
-                onClick={() => window.open(`https://wa.me/${lead.phone.replace(/\D/g,'')}`, '_blank', 'noopener,noreferrer')}
-                style={{ width: '100%', padding: '0.75rem', background: '#25d366', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                onClick={() => sanitizedPhone && window.open(`https://wa.me/${sanitizedPhone}`, '_blank', 'noopener,noreferrer')}
+                style={{ 
+                  width: '100%', 
+                  padding: '0.75rem', 
+                  background: sanitizedPhone ? '#25d366' : '#f1f5f9', 
+                  color: sanitizedPhone ? 'white' : '#94a3b8', 
+                  border: 'none', 
+                  borderRadius: '8px', 
+                  fontWeight: 700, 
+                  cursor: sanitizedPhone ? 'pointer' : 'not-allowed', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '0.5rem',
+                  opacity: sanitizedPhone ? 1 : 0.7
+                }}
+                disabled={!sanitizedPhone}
+                title={!sanitizedPhone ? "Teléfono no disponible" : "Contactar por WhatsApp"}
               >
                 <FiMessageSquare /> Contactar por WhatsApp
               </button>
@@ -233,8 +253,20 @@ const LeadDetailPage = () => {
           <section className={styles.leadDetail__section}>
             <h2><FiUser /> Contacto Directo</h2>
             <div className={styles.leadDetail__contact}>
-              <a href={`mailto:${lead.email}`}><FiMail /> {lead.email}</a>
-              <a href={`tel:${lead.phone}`}><FiPhone /> {lead.phone}</a>
+              <a 
+                href={safeEmail ? `mailto:${safeEmail}` : '#'} 
+                style={{ pointerEvents: safeEmail ? 'auto' : 'none', opacity: safeEmail ? 1 : 0.6 }}
+                aria-disabled={!safeEmail}
+              >
+                <FiMail /> {lead.email || 'Email no disponible'}
+              </a>
+              <a 
+                href={sanitizedPhone ? `tel:${sanitizedPhone}` : '#'} 
+                style={{ pointerEvents: sanitizedPhone ? 'auto' : 'none', opacity: sanitizedPhone ? 1 : 0.6 }}
+                aria-disabled={!sanitizedPhone}
+              >
+                <FiPhone /> {lead.phone || 'Teléfono no disponible'}
+              </a>
             </div>
           </section>
 

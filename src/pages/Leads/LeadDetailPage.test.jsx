@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LeadDetailPage from './LeadDetailPage';
 import { useLead } from '../../hooks/useLeads';
 
@@ -44,10 +45,28 @@ const mockLead = {
 };
 
 describe('LeadDetailPage', () => {
+  let queryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+  });
+
+  const renderWithProviders = (ui) => render(
+    <QueryClientProvider client={queryClient}>
+      {ui}
+    </QueryClientProvider>
+  );
+
   it('debe mostrar el cargando inicialmente', () => {
     useLead.mockReturnValue({ isLoading: true });
     
-    render(
+    renderWithProviders(
       <MemoryRouter initialEntries={['/agent/prospectos/1']}>
         <Routes>
           <Route path="/agent/prospectos/:id" element={<LeadDetailPage />} />
@@ -61,7 +80,7 @@ describe('LeadDetailPage', () => {
   it('debe mostrar el error si falla la carga', () => {
     useLead.mockReturnValue({ error: true, isLoading: false });
     
-    render(
+    renderWithProviders(
       <MemoryRouter initialEntries={['/agent/prospectos/1']}>
         <Routes>
           <Route path="/agent/prospectos/:id" element={<LeadDetailPage />} />
@@ -75,7 +94,7 @@ describe('LeadDetailPage', () => {
   it('debe renderizar correctamente los datos del prospecto y el metadata', () => {
     useLead.mockReturnValue({ data: mockLead, isLoading: false });
     
-    render(
+    renderWithProviders(
       <MemoryRouter initialEntries={['/agent/prospectos/1']}>
         <Routes>
           <Route path="/agent/prospectos/:id" element={<LeadDetailPage />} />
