@@ -41,24 +41,12 @@ function TimelineBadge({ value }) {
 // ─── Status badge ────────────────────────────────────────────────────────────
 function StatusBadge({ status, color }) {
   const bg = color ?? '#94a3b8';
-  const isLight = (hex) => {
-    const c = hex.replace('#', '');
-    const r = parseInt(c.slice(0,2),16), g = parseInt(c.slice(2,4),16), b = parseInt(c.slice(4,6),16);
-    return (0.299*r + 0.587*g + 0.114*b) / 255 > 0.6;
-  };
-  const textColor = isLight(bg) ? '#1a1a1a' : '#ffffff';
   return (
     <span
       className={styles.statusBadge}
-      style={{
-        background: `${bg}22`,
-        color: bg,
-        borderColor: `${bg}55`,
-      }}
+      style={{ '--status-color': bg }}
     >
-      <span
-        style={{ width: 6, height: 6, borderRadius: '50%', background: bg, display: 'inline-block' }}
-      />
+      <span className={styles.statusDot} />
       {status ?? 'Nuevo'}
     </span>
   );
@@ -84,9 +72,9 @@ function LeadDrawer({ lead, onClose }) {
         </header>
 
         <div className={styles.drawerBody}>
-          <div style={{ padding: '0 1rem', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{lead.name}</h1>
+          <div className={styles.drawerBodyHeader}>
+            <div className={styles.drawerHeaderContent}>
+              <h1 className={styles.drawerName}>{lead.name}</h1>
               <StatusBadge status={lead.status} color={lead.statusColor} />
             </div>
           </div>
@@ -117,18 +105,18 @@ export default function AgentLeadsPage() {
   const [filterTimeline, setFilterTimeline] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. Resolve AgentProfile (id differs from userId)
+  // 1. Resolve AgentProfile (agentProfileId preferred over userId)
   useEffect(() => {
-    const userId = user?.userId ?? user?.id;
-    if (!userId) return;
-    agentApi.getAgentById(userId)
+    const agentId = user?.agentProfileId ?? user?.userId ?? user?.id;
+    if (!agentId) return;
+    agentApi.getAgentById(agentId)
       .then(res => {
         const payload = res?.data ?? res;
         const agentData = payload?.data ?? payload;
         setAgentProfile(agentData);
       })
       .catch(() => setError('No se pudo cargar el perfil del agente.'));
-  }, [user]);
+  }, [user?.agentProfileId, user?.userId, user?.id]);
 
   // 2. Fetch leads whenever agentProfile or page changes
   const fetchLeads = useCallback(async (page = 0) => {
@@ -212,11 +200,10 @@ export default function AgentLeadsPage() {
           <p className={styles.subtitle}>Solicitudes recibidas desde el SellWizard · ordenadas por urgencia</p>
         </div>
         <button
-          className={styles.actionBtn}
+          className={`${styles.actionBtn} ${styles.refreshBtn}`}
           onClick={() => fetchLeads(currentPage)}
           title="Actualizar"
           aria-label="Refrescar leads"
-          style={{ width: 40, height: 40 }}
         >
           <FiRefreshCw />
         </button>
@@ -228,21 +215,21 @@ export default function AgentLeadsPage() {
           <div className={`${styles.statIcon} ${styles['statIcon--total']}`}><FiTarget /></div>
           <div className={styles.statInfo}>
             <span className={styles.statValue}>{stats.total}</span>
-            <span className={styles.statLabel}>Total de Prospectos</span>
+            <span className={styles.statLabel}>Total (esta página)</span>
           </div>
         </div>
         <div className={styles.statCard}>
           <div className={`${styles.statIcon} ${styles['statIcon--urgent']}`}><FiAlertCircle /></div>
           <div className={styles.statInfo}>
             <span className={styles.statValue}>{stats.urgent}</span>
-            <span className={styles.statLabel}>Urgentes (≤1 mes)</span>
+            <span className={styles.statLabel}>Urgentes ≤1 mes (esta página)</span>
           </div>
         </div>
         <div className={styles.statCard}>
           <div className={`${styles.statIcon} ${styles['statIcon--month']}`}><FiTrendingUp /></div>
           <div className={styles.statInfo}>
             <span className={styles.statValue}>{stats.thisMonth}</span>
-            <span className={styles.statLabel}>Este Mes</span>
+            <span className={styles.statLabel}>Este Mes (esta página)</span>
           </div>
         </div>
       </div>
@@ -304,24 +291,14 @@ export default function AgentLeadsPage() {
       <div className={styles.tableCard}>
         {loading ? (
           <div className={styles.loadingWrapper}>
-            <div style={{
-              width: 36, height: 36, borderRadius: '50%',
-              border: '3px solid var(--color-border)',
-              borderTopColor: 'var(--color-accent)',
-              animation: 'spin 0.8s linear infinite',
-            }} />
-            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+            <div className={styles.spinner} />
             <span>Cargando prospectos...</span>
           </div>
         ) : error ? (
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}><FiAlertTriangle /></div>
             <p className={styles.emptyTitle}>{error}</p>
-            <button onClick={() => fetchLeads(currentPage)} style={{
-              marginTop: 8, padding: '8px 16px', borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--color-border)', background: 'transparent',
-              cursor: 'pointer', color: 'var(--color-text-secondary)',
-            }}>Reintentar</button>
+            <button onClick={() => fetchLeads(currentPage)} className={styles.retryBtn}>Reintentar</button>
           </div>
         ) : sorted.length === 0 ? (
           <div className={styles.emptyState}>
@@ -370,8 +347,8 @@ export default function AgentLeadsPage() {
                           </div>
                         </td>
                         <td><StatusBadge status={lead.status} color={lead.statusColor} /></td>
-                        <td>{timeline ? <TimelineBadge value={timeline} /> : <span style={{ color: 'var(--color-text-muted)' }}>—</span>}</td>
-                        <td style={{ color: 'var(--color-text-secondary)', fontSize: '0.83rem' }}>{propLabel}</td>
+                        <td>{timeline ? <TimelineBadge value={timeline} /> : <span className={styles.mutedText}>—</span>}</td>
+                        <td className={styles.propCell}>{propLabel}</td>
                         <td>
                           <div className={styles.dateCell}>
                             <FiClock size={13} />

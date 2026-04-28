@@ -32,7 +32,7 @@ if (L.Marker.prototype.options) {
   L.Marker.prototype.options.icon = DefaultIcon;
 }
 
-const LeadDetailView = ({ lead: initialLead, leadId, onContactClick }) => {
+const LeadDetailView = ({ lead: initialLead, leadId }) => {
   const { data: fetchedLead, isLoading, error } = useLead(leadId);
   const [showMessageModal, setShowMessageModal] = React.useState(false);
 
@@ -72,7 +72,7 @@ const LeadDetailView = ({ lead: initialLead, leadId, onContactClick }) => {
     >
       <div className={styles.icon}>{icon}</div>
       <span className={styles.label}>{label}</span>
-      <span className={styles.value}>{value || '—'}</span>
+      <span className={styles.value}>{(value == null || value === '') ? '—' : value}</span>
     </motion.div>
   );
 
@@ -123,31 +123,30 @@ const LeadDetailView = ({ lead: initialLead, leadId, onContactClick }) => {
               {metadata.hasHOA && renderMetadataCard(<FiInfo />, "Expensas/HOA", "Sí")}
             </div>
             
-            {(metadata.address || (metadata.latitude && metadata.longitude)) && (
+            {(metadata.address || (Number.isFinite(metadata.latitude) && Number.isFinite(metadata.longitude))) && (
               <div className={styles.addressSection}>
                 {metadata.address && (
                   <div className={styles.addressHeader}>
                     <h4 className={styles.subTitle}>Ubicación Exacta:</h4>
                     <p className={styles.addressText}>{metadata.address}</p>
-                    
-                    {metadata.latitude && metadata.longitude && (
-                      <div className={styles.mapWrapper}>
-                        <MapContainer 
-                          center={[metadata.latitude, metadata.longitude]} 
-                          zoom={16} 
-                          scrollWheelZoom={false}
-                          style={{ height: '100%', width: '100%' }}
-                        >
-                          <TileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                          />
-                          <Marker position={[metadata.latitude, metadata.longitude]}>
-                            <Popup>Ubicación de la propiedad</Popup>
-                          </Marker>
-                        </MapContainer>
-                      </div>
-                    )}
+                  </div>
+                )}
+                {Number.isFinite(metadata.latitude) && Number.isFinite(metadata.longitude) && (
+                  <div className={styles.mapWrapper}>
+                    <MapContainer
+                      center={[metadata.latitude, metadata.longitude]}
+                      zoom={16}
+                      scrollWheelZoom={false}
+                      className={styles.mapContainer}
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                      />
+                      <Marker position={[metadata.latitude, metadata.longitude]}>
+                        <Popup>Ubicación de la propiedad</Popup>
+                      </Marker>
+                    </MapContainer>
                   </div>
                 )}
               </div>
@@ -183,25 +182,29 @@ const LeadDetailView = ({ lead: initialLead, leadId, onContactClick }) => {
           <section className={styles.leadDetail__section}>
             <h2 className={styles.sectionTitle}><FiUser /> Contacto Directo</h2>
             <div className={styles.contactList}>
-              <a 
-                href={safeEmail ? `mailto:${safeEmail}` : '#'} 
-                className={styles.contactLink}
-                style={{ opacity: safeEmail ? 1 : 0.6 }}
-              >
-                <FiMail /> {lead.email || 'Email no disponible'}
-              </a>
-              <a 
-                href={sanitizedPhone ? `tel:${sanitizedPhone}` : '#'} 
-                className={styles.contactLink}
-                style={{ opacity: sanitizedPhone ? 1 : 0.6 }}
-              >
-                <FiPhone /> {lead.phone || 'Teléfono no disponible'}
-              </a>
+              {safeEmail ? (
+                <a href={`mailto:${safeEmail}`} className={styles.contactLink}>
+                  <FiMail /> {lead.email}
+                </a>
+              ) : (
+                <span className={styles.disabledContact}>
+                  <FiMail /> Email no disponible
+                </span>
+              )}
+              {sanitizedPhone ? (
+                <a href={`tel:${sanitizedPhone}`} className={styles.contactLink}>
+                  <FiPhone /> {lead.phone}
+                </a>
+              ) : (
+                <span className={styles.disabledContact}>
+                  <FiPhone /> Teléfono no disponible
+                </span>
+              )}
             </div>
 
             <div className={styles.actionButtons}>
-              <button 
-                onClick={() => sanitizedPhone && window.open(`https://wa.me/${sanitizedPhone}`, '_blank')}
+              <button
+                onClick={() => sanitizedPhone && window.open(`https://wa.me/${sanitizedPhone}`, '_blank', 'noopener,noreferrer')}
                 className={styles.btnWhatsapp}
                 disabled={!sanitizedPhone}
               >

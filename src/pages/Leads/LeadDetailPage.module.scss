@@ -23,6 +23,11 @@
     }
   }
 
+  &__subtitle {
+    color: #64748b;
+    margin: 0;
+  }
+
   &__badge {
     padding: 0.5rem 1rem;
     border-radius: 99px;
@@ -30,6 +35,8 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    background-color: color-mix(in srgb, var(--badge-color, #94a3b8) 20%, transparent);
+    color: var(--badge-color, #94a3b8);
   }
 
   &__grid {

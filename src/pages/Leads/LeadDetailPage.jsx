@@ -7,7 +7,7 @@ import styles from './LeadDetailPage.module.scss';
 
 const LeadDetailPage = () => {
   const { id } = useParams();
-  const { data: lead, isLoading } = useLead(id);
+  const { data: lead } = useLead(id);
 
   return (
     <div className={styles.leadDetail}>
@@ -18,21 +18,21 @@ const LeadDetailPage = () => {
             <FiArrowLeft /> Volver
           </Link>
           <h1>{lead?.name || 'Cargando...'}</h1>
-          <p style={{ color: '#64748b', margin: 0 }}>
+          <p className={styles.leadDetail__subtitle}>
             {lead ? `ID de Prospecto: #${lead.id} · Captado vía ${lead.source}` : 'Obteniendo información...'}
           </p>
         </div>
         {lead && (
           <div 
             className={styles.leadDetail__badge} 
-            style={{ backgroundColor: `${lead.statusColor}20`, color: lead.statusColor }}
+            style={{ '--badge-color': lead.statusColor }}
           >
             {lead.status}
           </div>
         )}
       </header>
 
-      <LeadDetailView leadId={id} />
+      <LeadDetailView leadId={id} lead={lead} />
     </div>
   );
 };
