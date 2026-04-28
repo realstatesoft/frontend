@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
   FiGrid, FiUsers, FiHome, FiCalendar,
-  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser
+  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser, FiTarget
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -21,6 +21,7 @@ const AGENT_NAV_ITEMS = [
   { to: AGENT_ROUTES.CLIENTS, icon: <FiUsers />, label: 'Clientes' },
   { to: AGENT_ROUTES.PROPERTIES, icon: <FiHome />, label: 'Propiedades' },
   { to: AGENT_ROUTES.VISIT_REQUESTS, icon: <FiClipboard />, label: 'Solicitudes de Visita' },
+  { to: AGENT_ROUTES.LEADS, icon: <FiTarget />, label: 'Prospectos' },
   { to: AGENT_ROUTES.OFFERS, icon: <FiDollarSign />, label: 'Ofertas Recibidas' },
   { section: 'Gestión' },
   { to: AGENT_ROUTES.AGENDA, icon: <FiCalendar />, label: 'Agenda' },
