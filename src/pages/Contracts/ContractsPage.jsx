@@ -59,10 +59,10 @@ export default function ContractsPage() {
   const downloadMutation = useDownloadContract();
 
   const rawLookup = {
-    seller:     sellerRes?.data,
-    buyer:      buyerRes?.data,
-    listing:    listingRes?.data,
-    buyerAgent: bAgentRes?.data,
+    seller:     sellerRes,
+    buyer:      buyerRes,
+    listing:    listingRes,
+    buyerAgent: bAgentRes,
   };
   const loadingLookup = {
     seller:     loadingSeller,
@@ -81,17 +81,17 @@ export default function ContractsPage() {
 
   const count = (key) => {
     const src = {
-      seller:     sellerRes?.data,
-      buyer:      buyerRes?.data,
-      listing:    listingRes?.data,
-      buyerAgent: bAgentRes?.data,
+      seller:     sellerRes,
+      buyer:      buyerRes,
+      listing:    listingRes,
+      buyerAgent: bAgentRes,
     }[key];
     return Array.isArray(src) ? src.length : 0;
   };
 
   const allContracts = useMemo(() => {
     const map = new Map();
-    [sellerRes?.data, buyerRes?.data, listingRes?.data, bAgentRes?.data]
+    [sellerRes, buyerRes, listingRes, bAgentRes]
       .filter(Array.isArray)
       .flat()
       .forEach((c) => map.set(c.id, c));
