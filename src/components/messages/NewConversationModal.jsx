@@ -12,8 +12,8 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const [error, setError] = useState('');
   
   const { canSeeAgents, canSeeClients } = useContacts();
-  const { data: agentsData, isLoading: agentsLoading } = useAgents(search);
-  const { data: clientsData, isLoading: clientsLoading, refetch: refetchClients } = useClients();
+  const { data: agentsData, isLoading: agentsLoading, error: agentsError } = useAgents(search);
+  const { data: clientsData, isLoading: clientsLoading, error: clientsError, refetch: refetchClients } = useClients();
   const sendMessage = useSendMessage();
 
   useEffect(() => {
@@ -29,8 +29,13 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     }
   }, [canSeeClients, isOpen, refetchClients]);
 
-  const agents = agentsData?.data?.content || agentsData || [];
-  const clients = clientsData?.data?.content || clientsData || [];
+  const agents = Array.isArray(agentsData?.content) 
+    ? agentsData.content 
+    : (Array.isArray(agentsData) ? agentsData : []);
+
+  const clients = Array.isArray(clientsData?.content) 
+    ? clientsData.content 
+    : (Array.isArray(clientsData) ? clientsData : []);
 
   const handleSelectContact = (contact) => {
     if (!contact?.id) {
@@ -48,7 +53,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     setError('');
     try {
       await sendMessage.mutateAsync({
-        receiverId: selectedContact.id,
+        receiverId: selectedContact.userId || selectedContact.id,
         content: message.trim()
       });
       
@@ -145,6 +150,8 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
             <h6 className={styles.sectionTitle}>Agentes</h6>
             {agentsLoading ? (
               <div className={styles.loading}><Spinner size="sm" /> Cargando...</div>
+            ) : agentsError ? (
+              <div className={styles.error}>Error cargando agentes</div>
             ) : agents.length === 0 ? (
               <div className={styles.empty}>No hay agentes disponibles</div>
             ) : (
@@ -170,9 +177,11 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
 
         {canSeeClients && (
           <div className={styles.section}>
-            <h6 className={styles.sectionTitle}>Mis clientes</h6>
+            <h6 className={styles.sectionTitle}>Clientes</h6>
             {clientsLoading ? (
               <div className={styles.loading}><Spinner size="sm" /> Cargando...</div>
+            ) : clientsError ? (
+              <div className={styles.error}>Error cargando clientes</div>
             ) : clients.length === 0 ? (
               <div className={styles.empty}>No hay clientes disponibles</div>
             ) : (

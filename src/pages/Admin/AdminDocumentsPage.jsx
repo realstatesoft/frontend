@@ -182,7 +182,7 @@ function UserProfileModal({ user, docs, onClose, onUpdateDoc, processingId }) {
                       {doc && (
                         <button
                           className="kyc-doc-row__btn-view"
-                          onClick={() => window.open(doc.url, "_blank")}
+                          onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
                         >
                           <IoEyeOutline size={14} /> Ver
                         </button>
@@ -237,7 +237,7 @@ function UserProfileModal({ user, docs, onClose, onUpdateDoc, processingId }) {
                       </div>
                       <div className="kyc-doc-row__right">
                         <StatusPill status={doc.documentStatus} />
-                        <button className="kyc-doc-row__btn-view" onClick={() => window.open(doc.url, "_blank")}>
+                        <button className="kyc-doc-row__btn-view" onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}>
                           <IoEyeOutline size={14} />
                         </button>
                       </div>

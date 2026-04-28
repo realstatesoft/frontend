@@ -1,6 +1,5 @@
 import React from "react";
 import { Container } from "react-bootstrap";
-import { Search } from "react-bootstrap-icons";
 import fotoHero from "../../assets/FotoHero.png";
 
 const HeroSection = () => {
