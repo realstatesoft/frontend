@@ -61,7 +61,7 @@ export function usePropertyPermissions(property, propertyAssignments = null) {
     canDelete: isOwner || isAdmin,
 
     /** Cualquier usuario autenticado puede destacar. */
-    canFeature: !!user,
+    canFeature: canAct,
 
     /** Compartir está disponible para todos, incluso visitantes. */
     canShare: true,

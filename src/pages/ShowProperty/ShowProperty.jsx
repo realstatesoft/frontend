@@ -30,6 +30,7 @@ import PropertySummaryCard from "../../components/properties/PropertySummaryCard
 import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
+import HighlightPropertyModal from "../../components/properties/HighlightPropertyModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
@@ -75,6 +76,7 @@ export default function ShowProperty() {
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
+  const [showHighlightModal, setShowHighlightModal] = useState(false);
 
   const {
     canChangeStatus,
@@ -208,7 +210,23 @@ export default function ShowProperty() {
 
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h1>{property.title}</h1>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              <h1 className="mb-0">{property.title}</h1>
+              {property.highlighted && (
+                <Badge
+                  className="d-flex align-items-center gap-2"
+                  style={{
+                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                    fontSize: "1rem",
+                    padding: "8px 16px",
+                    borderRadius: "20px",
+                    fontWeight: 600,
+                  }}
+                >
+                  <Star size={15} /> Destacada
+                </Badge>
+              )}
+            </div>
             <div className="d-flex gap-2 align-items-center mt-2">
               {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
               {(canChangeStatus || canEdit) && (
@@ -265,14 +283,16 @@ export default function ShowProperty() {
                 </Button>
               )}
 
-              {/* Destacar — cualquier usuario autenticado */}
+              {/* Destacar — owner, asignado o admin */}
               {canFeature && (
                 <Button
                   size="sm"
-                  variant="warning"
+                  variant={property.highlighted ? "warning" : "outline-warning"}
                   className="d-flex align-items-center"
+                  onClick={() => setShowHighlightModal(true)}
                 >
-                  <Star size={16} className="property__icon-button" /> Destacar
+                  <Star size={16} className="property__icon-button" />
+                  {property.highlighted ? "Destacada" : "Destacar"}
                 </Button>
               )}
 
@@ -688,9 +708,15 @@ export default function ShowProperty() {
         </Container>
       </div>
 
-      <ReportPropertyModal 
-        propertyId={property.id} 
-        isOpen={showReportModal} 
+      <HighlightPropertyModal
+        property={property}
+        show={showHighlightModal}
+        onHide={() => setShowHighlightModal(false)}
+      />
+
+      <ReportPropertyModal
+        propertyId={property.id}
+        isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
         onSuccess={() => fetchActiveFlagCount && fetchActiveFlagCount()}
       />

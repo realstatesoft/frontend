@@ -161,9 +161,9 @@ export default function MyPropertyCard({ property }) {
                 {property.highlighted ? (
                     <div
                         className="d-flex align-items-center gap-1 text-center"
-                        style={{ fontSize: "0.78rem", color: "#d97706", fontWeight: 600 }}
+                        style={{ fontSize: "0.78rem", fontWeight: 600 }}
                     >
-                        <StarFill size={13} /> Propiedad destacada
+                        <StarFill size={13} /> Destacada hasta el {new Date(property.highlightedUntil).toLocaleDateString()}
                     </div>
                 ) : (
                     <Button
