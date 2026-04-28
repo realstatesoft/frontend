@@ -3,10 +3,11 @@ import { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiBell, FiHome, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
 import { CiUser } from 'react-icons/ci';
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoCashOutline } from 'react-icons/io5';
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoCashOutline, IoChatbubblesOutline } from 'react-icons/io5';
 import { MdFavoriteBorder } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
+import { useUnreadMessagesCount } from '../../../hooks/useMessagesData';
 import useUIStore from '../../../store/useUIStore';
 import LanguageSelector from '../../common/LanguageSelector';
 import CurrencySelector from '../../common/CurrencySelector';
@@ -14,9 +15,11 @@ import styles from './Topbar.module.scss';
 
 export default function Topbar({ extraActions }) {
   const { sidebarCollapsed, toggleSidebar, darkMode, toggleDarkMode } = useUIStore();
-  const { user, logout } = useAuth();
+ 
   const { t } = useTranslation('navigation');
+  const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { data: messagesUnread = 0 } = useUnreadMessagesCount({ enabled: isAuthenticated });
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -106,6 +109,21 @@ export default function Topbar({ extraActions }) {
           <FiBell />
           <span className={styles.topbar__badge} />
         </button>
+
+        {isAuthenticated && (
+          <Link
+            to={user?.role === 'AGENT' ? '/agent/mensajes' : user?.role === 'USER' || user?.role === 'OWNER' ? '/owner/mensajes' : '/mensajes'}
+            className={styles.topbar__iconBtn}
+            aria-label="Mensajes"
+          >
+            <IoChatbubblesOutline />
+            {messagesUnread > 0 && (
+              <span className={styles.topbar__badge}>
+                {messagesUnread > 99 ? '99+' : messagesUnread}
+              </span>
+            )}
+          </Link>
+        )}
         <div className="profile-dropdown-wrapper" ref={dropdownRef}>
           <button
             type="button"

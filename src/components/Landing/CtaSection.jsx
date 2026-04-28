@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import agente from "../../assets/ImagenCta.png";
@@ -8,6 +8,7 @@ const CtaSection = () => {
     const { t } = useTranslation("landing");
     const { ref, isVisible } = useScrollReveal({ threshold: 0.15 });
 
+    
     return (
         <section ref={ref} style={{ padding: "80px 0", backgroundColor: "#f8f9fb" }}>
             <Container>
@@ -32,27 +33,31 @@ const CtaSection = () => {
                             </p>
 
                             <div className="d-flex gap-3 mb-4 flex-wrap">
-                                <button
+                                <Link
+                                    to="/properties"
                                     className="btn text-white rounded-pill px-4 py-2 fw-semibold"
                                     style={{
                                         backgroundColor: "var(--primary, #1a56db)",
                                         border: "none",
                                         fontSize: "0.9rem",
+                                        textDecoration: "none"
                                     }}
                                 >
                                     {t("cta.explore")}
-                                </button>
-                                <button
+                                </Link>
+                                <Link
+                                    to="/properties/create"
                                     className="btn rounded-pill px-4 py-2 fw-semibold"
                                     style={{
                                         backgroundColor: "transparent",
                                         border: "2px solid #d1d5db",
                                         color: "var(--text-dark, #1f2937)",
                                         fontSize: "0.9rem",
+                                        textDecoration: "none"
                                     }}
                                 >
                                     {t("cta.sell")}
-                                </button>
+                                </Link>
                             </div>
 
                             <div className="d-flex gap-4 flex-wrap">

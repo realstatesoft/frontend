@@ -3,10 +3,14 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { ArrowLeft, CheckLg } from "react-bootstrap-icons";
+import { FiMessageSquare } from "react-icons/fi";
+import Swal from "sweetalert2";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
 import { useTranslation } from "react-i18next";
+import NewConversationModal from "../../components/messages/NewConversationModal";
+import { useAuth } from "../../hooks/useAuth";
 import "./AgentProfilePage.scss";
 
 // No external avatar URL — missing avatars fall back to rendered initials.
@@ -15,9 +19,11 @@ export default function PublicAgentProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation("agents");
+  const { isAuthenticated } = useAuth();
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -148,7 +154,16 @@ export default function PublicAgentProfilePage() {
                 </div>
               </div>
             </div>
-            <div className="pb-2">
+            <div className="pb-2 d-flex gap-2">
+              {isAuthenticated && (
+                <button
+                  className="btn btn-outline-primary px-4 py-2"
+                  style={{ borderRadius: "8px", fontWeight: 600 }}
+                  onClick={() => setShowMessageModal(true)}
+                >
+                  <FiMessageSquare className="me-2" /> Mensaje
+                </button>
+              )}
               <button
                 className="btn btn-primary px-4 py-2"
                 style={{ borderRadius: "8px", fontWeight: 600 }}
@@ -302,6 +317,25 @@ export default function PublicAgentProfilePage() {
           </div>
         </Container>
       </div>
+
+      <NewConversationModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        preSelectedAgent={{
+          id: agent?.userId || agent?.id,
+          name: name,
+          email: email,
+        }}
+        onSuccess={() => {
+          Swal.fire({
+            icon: "success",
+            title: "¡Mensaje enviado!",
+            text: "Tu mensaje ha sido enviado correctamente.",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }}
+      />
       <Footer />
     </>
   );

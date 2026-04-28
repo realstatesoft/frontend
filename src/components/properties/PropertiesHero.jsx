@@ -1,15 +1,11 @@
-import { useState } from "react";
-import { Container, Collapse, Row, Col, Form } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { PROPERTY_TYPE, AVAILABILITY } from "../../constants/propertyEnums";
 import useCurrencyStore from "../../store/useCurrencyStore";
+import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
+import SaveSearchModal from "./SaveSearchModal";
+import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
 
-/**
- * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
- *
- * Filtros básicos en la barra: Tipo · Precio · Dormitorios · Más (avanzados)
- * Panel avanzado: disponibilidad, precio min/max, dormitorios mín., baños mín.
- */
 export default function PropertiesHero({
     search,
     typeFilter,
@@ -30,9 +26,50 @@ export default function PropertiesHero({
     onClear,
 }) {
     const { t } = useTranslation("properties");
+
     const [showAdvanced, setShowAdvanced] = useState(false);
     const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
     const activePriceCurrency = priceCurrency || selectedCurrency || "PYG";
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [savedSearches, setSavedSearches] = useState([]);
+
+    const fetchSavedSearches = async () => {
+        try {
+            const res = await searchPreferencesApi.getMine();
+            const items = res?.content || [];
+            setSavedSearches(items);
+        } catch (err) {
+            console.error("Error loading saved searches:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchSavedSearches();
+    }, []);
+
+    const handleDeleteSearch = async (id, evt) => {
+        evt.stopPropagation();
+        try {
+            await searchPreferencesApi.delete(id);
+            fetchSavedSearches();
+        } catch (err) {
+            console.error("Error deleting search:", err);
+        }
+    };
+
+    const filters = {
+        q: search,
+        propertyType: typeFilter,
+        availability,
+        minPrice: minPrice || null,
+        maxPrice: maxPrice || null,
+        minBedrooms: minBedrooms || null,
+        minBathrooms: minBathrooms || null,
+    };
+
+    const handleSaveSuccess = () => {
+        fetchSavedSearches();
+    };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
@@ -42,13 +79,12 @@ export default function PropertiesHero({
             : `Los filtros de precio se convierten a PYG según la cotización disponible de Cambios Chaco.`;
 
     return (
-        <div className="bg-light py-4">
+        <div className="bg-light py-4" style={{ overflow: "visible" }}>
             <Container>
                 <div className="filter-bar">
 
                     {/* Búsqueda */}
                     <div className="filter-bar__search">
-                        <span className="filter-bar__search-icon"></span>
                         <input
                             type="text"
                             placeholder={t("search.placeholder")}
@@ -57,63 +93,89 @@ export default function PropertiesHero({
                         />
                     </div>
 
-                    <div className="filter-bar__divider" />
+                    {/* Mis búsquedas */}
+                    <Dropdown className="filter-bar__saved-dropdown">
+                        <Dropdown.Toggle className="filter-pill">
+                            Mis búsquedas
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Header>Mis búsquedas guardadas</Dropdown.Header>
 
-                    {/* Pill: Tipo */}
+                            {savedSearches.map((s) => (
+                                <Dropdown.Item
+                                    key={s.id}
+                                    as="div"
+                                    className="d-flex justify-content-between"
+                                    onClick={() => {
+                                        const f = s.filters || {};
+                                        onSearch(f.q ?? "");
+                                        onTypeChange(f.propertyType ?? "");
+                                        onAvailabilityChange(f.availability ?? "");
+                                        onMinPriceChange(f.minPrice ?? "");
+                                        onMaxPriceChange(f.maxPrice ?? "");
+                                        onMinBedroomsChange(f.minBedrooms ?? "");
+                                        onMinBathroomsChange(f.minBathrooms ?? "");
+                                    }}
+                                >
+                                    <span>{s.name}</span>
+                                    <button
+                                        onClick={(evt) => handleDeleteSearch(s.id, evt)}
+                                        type="button"
+                                    >
+                                        ×
+                                    </button>
+                                </Dropdown.Item>
+                            ))}
+
+                            {savedSearches.length === 0 && (
+                                <Dropdown.Item disabled>
+                                    Sin búsquedas guardadas
+                                </Dropdown.Item>
+                            )}
+                        </Dropdown.Menu>
+                    </Dropdown>
+
+                    {/* Tipo */}
                     <PillSelect
                         label={t("search.type")}
                         value={typeFilter}
                         onChange={onTypeChange}
                         active={!!typeFilter}
                     >
-                        <option value="">{t("search.all")}</option>
-                        {Object.entries(PROPERTY_TYPE).map(([label, value]) => (
-                            <option key={value} value={label}>{t(`types.${value.toLowerCase()}`)}</option>
+                        <option value="">Todos</option>
+                        {PROPERTY_TYPE_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>
+                                {opt}
+                            </option>
                         ))}
                     </PillSelect>
 
-                    <div className="filter-bar__divider" />
-
-                    {/* Pill: Dormitorios */}
+                    {/* Dormitorios */}
                     <PillSelect
                         label={t("search.bedrooms")}
                         value={minBedrooms}
                         onChange={onMinBedroomsChange}
                         active={!!minBedrooms}
                     >
-                        <option value="">{t("search.any")}</option>
+                        <option value="">Cualquiera</option>
                         {[1, 2, 3, 4, 5].map((n) => (
                             <option key={n} value={n}>{n}+</option>
                         ))}
                     </PillSelect>
 
-                    <div className="filter-bar__divider" />
-
-                    {/* Pill: Más (abre panel avanzado) */}
-                    <button
-                        className={`filter-pill${showAdvanced || advancedActiveCount > 0 ? " filter-pill--active" : ""}`}
-                        onClick={() => setShowAdvanced((v) => !v)}
-                        type="button"
-                    >
+                    {/* Más filtros */}
+                    <button onClick={() => setShowAdvanced(!showAdvanced)}>
                         {t("search.moreFilters")}
-                        {advancedActiveCount > 0
-                            ? <span className="filter-pill__badge">{advancedActiveCount}</span>
-                            : <span className={`filter-pill__chevron${showAdvanced ? " filter-pill__chevron--open" : ""}`} />
-                        }
                     </button>
 
-                    {/* Limpiar — solo aparece cuando hay algo activo */}
                     {hasAnyFilter && (
                         <>
-                            <div className="filter-bar__divider" />
-                            <button className="filter-bar__clear" onClick={onClear} title={t("search.clearFilters")} type="button">
-                                ✕
-                            </button>
+                            <button onClick={onClear}>Limpiar</button>
+                            <button onClick={() => setShowSaveModal(true)}>Guardar</button>
                         </>
                     )}
                 </div>
 
-                {/* ── Panel de filtros avanzados ─────────────────────────── */}
                 <Collapse in={showAdvanced}>
                     <div>
                         <div className="filter-bar__advanced-panel">
@@ -126,19 +188,9 @@ export default function PropertiesHero({
                                         size="sm"
                                     >
                                         <option value="">{t("search.any")}</option>
-                                        {Object.entries(AVAILABILITY).map(([label, value]) => (
-                                            <option key={value} value={label}>
-                                                {t(
-                                                    `availabilityOptions.${
-                                                        value === 'IMMEDIATE'
-                                                            ? 'immediate'
-                                                            : value === 'IN_30_DAYS'
-                                                              ? 'in30Days'
-                                                              : value === 'IN_60_DAYS'
-                                                                ? 'in60Days'
-                                                                : 'toNegotiate'
-                                                    }`
-                                                )}
+                                        {AVAILABILITY_OPTIONS.map((opt) => (
+                                            <option key={opt} value={opt}>
+                                                {opt}
                                             </option>
                                         ))}
                                     </Form.Select>
@@ -149,7 +201,10 @@ export default function PropertiesHero({
                                         {t("search.minPrice")} ({activePriceCurrency})
                                     </span>
                                     <Form.Control
-                                        type="number" size="sm" placeholder={`0 ${activePriceCurrency}`} min={0}
+                                        type="number"
+                                        size="sm"
+                                        placeholder={`0 ${activePriceCurrency}`}
+                                        min={0}
                                         value={minPrice}
                                         onChange={(e) => onMinPriceChange(e.target.value)}
                                     />
@@ -160,7 +215,10 @@ export default function PropertiesHero({
                                         {t("search.maxPrice")} ({activePriceCurrency})
                                     </span>
                                     <Form.Control
-                                        type="number" size="sm" placeholder={`${t("search.noLimit")} (${activePriceCurrency})`} min={0}
+                                        type="number"
+                                        size="sm"
+                                        placeholder={`${t("search.noLimit")} (${activePriceCurrency})`}
+                                        min={0}
                                         value={maxPrice}
                                         onChange={(e) => onMaxPriceChange(e.target.value)}
                                     />
@@ -185,21 +243,26 @@ export default function PropertiesHero({
                     </div>
                 </Collapse>
 
-                {/* Contador de resultados */}
                 <p className="filter-bar__results">
                     {t("results.showing", { count: totalResults })}
                 </p>
+
+                <SaveSearchModal
+                    show={showSaveModal}
+                    onHide={() => setShowSaveModal(false)}
+                    filters={filters}
+                    onSuccess={handleSaveSuccess}
+                />
             </Container>
         </div>
     );
 }
 
-/* ── Componente interno: pill que envuelve un <select> nativo invisible ── */
 function PillSelect({ label, value, onChange, active, children }) {
     return (
         <div style={{ position: "relative" }}>
             <div className={`filter-pill${active ? " filter-pill--active" : ""}`} style={{ pointerEvents: "none" }}>
-                {value ? value : label}
+                {value || label}
                 <span className="filter-pill__chevron" />
             </div>
             <select

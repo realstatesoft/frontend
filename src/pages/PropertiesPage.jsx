@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
@@ -21,17 +23,28 @@ const PAGE_SIZE = 12;
  */
 export default function PropertiesPage() {
     const { isAuthenticated: authCheck, preferencesCompleted } = useAuth();
-    const [search, setSearch] = useState("");
-    const [typeFilter, setTypeFilter] = useState("");
-    const [availability, setAvailability] = useState("");
-    const [minPrice, setMinPrice] = useState("");
-    const [maxPrice, setMaxPrice] = useState("");
-    const [minBedrooms, setMinBedrooms] = useState("");
+    const locationState = useLocation().state || {};
+
+    const [search, setSearch] = useState(locationState.search || "");
+    const [typeFilter, setTypeFilter] = useState(locationState.typeFilter || "");
+    const [availability, setAvailability] = useState(locationState.availability || "");
+    const [minPrice, setMinPrice] = useState(locationState.minPrice || "");
+    const [maxPrice, setMaxPrice] = useState(locationState.maxPrice || "");
+    const [minBedrooms, setMinBedrooms] = useState(locationState.minBedrooms || "");
     const [minBathrooms, setMinBathrooms] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);
     const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
     const { data: exchangeRates } = useExchangeRates({ enabled: true, staleTime: 10 * 60 * 1000, retry: 1 });
+
+    useEffect(() => {
+        setSearch(locationState.search || "");
+        setTypeFilter(locationState.typeFilter || "");
+        setAvailability(locationState.availability || "");
+        setMinPrice(locationState.minPrice || "");
+        setMaxPrice(locationState.maxPrice || "");
+        setMinBedrooms(locationState.minBedrooms || "");
+    }, [locationState.search, locationState.typeFilter, locationState.availability, locationState.minPrice, locationState.maxPrice, locationState.minBedrooms]);
 
     // Convertir labels a valores enum del backend
     const backendType = typeFilter ? PROPERTY_TYPE[typeFilter] : undefined;

@@ -39,6 +39,8 @@ export function useShowProperty() {
   const registeredViewRef = useRef(registeredViewIds);
 
   const [property, setProperty] = useState(null);
+  const propertyRef = useRef(property);
+  propertyRef.current = property;
   const [similarProperties, setSimilarProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingSimilar, setLoadingSimilar] = useState(true);
@@ -299,6 +301,34 @@ export function useShowProperty() {
     }
   }, [id, hideConfirm, navigate]);
 
+  const handleToggleHighlight = useCallback(async () => {
+    const currentProp = propertyRef.current;
+    if (!id || !currentProp) return;
+    setActionLoading(true);
+    const newHighlightState = !currentProp.highlighted;
+    try {
+      const { data } = await propertyApi.toggleHighlight(id, newHighlightState);
+      if (!data?.success || !data?.data) throw new Error(data?.message || 'Backend reported failure');
+      
+      setProperty(data.data);
+      await Swal.fire({
+        icon: "success",
+        title: "Éxito",
+        text: newHighlightState ? "Propiedad destacada correctamente" : "Se ha quitado el destacado de la propiedad",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id]);
+
   const openChangeStatusConfirm = useCallback((option) => {
     setConfirmData({
       title: `Cambiar estado a "${option.label}"`,
@@ -406,6 +436,7 @@ export function useShowProperty() {
     copyLink,
     activeFlagCount,
     viewCount,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleToggleHighlight
   };
 }

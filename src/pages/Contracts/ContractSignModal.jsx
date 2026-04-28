@@ -56,7 +56,7 @@ export default function ContractSignModal({ contract, onClose, onSuccess }) {
     if (signaturesRes?.data && user && !role) {
       const pendingSigs = signaturesRes.data.filter(s => !s.signed);
       // Buscar si el usuario actual coincide con alguno de los que DEBEN firmar
-      const myPendingRole = pendingSigs.find(s => s.userId === user.id || s.email === user.email);
+      const myPendingRole = pendingSigs.find(s => s.signerId === user.userId || s.signerEmail === user.email);
 
       if (myPendingRole) {
         setRole(myPendingRole.role);
