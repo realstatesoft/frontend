@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FiTarget, FiAlertCircle, FiClock, FiCalendar, FiPhone,
   FiMail, FiX, FiEye, FiRefreshCw, FiHome, FiTrendingUp,
@@ -9,6 +10,7 @@ import { getLeadsByAgent } from '../../services/leads/leadApi';
 import agentApi from '../../services/agents/agentApi';
 import { useAuth } from '../../hooks/useAuth';
 import { getWhatsAppLink } from '../../utils/whatsapp';
+import LeadDetailView from '../../components/leads/LeadDetailView';
 import styles from './AgentLeadsPage.module.scss';
 
 // ─── Timeline helpers ────────────────────────────────────────────────────────
@@ -68,162 +70,28 @@ function Avatar({ name }) {
   return <div className={styles.avatar}>{initials}</div>;
 }
 
-// ─── Detail Drawer ───────────────────────────────────────────────────────────
 function LeadDrawer({ lead, onClose }) {
-  const [copyFeedback, setCopyFeedback] = useState(false);
-
   if (!lead) return null;
-
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopyFeedback(true);
-    setTimeout(() => setCopyFeedback(false), 2000);
-  };
-
-  const meta = lead.metadata ?? {};
-  const timeline = getTimeline(lead);
-  const whatsappUrl = getWhatsAppLink(lead.phone, '595',
-    `Hola ${lead.name ?? ''}, te contacto desde OpenRoof por tu consulta.`);
-
-  const metaRows = [
-    { key: 'Propiedad',    val: meta.propertyType ?? '—' },
-    { key: 'Operación',    val: meta.category === 'SALE' ? 'Venta' : meta.category === 'RENT' ? 'Alquiler' : '—' },
-    { key: 'Dirección',    val: meta.address ?? '—' },
-    { key: 'Superficie',   val: meta.surfaceArea ? `${meta.surfaceArea} m²` : '—' },
-    { key: 'Área construida', val: meta.builtArea ? `${meta.builtArea} m²` : '—' },
-    { key: 'Habitaciones', val: meta.bedrooms ?? '—' },
-    { key: 'Año de construcción', val: meta.yearBuilt ?? '—' },
-    { key: 'Pisos',        val: meta.floors ?? '—' },
-    { key: 'Estacionamientos', val: meta.parkingSpaces ?? '—' },
-    { key: 'Pileta',       val: meta.hasPool ? 'Sí' : 'No' },
-    { key: 'Seguridad',    val: meta.hasSecureEntry ? 'Sí' : 'No' },
-    { key: 'Relación c/ agente', val: meta.agentRelationship ?? '—' },
-  ].filter(r => r.val !== '—');
 
   return (
     <div className={styles.drawerOverlay} onClick={onClose} role="dialog" aria-modal="true">
       <div className={styles.drawer} onClick={e => e.stopPropagation()}>
-        <div className={styles.drawerHeader}>
+        <header className={styles.drawerHeader}>
           <h2 className={styles.drawerTitle}>Detalle del Prospecto</h2>
-          <button className={styles.drawerClose} onClick={onClose} aria-label="Cerrar"><FiX /></button>
-        </div>
+          <button className={styles.drawerClose} onClick={onClose} aria-label="Cerrar">
+            <FiX />
+          </button>
+        </header>
 
         <div className={styles.drawerBody}>
-          {/* Contact */}
-          <div className={styles.drawerSection}>
-            <p className={styles.drawerSectionTitle}>Contacto</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <Avatar name={lead.name} />
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '1rem' }}>{lead.name}</div>
-                <StatusBadge status={lead.status} color={lead.statusColor} />
-              </div>
-            </div>
-            {lead.email && (
-              <div className={styles.drawerRow}>
-                <span className={styles.drawerRowKey}><FiMail /> Email</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <a href={`mailto:${lead.email}`} className={styles.drawerRowVal}>{lead.email}</a>
-                  <button
-                    onClick={() => handleCopy(lead.email)}
-                    className={styles.miniCopyBtn}
-                    title="Copiar email"
-                  >
-                    {copyFeedback ? <FiCheck style={{ color: '#16a34a' }} /> : <FiCopy />}
-                  </button>
-                  {copyFeedback && <span className={styles.copyTooltip}>¡Copiado!</span>}
-                </div>
-              </div>
-            )}
-            {lead.phone && (
-              <div className={styles.drawerRow}>
-                <span className={styles.drawerRowKey}><FiPhone /> Teléfono</span>
-                <a href={`tel:${lead.phone}`} className={styles.drawerRowVal}>{lead.phone}</a>
-              </div>
-            )}
-            {lead.createdAt && (
-              <div className={styles.drawerRow}>
-                <span className={styles.drawerRowKey}><FiCalendar /> Recibido</span>
-                <span className={styles.drawerRowVal}>
-                  {new Date(lead.createdAt).toLocaleString('es-PY', {
-                    dateStyle: 'medium', timeStyle: 'short',
-                  })}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Timeline */}
-          {timeline && (
-            <div className={styles.drawerSection}>
-              <p className={styles.drawerSectionTitle}>Urgencia</p>
-              <TimelineBadge value={timeline} />
-            </div>
-          )}
-
-          {/* Property info */}
-          {metaRows.length > 0 && (
-            <div className={styles.drawerSection}>
-              <p className={styles.drawerSectionTitle}>Información de la Propiedad</p>
-              <div className={styles.drawerRow}>
-                <span className={styles.drawerRowKey}>Fuente</span>
-                <span className={styles.drawerRowVal} style={{ textTransform: 'capitalize' }}>
-                  {lead.source?.replace('_', ' ') ?? 'Manual'}
-                </span>
-              </div>
-              {metaRows.map(r => (
-                <div key={r.key} className={styles.drawerRow}>
-                  <span className={styles.drawerRowKey}>{r.key}</span>
-                  <span className={styles.drawerRowVal}>{String(r.val)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Notes */}
-          {lead.notes && (
-            <div className={styles.drawerSection}>
-              <p className={styles.drawerSectionTitle}>Notas del Wizard</p>
-              <div className={styles.notesBox}>{lead.notes}</div>
-            </div>
-          )}
-
-          {/* Quick actions */}
-          <div className={styles.drawerSection}>
-            <p className={styles.drawerSectionTitle}>Acciones Rápidas</p>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {lead.email && (
-                <a
-                  href={`mailto:${lead.email}`}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
-                    padding: '8px 14px', borderRadius: 'var(--radius-sm)',
-                    background: 'rgba(37,99,235,0.1)', color: 'var(--color-accent)',
-                    border: '1px solid rgba(37,99,235,0.25)', textDecoration: 'none',
-                    fontSize: '0.875rem', fontWeight: 600,
-                  }}
-                >
-                  <FiMail /> Enviar email
-                </a>
-              )}
-              {whatsappUrl && (
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6,
-                    padding: '8px 14px', borderRadius: 'var(--radius-sm)',
-                    background: 'rgba(34,197,94,0.1)', color: '#16a34a',
-                    border: '1px solid rgba(34,197,94,0.25)', textDecoration: 'none',
-                    fontSize: '0.875rem', fontWeight: 600,
-                  }}
-                >
-                  <FiPhone /> WhatsApp
-                </a>
-              )}
+          <div style={{ padding: '0 1rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{lead.name}</h1>
+              <StatusBadge status={lead.status} color={lead.statusColor} />
             </div>
           </div>
+
+          <LeadDetailView lead={lead} />
         </div>
       </div>
     </div>
@@ -234,6 +102,7 @@ function LeadDrawer({ lead, onClose }) {
 const PAGE_SIZE = 20;
 
 export default function AgentLeadsPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   const [agentProfile, setAgentProfile] = useState(null);
@@ -242,7 +111,6 @@ export default function AgentLeadsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedLead, setSelectedLead] = useState(null);
 
   // Filters
   const [filterStatus, setFilterStatus] = useState('');
@@ -491,7 +359,7 @@ export default function AgentLeadsPage() {
                     ].filter(Boolean).join(' · ') || '—';
 
                     return (
-                      <tr key={lead.id}>
+                      <tr key={lead.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/agent/leads/${lead.id}`)}>
                         <td>
                           <div className={styles.prospectCell}>
                             <Avatar name={lead.name} />
@@ -521,6 +389,7 @@ export default function AgentLeadsPage() {
                                 href={whatsappUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
                                 className={`${styles.actionBtn} ${styles['actionBtn--whatsapp']}`}
                                 title="WhatsApp"
                                 aria-label="Contactar por WhatsApp"
@@ -531,6 +400,7 @@ export default function AgentLeadsPage() {
                             {lead.email && (
                               <a
                                 href={`mailto:${lead.email}`}
+                                onClick={(e) => e.stopPropagation()}
                                 className={`${styles.actionBtn} ${styles['actionBtn--primary']}`}
                                 title="Enviar email"
                                 aria-label="Enviar email"
@@ -540,7 +410,10 @@ export default function AgentLeadsPage() {
                             )}
                             <button
                               className={`${styles.actionBtn} ${styles['actionBtn--primary']}`}
-                              onClick={() => setSelectedLead(lead)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/agent/leads/${lead.id}`);
+                              }}
                               title="Ver detalle"
                               aria-label="Ver detalle"
                             >
@@ -590,11 +463,6 @@ export default function AgentLeadsPage() {
           </>
         )}
       </div>
-
-      {/* Detail Drawer */}
-      {selectedLead && (
-        <LeadDrawer lead={selectedLead} onClose={() => setSelectedLead(null)} />
-      )}
     </div>
   );
 }

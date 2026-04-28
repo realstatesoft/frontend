@@ -120,6 +120,7 @@ export default function AppRouter() {
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                     <Route path="leads" element={<AgentLeadsPage />} />
+          <Route path="leads/:id" element={<LeadDetailPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
                     <Route path="prospectos/:id" element={<LeadDetailPage />} />
                 </Route>
