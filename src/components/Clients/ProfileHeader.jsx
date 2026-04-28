@@ -21,6 +21,15 @@ const ProfileHeader = ({ client }) => {
   const navigate = useNavigate();
   const [showMessageModal, setShowMessageModal] = React.useState(false);
 
+  const preSelectedAgent = React.useMemo(() => {
+    if (!client) return null;
+    return {
+      id: client.userId || client.id,
+      name: client.userName,
+      email: client.userEmail,
+    };
+  }, [client?.userId, client?.id, client.userName, client.userEmail]);
+
   if (!client) return null;
 
   const priorityLabel = CLIENT_PRIORITY_LABELS[client.priority] || client.priority;
@@ -39,12 +48,6 @@ const ProfileHeader = ({ client }) => {
     minWidth: '140px',
     boxShadow: 'none'
   };
-
-  const preSelectedAgent = React.useMemo(() => ({
-    id: client?.userId || client?.id,
-    name: client.userName,
-    email: client.userEmail,
-  }), [client?.userId, client?.id, client.userName, client.userEmail]);
 
   return (
     <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: '1.5rem', overflow: 'hidden' }}>
