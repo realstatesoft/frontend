@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FiSend, FiUser, FiPlus } from 'react-icons/fi';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
@@ -7,12 +9,13 @@ import NewConversationModal from '../../components/messages/NewConversationModal
 import styles from './OwnerMessagesPage.module.scss';
 
 function InboxList({ conversations, activeId, onSelect }) {
+  const { t } = useTranslation('owner');
   return (
     <div className={styles.inbox}>
-      <div className={styles.inbox__header}>Conversaciones</div>
+      <div className={styles.inbox__header}>{t('messages.inbox')}</div>
       <div className={styles.inbox__list}>
         {conversations.length === 0 ? (
-          <div className={styles.inbox__empty}>No hay conversaciones</div>
+          <div className={styles.inbox__empty}>{t('messages.emptyInbox')}</div>
         ) : (
           conversations.map((conv) => (
             <button
@@ -48,6 +51,7 @@ function ConversationPanel({ conversation }) {
   const messages = response?.data || [];
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
+  const { t } = useTranslation('owner');
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -69,7 +73,7 @@ function ConversationPanel({ conversation }) {
     return (
       <div className={styles.conversation}>
         <div className={styles.conversation__empty}>
-          Selecciona una conversación para comenzar a chatear
+          {t('messages.emptyConversation')}
         </div>
       </div>
     );
@@ -108,7 +112,7 @@ function ConversationPanel({ conversation }) {
         <input
           type="text"
           className={styles.conversation__input}
-          placeholder="Escribe un mensaje..."
+          placeholder={t('messages.placeholder')}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           disabled={sendMessage.isPending}
@@ -130,27 +134,31 @@ export default function OwnerMessagesPage() {
   const { data: response, isLoading, refetch } = useConversations();
   const conversations = response?.data || [];
   const [activeConversation, setActiveConversation] = useState(null);
-  const [showNewConvModal, setShowNewConvModal] = useState(false);
+  const { t } = useTranslation('owner');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showNewConvModal, setShowNewConvModal] = useState(() => Boolean(location.state?.openNewConversation));
+  const [preSelectedUser, setPreSelectedUser] = useState(() => location.state?.preSelectedAgent || null);
 
   if (isLoading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.page__loading}>Cargando mensajes...</div>
-      </div>
+        <div className={styles.page}>
+          <div className={styles.page__loading}>{t('messages.loading')}</div>
+        </div>
     );
   }
 
   return (
     <div className={styles.page}>
       <div className={styles.page__header}>
-        <h1 className={styles.page__title}>Mensajes</h1>
-        <p className={styles.page__subtitle}>Comunicación con tu agente</p>
+        <h1 className={styles.page__title}>{t('messages.title')}</h1>
+        <p className={styles.page__subtitle}>{t('messages.subtitle')}</p>
         <Button 
           variant="outline-primary" 
           size="sm"
           onClick={() => setShowNewConvModal(true)}
         >
-          <FiPlus className="me-1" /> Nueva conversación
+          <FiPlus className="me-1" /> {t('messages.newConversation')}
         </Button>
       </div>
 
@@ -165,8 +173,13 @@ export default function OwnerMessagesPage() {
 
       <NewConversationModal
         isOpen={showNewConvModal}
-        onClose={() => setShowNewConvModal(false)}
+        onClose={() => { 
+          setShowNewConvModal(false); 
+          setPreSelectedUser(null); 
+          navigate(window.location.pathname, { replace: true, state: null });
+        }}
         onSuccess={() => refetch()}
+        preSelectedAgent={preSelectedUser}
       />
     </div>
   );

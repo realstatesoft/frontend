@@ -1,9 +1,18 @@
 import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { tagColors, STATUS_LABELS } from "../../data/propertiesData";
-import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import FavoriteToggleButton from "./FavoriteToggleButton";
+import { useTranslation } from "react-i18next";
+
+const STATUS_COLORS = {
+    PENDING: "#757575",
+    APPROVED: "#1565c0",
+    REJECTED: "#c62828",
+    PUBLISHED: "#2e7d32",
+    SOLD: "#7b1fa2",
+    RENTED: "#b39ddb",
+    ARCHIVED: "#455a64",
+};
 
 /**
  * PropertyCard
@@ -20,15 +29,17 @@ export default function PropertyCard({
     onToggleCompare,
     compareDisabled = false,
 }) {
+    const { t } = useTranslation("properties");
     // Normalizar campos del API a los que usa el componente
-    const tag = STATUS_LABELS[property.status] ?? property.tag ?? "—";
+    const tag = t(`card.status.${property.status}`, { defaultValue: property.tag ?? "—" });
     const price = property.price;
     const numericPrice = Number(price);
     const formattedPrice = Number.isFinite(numericPrice)
         ? `Gs ${numericPrice.toLocaleString()}`
         : "—";
-    const type =
-        PROPERTY_TYPE_LABELS[property.propertyType] ?? property.type ?? "";
+    const type = property.propertyType
+        ? t(`types.${property.propertyType.toLowerCase()}`, { defaultValue: property.type ?? "" })
+        : (property.type ?? "");
     const location = property.address || property.locationName || property.location || "";
     const bedrooms = property.bedrooms ?? "—";
     const bathrooms = property.bathrooms ?? "—";
@@ -53,7 +64,7 @@ export default function PropertyCard({
                 <Badge
                     className="position-absolute top-0 start-0 m-2 px-3 py-2"
                     style={{
-                        backgroundColor: tagColors[tag] ?? "#555",
+                        backgroundColor: STATUS_COLORS[property.status] ?? "#555",
                         borderRadius: "20px",
                         fontSize: "0.72rem",
                         zIndex: 2,
@@ -65,7 +76,7 @@ export default function PropertyCard({
                     isFavorite={isFavorite}
                     loading={isFavoriteLoading}
                     disabled={!canToggleFavorite || !onToggleFavorite}
-                    ariaLabel={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+                    ariaLabel={isFavorite ? t("card.favoriteRemove") : t("card.favoriteAdd")}
                     onClick={() => onToggleFavorite(property.id)}
                 />
                 <Card.Img
@@ -94,8 +105,8 @@ export default function PropertyCard({
                 </p>
                 <hr className="my-2" />
                 <div className="d-flex justify-content-between text-muted" style={{ fontSize: "0.82rem" }}>
-                    <span>🛏 {bedrooms} hab.</span>
-                    <span>🚿 {bathrooms} baños</span>
+                    <span>🛏 {t("card.bedrooms", { count: bedrooms })}</span>
+                    <span>🚿 {t("card.bathrooms", { count: bathrooms })}</span>
                     <span>📐 {area} m²</span>
                 </div>
             </Card.Body>
@@ -113,7 +124,7 @@ export default function PropertyCard({
                             fontSize: "0.85rem",
                         }}
                     >
-                        Ver Detalles
+                        {t("card.details")}
                     </Button>
                     <Button
                         variant={isCompared ? "outline-danger" : "outline-primary"}

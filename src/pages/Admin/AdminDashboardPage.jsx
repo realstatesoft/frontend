@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   FiUsers,
   FiHome,
@@ -42,6 +43,7 @@ function priorityBadgeClass(key) {
 }
 
 export default function AdminDashboardPage() {
+  const { t } = useTranslation('admin');
   const { data: response, isLoading, isError, error } = useAdminDashboard();
   const overview = response?.data;
   const navigate = useNavigate();
@@ -50,27 +52,25 @@ export default function AdminDashboardPage() {
     <div className={styles.page}>
       <div className={styles.main}>
         <header className={styles.hero}>
-          <h1 className={styles.hero__title}>Panel de Administración</h1>
-          <p className={styles.hero__subtitle}>
-            Vista general del sistema y estadísticas principales
-          </p>
+          <h1 className={styles.hero__title}>{t('dashboard.title')}</h1>
+          <p className={styles.hero__subtitle}>{t('dashboard.subtitle')}</p>
         </header>
 
-        {isLoading && <div className={styles.state}>Cargando resumen…</div>}
+        {isLoading && <div className={styles.state}>{t('dashboard.loading')}</div>}
 
         {isError && (
           <div className={styles.stateError}>
             {error?.response?.status === 403
-              ? 'No tenés permisos para ver este panel.'
-              : 'No se pudo cargar el panel. Intentá de nuevo más tarde.'}
+              ? t('dashboard.noPermission')
+              : t('dashboard.loadError')}
           </div>
         )}
 
         {overview && (
           <>
-            <section className={styles.stats} aria-label="Indicadores">
+            <section className={styles.stats} aria-label={t('dashboard.indicators')}>
               <StatCard
-                label="Usuarios"
+                label={t('auditLogs.table.user')}
                 value={overview.users?.valueLabel ?? '—'}
                 subtitle={overview.users?.subtitle}
                 trend={overview.users?.trendPercent}
@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
                 colorAccent="accent"
               />
               <StatCard
-                label="Propiedades"
+                label={t('auditLogs.table.property')}
                 value={overview.properties?.valueLabel ?? '—'}
                 subtitle={overview.properties?.subtitle}
                 trend={overview.properties?.trendPercent}
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
                 colorAccent="success"
               />
               <StatCard
-                label="Transacciones"
+                label={t('reports.sales')}
                 value={overview.transactions?.valueLabel ?? '—'}
                 subtitle={overview.transactions?.subtitle}
                 trend={overview.transactions?.trendPercent}
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
                 colorAccent="warning"
               />
               <StatCard
-                label="Ingresos"
+                label={t('reports.priceAverage')}
                 value={overview.revenue?.valueLabel ?? '—'}
                 subtitle={overview.revenue?.subtitle}
                 trend={overview.revenue?.trendPercent}
@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
             <div className={styles.columns}>
               <section className={styles.panel} aria-labelledby="admin-quick-title">
                 <h2 id="admin-quick-title" className={styles.panel__title}>
-                  Acciones rápidas
+                  {t('dashboard.quickActions')}
                 </h2>
                 <div className={styles.quickList}>
                   {(overview.quickActions ?? []).map((action) => {
@@ -139,7 +139,7 @@ export default function AdminDashboardPage() {
                         type="button"
                         className={styles.quickRow}
                         disabled
-                        title="Próximamente"
+                        title={t('dashboard.comingSoon')}
                       >
                         {inner}
                       </button>
@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
 
               <section className={styles.panel} aria-labelledby="admin-activity-title">
                 <h2 id="admin-activity-title" className={styles.panel__title}>
-                  Actividad reciente
+                  {t('dashboard.activity')}
                 </h2>
                 <div className={styles.activityList}>
                   {(overview.recentActivity ?? []).map((item) => {
@@ -172,17 +172,17 @@ export default function AdminDashboardPage() {
                   })}
                 </div>
                 <Link to={ADMIN_ROUTES.AUDIT_LOGS} className={styles.footerLink}>
-                  Ver todo el historial <FiArrowRight aria-hidden className={styles.activityFooterArrow} />
+                  {t('dashboard.viewAllHistory')} <FiArrowRight aria-hidden className={styles.activityFooterArrow} />
                 </Link>
               </section>
 
               <section className={styles.panel} aria-labelledby="admin-attention-title">
                 <h2 id="admin-attention-title" className={styles.panel__title}>
-                  Requiere atención
+                  {t('dashboard.attention')}
                 </h2>
                 <div className={styles.attentionList}>
                   {(overview.attentionItems ?? []).length === 0 ? (
-                    <p className={styles.emptyAttention}>No hay propiedades que requieran atención en estos estados.</p>
+                    <p className={styles.emptyAttention}>{t('dashboard.emptyAttention')}</p>
                   ) : (
                     (overview.attentionItems ?? []).map((item) => (
                       <Link
@@ -205,7 +205,7 @@ export default function AdminDashboardPage() {
                   className={styles.footerLink}
                   onClick={() => navigate(ADMIN_ROUTES.APPROVAL)}
                 >
-                  Ver todas las tareas <FiArrowRight aria-hidden />
+                  {t('dashboard.viewAllTasks')} <FiArrowRight aria-hidden />
                 </button>
               </section>
             </div>

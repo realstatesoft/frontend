@@ -27,6 +27,8 @@ const propertyApi = {
 
   changeStatus: (id, newStatus) => api.patch(`${BASE}/${id}/status`, { newStatus }),
 
+  toggleHighlight: (id, highlighted) => api.patch(`${BASE}/${id}/highlight`, null, { params: { highlighted } }),
+
   trash: (id) => api.patch(`${BASE}/${id}/trash`),
 
   restore: (id) => api.patch(`${BASE}/${id}/restore`),

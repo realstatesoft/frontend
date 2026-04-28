@@ -1,19 +1,27 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../../i18n';
 import QuickActions from '../../../components/widgets/QuickActions/QuickActions';
 
 const renderQuickActions = () =>
   render(
-    <MemoryRouter>
-      <QuickActions />
-    </MemoryRouter>
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <QuickActions />
+      </MemoryRouter>
+    </I18nextProvider>
   );
 
 // ── Tests ──────────────────────────────────────────────────────────────────────
 
 describe('QuickActions', () => {
+  beforeEach(async () => {
+    await initializeI18n();
+  });
+
   describe('título', () => {
     it('muestra el título "Acciones Rápidas"', () => {
       renderQuickActions();

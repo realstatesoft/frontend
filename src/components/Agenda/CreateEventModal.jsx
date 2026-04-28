@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col, Alert } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { createEvent } from '../../services/agents/agentAgendaService';
 
-const EVENT_TYPE_OPTIONS = [
-    { value: 'VISIT',    label: 'Visita' },
-    { value: 'MEETING',  label: 'Reunión' },
-    { value: 'BLOCKED',  label: 'Bloqueado' },
-    { value: 'OTHER',    label: 'Otro' },
+const EVENT_TYPE_OPTIONS = (t) => [
+    { value: 'VISIT',    label: t('options.visit') },
+    { value: 'MEETING',  label: t('options.meeting') },
+    { value: 'BLOCKED',  label: t('options.blocked') },
+    { value: 'OTHER',    label: t('options.other') },
 ];
 
 // Format a Date to "YYYY-MM-DD"
@@ -36,6 +37,7 @@ const INITIAL_FORM = {
 };
 
 export default function CreateEventModal({ show, onHide, initialDate, onSuccess }) {
+    const { t } = useTranslation('agenda');
     const [form, setForm]       = useState(INITIAL_FORM);
     const [loading, setLoading] = useState(false);
     const [error, setError]     = useState(null);
@@ -65,7 +67,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
 
         // Client-side temporal validation
         if (startsAt && endsAt && endsAt <= startsAt) {
-            setError('La hora de fin debe ser posterior a la hora de inicio.');
+            setError(t('errors.endAfterStart'));
             return;
         }
 
@@ -87,7 +89,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
         } catch (err) {
             const msg = err.response?.data?.message
                 ?? err.response?.data?.error
-                ?? 'Error al crear el evento. Intente nuevamente.';
+                ?? t('errors.createFailed');
             setError(msg);
         } finally {
             setLoading(false);
@@ -97,7 +99,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
     return (
         <Modal show={show} onHide={onHide} centered size="lg">
             <Modal.Header closeButton className="border-0 pb-0">
-                <Modal.Title className="fw-bold fs-5">Crear un Evento</Modal.Title>
+                <Modal.Title className="fw-bold fs-5">{t('title')}</Modal.Title>
             </Modal.Header>
 
             <Modal.Body className="px-4 pt-2 pb-0">
@@ -112,12 +114,12 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                     <Row className="mb-3 g-2 align-items-end">
                         <Col xs={12} md={5}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Título <span className="text-danger">*</span>
+                                {t('fields.title')} <span className="text-danger">*</span>
                             </Form.Label>
                             <Form.Control
                                 type="text"
                                 name="title"
-                                placeholder="Ej. Llamada a Cliente María López"
+                                placeholder={t('placeholders.title')}
                                 value={form.title}
                                 onChange={handleChange}
                                 required
@@ -127,7 +129,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
 
                         <Col xs={6} md={3}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Fecha <span className="text-danger">*</span>
+                                {t('fields.date')} <span className="text-danger">*</span>
                             </Form.Label>
                             <Form.Control
                                 type="date"
@@ -141,7 +143,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
 
                         <Col xs={3} md={2}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Hora inicio <span className="text-danger">*</span>
+                                {t('fields.startTime')} <span className="text-danger">*</span>
                             </Form.Label>
                             <Form.Control
                                 type="time"
@@ -155,7 +157,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
 
                         <Col xs={3} md={2}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Hora fin <span className="text-danger">*</span>
+                                {t('fields.endTime')} <span className="text-danger">*</span>
                             </Form.Label>
                             <Form.Control
                                 type="time"
@@ -172,7 +174,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                     <Row className="mb-3 g-2 align-items-end">
                         <Col xs={12} md={4}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Tipo <span className="text-danger">*</span>
+                                {t('fields.type')} <span className="text-danger">*</span>
                             </Form.Label>
                             <Form.Select
                                 name="eventType"
@@ -181,8 +183,8 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 required
                                 disabled={loading}
                             >
-                                <option value="">Seleccionar tipo...</option>
-                                {EVENT_TYPE_OPTIONS.map(opt => (
+                                <option value="">{t('placeholders.type')}</option>
+                                {EVENT_TYPE_OPTIONS(t).map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                 ))}
                             </Form.Select>
@@ -190,12 +192,12 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
 
                         <Col xs={12} md={8}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Ubicación
+                                {t('fields.location')}
                             </Form.Label>
                             <Form.Control
                                 type="text"
                                 name="location"
-                                placeholder="Ej. Oficina central, Av. España 123"
+                                placeholder={t('placeholders.location')}
                                 value={form.location}
                                 onChange={handleChange}
                                 disabled={loading}
@@ -207,13 +209,13 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                     <Row className="mb-3 g-2">
                         <Col xs={12}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Descripción
+                                {t('fields.description')}
                             </Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={2}
                                 name="description"
-                                placeholder="Descripción breve del evento..."
+                                placeholder={t('placeholders.description')}
                                 value={form.description}
                                 onChange={handleChange}
                                 disabled={loading}
@@ -225,13 +227,13 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                     <Row className="mb-1 g-2">
                         <Col xs={12}>
                             <Form.Label className="small fw-semibold text-secondary mb-1">
-                                Notas
+                                {t('fields.notes')}
                             </Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={3}
                                 name="notes"
-                                placeholder=""
+                                placeholder={t('placeholders.notes')}
                                 value={form.notes}
                                 onChange={handleChange}
                                 disabled={loading}
@@ -248,7 +250,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                     disabled={loading}
                     className="px-4"
                 >
-                    Cancelar
+                    {t('cancel')}
                 </Button>
                 <Button
                     variant="primary"
@@ -257,7 +259,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                     disabled={loading}
                     className="px-4"
                 >
-                    {loading ? 'Guardando...' : 'Guardar'}
+                    {loading ? t('saving') : t('save')}
                 </Button>
             </Modal.Footer>
         </Modal>

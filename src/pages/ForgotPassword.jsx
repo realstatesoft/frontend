@@ -5,8 +5,10 @@ import { Container, Card, Form, InputGroup } from 'react-bootstrap';
 import { Envelope, ArrowLeft } from 'react-bootstrap-icons';
 import logo from '../assets/Logotipo.png';
 import BotonLogin from '../components/loginButton';
+import { useTranslation } from 'react-i18next';
 
 const ForgotPassword = () => {
+    const { t } = useTranslation('auth');
     // Color azul principal de tu aplicación
     const primaryColor = '#2563eb';
 
@@ -33,17 +35,17 @@ const ForgotPassword = () => {
 
                     {/* Encabezados */}
                     <h4 className="text-center fw-bold mb-3">
-                        Recuperar Contraseña
+                        {t('recoverPassword')}
                     </h4>
                     <p className="text-center text-muted mb-4" style={{ fontSize: '0.9rem' }}>
-                        Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.
+                        {t('forgotPasswordDescription')}
                     </p>
 
                     {/* Formulario */}
                     <Form>
                         <Form.Group className="mb-4">
                             <Form.Label className="fw-bold" style={{ fontSize: '0.85rem' }}>
-                                Correo electrónico
+                                {t('email')}
                             </Form.Label>
                             <InputGroup>
                                 <InputGroup.Text className="bg-light border-end-0" style={{ borderRadius: '0.5rem 0 0 0.5rem' }}>
@@ -51,7 +53,7 @@ const ForgotPassword = () => {
                                 </InputGroup.Text>
                                 <Form.Control
                                     type="email"
-                                    placeholder="tu@email.com"
+                                    placeholder={t('emailPlaceholder')}
                                     className="bg-light border-start-0 ps-0"
                                     style={{ padding: '0.7rem', borderRadius: '0 0.5rem 0.5rem 0' }}
                                 />
@@ -59,7 +61,7 @@ const ForgotPassword = () => {
                         </Form.Group>
 
                         {/* Botón Principal (tu componente con tu color azul) */}
-                        <BotonLogin texto="Recuperar Contraseña" />
+                        <BotonLogin texto={t('recoverPassword')} />
                     </Form>
 
                     {/* Enlace para volver */}
@@ -69,7 +71,7 @@ const ForgotPassword = () => {
                             className="text-decoration-none fw-bold text-dark d-inline-flex align-items-center"
                             style={{ fontSize: '0.9rem' }}
                         >
-                            <ArrowLeft className="me-2" /> Volver al inicio de sesión
+                            <ArrowLeft className="me-2" /> {t('backToLogin')}
                         </a>
                     </div>
 
@@ -78,9 +80,9 @@ const ForgotPassword = () => {
 
                     {/* Enlace de registro */}
                     <div className="text-center" style={{ fontSize: '0.9rem' }}>
-                        <span className="text-muted">¿No tienes una cuenta? </span>
+                        <span className="text-muted">{t('noAccount')} </span>
                         <a href="/signup" className="text-decoration-none fw-bold" style={{ color: primaryColor }}>
-                            Regístrate aquí
+                            {t('signupLink')}
                         </a>
                     </div>
 

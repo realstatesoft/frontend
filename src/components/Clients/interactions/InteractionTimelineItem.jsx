@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, Card, Col, Form, Row } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   ChatSquareTextFill,
   ClockHistory,
@@ -14,9 +15,7 @@ import {
   Whatsapp,
 } from "react-bootstrap-icons";
 import {
-  INTERACTION_SOURCE_LABELS,
   INTERACTION_SOURCE_STYLES,
-  INTERACTION_TYPE_LABELS,
   INTERACTION_TYPE_STYLES,
 } from "../../../constants/clientInteractionConstants";
 import {
@@ -83,6 +82,7 @@ export default function InteractionTimelineItem({
   onUpdate,
   onDelete,
 }) {
+  const { t } = useTranslation('clients');
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(() => buildEditForm(interaction));
 
@@ -92,6 +92,18 @@ export default function InteractionTimelineItem({
     INTERACTION_SOURCE_STYLES[interaction.source] ?? INTERACTION_SOURCE_STYLES.MANUAL;
   const canManage = interaction.source === "MANUAL";
   const isNote = interaction.type === "NOTE";
+  const typeLabelMap = {
+    CALL: t('interactions.types.call'),
+    EMAIL: t('interactions.types.email'),
+    WHATSAPP: t('interactions.types.whatsapp'),
+    VISIT: t('interactions.types.visit'),
+    MEETING: t('interactions.types.meeting'),
+    NOTE: t('interactions.types.note'),
+  };
+  const sourceLabelMap = {
+    MANUAL: t('interactions.source.manual'),
+    SYSTEM: t('interactions.source.system'),
+  };
 
   useEffect(() => {
     setForm(buildEditForm(interaction));
@@ -153,7 +165,7 @@ export default function InteractionTimelineItem({
                 className="px-3 py-2 rounded-pill border-0 fw-semibold"
                 style={typeStyle}
               >
-                {INTERACTION_TYPE_LABELS[interaction.type] ?? interaction.type}
+                {typeLabelMap[interaction.type] ?? interaction.type}
               </Badge>
               <Badge
                 bg="none"
@@ -163,10 +175,10 @@ export default function InteractionTimelineItem({
                 {interaction.source === "SYSTEM" ? (
                   <>
                     <LightningChargeFill className="me-1" />
-                    {INTERACTION_SOURCE_LABELS[interaction.source]}
+                    {sourceLabelMap[interaction.source]}
                   </>
                 ) : (
-                  INTERACTION_SOURCE_LABELS[interaction.source] ?? interaction.source
+                  sourceLabelMap[interaction.source] ?? interaction.source
                 )}
               </Badge>
             </div>
@@ -182,7 +194,7 @@ export default function InteractionTimelineItem({
               <Row className="g-3">
                 <Col md={6}>
                   <Form.Label className="small fw-semibold text-secondary">
-                    Asunto
+                    {t('interactions.subject')}
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -194,7 +206,7 @@ export default function InteractionTimelineItem({
                 </Col>
                 <Col md={6}>
                   <Form.Label className="small fw-semibold text-secondary">
-                    Fecha y hora
+                    {t('interactions.dateTime')}
                   </Form.Label>
                   <Form.Control
                     type="datetime-local"
@@ -206,7 +218,7 @@ export default function InteractionTimelineItem({
                 </Col>
                 <Col xs={12}>
                   <Form.Label className="small fw-semibold text-secondary">
-                    Nota
+                    {t('interactions.note')}
                   </Form.Label>
                   <Form.Control
                     as="textarea"
@@ -219,7 +231,7 @@ export default function InteractionTimelineItem({
                 </Col>
                 <Col xs={12}>
                   <Form.Label className="small fw-semibold text-secondary">
-                    Resultado
+                    {t('interactions.outcome')}
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -239,7 +251,7 @@ export default function InteractionTimelineItem({
                   onClick={handleEditToggle}
                   disabled={updating}
                 >
-                  Cancelar
+                  {t('close', { ns: 'common' })}
                 </Button>
                 <Button
                   type="submit"
@@ -247,7 +259,7 @@ export default function InteractionTimelineItem({
                   className="rounded-pill px-4"
                   disabled={updating}
                 >
-                  {updating ? "Guardando..." : "Guardar cambios"}
+                  {updating ? t('saving') : `${t('save')} ${t('edit').toLowerCase()}`}
                 </Button>
               </div>
             </Form>
@@ -264,14 +276,14 @@ export default function InteractionTimelineItem({
               {interaction.outcome && (
                 <div className="mb-3">
                   <Badge bg="light" text="dark" className="px-3 py-2 rounded-pill border">
-                    Resultado: {interaction.outcome}
+                    {t('interactions.result')} {interaction.outcome}
                   </Badge>
                 </div>
               )}
 
               {!interaction.subject && !interaction.note && !interaction.outcome && (
                 <p className="text-muted mb-3">
-                  Sin detalle adicional para esta interacción.
+                  {t('interactions.noDetails')}
                 </p>
               )}
 
@@ -280,11 +292,11 @@ export default function InteractionTimelineItem({
                   {hasRelevantUpdate(interaction) && (
                     <span className="d-inline-flex align-items-center gap-1">
                       <ChatSquareTextFill size={14} />
-                      Actualizado {formatTimeAgo(interaction.updatedAt)}
+                      {t('interactions.updated', { value: formatTimeAgo(interaction.updatedAt) })}
                     </span>
                   )}
                   {interaction.source === "SYSTEM" && (
-                    <span>Evento generado automáticamente por el sistema.</span>
+                    <span>{t('interactions.autoEvent')}</span>
                   )}
                 </div>
 
@@ -298,7 +310,7 @@ export default function InteractionTimelineItem({
                       disabled={updating || deleting}
                     >
                       <PencilSquare className="me-2" />
-                      {isNote ? "Editar nota" : "Editar"}
+                      {isNote ? t('interactions.editNote') : t('interactions.edit')}
                     </Button>
                     <Button
                       variant="outline-danger"
@@ -308,7 +320,7 @@ export default function InteractionTimelineItem({
                       disabled={updating || deleting}
                     >
                       <Trash className="me-2" />
-                      {deleting ? "Eliminando..." : "Eliminar"}
+                      {deleting ? t('processing', { ns: 'common' }) : t('interactions.delete')}
                     </Button>
                   </div>
                 )}

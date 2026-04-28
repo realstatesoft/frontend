@@ -58,9 +58,35 @@ export async function createLeadFromWizard(wizardData) {
   };
   
   const response = await api.post("/leads/wizard", payload);
+  // Normalización defensiva: extrae .data.data o .data directamente
+  return response.data?.data ?? response.data;
+}
+
+/**
+ * Obtiene el detalle de un Lead por ID.
+ * @param {number|string} id - ID del Lead
+ * @returns {Promise<Object>} - Detalle del Lead
+ */
+export async function getLeadById(id) {
+  const encodedId = encodeURIComponent(id);
+  const response = await api.get(`/leads/${encodedId}`);
+  // Normalización defensiva: extrae .data.data o .data directamente
+  return response.data?.data ?? response.data;
+}
+
+/**
+ * Obtiene los leads asignados a un agente (paginado).
+ * @param {number} agentId - ID del agente (AgentProfile)
+ * @param {Object} params  - page, size, sort
+ * @returns {Promise<Object>} Page de LeadResponse
+ */
+export async function getLeadsByAgent(agentId, params = {}) {
+  const response = await api.get(`/leads/agent/${agentId}`, { params });
   return response.data;
 }
 
 export default {
   createLeadFromWizard,
+  getLeadById,
+  getLeadsByAgent,
 };

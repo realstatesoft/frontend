@@ -1,0 +1,64 @@
+{
+  "agent": {
+    "title": "Dashboard",
+    "subtitle": "Activity overview",
+    "stats": {
+      "activeClients": "Active Clients",
+      "monthlySales": "Monthly Sales",
+      "scheduledVisits": "Scheduled Visits",
+      "commissions": "Commissions"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "newClient": "New Client",
+      "newProperty": "New Property",
+      "scheduleVisit": "Schedule Visit",
+      "viewOffers": "View Offers"
+    },
+    "upcomingAppointments": {
+      "title": "Upcoming Appointments",
+      "loading": "Loading...",
+      "empty": "No scheduled appointments"
+    },
+    "salesPerformance": {
+      "title": "Sales Performance",
+      "subtitle": "Last 6 months",
+      "loading": "Loading..."
+    }
+  },
+  "owner": {
+    "title": "My Dashboard",
+    "subtitle": "Overview of your properties and transactions",
+    "loading": "Loading dashboard...",
+    "actionRequired": "Action required",
+    "urgentContracts": "You have {{count}} contract(s) pending your digital signature.",
+    "newVisits": "New visits",
+    "pendingVisits": "You have {{count}} visit request(s) waiting for a response.",
+    "signNow": "Sign now",
+    "manageVisits": "Manage visits",
+    "recentProperties": "Recent properties",
+    "viewAll": "View all",
+    "viewProperty": "View listing",
+    "pendingSignatures": "Pending signatures",
+    "earnings": "Earned income",
+    "pendingVisitsTitle": "Pending visits",
+    "emptyRecentProperties": "You do not have any published properties yet.",
+    "emptyContracts": "You have no contracts pending signature.",
+    "emptyVisits": "You have no pending visit requests.",
+    "contractPrefix": "Contract #",
+    "sign": "Sign",
+    "contractHint": "Data based on closed contracts",
+    "quickActions": {
+      "title": "Quick Actions",
+      "newProperty": "New Property",
+      "viewVisits": "View Visits",
+      "messages": "Messages",
+      "viewOffers": "View Offers"
+    },
+    "messages": {
+      "title": "Inquiries"
+    },
+    "successTitle": "Success!",
+    "successText": "You signed the contract digitally."
+  }
+}
