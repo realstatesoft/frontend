@@ -74,7 +74,19 @@ export async function getLeadById(id) {
   return response.data?.data ?? response.data;
 }
 
+/**
+ * Obtiene los leads asignados a un agente (paginado).
+ * @param {number} agentId - ID del agente (AgentProfile)
+ * @param {Object} params  - page, size, sort
+ * @returns {Promise<Object>} Page de LeadResponse
+ */
+export async function getLeadsByAgent(agentId, params = {}) {
+  const response = await api.get(`/leads/agent/${agentId}`, { params });
+  return response.data;
+}
+
 export default {
   createLeadFromWizard,
   getLeadById,
+  getLeadsByAgent,
 };

@@ -1,0 +1,308 @@
+.leadDetail {
+  padding: 1.5rem;
+  color: var(--color-text-primary);
+  width: 100%;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 1.5rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__section {
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--color-text-secondary);
+
+    svg {
+      color: var(--color-accent);
+      font-size: 1.1rem;
+    }
+  }
+
+  &__infoCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  &__card {
+    background: var(--color-bg-surface);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid var(--color-border);
+    transition: var(--transition-fast);
+
+    &:hover {
+      border-color: var(--color-accent);
+      background: var(--color-bg-surface-hover);
+    }
+
+    .icon {
+      font-size: 1.25rem;
+      color: var(--color-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .label {
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .value {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+  }
+
+  &__conditions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  &__condition {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0.8rem;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    border: 1px solid var(--color-border);
+
+    .condLabel { color: var(--color-text-muted); }
+    .condValue { font-weight: 700; color: var(--color-text-primary); }
+  }
+
+  &__timeline {
+    position: relative;
+    padding-left: 1.5rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0.4rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--color-border);
+    }
+  }
+
+  &__event {
+    position: relative;
+    padding-bottom: 1.5rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: -1.35rem;
+      top: 0.25rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      border: 2px solid var(--color-bg-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .date {
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+
+    .type {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin: 0.15rem 0;
+    }
+
+    .note {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+    }
+  }
+
+  &__notes {
+    white-space: pre-wrap;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    background: rgba(245, 158, 11, 0.05);
+    padding: 1.25rem;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid #f59e0b;
+  }
+
+  .addressSection {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .addressText {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .mapWrapper {
+    height: 200px;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+
+  .mapContainer {
+    height: 100%;
+    width: 100%;
+  }
+
+  .timelineStatus {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.08);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .timelineLabel {
+    font-size: 0.7rem;
+    color: #059669;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .timelineValue {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #064e3b;
+    margin-top: 0.4rem;
+  }
+
+  .contactList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .contactLink {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.6rem;
+    background: rgba(37, 99, 235, 0.05);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+
+    &:hover {
+      background: rgba(37, 99, 235, 0.1);
+      transform: translateX(4px);
+    }
+  }
+
+  .disabledContact {
+    @extend .contactLink;
+    opacity: 0.5;
+    cursor: not-allowed;
+    &:hover {
+      transform: none;
+      background: rgba(37, 99, 235, 0.05);
+    }
+  }
+
+  .actionButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btnWhatsapp, .btnMessage {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-fast);
+  }
+
+  .btnWhatsapp {
+    background: #25d366;
+    color: white;
+    &:hover { background: #22c35e; transform: translateY(-2px); }
+  }
+
+  .btnMessage {
+    background: #f59e0b;
+    color: white;
+    &:hover { background: #d97706; transform: translateY(-2px); }
+  }
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  color: var(--color-text-muted);
+
+  svg {
+    font-size: 2rem;
+    color: var(--color-accent);
+  }
+}
