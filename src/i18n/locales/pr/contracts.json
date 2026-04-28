@@ -1,0 +1,12 @@
+{
+  "detail": {
+    "downloadPdf": "Baixar PDF",
+    "comingSoon": "Em breve",
+    "comingSoonText": "A geração de PDF estará disponível em breve."
+  },
+  "templates": {
+    "success": "Sucesso!",
+    "loading": "Carregando editor...",
+    "title": "Modelos de contrato"
+  }
+}

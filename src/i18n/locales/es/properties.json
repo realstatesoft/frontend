@@ -1,0 +1,78 @@
+{
+  "search": {
+    "placeholder": "Buscar por ubicación...",
+    "type": "Tipo",
+    "bedrooms": "Dormitorios",
+    "moreFilters": "Más filtros",
+    "clearFilters": "Limpiar filtros",
+    "availability": "Disponibilidad",
+    "minPrice": "Precio mín. ($)",
+    "maxPrice": "Precio máx. ($)",
+    "minBathrooms": "Baños mín.",
+    "any": "Cualquiera",
+    "all": "Todos",
+    "noLimit": "Sin límite"
+  },
+  "types": {
+    "house": "Casa",
+    "apartment": "Departamento",
+    "land": "Terreno",
+    "office": "Local",
+    "warehouse": "Depósito",
+    "farm": "Campo"
+  },
+  "availabilityOptions": {
+    "immediate": "Inmediata",
+    "in30Days": "En 30 días",
+    "in60Days": "En 60 días",
+    "toNegotiate": "A negociar"
+  },
+  "results": {
+    "count": "{{count}} propiedad encontrada",
+    "count_plural": "{{count}} propiedades encontradas",
+    "loading": "Cargando propiedades...",
+    "empty": "No se encontraron propiedades con esos filtros.",
+    "retry": "Reintentar",
+    "showing": "Mostrando {{count}} propiedades"
+  },
+  "card": {
+    "details": "Ver Detalles",
+    "favoriteAdd": "Agregar a favoritos",
+    "favoriteRemove": "Quitar de favoritos",
+    "bedrooms": "{{count}} hab.",
+    "bathrooms": "{{count}} baños",
+    "status": {
+      "PENDING": "Pendiente",
+      "APPROVED": "Aprobado",
+      "REJECTED": "Rechazado",
+      "PUBLISHED": "Publicado",
+      "SOLD": "Vendido",
+      "RENTED": "Alquilado",
+      "ARCHIVED": "Archivado"
+    }
+  },
+  "map": {
+    "eyebrow": "Mapa de resultados",
+    "title": "Ubicación de las propiedades",
+    "subtitle": "Explorá en el mapa las propiedades visibles con los filtros actuales.",
+    "points_one": "{{count}} punto",
+    "points_other": "{{count}} puntos",
+    "empty": "No hay propiedades con coordenadas disponibles para mostrar en el mapa con los filtros actuales.",
+    "details": "Ver detalles",
+    "priceUnavailable": "Precio no disponible",
+    "propertyFallback": "Propiedad",
+    "locationUnavailable": "Ubicación no disponible",
+    "stats": {
+      "bedrooms_one": "{{count}} hab.",
+      "bedrooms_other": "{{count}} hab.",
+      "bathrooms_one": "{{count}} baño",
+      "bathrooms_other": "{{count}} baños",
+      "area_one": "{{count}} m²",
+      "area_other": "{{count}} m²"
+    }
+  },
+  "pagination": {
+    "previous": "Página anterior",
+    "next": "Página siguiente"
+  }
+}

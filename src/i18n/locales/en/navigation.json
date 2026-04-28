@@ -1,0 +1,83 @@
+{
+  "home": "Home",
+  "properties": "Properties",
+  "sellRent": "Sell / Rent",
+  "about": "About us",
+  "projects": "Projects",
+  "agents": "Agents",
+  "services": "Services",
+  "contactUs": "Contact us",
+  "profileMenu": "Profile menu",
+  "welcome": "Welcome",
+  "notifications": "Notifications",
+  "messages": "Messages",
+  "login": "Log in",
+  "logout": "Log out",
+  "myProfile": "My profile",
+  "myOffers": "My offers",
+  "myProperties": "My properties",
+  "myReservations": "My reservations",
+  "receivedReservations": "Received reservations",
+  "trash": "Trash",
+  "favorites": "Favorites",
+  "preferences": "My preferences",
+  "dashboard": "Dashboard",
+  "adminPanel": "Admin panel",
+  "settings": "Settings",
+  "agenda": "Agenda",
+  "propertyApproval": "Property approval",
+  "sidebar": {
+    "sectionMain": "Main",
+    "sectionManagement": "Management",
+    "sectionCommunication": "Communication",
+    "toggleOpen": "Open menu",
+    "toggleClose": "Close menu",
+    "logoAlt": "OpenRoof"
+  },
+  "theme": {
+    "light": "Switch to light mode",
+    "dark": "Switch to dark mode"
+  },
+  "layouts": {
+    "admin": {
+      "dashboard": "Panel",
+      "approval": "Property approval",
+      "auditLogs": "Audit",
+      "reports": "Reports",
+      "documents": "Document validation",
+      "rentConfig": "Rent configuration",
+      "contractTemplates": "Contract templates"
+    },
+    "owner": {
+      "dashboard": "My Dashboard",
+      "properties": "My Properties",
+      "visits": "Visits",
+      "offers": "Offers",
+      "contracts": "My Contracts",
+      "messages": "Messages"
+    },
+    "agent": {
+      "profile": "My Profile",
+      "dashboard": "Dashboard",
+      "clients": "Clients",
+      "properties": "Properties",
+      "visitRequests": "Visit Requests",
+      "offers": "Received Offers",
+      "agenda": "Agenda",
+      "sales": "Sales",
+      "contracts": "Contracts",
+      "reports": "Reports",
+      "messages": "Messages"
+    }
+  },
+  "role": {
+    "agent": "Agent",
+    "owner": "Owner"
+  },
+  "language": {
+    "label": "Language",
+    "es": "Spanish",
+    "en": "English",
+    "pr": "Portuguese"
+  }
+}

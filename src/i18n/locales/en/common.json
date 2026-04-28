@@ -1,0 +1,22 @@
+{
+  "cancel": "Cancel",
+  "close": "Close",
+  "confirm": "Confirm",
+  "loading": "Loading...",
+  "processing": "Processing...",
+  "retry": "Retry",
+  "search": "Search",
+  "save": "Save",
+  "view": "View",
+  "back": "Back",
+  "all": "All"
+  ,
+  "previous": "Previous",
+  "next": "Next",
+  "comingSoon": "Coming soon",
+  "empty": "No results found",
+  "noData": "No data",
+  "select": "Select",
+  "yes": "Yes",
+  "fallbackDemo": "Spanish fallback text"
+}

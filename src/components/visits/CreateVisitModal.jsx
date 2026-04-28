@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col, Alert, Spinner, Badge } from 'react-bootstrap';
 import { createVisitRequest, getAgentAvailability } from '../../services/visits/visitApi';
 import { Calendar3, Clock, InfoCircle } from 'react-bootstrap-icons';
+import { useTranslation } from 'react-i18next';
 
 const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
+  const { t } = useTranslation('visits');
   const [formData, setFormData] = useState({
     proposedAt: '',
     message: '',
@@ -78,7 +80,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
       setLastCheckDate(null);
     } catch (err) {
       console.error('Error al crear solicitud:', err);
-      setError(err.response?.data?.message || 'Error al enviar la solicitud de visita');
+      setError(err.response?.data?.message || t('create.error'));
     } finally {
       setLoading(false);
     }
@@ -133,7 +135,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
       <Modal.Header closeButton className="border-0 pb-0">
         <Modal.Title className="fw-bold d-flex align-items-center gap-2">
           <Calendar3 className="text-primary" />
-          Agendar Visita
+          {t('create.title')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-4 pt-3">
@@ -148,7 +150,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
           <div className="mb-4">
             <Form.Group className="mb-3">
               <Form.Label className="small fw-bold text-uppercase text-muted" style={{ fontSize: '0.7rem' }}>
-                1. Selecciona el día de tu visita
+                {t('create.step1')}
               </Form.Label>
               <Form.Control
                 type="date"
@@ -171,7 +173,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <span className="small fw-semibold text-dark">
                     <Clock size={16} className="me-2 text-primary" />
-                    2. Selecciona un horario libre (Slot de 1 hora)
+                    {t('create.step2')}
                   </span>
                   {loadingAvailability && <Spinner animation="border" size="sm" variant="primary" />}
                 </div>
@@ -179,19 +181,19 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
                 {!agentId && (
                   <Alert variant="info" className="py-2 border-0" style={{ backgroundColor: 'rgba(37, 99, 235, 0.05)', color: '#2563eb', fontSize: '0.8rem' }}>
                     <InfoCircle className="me-2" />
-                    No hay un agente asignado; selecciona un horario sugerido.
+                    {t('create.noAgent')}
                   </Alert>
                 )}
 
                 {!loadingAvailability && availableSlots.length === 0 && (
                   <Alert variant="warning" className="small py-2 border-0" style={{ backgroundColor: 'rgba(245, 158, 11, 0.05)', color: '#f59e0b' }}>
-                    No tienes horarios libres para este día. Intenta con otra fecha.
+                    {t('create.noSlots')}
                   </Alert>
                 )}
 
                 {!loadingAvailability && availableSlots.length > 0 && (
                   <>
-                    <p className="text-muted small mb-3">Haz clic en un horario para seleccionarlo:</p>
+                    <p className="text-muted small mb-3">{t('create.hint')}</p>
                     <div className="row g-2 overflow-auto" style={{ maxHeight: '240px', padding: '5px' }}>
                       {availableSlots.map((slot, index) => {
                         const slotTime = formatTime(slot.start);
@@ -223,8 +225,14 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
                 {formData.proposedAt && formData.proposedAt.includes('T') && (
                   <div className="mt-4 text-center p-3 rounded-md" style={{ backgroundColor: '#f8fafc', border: '1px dashed #2563eb', borderRadius: '8px' }}>
                     <span className="small fw-semibold text-primary">
-                      Horario Seleccionado: {new Date(formData.proposedAt).toLocaleString('es-ES', { 
-                        weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
+                      {t('create.selected', {
+                        value: new Date(formData.proposedAt).toLocaleString('es-ES', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'short',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })
                       })}
                     </span>
                   </div>
@@ -235,12 +243,12 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
 
           <Form.Group className="mb-3">
             <Form.Label className="small fw-bold text-uppercase text-muted" style={{ fontSize: '0.7rem' }}>
-              3. Información de contacto
+              {t('create.step3')}
             </Form.Label>
             <Form.Control
               type="text"
               name="buyerName"
-              placeholder="Tu nombre completo"
+              placeholder={t('create.contactPlaceholder')}
               value={formData.buyerName}
               onChange={handleChange}
               style={{ borderRadius: '8px' }}
@@ -250,7 +258,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
 
           <Form.Group className="mb-4">
             <Form.Label className="small fw-bold text-uppercase text-muted" style={{ fontSize: '0.7rem' }}>
-              4. Comentarios opcionales
+              {t('create.step4')}
             </Form.Label>
             <Form.Control
               as="textarea"
@@ -258,7 +266,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder="Hola, me interesa conocer la propiedad..."
+              placeholder={t('create.messagePlaceholder')}
               style={{ borderRadius: '8px' }}
             />
           </Form.Group>
@@ -274,12 +282,12 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
               {loading ? (
                 <>
                   <Spinner animation="border" size="sm" className="me-2" />
-                  Enviando...
+                  {t('create.submitting')}
                 </>
-              ) : 'CONFIRMAR AGENDAMIENTO'}
+              ) : t('create.submit').toUpperCase()}
             </Button>
             <Button variant="link" onClick={onHide} className="text-muted text-decoration-none small" disabled={loading}>
-              Cerrar
+              {t('create.close', { defaultValue: 'Cerrar' })}
             </Button>
           </div>
         </Form>

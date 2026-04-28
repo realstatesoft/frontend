@@ -36,9 +36,11 @@ import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour
 import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
+import { useTranslation } from "react-i18next";
 import "./show-property.scss";
 
 export default function ShowProperty() {
+  const { t } = useTranslation("showProperty");
   const BASE_URL = import.meta.env.VITE_DEPLOY_URL
 
   const {
@@ -68,7 +70,8 @@ export default function ShowProperty() {
     activeFlagCount,
     viewCount,
     isAuthenticated,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleToggleHighlight
   } = useShowProperty();
 
   const { user: authUser } = useAuth();
@@ -91,9 +94,9 @@ export default function ShowProperty() {
   const [loadingConfig, setLoadingConfig] = useState(false);
   const viewBadgeText =
     viewCount === 1
-      ? "1 ha visto esta propiedad"
+      ? t("views.one")
       : viewCount > 1
-      ? `${viewCount} han visto esta propiedad`
+      ? t("views.other", { count: viewCount })
       : null;
 
   // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
@@ -193,7 +196,7 @@ export default function ShowProperty() {
           {activeFlagCount > 0 && (
             <Alert variant="warning" className="d-flex align-items-center mb-4">
               <Flag size={20} className="me-2" />
-              <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.</span>
+              <span>{t("reportsWarning")}</span>
             </Alert>
           )}
 
@@ -261,18 +264,20 @@ export default function ShowProperty() {
                   as={Link}
                   to={`/properties/${property.id}/edit`}
                 >
-                  <Pencil size={16} className="property__icon-button" /> Editar
+                  <Pencil size={16} className="property__icon-button" /> {t("actions.edit")}
                 </Button>
               )}
 
-              {/* Destacar — cualquier usuario autenticado */}
+              {/* Destacar — solo ADMIN */}
               {canFeature && (
                 <Button
                   size="sm"
-                  variant="warning"
-                  className="d-flex align-items-center"
+                  variant={property.highlighted ? "secondary" : "warning"}
+                  className="d-flex align-items-center text-white"
+                  onClick={handleToggleHighlight}
+                  disabled={actionLoading}
                 >
-                  <Star size={16} className="property__icon-button" /> Destacar
+                  <Star size={16} className="property__icon-button me-1" /> {property.highlighted ? "Quitar Destacado" : "Destacar"}
                 </Button>
               )}
 
@@ -284,7 +289,7 @@ export default function ShowProperty() {
                   className="d-flex align-items-center"
                   onClick={openDeleteConfirm}
                 >
-                  <Trash size={16} className="property__icon-button" /> Eliminar
+                  <Trash size={16} className="property__icon-button" /> {t("actions.delete")}
                 </Button>
               )}
               <Dropdown as={ButtonGroup}>
@@ -479,7 +484,7 @@ export default function ShowProperty() {
                         <>
                           {property.createdAt && (
                             <>
-                            Publicado{" "}
+                            {t("actions.published")}{" "}
                               <strong>
                                 {formatTimeAgo(property.createdAt)}
                               </strong>
@@ -552,7 +557,7 @@ export default function ShowProperty() {
                         ) : finalTourConfig ? (
                           <Property360Tour config={finalTourConfig} />
                         ) : (
-                          <Alert variant="info">Cargando configuración del recorrido...</Alert>
+                          <Alert variant="info">{t("actions.loadingTour")}</Alert>
                         )
                       )}
 
@@ -572,8 +577,8 @@ export default function ShowProperty() {
                         <div className="property__empty-3d">
                           <div className="property__empty-3d-box">
                             <CameraVideo size={48} className="mb-3 text-muted" />
-                            <p className="mb-1 fw-bold">No hay recorridos disponibles</p>
-                            <p className="text-muted small">Esta propiedad aun no cuenta con contenido 360 o modelos 3D.</p>
+                            <p className="mb-1 fw-bold">{t("actions.noTours")}</p>
+                            <p className="text-muted small">{t("actions.noToursHint")}</p>
                           </div>
                         </div>
                       )}
@@ -610,7 +615,7 @@ export default function ShowProperty() {
                       ) : (
                         <Col>
                           <p className="text-muted">
-                            No hay caracteristicas cargadas.
+                            {t("actions.noFeatures")}
                           </p>
                         </Col>
                       )}
@@ -648,7 +653,7 @@ export default function ShowProperty() {
                     onClick={() => setShowReportModal(true)}
                     style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                   >
-                    <Flag className="me-2" /> Reportar propiedad
+                    <Flag className="me-2" /> {t("actions.reportProperty")}
                   </Button>
                   {!isPropertyOwner && (property.ownerId || property.userId) && (
                     <Button 
@@ -657,7 +662,7 @@ export default function ShowProperty() {
                       onClick={() => setShowReportUserModal(true)}
                       style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                     >
-                      <Flag className="me-2" /> Reportar usuario
+                      <Flag className="me-2" /> {t("actions.reportUser")}
                     </Button>
                   )}
                 </div>

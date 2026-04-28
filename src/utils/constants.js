@@ -3,6 +3,7 @@ export const AGENT_ROUTES = {
   CLIENTS: '/agent/clientes',
   PROPERTIES: '/agent/propiedades',
   VISIT_REQUESTS: '/agent/solicitudes-visita',
+  LEADS: '/agent/leads',
   AGENDA: '/agent/agenda',
   SALES: '/agent/ventas',
   CONTRACTS: '/agent/contratos',

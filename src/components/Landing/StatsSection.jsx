@@ -1,17 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import HomePng from "../../assets/Home.png";
 import person from "../../assets/person.png";
 import Asociados from "../../assets/Asociados.png";
 import ciudadIMG from "../../assets/image 28.png";
-
-const stats = [
-    { icon: <img src={HomePng} alt="Home" style={{ width: 50, height: 50, objectFit: "contain" }} />, target: 5000, prefix: "+", suffix: "", label: "Propiedades activas" },
-    { icon: <img src={person} alt="person" style={{ width: 50, height: 50, objectFit: "contain" }} />, target: 3000, prefix: "+", suffix: "", label: "Clientes Satisfechos" },
-    { icon: <img src={Asociados} alt="Asociados" style={{ width: 65, height: 65, objectFit: "contain" }} />, target: 200, prefix: "+", suffix: "", label: "Asociados" },
-    { icon: <img src={ciudadIMG} alt="CIU" style={{ width: 60, height: 60, objectFit: "contain" }} />, target: 50, prefix: "+", suffix: "", label: "Ciudades" },
-];
-
 
 function useCountUp(target, duration = 1800, active = false) {
     const [count, setCount] = useState(0);
@@ -36,7 +29,7 @@ function useCountUp(target, duration = 1800, active = false) {
 }
 
 function StatCard({ stat, active, delay }) {
-    const count = useCountUp(stat.target, 1800, active);
+  const count = useCountUp(stat.target, 1800, active);
 
     const formatted = count.toLocaleString("es-PY");
 
@@ -71,8 +64,15 @@ function StatCard({ stat, active, delay }) {
 }
 
 const StatsSection = () => {
+    const { t } = useTranslation("landing");
     const sectionRef = useRef(null);
     const [visible, setVisible] = useState(false);
+    const stats = [
+        { icon: <img src={HomePng} alt="Home" style={{ width: 50, height: 50, objectFit: "contain" }} />, target: 5000, prefix: "+", suffix: "", label: t("stats.activeProperties") },
+        { icon: <img src={person} alt="person" style={{ width: 50, height: 50, objectFit: "contain" }} />, target: 3000, prefix: "+", suffix: "", label: t("stats.happyClients") },
+        { icon: <img src={Asociados} alt="Asociados" style={{ width: 65, height: 65, objectFit: "contain" }} />, target: 200, prefix: "+", suffix: "", label: t("stats.partners") },
+        { icon: <img src={ciudadIMG} alt="CIU" style={{ width: 60, height: 60, objectFit: "contain" }} />, target: 50, prefix: "+", suffix: "", label: t("stats.cities") },
+    ];
 
     useEffect(() => {
         const observer = new IntersectionObserver(

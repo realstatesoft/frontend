@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../i18n';
 import PropertiesPage from '../../pages/PropertiesPage';
 
 const queryClient = new QueryClient();
@@ -19,12 +21,15 @@ vi.mock('../../services/properties/propertyApi', () => ({
 
 describe('PropertiesPage', () => {
   it('renders the properties search section', async () => {
+    await initializeI18n();
     render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
-          <PropertiesPage />
-        </MemoryRouter>
-      </QueryClientProvider>
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>
+            <PropertiesPage />
+          </MemoryRouter>
+        </QueryClientProvider>
+      </I18nextProvider>
     );
 
     expect(await screen.findByPlaceholderText(/Buscar por ubicación/i)).toBeInTheDocument();

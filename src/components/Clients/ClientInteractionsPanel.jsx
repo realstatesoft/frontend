@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Alert, Badge, Button, Card, Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   ArrowClockwise,
   ExclamationTriangleFill,
@@ -15,6 +16,7 @@ import InteractionComposer from "./interactions/InteractionComposer";
 import InteractionTimelineItem from "./interactions/InteractionTimelineItem";
 
 export default function ClientInteractionsPanel({ client, clientId, onRefreshClient }) {
+  const { t } = useTranslation('clients');
   const resolvedClientId = client?.clientId ?? clientId ?? client?.id;
   const [composerOpen, setComposerOpen] = useState(false);
   const [interactionToDelete, setInteractionToDelete] = useState(null);
@@ -43,11 +45,19 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
 
   const currentFilterLabel = useMemo(() => {
     if (filterType === "ALL") {
-      return "todas";
+      return t('interactions.all');
     }
 
-    return INTERACTION_TYPE_LABELS[filterType]?.toLowerCase() ?? filterType.toLowerCase();
-  }, [filterType]);
+    const map = {
+      CALL: t('interactions.types.call'),
+      EMAIL: t('interactions.types.email'),
+      WHATSAPP: t('interactions.types.whatsapp'),
+      VISIT: t('interactions.types.visit'),
+      MEETING: t('interactions.types.meeting'),
+      NOTE: t('interactions.types.note'),
+    };
+    return map[filterType] ?? filterType.toLowerCase();
+  }, [filterType, t]);
 
   const handleDeleteConfirm = async () => {
     if (!interactionToDelete) {
@@ -74,15 +84,12 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
           <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
             <div>
               <div className="d-flex align-items-center gap-2 mb-2">
-                <h4 className="fw-bold mb-0">Interacciones CRM</h4>
+                <h4 className="fw-bold mb-0">{t('interactions.crmTitle')}</h4>
                 <Badge bg="light" text="dark" className="px-3 py-2 rounded-pill border">
-                  {totalElements} registradas
+                  {t('interactions.registered', { count: totalElements })}
                 </Badge>
               </div>
-              <p className="text-muted mb-0">
-                Seguí el historial comercial del cliente con eventos manuales y
-                automáticos desde una sola línea de tiempo.
-              </p>
+              <p className="text-muted mb-0">{t('interactions.crmSubtitle')}</p>
             </div>
 
             <Button
@@ -92,7 +99,7 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
               disabled={loading}
             >
               <ArrowClockwise className="me-2" />
-              Actualizar
+              {t('interactions.refresh')}
             </Button>
           </div>
 
@@ -107,7 +114,9 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
                 onClick={() => setFilterType(option.value)}
               >
                 <FunnelFill className="me-2" size={12} />
-                {option.label}
+                {option.value === 'ALL'
+                  ? t('interactions.all')
+                  : t(`interactions.types.${option.value.toLowerCase()}`)}
               </Button>
             ))}
           </div>
@@ -115,7 +124,7 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
           {loading ? (
             <div className="text-center py-5">
               <Spinner animation="border" variant="primary" />
-              <p className="text-muted mt-3 mb-0">Cargando interacciones...</p>
+              <p className="text-muted mt-3 mb-0">{t('interactions.loading')}</p>
             </div>
           ) : error ? (
             <Alert variant="danger" className="mb-0">
@@ -123,12 +132,12 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
                 <div className="d-flex align-items-start gap-2">
                   <ExclamationTriangleFill className="mt-1 flex-shrink-0" />
                   <div>
-                    <div className="fw-semibold">No pudimos cargar la línea de tiempo</div>
+                    <div className="fw-semibold">{t('interactions.loadError')}</div>
                     <div>{error}</div>
                   </div>
                 </div>
                 <Button variant="outline-danger" size="sm" onClick={fetchInteractions}>
-                  Reintentar
+                  {t('retry', { ns: 'common' })}
                 </Button>
               </div>
             </Alert>
@@ -137,9 +146,11 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
               <div className="mb-3">
                 <ExclamationTriangleFill size={28} className="text-secondary opacity-75" />
               </div>
-              <h5 className="fw-bold">No hay interacciones {currentFilterLabel}</h5>
+              <h5 className="fw-bold">
+                {t('interactions.empty', { filter: currentFilterLabel })}
+              </h5>
               <p className="text-muted mb-3">
-                Registrá la primera interacción manual o cambiá el filtro para ver más actividad.
+                {t('interactions.crmSubtitle')}
               </p>
               {filterType !== "ALL" && (
                 <Button
@@ -147,7 +158,7 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
                   className="rounded-pill px-4"
                   onClick={() => setFilterType("ALL")}
                 >
-                  Ver todas
+                  {t('interactions.viewAll')}
                 </Button>
               )}
             </div>
@@ -174,7 +185,7 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
                     onClick={loadMore}
                     disabled={loadingMore}
                   >
-                    {loadingMore ? "Cargando..." : "Cargar más interacciones"}
+                    {loadingMore ? t('loading', { ns: 'common' }) : t('interactions.loadMore')}
                   </Button>
                 </div>
               )}
@@ -187,13 +198,14 @@ export default function ClientInteractionsPanel({ client, clientId, onRefreshCli
         show={Boolean(interactionToDelete)}
         onHide={() => setInteractionToDelete(null)}
         onConfirm={handleDeleteConfirm}
-        title="Eliminar interacción"
-        message={`¿Querés eliminar esta ${
-          interactionToDelete
-            ? INTERACTION_TYPE_LABELS[interactionToDelete.type]?.toLowerCase() ?? "interacción"
-            : "interacción"
-        }? Esta acción no se puede deshacer.`}
-        confirmText="Eliminar"
+        title={t('interactions.deleteTitle')}
+        message={t('interactions.deleteMessage', {
+          type:
+            interactionToDelete
+              ? t(`interactions.types.${interactionToDelete.type.toLowerCase()}`)
+              : t('interactions.types.note'),
+        })}
+        confirmText={t('interactions.delete')}
         variant="danger"
         loading={Boolean(interactionToDelete) && deletingId === interactionToDelete?.id}
       />
