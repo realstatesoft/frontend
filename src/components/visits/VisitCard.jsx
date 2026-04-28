@@ -1,22 +1,24 @@
 import React from 'react';
 import { Card, Row, Col, Badge, Button } from 'react-bootstrap';
 import { PersonCircle, Envelope, Phone, Clock, Check2Circle, XCircle, Calendar3, ArrowRepeat } from 'react-bootstrap-icons';
+import { useTranslation } from 'react-i18next';
 import './visits.scss';
 
 const VisitCard = ({ visit, onConfirm, onSuggest, onReject, disabled }) => {
+  const { t } = useTranslation('owner');
 
   const getStatusBadge = (status) => {
     switch (status) {
       case 'PENDING':
-        return <Badge bg="warning" text="dark" className="visit-status-badge">Pendiente</Badge>;
+        return <Badge bg="warning" text="dark" className="visit-status-badge">{t('visits.filters.pending')}</Badge>;
       case 'ACCEPTED':
-        return <Badge bg="success" className="visit-status-badge">Aceptada</Badge>;
+        return <Badge bg="success" className="visit-status-badge">{t('visits.filters.accepted')}</Badge>;
       case 'REJECTED':
-        return <Badge bg="danger" className="visit-status-badge">Rechazada</Badge>;
+        return <Badge bg="danger" className="visit-status-badge">{t('visits.filters.rejected')}</Badge>;
       case 'COUNTER_PROPOSED':
-        return <Badge bg="info" className="visit-status-badge">Contra-propuesta</Badge>;
+        return <Badge bg="info" className="visit-status-badge">{t('visits.filters.counterProposed')}</Badge>;
       case 'CANCELLED':
-        return <Badge bg="secondary" className="visit-status-badge">Cancelada</Badge>;
+        return <Badge bg="secondary" className="visit-status-badge">{t('visits.filters.cancelled')}</Badge>;
       default:
         return null;
     }
@@ -83,7 +85,7 @@ const VisitCard = ({ visit, onConfirm, onSuggest, onReject, disabled }) => {
 
         <Row className="mb-3">
           <Col md={6}>
-            <h6 className="text-muted small fw-bold text-uppercase mb-3">Detalles del Solicitante</h6>
+            <h6 className="text-muted small fw-bold text-uppercase mb-3">{t('visits.requesterDetails', { defaultValue: 'Detalles del Solicitante' })}</h6>
             <div className="d-flex align-items-center mb-2">
               <PersonCircle size={40} className="me-3 text-muted" />
               <div>
@@ -99,11 +101,11 @@ const VisitCard = ({ visit, onConfirm, onSuggest, onReject, disabled }) => {
             </div>
             <div className="small mb-1">
               <Envelope className="me-2 text-muted" />
-              <span className="fw-bold">Correo electrónico:</span> {visit.buyerEmail}
+              <span className="fw-bold">{t('visits.email', { defaultValue: 'Correo electrónico' })}:</span> {visit.buyerEmail}
             </div>
             <div className="small">
               <Phone className="me-2 text-muted" />
-              <span className="fw-bold">Teléfono:</span> {visit.buyerPhone}
+              <span className="fw-bold">{t('visits.phone', { defaultValue: 'Teléfono' })}:</span> {visit.buyerPhone}
             </div>
           </Col>
         </Row>
@@ -111,7 +113,7 @@ const VisitCard = ({ visit, onConfirm, onSuggest, onReject, disabled }) => {
         {visit.message && (
           <div className="visit-comment-box mb-3">
             <p className="small mb-0 text-dark">
-              <span className="fw-bold">Comentarios:</span> "{visit.message}"
+              <span className="fw-bold">{t('visits.comments', { defaultValue: 'Comentarios' })}:</span> "{visit.message}"
             </p>
           </div>
         )}
@@ -125,7 +127,7 @@ const VisitCard = ({ visit, onConfirm, onSuggest, onReject, disabled }) => {
               className="btn-confirm px-4"
               disabled={disabled}
             >
-              Confirmar
+              {t('visits.actions.confirm')}
             </Button>
             <Button
               variant="warning"
@@ -134,7 +136,7 @@ const VisitCard = ({ visit, onConfirm, onSuggest, onReject, disabled }) => {
               className="btn-suggest-time px-4"
               disabled={disabled}
             >
-              Sugerir otro horario
+              {t('visits.actions.suggest')}
             </Button>
             <Button
               variant="danger"
@@ -143,7 +145,7 @@ const VisitCard = ({ visit, onConfirm, onSuggest, onReject, disabled }) => {
               className="btn-reject px-4"
               disabled={disabled}
             >
-              Rechazar
+              {t('visits.actions.reject')}
             </Button>
           </div>
         )}

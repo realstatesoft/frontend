@@ -1,0 +1,18 @@
+{
+  "title": "Selecionar localização",
+  "help": "Clique no mapa para escolher a localização exata do imóvel.",
+  "address": "Endereço",
+  "addressPlaceholder": "Endereço detectado pelo mapa (editável)",
+  "loadingAddress": "Buscando endereço...",
+  "zone": "Zona",
+  "loadingZone": "Buscando zona...",
+  "zonePlaceholder": "Selecione uma zona...",
+  "matchedZones": "Foram encontradas {{count}} zonas para esta cidade.",
+  "autoCreated": "Nova zona criada automaticamente.",
+  "noZoneDetected": "Não foi possível detectar a zona desta localização.",
+  "cancel": "Cancelar",
+  "useLocation": "Usar esta localização",
+  "errors": {
+    "reverseGeocode": "Não foi possível obter o endereço automaticamente. Você pode editá-lo manualmente."
+  }
+}

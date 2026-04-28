@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -24,8 +24,10 @@ import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
+import { useAuth } from "../../hooks/useAuth";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
+import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
@@ -33,9 +35,12 @@ import PropertyModel3DViewer from "../../components/properties/PropertyModel3DVi
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
 import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
+import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
+import { useTranslation } from "react-i18next";
 import "./show-property.scss";
 
 export default function ShowProperty() {
+  const { t } = useTranslation("showProperty");
   const BASE_URL = import.meta.env.VITE_DEPLOY_URL
 
   const {
@@ -66,9 +71,13 @@ export default function ShowProperty() {
     recentError,
     copyLink,
     activeFlagCount,
+    viewCount,
     isAuthenticated,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleToggleHighlight
   } = useShowProperty();
+
+  const { user: authUser } = useAuth();
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
@@ -80,11 +89,18 @@ export default function ShowProperty() {
     canDelete,
     canFeature,
     isOwner: isPropertyOwner,
+    isAdmin,
   } = usePropertyPermissions(property);
 
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
+  const viewBadgeText =
+    viewCount === 1
+      ? t("views.one")
+      : viewCount > 1
+      ? t("views.other", { count: viewCount })
+      : null;
 
   // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
   useEffect(() => {
@@ -183,8 +199,17 @@ export default function ShowProperty() {
           {activeFlagCount > 0 && (
             <Alert variant="warning" className="d-flex align-items-center mb-4">
               <Flag size={20} className="me-2" />
-              <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.</span>
+              <span>{t("reportsWarning")}</span>
             </Alert>
+          )}
+
+          {/* Panel de reserva solo para owner/agent/admin — buyer lo ve en el sidebar */}
+          {(isPropertyOwner || isAdmin || authUser?.role?.toUpperCase() === 'AGENT') && (
+            <PropertyReservationPanel
+              property={property}
+              currentUser={authUser}
+              defaultPercent={1}
+            />
           )}
 
           {/* Header */}
@@ -242,18 +267,20 @@ export default function ShowProperty() {
                   as={Link}
                   to={`/properties/${property.id}/edit`}
                 >
-                  <Pencil size={16} className="property__icon-button" /> Editar
+                  <Pencil size={16} className="property__icon-button" /> {t("actions.edit")}
                 </Button>
               )}
 
-              {/* Destacar — cualquier usuario autenticado */}
+              {/* Destacar — solo ADMIN */}
               {canFeature && (
                 <Button
                   size="sm"
-                  variant="warning"
-                  className="d-flex align-items-center"
+                  variant={property.highlighted ? "secondary" : "warning"}
+                  className="d-flex align-items-center text-white"
+                  onClick={handleToggleHighlight}
+                  disabled={actionLoading}
                 >
-                  <Star size={16} className="property__icon-button" /> Destacar
+                  <Star size={16} className="property__icon-button me-1" /> {property.highlighted ? "Quitar Destacado" : "Destacar"}
                 </Button>
               )}
 
@@ -265,7 +292,7 @@ export default function ShowProperty() {
                   className="d-flex align-items-center"
                   onClick={openDeleteConfirm}
                 >
-                  <Trash size={16} className="property__icon-button" /> Eliminar
+                  <Trash size={16} className="property__icon-button" /> {t("actions.delete")}
                 </Button>
               )}
               <Dropdown as={ButtonGroup}>
@@ -308,11 +335,19 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <img
-                src={images[0]}
-                alt="Fachada"
-                className="property__main-image"
-              />
+              <div className="property__main-image-wrapper">
+                <img
+                  src={images[0]}
+                  alt="Fachada"
+                  className="property__main-image"
+                />
+                {viewBadgeText && (
+                  <div className="property__views-badge">
+                    <Eye size={20} className="property__views-icon" />
+                    <span>{viewBadgeText}</span>
+                  </div>
+                )}
+              </div>
             </Col>
             <Col xs={6}>
               <Row className="g-1 h-100">
@@ -448,12 +483,11 @@ export default function ShowProperty() {
 
                     <div className="property__meta-box mt-4">
                       {(property.createdAt ||
-                        property.viewCount != null ||
                         property.favoriteCount != null) && (
                         <>
                           {property.createdAt && (
                             <>
-                            Publicado{" "}
+                            {t("actions.published")}{" "}
                               <strong>
                                 {formatTimeAgo(property.createdAt)}
                               </strong>
@@ -526,7 +560,7 @@ export default function ShowProperty() {
                         ) : finalTourConfig ? (
                           <Property360Tour config={finalTourConfig} />
                         ) : (
-                          <Alert variant="info">Cargando configuración del recorrido...</Alert>
+                          <Alert variant="info">{t("actions.loadingTour")}</Alert>
                         )
                       )}
 
@@ -546,25 +580,18 @@ export default function ShowProperty() {
                         <div className="property__empty-3d">
                           <div className="property__empty-3d-box">
                             <CameraVideo size={48} className="mb-3 text-muted" />
-                            <p className="mb-1 fw-bold">No hay recorridos disponibles</p>
-                            <p className="text-muted small">Esta propiedad aun no cuenta con contenido 360 o modelos 3D.</p>
+                            <p className="mb-1 fw-bold">{t("actions.noTours")}</p>
+                            <p className="text-muted small">{t("actions.noToursHint")}</p>
                           </div>
                         </div>
                       )}
                     </div>
 
                     <div className="mt-4">
-                      <Row className="g-4">
-                        <Col sm={6}>
-                          <div className="property__tour-card property__tour-card--static">
-                            <div className="mb-2">
-                              <FileText size={28} color="#555" />
-                            </div>
-                            <p className="property__tour-label">Planos de la propiedad</p>
-                            <span className="text-muted small">Proximamente disponible</span>
-                          </div>
-                        </Col>
-                      </Row>
+                      <h6 className="property__section-title mb-3" style={{ fontSize: "0.95rem" }}>
+                        Planos de la propiedad
+                      </h6>
+                      <PropertyFloorPlansViewer propertyId={property.id} />
                     </div>
                   </Tab.Pane>
 
@@ -591,7 +618,7 @@ export default function ShowProperty() {
                       ) : (
                         <Col>
                           <p className="text-muted">
-                            No hay caracteristicas cargadas.
+                            {t("actions.noFeatures")}
                           </p>
                         </Col>
                       )}
@@ -602,6 +629,17 @@ export default function ShowProperty() {
             </Col>
 
             <Col lg={4} className="mt-4 mt-lg-0">
+              {/* Panel de reserva para comprador (sticky en desktop) */}
+              {!isPropertyOwner && !isAdmin && authUser?.role?.toUpperCase() !== 'AGENT' && (
+                <div style={{ position: 'sticky', top: '1.5rem' }}>
+                  <PropertyReservationPanel
+                    property={property}
+                    currentUser={authUser}
+                    defaultPercent={1}
+                  />
+                </div>
+              )}
+
               <PropertyContactCard property={property} />
 
               {showRentCost && (
@@ -618,7 +656,7 @@ export default function ShowProperty() {
                     onClick={() => setShowReportModal(true)}
                     style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                   >
-                    <Flag className="me-2" /> Reportar propiedad
+                    <Flag className="me-2" /> {t("actions.reportProperty")}
                   </Button>
                   {!isPropertyOwner && (property.ownerId || property.userId) && (
                     <Button 
@@ -627,7 +665,7 @@ export default function ShowProperty() {
                       onClick={() => setShowReportUserModal(true)}
                       style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                     >
-                      <Flag className="me-2" /> Reportar usuario
+                      <Flag className="me-2" /> {t("actions.reportUser")}
                     </Button>
                   )}
                 </div>

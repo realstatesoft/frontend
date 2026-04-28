@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
 import userReportsApi from '../../services/userReportsApi';
+import { useTranslation } from 'react-i18next';
 
 /** Razones de reporte con etiquetas en español */
 const REPORT_REASONS = [
@@ -18,6 +19,7 @@ const REPORT_REASONS = [
  * @param {{ reportedUser: { id: number; name: string }; open: boolean; onClose: () => void }} props
  */
 export default function ReportUserModal({ reportedUser, open, onClose }) {
+  const { t } = useTranslation('showProperty');
   const [reason, setReason] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -65,9 +67,9 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
       const status = err.response?.status;
       const msg = err.response?.data?.message || err.response?.data?.error || '';
       if (status === 409) {
-        setError('Ya enviaste un reporte para este usuario. Nuestro equipo lo está revisando.');
+        setError(t('reportUser.duplicate', { defaultValue: 'Ya enviaste un reporte para este usuario. Nuestro equipo lo está revisando.' }));
       } else {
-        setError(msg || 'Ocurrió un error al enviar el reporte. Por favor, intentá nuevamente.');
+        setError(msg || t('reportUser.error', { defaultValue: 'Ocurrió un error al enviar el reporte. Por favor, intentá nuevamente.' }));
       }
     } finally {
       if (isMounted.current) setLoading(false);
@@ -84,19 +86,18 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
   return (
     <Modal show={open} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Reportar a {reportedUser.name}</Modal.Title>
+        <Modal.Title>{t('reportUser.title', { defaultValue: `Reportar a ${reportedUser.name}` })}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         {success ? (
           <Alert variant="success" className="mb-0" aria-live="polite">
-            <strong>Reporte enviado.</strong> Lo revisaremos a la brevedad. Gracias por contribuir a la seguridad de la plataforma.
+            <strong>{t('reportUser.successTitle', { defaultValue: 'Reporte enviado.' })}</strong> {t('reportUser.successText', { defaultValue: 'Lo revisaremos a la brevedad. Gracias por contribuir a la seguridad de la plataforma.' })}
           </Alert>
         ) : (
           <Form onSubmit={handleSubmit} noValidate>
             <p className="mb-4 text-muted" style={{ fontSize: '0.9rem' }}>
-              Si considerás que este usuario incumple nuestras normas, completá el formulario.
-              Tu reporte es anónimo y será revisado por nuestro equipo.
+              {t('reportUser.description', { defaultValue: 'Si considerás que este usuario incumple nuestras normas, completá el formulario. Tu reporte es anónimo y será revisado por nuestro equipo.' })}
             </p>
 
             {error && (
@@ -107,7 +108,7 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
 
             <Form.Group className="mb-3">
               <Form.Label>
-                Motivo del reporte <span className="text-danger">*</span>
+                {t('reportUser.reasonLabel', { defaultValue: 'Motivo del reporte' })} <span className="text-danger">*</span>
               </Form.Label>
               <Form.Select
                 value={reason}
@@ -115,7 +116,7 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
                 disabled={loading}
                 required
               >
-                <option value="">Seleccioná un motivo...</option>
+                <option value="">{t('reportUser.selectReason', { defaultValue: 'Seleccioná un motivo...' })}</option>
                 {REPORT_REASONS.map((r) => (
                   <option key={r.value} value={r.value}>
                     {r.label}
@@ -125,12 +126,12 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Descripción <span className="text-muted">(opcional)</span></Form.Label>
+              <Form.Label>{t('reportUser.descriptionLabel', { defaultValue: 'Descripción' })} <span className="text-muted">({t('reportUser.optional', { defaultValue: 'opcional' })})</span></Form.Label>
               <Form.Control
                 as="textarea"
                 rows={4}
                 maxLength={1000}
-                placeholder="Describí con más detalle el problema..."
+                placeholder={t('reportUser.descriptionPlaceholder', { defaultValue: 'Describí con más detalle el problema...' })}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={loading}
@@ -144,13 +145,13 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
 
             <div className="d-flex justify-content-end gap-2 mt-4">
               <Button variant="secondary" onClick={handleClose} disabled={loading}>
-                Cancelar
+                {t('reportUser.cancel', { defaultValue: 'Cancelar' })}
               </Button>
               <Button type="submit" variant="primary" disabled={!reason || loading}>
                 {loading ? (
-                  <><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Enviando...</>
+                  <><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> {t('reportUser.sending', { defaultValue: 'Enviando...' })}</>
                 ) : (
-                  'Enviar reporte'
+                  t('reportUser.submit', { defaultValue: 'Enviar reporte' })
                 )}
               </Button>
             </div>
@@ -161,7 +162,7 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
       {success && (
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Cerrar
+            {t('reportUser.close', { defaultValue: 'Cerrar' })}
           </Button>
         </Modal.Footer>
       )}

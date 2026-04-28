@@ -1,0 +1,33 @@
+{
+  "title": "Crear un Evento",
+  "fields": {
+    "title": "Título",
+    "date": "Fecha",
+    "startTime": "Hora inicio",
+    "endTime": "Hora fin",
+    "type": "Tipo",
+    "location": "Ubicación",
+    "description": "Descripción",
+    "notes": "Notas"
+  },
+  "placeholders": {
+    "title": "Ej. Llamada a Cliente María López",
+    "type": "Seleccionar tipo...",
+    "location": "Ej. Oficina central, Av. España 123",
+    "description": "Descripción breve del evento...",
+    "notes": ""
+  },
+  "options": {
+    "visit": "Visita",
+    "meeting": "Reunión",
+    "blocked": "Bloqueado",
+    "other": "Otro"
+  },
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "saving": "Guardando...",
+  "errors": {
+    "endAfterStart": "La hora de fin debe ser posterior a la hora de inicio.",
+    "createFailed": "Error al crear el evento. Intente nuevamente."
+  }
+}

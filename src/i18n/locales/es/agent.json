@@ -1,0 +1,70 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Resumen de tu actividad",
+    "stats": {
+      "activeClients": "Clientes Activos",
+      "monthlySales": "Ventas del Mes",
+      "scheduledVisits": "Visitas Programadas",
+      "commissions": "Comisiones"
+    }
+  },
+  "quickActions": {
+    "title": "Acciones Rápidas",
+    "newClient": "Nuevo Cliente",
+    "newProperty": "Nueva Propiedad",
+    "scheduleVisit": "Agendar Visita",
+    "viewOffers": "Ver Ofertas"
+  },
+  "clients": {
+    "title": "Clientes",
+    "subtitle": "Gestiona tu cartera de clientes",
+    "new": "Nuevo Cliente",
+    "view": "Ver Cliente",
+    "empty": "No se encontraron clientes",
+    "searchPlaceholder": "Nombre, Email...",
+    "filters": {
+      "status": "Estado",
+      "origin": "Origen",
+      "type": "Tipo"
+    }
+  },
+  "properties": {
+    "title": "Propiedades",
+    "subtitle": "Administra tus propiedades",
+    "new": "Nueva Propiedad",
+    "empty": "No se encontraron propiedades"
+  },
+  "visitRequests": {
+    "title": "Solicitudes de Visita",
+    "subtitle": "Revisa y aprueba las solicitudes de visitas a sus propiedades",
+    "loading": "Cargando solicitudes...",
+    "empty": "No hay solicitudes de visitas{{suffix}}.",
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendientes",
+      "accepted": "Aceptadas",
+      "counterProposed": "Contra-propuestas",
+      "rejected": "Rechazadas",
+      "cancelled": "Canceladas"
+    }
+  },
+  "messages": {
+    "title": "Mensajes",
+    "subtitle": "Comunicación con clientes",
+    "loading": "Cargando mensajes...",
+    "inbox": "Conversaciones",
+    "emptyInbox": "No hay conversaciones",
+    "emptyConversation": "Selecciona una conversación para comenzar a chatear",
+    "newConversation": "Nueva conversación",
+    "placeholder": "Escribe un mensaje..."
+  },
+  "edit": {
+    "title": "Editar Perfil",
+    "backToProfile": "Volver al perfil",
+    "loadError": "No se pudo cargar los datos del agente.",
+    "saveError": "No se pudo guardar los cambios. Intenta de nuevo.",
+    "notFound": "Agente no encontrado.",
+    "success": "Perfil actualizado correctamente. Redirigiendo…"
+  }
+}

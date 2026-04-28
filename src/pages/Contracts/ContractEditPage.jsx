@@ -12,12 +12,14 @@ import {
 import { getClausesForType } from './contractClauses';
 import contractTemplateApi from '../../services/contracts/contractTemplateApi';
 import { htmlToPlainText, hasMeaningfulHtmlContent, plainTextToTipTapHtml } from '../../utils/htmlToPlainText';
+import { useAuth } from '../../hooks/useAuth';
 import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
 
 export default function ContractEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: contractRes, isLoading: loadingContract } = useContractDetail(id);
   const contract = contractRes?.data;
@@ -59,7 +61,10 @@ export default function ContractEditPage() {
         icon: 'warning',
         title: 'No editable',
         text: 'Solo puedes editar contratos en estado Borrador (DRAFT).',
-      }).then(() => navigate('/agent/contratos'));
+      }).then(() => {
+        const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+        navigate(`/${base}/contratos`);
+      });
       return;
     }
 
@@ -259,7 +264,8 @@ export default function ContractEditPage() {
         });
       }
 
-      navigate('/agent/contratos');
+      const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+      navigate(`/${base}/contratos`);
     } catch (err) {
       Swal.fire({
         icon: 'error',
@@ -287,7 +293,10 @@ export default function ContractEditPage() {
         <button
           type="button"
           className={styles.page__back}
-          onClick={() => navigate('/agent/contratos')}
+          onClick={() => {
+            const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+            navigate(`/${base}/contratos`);
+          }}
         >
           <FiArrowLeft /> Volver a contratos
         </button>
@@ -574,7 +583,10 @@ export default function ContractEditPage() {
         <button
           type="button"
           className={`${styles.btn} ${styles['btn--ghost']}`}
-          onClick={() => navigate('/agent/contratos')}
+          onClick={() => {
+            const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+            navigate(`/${base}/contratos`);
+          }}
           disabled={isPending}
         >
           Cancelar

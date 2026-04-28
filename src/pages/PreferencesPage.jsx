@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { IoCheckmarkCircle, IoCloseCircle, IoArrowBackOutline } from "react-icons/io5";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
@@ -28,6 +29,7 @@ function Toast({ visible, message, type = "success" }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function PreferencesPage() {
+  const { t } = useTranslation("preferences");
   const navigate = useNavigate();
   const { user } = useAuth();
   const userId = user?.userId;
@@ -68,9 +70,9 @@ export default function PreferencesPage() {
   async function handleSubmit({ selectedOptionIds, ranges }) {
     try {
       await savePreferences({ userId, selectedOptionIds, ranges });
-      showToast("¡Preferencias guardadas! Ahora te mostraremos propiedades más relevantes.", "success");
+      showToast(t("toastSuccess"), "success");
     } catch (err) {
-      showToast(err?.message ?? "Error al guardar. Intentá de nuevo.", "error");
+      showToast(err?.message ?? t("toastError"), "error");
     }
   }
 
@@ -102,13 +104,12 @@ export default function PreferencesPage() {
                   gap: "6px",
                 }}
               >
-                <IoArrowBackOutline /> Volver
+                <IoArrowBackOutline /> {t("back")}
               </button>
             </div>
-            <h1 className="preferences-page__title">Mis preferencias</h1>
+            <h1 className="preferences-page__title">{t("title")}</h1>
             <p className="preferences-page__subtitle">
-              Seleccioná las características que más te importan para que podamos
-              mostrarte propiedades más relevantes para vos.
+              {t("subtitle")}
             </p>
           </div>
 
@@ -116,10 +117,10 @@ export default function PreferencesPage() {
             {isLoading ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Cargando...</span>
+                  <span className="visually-hidden">{t("loading")}</span>
                 </div>
                 <p className="text-muted mt-3 mb-0" style={{ fontSize: "0.875rem" }}>
-                  Cargando tus preferencias...
+                  {t("loadingDetails")}
                 </p>
               </div>
             ) : (
@@ -131,7 +132,7 @@ export default function PreferencesPage() {
                 initialPreferences={preferences}
                 onSubmit={handleSubmit}
                 isSaving={isSaving}
-                submitLabel="Guardar preferencias"
+                submitLabel={t("save")}
               />
             )}
           </div>

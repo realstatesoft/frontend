@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createPropertySchema } from '../../validation/createPropertySchema';
 
 describe('createPropertySchema', () => {
+  const schema = createPropertySchema();
   const validData = {
     title: 'Casa en el centro',
     address: 'Av. Corrientes 1234, Buenos Aires',
@@ -16,20 +17,20 @@ describe('createPropertySchema', () => {
   };
 
   it('valida correctamente datos válidos', () => {
-    const result = createPropertySchema.safeParse(validData);
+    const result = schema.safeParse(validData);
     expect(result.success).toBe(true);
   });
 
   describe('title', () => {
     it('falla si el título está vacío', () => {
-      const result = createPropertySchema.safeParse({ ...validData, title: '' });
+      const result = schema.safeParse({ ...validData, title: '' });
       expect(result.success).toBe(false);
       const msgs = getMessages(result.error);
       expect(msgs).toContain('El título es obligatorio');
     });
 
     it('falla si el título supera 255 caracteres', () => {
-      const result = createPropertySchema.safeParse({
+      const result = schema.safeParse({
         ...validData,
         title: 'a'.repeat(256),
       });
@@ -39,7 +40,7 @@ describe('createPropertySchema', () => {
     });
 
     it('acepta un título con exactamente 255 caracteres', () => {
-      const result = createPropertySchema.safeParse({
+      const result = schema.safeParse({
         ...validData,
         title: 'a'.repeat(255),
       });
@@ -49,14 +50,14 @@ describe('createPropertySchema', () => {
 
   describe('address', () => {
     it('falla si la dirección está vacía', () => {
-      const result = createPropertySchema.safeParse({ ...validData, address: '' });
+      const result = schema.safeParse({ ...validData, address: '' });
       expect(result.success).toBe(false);
       const msgs = getMessages(result.error);
       expect(msgs).toContain('La dirección es obligatoria');
     });
 
     it('falla si la dirección supera 500 caracteres', () => {
-      const result = createPropertySchema.safeParse({
+      const result = schema.safeParse({
         ...validData,
         address: 'a'.repeat(501),
       });
@@ -66,45 +67,45 @@ describe('createPropertySchema', () => {
 
   describe('price', () => {
     it('falla si el precio está vacío', () => {
-      const result = createPropertySchema.safeParse({ ...validData, price: '' });
+      const result = schema.safeParse({ ...validData, price: '' });
       expect(result.success).toBe(false);
       const msgs = getMessages(result.error);
       expect(msgs).toContain('El precio es obligatorio');
     });
 
     it('falla si el precio es 0', () => {
-      const result = createPropertySchema.safeParse({ ...validData, price: '0' });
+      const result = schema.safeParse({ ...validData, price: '0' });
       expect(result.success).toBe(false);
       const msgs = getMessages(result.error);
       expect(msgs).toContain('El precio debe ser mayor a 0');
     });
 
     it('falla si el precio es negativo', () => {
-      const result = createPropertySchema.safeParse({ ...validData, price: '-100' });
+      const result = schema.safeParse({ ...validData, price: '-100' });
       expect(result.success).toBe(false);
     });
 
     it('falla si el precio no es numérico', () => {
-      const result = createPropertySchema.safeParse({ ...validData, price: 'abc' });
+      const result = schema.safeParse({ ...validData, price: 'abc' });
       expect(result.success).toBe(false);
     });
 
     it('acepta un precio positivo válido', () => {
-      const result = createPropertySchema.safeParse({ ...validData, price: '500000' });
+      const result = schema.safeParse({ ...validData, price: '500000' });
       expect(result.success).toBe(true);
     });
   });
 
   describe('propertyType', () => {
     it('falla si propertyType está vacío', () => {
-      const result = createPropertySchema.safeParse({ ...validData, propertyType: '' });
+      const result = schema.safeParse({ ...validData, propertyType: '' });
       expect(result.success).toBe(false);
       const msgs = getMessages(result.error);
       expect(msgs).toContain('El tipo de propiedad es obligatorio');
     });
 
     it('acepta cualquier string no vacío como propertyType', () => {
-      const result = createPropertySchema.safeParse({ ...validData, propertyType: 'APARTMENT' });
+      const result = schema.safeParse({ ...validData, propertyType: 'APARTMENT' });
       expect(result.success).toBe(true);
     });
   });
@@ -113,16 +114,16 @@ describe('createPropertySchema', () => {
     it('acepta datos sin campo category (opcionalidad real)', () => {
       // Empezamos con un objeto que SÍ tiene category
       const dataWithCategory = { ...validData, category: 'SALE' };
-      expect(createPropertySchema.safeParse(dataWithCategory).success).toBe(true);
+      expect(schema.safeParse(dataWithCategory).success).toBe(true);
 
       // Ahora lo removemos y verificamos que sigue siendo válido
       const { category: _cat, ...dataWithoutCategory } = dataWithCategory;
-      const result = createPropertySchema.safeParse(dataWithoutCategory);
+      const result = schema.safeParse(dataWithoutCategory);
       expect(result.success).toBe(true);
     });
 
     it('acepta datos con geolocation válido', () => {
-      const result = createPropertySchema.safeParse({
+      const result = schema.safeParse({
         ...validData,
         geolocation: { lat: -34.6, lng: -58.4 },
       });
@@ -130,7 +131,7 @@ describe('createPropertySchema', () => {
     });
 
     it('acepta geolocation con valores null', () => {
-      const result = createPropertySchema.safeParse({
+      const result = schema.safeParse({
         ...validData,
         geolocation: { lat: null, lng: null },
       });

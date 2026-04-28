@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FiSend, FiUser, FiPlus, FiArrowLeft } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
 import Button from '../../components/common/Button/Button';
@@ -9,12 +10,13 @@ import CustomNavbar from '../../components/Landing/Navbar';
 import styles from './ClientMessagesPage.module.scss';
 
 function InboxList({ conversations, activeId, onSelect }) {
+  const { t } = useTranslation('owner');
   return (
     <div className={styles.inbox}>
-      <div className={styles.inbox__header}>Conversaciones</div>
+      <div className={styles.inbox__header}>{t('messages.inbox')}</div>
       <div className={styles.inbox__list}>
         {conversations.length === 0 ? (
-          <div className={styles.inbox__empty}>No hay conversaciones</div>
+          <div className={styles.inbox__empty}>{t('messages.emptyInbox')}</div>
         ) : (
           conversations.map((conv) => (
             <button
@@ -52,6 +54,7 @@ function ConversationPanel({ conversation }) {
   const messages = response?.data || [];
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
+  const { t } = useTranslation('owner');
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -73,7 +76,7 @@ function ConversationPanel({ conversation }) {
     return (
       <div className={styles.conversation}>
         <div className={styles.conversation__empty}>
-          Selecciona una conversación para comenzar a chatear
+          {t('messages.emptyConversation')}
         </div>
       </div>
     );
@@ -112,7 +115,7 @@ function ConversationPanel({ conversation }) {
         <input
           type="text"
           className={styles.conversation__input}
-          placeholder="Escribe un mensaje..."
+          placeholder={t('messages.placeholder')}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           disabled={sendMessage.isPending}
@@ -136,13 +139,26 @@ export default function ClientMessagesPage() {
   const [activeConversation, setActiveConversation] = useState(null);
   const [showNewConvModal, setShowNewConvModal] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation('owner');
+  const location = useLocation();
+  const [preSelectedUser, setPreSelectedUser] = useState(null);
+  const isInitializedRef = useRef(false);
+
+  useEffect(() => {
+    if (location.state?.openNewConversation && !isInitializedRef.current) {
+      isInitializedRef.current = true;
+      setShowNewConvModal(true);
+      setPreSelectedUser(location.state.preSelectedAgent);
+      navigate(window.location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, navigate]);
 
   if (isLoading) {
     return (
       <div className={styles.wrapper}>
         <CustomNavbar />
         <div className={styles.page}>
-          <div className={styles.page__loading}>Cargando mensajes...</div>
+          <div className={styles.page__loading}>{t('messages.loading')}</div>
         </div>
       </div>
     );
@@ -157,21 +173,21 @@ export default function ClientMessagesPage() {
             type="button"
             className={styles.page__back}
             onClick={() => navigate(-1)}
-            aria-label="Volver"
+            aria-label={t('back', { ns: 'common' })}
           >
             <FiArrowLeft size={18} />
           </button>
           <div className={styles.page__headerText}>
-            <h1 className={styles.page__title}>Mensajes</h1>
-            <p className={styles.page__subtitle}>Comunicación con agentes</p>
+            <h1 className={styles.page__title}>{t('messages.title')}</h1>
+            <p className={styles.page__subtitle}>{t('messages.subtitle')}</p>
           </div>
-          <Button
+          {/*<Button
             variant="outline-primary"
             size="sm"
             onClick={() => setShowNewConvModal(true)}
           >
             <FiPlus className="me-1" /> Nueva conversación
-          </Button>
+          </Button>*/}
         </div>
 
         <div className={styles.page__body}>
@@ -185,8 +201,13 @@ export default function ClientMessagesPage() {
 
         <NewConversationModal
           isOpen={showNewConvModal}
-          onClose={() => setShowNewConvModal(false)}
+          onClose={() => { 
+            setShowNewConvModal(false); 
+            setPreSelectedUser(null); 
+            navigate(window.location.pathname, { replace: true, state: null });
+          }}
           onSuccess={() => refetch()}
+          preSelectedAgent={preSelectedUser}
         />
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Button, Form, Spinner, Alert, Badge } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import PropertyMap from "./PropertyMap";
 import locationApi from "../../services/locations/locationApi";
 
@@ -46,6 +47,7 @@ export default function LocationPickerModal({
   initialLocationId = null,
   onConfirm,
 }) {
+  const { t } = useTranslation("locations");
   const [coords, setCoords] = useState(initialCoords || null);
   const [address, setAddress] = useState(initialAddress || "");
   const [loadingAddress, setLoadingAddress] = useState(false);
@@ -110,9 +112,7 @@ export default function LocationPickerModal({
         }
       }
     } catch {
-      setError(
-        "No se pudo obtener la dirección automáticamente. Podés editarla manualmente."
-      );
+      setError(t("errors.reverseGeocode"));
     } finally {
       setLoadingAddress(false);
       setLoadingMatch(false);
@@ -141,12 +141,12 @@ export default function LocationPickerModal({
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
       <Modal.Header closeButton>
-        <Modal.Title>Seleccionar ubicación</Modal.Title>
+        <Modal.Title>{t("title")}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <p className="small text-muted mb-2">
-          Hacé clic en el mapa para elegir la ubicación exacta de la propiedad.
+          {t("help")}
         </p>
 
         <PropertyMap
@@ -158,25 +158,25 @@ export default function LocationPickerModal({
         />
 
         <Form.Group className="mt-3">
-          <Form.Label className="fw-semibold">Dirección</Form.Label>
+          <Form.Label className="fw-semibold">{t("address")}</Form.Label>
           <Form.Control
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="Dirección detectada por el mapa (editable)"
+            placeholder={t("addressPlaceholder")}
           />
           {loadingAddress && (
             <div className="mt-1 small text-muted d-flex align-items-center gap-2">
-              <Spinner animation="border" size="sm" /> Buscando dirección...
+              <Spinner animation="border" size="sm" /> {t("loadingAddress")}
             </div>
           )}
         </Form.Group>
 
         {/* Zona auto-detectada */}
         <Form.Group className="mt-3">
-          <Form.Label className="fw-semibold">Zona</Form.Label>
+          <Form.Label className="fw-semibold">{t("zone")}</Form.Label>
           {loadingMatch ? (
             <div className="small text-muted d-flex align-items-center gap-2">
-              <Spinner animation="border" size="sm" /> Buscando zona...
+              <Spinner animation="border" size="sm" /> {t("loadingZone")}
             </div>
           ) : matchedLocations.length > 1 && !autoCreatedLocation ? (
             // Múltiples zonas existentes → dropdown
@@ -185,7 +185,7 @@ export default function LocationPickerModal({
                 value={selectedLocationId || ""}
                 onChange={handleLocationSelect}
               >
-                <option value="">Seleccioná una zona...</option>
+                <option value="">{t("zonePlaceholder")}</option>
                 {matchedLocations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
                     {loc.name}
@@ -193,7 +193,7 @@ export default function LocationPickerModal({
                 ))}
               </Form.Select>
               <div className="mt-1 small text-muted">
-                Se encontraron {matchedLocations.length} zonas para esta ciudad.
+                {t("matchedZones", { count: matchedLocations.length })}
               </div>
             </>
           ) : matchedLocations.length === 1 ? (
@@ -209,14 +209,14 @@ export default function LocationPickerModal({
               {autoCreatedLocation && (
                 <div className="mt-1 small text-muted">
                   <i className="bi bi-plus-circle me-1" />
-                  Zona nueva creada automáticamente.
+                  {t("autoCreated")}
                 </div>
               )}
             </div>
           ) : coords ? (
             <div className="small text-muted">
               <i className="bi bi-info-circle me-1" />
-              No se pudo detectar la zona para esta ubicación.
+              {t("noZoneDetected")}
             </div>
           ) : null}
         </Form.Group>
@@ -230,10 +230,10 @@ export default function LocationPickerModal({
 
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
-          Cancelar
+          {t("cancel")}
         </Button>
         <Button variant="primary" onClick={handleConfirm} disabled={!canConfirm}>
-          Usar esta ubicación
+          {t("useLocation")}
         </Button>
       </Modal.Footer>
     </Modal>

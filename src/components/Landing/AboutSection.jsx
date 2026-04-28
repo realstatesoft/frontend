@@ -1,8 +1,10 @@
 import React from "react";
 import { Container } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 const AboutSection = () => {
+    const { t } = useTranslation("landing");
     const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
 
     return (
@@ -27,16 +29,13 @@ const AboutSection = () => {
                             fontWeight: 600,
                         }}
                     >
-                        Sobre Nosotros
+                        {t("about.eyebrow")}
                     </div>
                     <h2 className="fw-bold mb-4" style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)", color: "black" }}>
-                        Somos una agencia inmobiliaria boutique especializada en el mercado
-                        de Paraguay.
+                        {t("about.title")}
                     </h2>
                     <p className="text-muted" style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--primary, #1a56db)" }}>
-                        Con años de experiencia y un equipo apasionado, ayudamos a nuestros
-                        clientes a encontrar el hogar perfecto. Nuestra misión es hacer que
-                        cada transacción sea simple, transparente y exitosa.
+                        {t("about.description")}
                     </p>
                 </div>
             </Container>

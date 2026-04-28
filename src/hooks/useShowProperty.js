@@ -20,6 +20,12 @@ const getErrorMessage = (err) =>
   "No se pudo conectar con el servidor. Verificá que el backend esté activo.";
 
 const SIMILAR_LIMIT = 6
+const registeredViewIds = new Set();
+
+export function __resetShowPropertyViewRegistrationForTests() {
+  registeredViewIds.clear();
+}
+
 /**
  * Hook con toda la lógica de la página ShowProperty:
  * fetch de propiedad, estado, visibilidad, changeStatus, changeVisibility, delete.
@@ -29,8 +35,12 @@ export function useShowProperty() {
   const navigate = useNavigate();
 
   const similarRequestRef = useRef(0);
+  const viewCountRequestRef = useRef(0);
+  const registeredViewRef = useRef(registeredViewIds);
 
   const [property, setProperty] = useState(null);
+  const propertyRef = useRef(property);
+  propertyRef.current = property;
   const [similarProperties, setSimilarProperties] = useState([]);
   const [recentProperties, setRecentProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +50,7 @@ export function useShowProperty() {
   const [error, setError] = useState(null);
   const [similarError, setSimilarError] = useState(null);
   const [recentError, setRecentError] = useState(null);
+  const [viewCount, setViewCount] = useState(null);
 
   const [status, setStatus] = useState(PROPERTY_STATUS_OPTIONS[0]);
   const [visibility, setVisibility] = useState(PROPERTY_VISIBILITY_OPTIONS[0]);
@@ -163,11 +174,72 @@ export function useShowProperty() {
       });
   }, [id]);
 
+  const fetchViewCount = useCallback(() => {
+    if (!id) {
+      setViewCount(null);
+      return Promise.resolve(null);
+    }
+
+    const requestId = ++viewCountRequestRef.current;
+    const currentId = String(id);
+
+    return propertyApi
+      .getViewCount(id)
+      .then(({ data }) => {
+        if (
+          requestId !== viewCountRequestRef.current ||
+          String(id) !== currentId
+        ) {
+          return null;
+        }
+        const count = typeof data === "number" ? data : (data?.data ?? data?.count ?? data);
+        setViewCount(Number.isFinite(Number(count)) ? Number(count) : null);
+        return count;
+      })
+      .catch(() => {
+        if (
+          requestId !== viewCountRequestRef.current ||
+          String(id) !== currentId
+        ) {
+          return null;
+        }
+        setViewCount(null);
+        return null;
+      });
+  }, [id]);
+
+  const registerPropertyView = useCallback(() => {
+    if (!id) return Promise.resolve(null);
+    const propertyId = String(id);
+    if (registeredViewRef.current.has(propertyId)) {
+      return Promise.resolve(null);
+    }
+    registeredViewRef.current.add(propertyId);
+    return propertyApi.registerView(id).catch(() => {
+      registeredViewRef.current.delete(propertyId);
+      return null;
+    });
+  }, [id]);
+
   useEffect(() => {
     fetchProperty();
     fetchSimilar();
     fetchActiveFlagCount();
-  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount]);
+
+    let cancelled = false;
+
+    const registerAndCountViews = async () => {
+      await registerPropertyView();
+      if (cancelled) return;
+      await fetchViewCount();
+    };
+
+    registerAndCountViews();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount, fetchViewCount, registerPropertyView]);
 
   useEffect(() => {
     if (!isAuthenticated || !id) return;
@@ -269,6 +341,34 @@ export function useShowProperty() {
       setActionLoading(false);
     }
   }, [id, hideConfirm, navigate]);
+
+  const handleToggleHighlight = useCallback(async () => {
+    const currentProp = propertyRef.current;
+    if (!id || !currentProp) return;
+    setActionLoading(true);
+    const newHighlightState = !currentProp.highlighted;
+    try {
+      const { data } = await propertyApi.toggleHighlight(id, newHighlightState);
+      if (!data?.success || !data?.data) throw new Error(data?.message || 'Backend reported failure');
+      
+      setProperty(data.data);
+      await Swal.fire({
+        icon: "success",
+        title: "Éxito",
+        text: newHighlightState ? "Propiedad destacada correctamente" : "Se ha quitado el destacado de la propiedad",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id]);
 
   const openChangeStatusConfirm = useCallback((option) => {
     setConfirmData({
@@ -375,6 +475,8 @@ export function useShowProperty() {
     recentError,
     copyLink,
     activeFlagCount,
-    fetchActiveFlagCount
+    viewCount,
+    fetchActiveFlagCount,
+    handleToggleHighlight
   };
 }

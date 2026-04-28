@@ -1,37 +1,42 @@
-import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
-import casita from "../../assets/Home.png"
-import eye from "../../assets/Eye.png"
-const services = [
-    {
-        icon: <img src={casita} alt="CIU" style={{ width: 300, height: 30, objectFit: "contain" }} />,
-        title: "Comprar una casa",
-        description:
-            "Encuentra la casa perfecta con nuestra herramienta de búsqueda avanzada.",
-        link: "Explorar propiedades →",
-        color: "#dbeafe",
-    },
-    {
-        icon: <img src={eye} alt="Eye" style={{ width: 300, height: 30, objectFit: "contain" }} />,
-        title: "Alquilar una casa",
-        description:
-            "Encuentra tu próximo hogar en alquiler con precios competitivos.",
-        link: "Ver alquileres →",
-        color: "#fef3c7",
-    },
-    {
-        icon: <span style={{ fontSize: "1.5rem", color: "#000000" }}>$</span>,
-        title: "Vender tu casa",
-        description:
-            "Publica tu propiedad y conecta con miles de compradores potenciales.",
-        link: "Publicar propiedad →",
-        color: "#d1fae5",
-    },
-];
+import { Link } from "react-router-dom";
+import casita from "../../assets/Home.png";
+import eye from "../../assets/Eye.png";
 
 const ServicesSection = () => {
+    const { t } = useTranslation("landing");
     const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
+    const services = [
+        {
+            icon: <img src={casita} alt="CIU" style={{ width: 300, height: 30, objectFit: "contain" }} />,
+            title: t("services.buy.title"),
+            description: t("services.buy.description"),
+            linkText: t("services.buy.link"),
+            to: "/properties",
+            state: { availability: "VENTA" },
+            color: "#dbeafe",
+        },
+        {
+            icon: <img src={eye} alt="Eye" style={{ width: 300, height: 30, objectFit: "contain" }} />,
+            title: t("services.rent.title"),
+            description: t("services.rent.description"),
+            linkText: t("services.rent.link"),
+            to: "/properties",
+            state: { availability: "ALQUILER" },
+            color: "#fef3c7",
+        },
+        {
+            icon: <span style={{ fontSize: "1.5rem", color: "#000000" }}>$</span>,
+            title: t("services.sell.title"),
+            description: t("services.sell.description"),
+            linkText: t("services.sell.link"),
+            to: "/properties/create",
+            state: null,
+            color: "#d1fae5",
+        },
+    ];
 
     return (
         <section
@@ -42,8 +47,10 @@ const ServicesSection = () => {
                 <Row className="g-4">
                     {services.map((service, i) => (
                         <Col md={4} key={i}>
-                            <div
-                                className="p-4 rounded-4 h-100"
+                            <Link
+                                to={service.to}
+                                state={service.state}
+                                className="p-4 rounded-4 h-100 d-block text-decoration-none"
                                 style={{
                                     backgroundColor: "#fafbfc",
                                     border: "1px solid #f0f0f0",
@@ -77,14 +84,13 @@ const ServicesSection = () => {
                                 <p className="text-muted mb-3" style={{ fontSize: "0.9rem" }}>
                                     {service.description}
                                 </p>
-                                <a
-                                    href="#"
+                                <span
                                     className="fw-semibold"
                                     style={{ color: "var(--primary, #1a56db)", fontSize: "0.9rem" }}
                                 >
-                                    {service.link}
-                                </a>
-                            </div>
+                                    {service.linkText}
+                                </span>
+                            </Link>
                         </Col>
                     ))}
                 </Row>

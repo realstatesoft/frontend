@@ -3,8 +3,10 @@ import { Modal, Button, Form, Row, Col, Spinner, Badge, Alert } from 'react-boot
 import { getAgentAvailability } from '../../services/visits/visitApi';
 import { Calendar3, Clock, InfoCircle } from 'react-bootstrap-icons';
 import './visits.scss';
+import { useTranslation } from 'react-i18next';
 
 const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
+  const { t } = useTranslation(['visits', 'common']);
   const [formData, setFormData] = useState({
     counterProposedAt: '',
     counterProposeMessage: '',
@@ -114,14 +116,14 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
       <Modal.Header closeButton className="border-0 pb-0">
         <Modal.Title className="fw-bold d-flex align-items-center gap-2">
           <Calendar3 className="text-primary" />
-          Sugerir otro horario de visita
+          {t('suggest.title')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-4 pt-3">
         <div className="mb-4 p-3 bg-light rounded-4 border-0 shadow-sm" style={{ border: '1px solid #e0ddd8', backgroundColor: '#f8fafc' }}>
           <h5 className="fw-bold mb-1 text-dark">{visit?.propertyTitle}</h5>
           <p className="text-muted small mb-0">
-            Horario solicitado por {visit?.buyerName}:{' '}
+            {t('suggest.requestedBy', { defaultValue: 'Horario solicitado por' })} {visit?.buyerName}:{' '}
             <span className="fw-bold text-primary">
               {formatProposedAt(visit?.proposedAt)}
             </span>
@@ -132,7 +134,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
           <div className="mb-4">
             <Form.Group className="mb-3">
               <Form.Label className="small fw-bold text-uppercase text-muted" style={{ fontSize: '0.7rem' }}>
-                1. Elige la nueva fecha
+                {t('suggest.step1')}
               </Form.Label>
               <Form.Control
                 type="date"
@@ -155,14 +157,14 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <span className="small fw-semibold text-dark">
                     <Clock size={16} className="me-2 text-primary" />
-                    2. Selecciona un horario libre en tu agenda
+                    {t('suggest.step2')}
                   </span>
                   {loadingAvailability && <Spinner animation="border" size="sm" variant="primary" />}
                 </div>
 
                 {!loadingAvailability && formData.counterProposedAt.split('T')[0] === lastCheckDate && availableSlots.length === 0 && (
                   <Alert variant="warning" className="small py-2 border-0" style={{ backgroundColor: 'rgba(245, 158, 11, 0.05)', color: '#f59e0b' }}>
-                    No tienes horarios libres para este día. Intenta con otra fecha.
+                    {t('suggest.noSlots')}
                   </Alert>
                 )}
 
@@ -197,7 +199,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                 {/* Shows busy slots for context */}
                 {!loadingAvailability && formData.counterProposedAt.split('T')[0] === lastCheckDate && busySlots.length > 0 && (
                   <div className="mt-4 border-top pt-3">
-                    <p className="text-muted mb-2 fw-bold" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ocupado actualmente:</p>
+                    <p className="text-muted mb-2 fw-bold" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('suggest.busy')}</p>
                     <div className="d-flex flex-wrap gap-1">
                       {busySlots.map((busy, idx) => (
                         <Badge key={idx} bg="danger-subtle" className="text-danger fw-normal py-1 px-2 border-0" style={{ fontSize: '0.7rem', backgroundColor: 'rgba(239, 68, 68, 0.08)' }}>
@@ -213,7 +215,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
 
           <Form.Group className="mb-4">
             <Form.Label className="small fw-bold text-uppercase text-muted" style={{ fontSize: '0.7rem' }}>
-              3. Mensaje para el comprador
+              {t('suggest.step3')}
             </Form.Label>
             <Form.Control
               as="textarea"
@@ -221,7 +223,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
               name="counterProposeMessage"
               value={formData.counterProposeMessage}
               onChange={handleChange}
-              placeholder="Ej: Hola, ese horario me queda mejor. ¿Te parece bien?"
+              placeholder={t('suggest.messagePlaceholder')}
               style={{ borderRadius: '10px' }}
             />
           </Form.Group>
@@ -234,10 +236,10 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                 disabled={!formData.counterProposedAt || !formData.counterProposedAt.includes('T')} 
                 style={{ borderRadius: '12px', backgroundColor: '#2563eb', borderColor: '#2563eb' }}
             >
-              ENVIAR PROPUESTA
+              {t('suggest.submit').toUpperCase()}
             </Button>
             <Button variant="link" onClick={onHide} className="text-muted text-decoration-none small">
-              Cancelar
+              {t('cancel', { ns: 'common' })}
             </Button>
           </div>
         </Form>
