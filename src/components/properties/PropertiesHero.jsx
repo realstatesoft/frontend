@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Container, Collapse, Row, Col, Form } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
+import SaveSearchModal from "./SaveSearchModal";
+import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -27,12 +29,53 @@ export default function PropertiesHero({
     onClear,
 }) {
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [savedSearches, setSavedSearches] = useState([]);
+
+    const fetchSavedSearches = async () => {
+        try {
+            const res = await searchPreferencesApi.getMine();
+            const items = res?.content || [];
+            setSavedSearches(items);
+        } catch (err) {
+            console.error("Error loading saved searches:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchSavedSearches();
+    }, []);
+
+    const handleDeleteSearch = async (id, evt) => {
+        evt.stopPropagation();
+        try {
+            await searchPreferencesApi.delete(id);
+            fetchSavedSearches();
+        } catch (err) {
+            console.error("Error deleting search:", err);
+        }
+    };
+
+    const filters = {
+        q: search,
+        propertyType: typeFilter,
+        availability,
+        minPrice: minPrice || null,
+        maxPrice: maxPrice || null,
+        minBedrooms: minBedrooms || null,
+        minBathrooms: minBathrooms || null,
+    };
+
+    const handleSaveSuccess = () => {
+        console.log("Búsqueda guardada");
+        fetchSavedSearches();
+    };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
 
     return (
-        <div className="bg-light py-4">
+        <div className="bg-light py-4" style={{ overflow: 'visible' }}>
             <Container>
                 <div className="filter-bar">
 
@@ -45,6 +88,53 @@ export default function PropertiesHero({
                             value={search}
                             onChange={(e) => onSearch(e.target.value)}
                         />
+                    </div>
+
+                    {/* Mis búsquedas dropdown */}
+                    <div className="filter-bar__saved-dropdown">
+                        <Dropdown>
+                            <Dropdown.Toggle
+                                className="filter-pill"
+                                id="saved-searches-dropdown"
+                            >
+                                Mis búsquedas
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Header>Mis búsquedas guardadas</Dropdown.Header>
+                                {savedSearches.map((s) => (
+                                    <Dropdown.Item
+                                        key={s.id}
+                                        as="div"
+                                        className="d-flex justify-content-between align-items-center"
+                                        onClick={() => {
+                                            const f = s.filters || {};
+                                            onSearch(f.q ?? "");
+                                            onTypeChange(f.propertyType ?? "");
+                                            onAvailabilityChange(f.availability ?? "");
+                                            onMinPriceChange(f.minPrice ?? "");
+                                            onMaxPriceChange(f.maxPrice ?? "");
+                                            onMinBedroomsChange(f.minBedrooms ?? "");
+                                            onMinBathroomsChange(f.minBathrooms ?? "");
+                                        }}
+                                    >
+                                        <span>{s.name}</span>
+                                        <button
+                                            className="filter-bar__delete-search"
+                                            onClick={(evt) => handleDeleteSearch(s.id, evt)}
+                                            title="Eliminar"
+                                            type="button"
+                                        >
+                                            ×
+                                        </button>
+                                    </Dropdown.Item>
+                                ))}
+                                {savedSearches.length === 0 && (
+                                    <Dropdown.Item disabled>
+                                        Sin búsquedas guardadas
+                                    </Dropdown.Item>
+                                )}
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </div>
 
                     <div className="filter-bar__divider" />
@@ -98,6 +188,15 @@ export default function PropertiesHero({
                             <div className="filter-bar__divider" />
                             <button className="filter-bar__clear" onClick={onClear} title="Limpiar filtros" type="button">
                                 ✕
+                            </button>
+                            <div className="filter-bar__divider" />
+                            <button
+                                className="filter-bar__save"
+                                onClick={() => setShowSaveModal(true)}
+                                title="Guardar esta búsqueda"
+                                type="button"
+                            >
+                                Guardar
                             </button>
                         </>
                     )}
@@ -162,6 +261,13 @@ export default function PropertiesHero({
                 <p className="filter-bar__results">
                     {totalResults} propiedad{totalResults !== 1 ? "es" : ""} encontrada{totalResults !== 1 ? "s" : ""}
                 </p>
+
+                <SaveSearchModal
+                    show={showSaveModal}
+                    onHide={() => setShowSaveModal(false)}
+                    filters={filters}
+                    onSuccess={handleSaveSuccess}
+                />
             </Container>
         </div>
     );
