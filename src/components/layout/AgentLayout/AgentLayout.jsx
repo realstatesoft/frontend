@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
   FiGrid, FiUsers, FiHome, FiCalendar,
-  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser
+  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser, FiTarget
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -14,6 +14,24 @@ import RoleRedirect from '../../commons/RoleRedirect';
 import TourOverlay from '../../common/Tour/TourOverlay';
 import TourLauncher from '../../common/Tour/TourLauncher';
 import { AGENT_TOUR_STEPS } from '../../../data/tourSteps';
+
+const AGENT_NAV_ITEMS = [
+  { section: 'Principal' },
+  { to: '/agent/perfil', icon: <FiUser />, label: 'Mi Perfil' },
+  { to: AGENT_ROUTES.DASHBOARD, icon: <FiGrid />, label: 'Dashboard' },
+  { to: AGENT_ROUTES.CLIENTS, icon: <FiUsers />, label: 'Clientes' },
+  { to: AGENT_ROUTES.PROPERTIES, icon: <FiHome />, label: 'Propiedades' },
+  { to: AGENT_ROUTES.VISIT_REQUESTS, icon: <FiClipboard />, label: 'Solicitudes de Visita' },
+  { to: AGENT_ROUTES.LEADS, icon: <FiTarget />, label: 'Prospectos' },
+  { to: AGENT_ROUTES.OFFERS, icon: <FiDollarSign />, label: 'Ofertas Recibidas' },
+  { section: 'Gestión' },
+  { to: AGENT_ROUTES.AGENDA, icon: <FiCalendar />, label: 'Agenda' },
+  { to: AGENT_ROUTES.SALES, icon: <FiDollarSign />, label: 'Ventas' },
+  { to: AGENT_ROUTES.CONTRACTS, icon: <FiFileText />, label: 'Contratos' },
+  { to: AGENT_ROUTES.REPORTS, icon: <FiBarChart2 />, label: 'Reportes' },
+  { section: 'Comunicación' },
+  { to: AGENT_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes', showBadge: true },
+];
 
 export default function AgentLayout() {
   const { user } = useAuth();

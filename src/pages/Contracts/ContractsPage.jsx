@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiFileText, FiCheckCircle, FiDollarSign, FiEye, FiRefreshCw, FiPlus, FiEdit2, FiFeather } from 'react-icons/fi';
+import { FiFileText, FiCheckCircle, FiDollarSign, FiEye, FiRefreshCw, FiPlus, FiEdit2, FiFeather, FiDownload } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import StatCard from '../../components/common/StatCard/StatCard';
 import DataTable from '../../components/common/DataTable/DataTable';
@@ -11,7 +11,9 @@ import {
   useContractsAsSeller,
   useContractsAsBuyer,
   useUpdateContractStatus,
+  useDownloadContract,
 } from '../../hooks/useContracts';
+
 import { useAuth } from '../../hooks/useAuth';
 import {
   CONTRACT_TYPE_LABELS,
@@ -54,6 +56,7 @@ export default function ContractsPage() {
   const { data: listingRes, isLoading: loadingListing } = useContractsAsListingAgent();
   const { data: bAgentRes,  isLoading: loadingBAgent  } = useContractsAsBuyerAgent();
   const updateStatus = useUpdateContractStatus();
+  const downloadMutation = useDownloadContract();
 
   const rawLookup = {
     seller:     sellerRes?.data,
@@ -215,8 +218,8 @@ export default function ContractsPage() {
             </button>
           )}
 
-          {/* Firmar — solo si SENT o PARTIALLY_SIGNED */}
-          {SIGNABLE_STATUSES.has(row.status) && (
+          {/* Firmar — solo si SENT o PARTIALLY_SIGNED y el usuario no ha firmado aún */}
+          {SIGNABLE_STATUSES.has(row.status) && !row.currentUserHasSigned && (
             <button
               className={`${styles.contracts__actionBtn} ${styles['contracts__actionBtn--sign']}`}
               title="Firmar contrato"
@@ -225,6 +228,19 @@ export default function ContractsPage() {
               <FiFeather />
             </button>
           )}
+
+          {/* Descargar PDF */}
+          <button
+            className={`${styles.contracts__actionBtn} ${styles['contracts__actionBtn--download']}`}
+            title="Descargar PDF"
+            onClick={(e) => {
+              e.stopPropagation();
+              downloadMutation.mutate({ id: row.id });
+            }}
+            disabled={downloadMutation.isPending}
+          >
+            <FiDownload />
+          </button>
 
           {/* Cambiar estado */}
           {ALLOWED_STATUS_TRANSITIONS[row.status] && (

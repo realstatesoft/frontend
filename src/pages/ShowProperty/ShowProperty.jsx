@@ -70,7 +70,8 @@ export default function ShowProperty() {
     activeFlagCount,
     viewCount,
     isAuthenticated,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleToggleHighlight
   } = useShowProperty();
 
   const { user: authUser } = useAuth();
@@ -267,14 +268,16 @@ export default function ShowProperty() {
                 </Button>
               )}
 
-              {/* Destacar — cualquier usuario autenticado */}
+              {/* Destacar — solo ADMIN */}
               {canFeature && (
                 <Button
                   size="sm"
-                  variant="warning"
-                  className="d-flex align-items-center"
+                  variant={property.highlighted ? "secondary" : "warning"}
+                  className="d-flex align-items-center text-white"
+                  onClick={handleToggleHighlight}
+                  disabled={actionLoading}
                 >
-                  <Star size={16} className="property__icon-button" /> Destacar
+                  <Star size={16} className="property__icon-button me-1" /> {property.highlighted ? "Quitar Destacado" : "Destacar"}
                 </Button>
               )}
 
