@@ -33,6 +33,7 @@ function CompareColumn({ property, onRemove }) {
       <Card.Img
         variant="top"
         src={property.primaryImageUrl || PLACEHOLDER_IMAGE}
+        alt={property.title || "Image of property"}
         style={{ height: "180px", objectFit: "cover" }}
       />
       <Card.Body className="d-flex flex-column">
@@ -80,7 +81,7 @@ function CompareColumn({ property, onRemove }) {
 }
 
 export default function PropertyComparePanel({
-  properties,
+  properties = [],
   loading,
   error,
   onRemove,

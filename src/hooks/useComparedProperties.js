@@ -6,7 +6,6 @@ export default function useComparedProperties(propertyIds = []) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const latestRequestRef = useRef(0);
-  const key = propertyIds.join(",");
 
   const fetchComparedProperties = useCallback(async () => {
     if (propertyIds.length === 0) {
@@ -41,7 +40,7 @@ export default function useComparedProperties(propertyIds = []) {
 
   useEffect(() => {
     fetchComparedProperties();
-  }, [fetchComparedProperties, key]);
+  }, [fetchComparedProperties]);
 
   return { properties, loading, error, refetch: fetchComparedProperties };
 }
