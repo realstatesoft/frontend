@@ -60,8 +60,8 @@ export function usePropertyPermissions(property, propertyAssignments = null) {
     /** El propietario o ADMIN pueden eliminar la propiedad (NO los asignados). */
     canDelete: isOwner || isAdmin,
 
-    /** Cualquier usuario autenticado puede destacar. */
-    canFeature: !!user,
+    /** Solo ADMIN puede destacar. */
+    canFeature: isAdmin,
 
     /** Compartir está disponible para todos, incluso visitantes. */
     canShare: true,
