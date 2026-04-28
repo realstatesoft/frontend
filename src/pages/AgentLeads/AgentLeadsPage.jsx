@@ -241,7 +241,7 @@ export default function AgentLeadsPage() {
           <input
             id="leads-search"
             className={styles.filterSearch}
-            placeholder="Nombre, email, teléfono, dirección..."
+            placeholder="Nombre, email... (en esta página)"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
@@ -306,7 +306,7 @@ export default function AgentLeadsPage() {
             <p className={styles.emptyTitle}>No hay prospectos</p>
             <p className={styles.emptyText}>
               {leads.length > 0
-                ? 'Ningún lead coincide con los filtros actuales.'
+                ? 'Ningún lead coincide con los filtros en esta página.'
                 : 'Cuando un cliente complete el SellWizard, sus datos aparecerán aquí.'}
             </p>
           </div>
