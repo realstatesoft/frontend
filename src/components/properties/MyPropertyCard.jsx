@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Card, Badge } from "react-bootstrap";
+import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Eye, EyeSlash } from "react-bootstrap-icons";
+import { Eye, EyeSlash, StarFill, Star } from "react-bootstrap-icons";
 import { tagColors, STATUS_DISPLAY_LABELS } from "../../data/propertiesData";
 import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
+import HighlightPropertyModal from "./HighlightPropertyModal";
 
 /**
  * MyPropertyCard
@@ -12,6 +13,7 @@ import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
  */
 export default function MyPropertyCard({ property }) {
     const [isHidden, setIsHidden] = useState(false);
+    const [showHighlightModal, setShowHighlightModal] = useState(false);
 
     const tag = STATUS_DISPLAY_LABELS[property.status] ?? property.status ?? "—";
     const numericPrice = Number(property.price);
@@ -25,6 +27,7 @@ export default function MyPropertyCard({ property }) {
     const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
 
     return (
+    <>
         <Card
             as={Link}
             to={`/properties/${property.id}`}
@@ -44,8 +47,8 @@ export default function MyPropertyCard({ property }) {
             }}
         >
             <Card.Body className="p-4 d-flex flex-column align-items-center">
-                {/* Badge de estado */}
-                <div className="w-100 d-flex justify-content-start mb-2">
+                {/* Badges: estado + destacada */}
+                <div className="w-100 d-flex justify-content-start align-items-center gap-2 mb-2">
                     <Badge
                         style={{
                             backgroundColor: tagColors[tag] ?? "#555",
@@ -56,6 +59,21 @@ export default function MyPropertyCard({ property }) {
                     >
                         {tag}
                     </Badge>
+                    {property.highlighted && (
+                        <Badge
+                            style={{
+                                background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                                borderRadius: "20px",
+                                fontSize: "0.72rem",
+                                padding: "6px 10px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                            }}
+                        >
+                            <StarFill size={10} /> Destacada
+                        </Badge>
+                    )}
                 </div>
 
                 {/* Título + icono ojo (futuro: ocultar propiedad de clientes) */}
@@ -133,12 +151,44 @@ export default function MyPropertyCard({ property }) {
 
                 {/* Dirección */}
                 <p
-                    className="text-muted mb-0 text-center"
+                    className="text-muted mb-3 text-center"
                     style={{ fontSize: "0.82rem", lineHeight: 1.3 }}
                 >
                     {address || "—"}
                 </p>
+
+                {/* Botón destacar */}
+                {property.highlighted ? (
+                    <div
+                        className="d-flex align-items-center gap-1 text-center"
+                        style={{ fontSize: "0.78rem", color: "#d97706", fontWeight: 600 }}
+                    >
+                        <StarFill size={13} /> Propiedad destacada
+                    </div>
+                ) : (
+                    <Button
+                        size="sm"
+                        variant="outline-warning"
+                        className="w-100 d-flex align-items-center justify-content-center gap-1"
+                        style={{ fontSize: "0.8rem", borderRadius: "20px" }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setShowHighlightModal(true);
+                        }}
+                    >
+                        <Star size={13} /> Destacar propiedad
+                    </Button>
+                )}
             </Card.Body>
         </Card>
+
+        <HighlightPropertyModal
+            property={property}
+            show={showHighlightModal}
+            onHide={() => setShowHighlightModal(false)}
+        />
+    </>
     );
 }
+

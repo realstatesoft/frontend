@@ -1,5 +1,6 @@
 import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { StarFill } from "react-bootstrap-icons";
 import { tagColors, STATUS_LABELS } from "../../data/propertiesData";
 import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
@@ -35,7 +36,14 @@ export default function PropertyCard({
     return (
         <Card
             className="h-100 border-0 shadow-sm rounded-4 overflow-hidden"
-            style={{ transition: "transform 0.2s, box-shadow 0.2s", cursor: "pointer" }}
+            style={{
+                transition: "transform 0.2s, box-shadow 0.2s",
+                cursor: "pointer",
+                ...(property.highlighted && {
+                    outline: "2px solid #f59e0b",
+                    boxShadow: "0 0 0 2px #fef3c7",
+                }),
+            }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-6px)";
                 e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.15)";
@@ -58,6 +66,20 @@ export default function PropertyCard({
                 >
                     {tag}
                 </Badge>
+                {property.highlighted && (
+                    <Badge
+                        className="position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1"
+                        style={{
+                            background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                            borderRadius: "20px",
+                            fontSize: "0.7rem",
+                            padding: "5px 10px",
+                            zIndex: 2,
+                        }}
+                    >
+                        <StarFill size={10} /> Destacada
+                    </Badge>
+                )}
                 <FavoriteToggleButton
                     isFavorite={isFavorite}
                     loading={isFavoriteLoading}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import paymentApi from '../services/payments/paymentApi';
+import { property } from 'zod';
 
 function luhnCheck(num) {
   const digits = num.replace(/\D/g, '').split('').reverse();
@@ -57,7 +58,7 @@ function validateFields({ cardholderName, cardNumber, expiry, cvv }) {
 /*
 type = RESERVATION, CONTRACT, PROPERTY_HIGHLIGHT, SUBSCRIPTION
 */
-export default function usePayment({ amount, concept, type, description } = {}) {
+export default function usePayment({ amount, concept, type, description, referenceId, planDays } = {}) {
   const [status, setStatus] = useState('idle'); // idle | processing | success | error
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
@@ -89,6 +90,17 @@ export default function usePayment({ amount, concept, type, description } = {}) 
     };
   }
 
+  function buildPaymentData() {
+    if (type === 'PROPERTY_HIGHLIGHT') {
+      return {
+        propertyId: referenceId,
+        highlightDays: planDays
+      };
+    }
+    // TO DO agregar otros tipos de pago si es necesario
+    return {};
+  }
+
   async function processPayment() {
     const errors = validateFields(form);
     if (Object.keys(errors).length > 0) {
@@ -105,6 +117,7 @@ export default function usePayment({ amount, concept, type, description } = {}) 
         amount: parseFloat(amount) || 0,
         concept: concept ?? '',
         description: description ?? '',
+        metadata: buildPaymentData()
       });
 
       setStatus('success');

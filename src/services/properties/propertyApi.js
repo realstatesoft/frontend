@@ -40,6 +40,12 @@ const propertyApi = {
 
   /** Propiedades del agente (Scope completo: asignadas + clientes) */
   getAgentScope: (params) => api.get(`${BASE}/agent/me`, { params }),
+
+  /** Marca la propiedad como destacada (requiere pago previo aprobado) */
+  highlight: (id) => api.post(`${BASE}/${id}/highlight`),
+
+  /** Quita el destacado de una propiedad */
+  removeHighlight: (id) => api.delete(`${BASE}/${id}/highlight`),
 };
 
 export default propertyApi;

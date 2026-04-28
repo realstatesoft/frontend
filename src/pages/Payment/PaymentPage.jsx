@@ -7,6 +7,7 @@ import { FiCheckCircle, FiXCircle, FiAlertTriangle, FiCreditCard, FiLock } from 
 import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import usePayment from '../../hooks/usePayment';
+import { PAYMENT_TYPE_DEFAULTS } from '../../services/payments/buildPaymentUrl';
 import styles from './PaymentPage.module.scss';
 
 function formatDisplayAmount(raw) {
@@ -18,13 +19,6 @@ function formatDisplayAmount(raw) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(num);
-}
-
-function toSafeRelative(url) {
-  if (!url) return '';
-  // Allow only relative paths starting with / and not //
-  if (url.startsWith('/') && !url.startsWith('//')) return url;
-  return '';
 }
 
 function maskCardNumber(cardNumber) {
@@ -39,11 +33,16 @@ export default function PaymentPage() {
   const navigate = useNavigate();
 
   const amount = searchParams.get('amount') ?? '';
-  const concept = searchParams.get('concept') ?? 'Pago';
   const type = searchParams.get('type') ?? 'OTHER';
   const description = searchParams.get('description') ?? '';
-  const redirectUrl = toSafeRelative(searchParams.get('redirectUrl'));
-  const cancelUrl = toSafeRelative(searchParams.get('cancelUrl'));
+  const referenceId = searchParams.get('referenceId') ?? '';
+  const planLabel = searchParams.get('planLabel') ?? '';
+
+  const typeDefaults = PAYMENT_TYPE_DEFAULTS[type] ?? PAYMENT_TYPE_DEFAULTS.OTHER;
+  const concept = typeDefaults.concept(planLabel);
+  const redirectUrl = typeDefaults.redirectUrl;
+  const cancelUrl = typeDefaults.cancelUrl(referenceId);
+  const planDays = searchParams.get('planDays') ?? null;
 
 
   const { form, setField, fieldErrors, status, errorMessage, processPayment, reset } = usePayment({
@@ -51,6 +50,8 @@ export default function PaymentPage() {
     concept,
     description,
     type,
+    referenceId,
+    planDays
   });
 
   const redirectTimerRef = useRef(null);
@@ -99,10 +100,6 @@ export default function PaymentPage() {
               </div>
             </Card>
 
-            <div className={styles.simulatedBadge}>
-              <FiAlertTriangle />
-              <span>Pago simulado — no se realizará ningún cargo real.</span>
-            </div>
           </Col>
 
           {/* Payment form */}
