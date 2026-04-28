@@ -40,6 +40,12 @@ const ProfileHeader = ({ client }) => {
     boxShadow: 'none'
   };
 
+  const preSelectedAgent = React.useMemo(() => ({
+    id: client?.userId || client?.id,
+    name: client.userName,
+    email: client.userEmail,
+  }), [client?.userId, client?.id, client.userName, client.userEmail]);
+
   return (
     <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: '1.5rem', overflow: 'hidden' }}>
       <Card.Body className="p-4 p-md-5">
@@ -149,11 +155,7 @@ const ProfileHeader = ({ client }) => {
       <NewConversationModal
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
-        preSelectedAgent={{
-          id: client?.userId || client?.id,
-          name: client.userName,
-          email: client.userEmail,
-        }}
+        preSelectedAgent={preSelectedAgent}
         onSuccess={() => {
           Swal.fire({
             icon: 'success',

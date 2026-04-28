@@ -29,12 +29,12 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     }
   }, [canSeeClients, isOpen, refetchClients]);
 
-  const agents = Array.isArray(agentsData?.data?.content) 
-    ? agentsData.data.content 
+  const agents = Array.isArray(agentsData?.content) 
+    ? agentsData.content 
     : (Array.isArray(agentsData) ? agentsData : []);
 
-  const clients = Array.isArray(clientsData?.data?.content) 
-    ? clientsData.data.content 
+  const clients = Array.isArray(clientsData?.content) 
+    ? clientsData.content 
     : (Array.isArray(clientsData) ? clientsData : []);
 
   const handleSelectContact = (contact) => {
