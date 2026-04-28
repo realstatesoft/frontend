@@ -12,6 +12,7 @@ const ADMIN_NAV_ITEMS = [
   { section: 'Principal' },
   { to: ADMIN_ROUTES.DASHBOARD, icon: <FiGrid />, label: 'Panel' },
   { to: ADMIN_ROUTES.APPROVAL, icon: <FiCheckSquare />, label: 'Aprobacion de propiedades' },
+  { to: ADMIN_ROUTES.PAYMENTS, icon: <FiDollarSign />, label: 'Gestión de pagos' },
   { to: ADMIN_ROUTES.AUDIT_LOGS, icon: <FiShield />, label: 'Auditoria' },
   { to: ADMIN_ROUTES.FLAGS, icon: <FiFlag />, label: 'Reportes' },
   { to: ADMIN_ROUTES.DOCUMENTS, icon: <FiFileText />, label: 'Validacion de Documentos' },
