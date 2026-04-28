@@ -242,15 +242,20 @@ export function useShowProperty() {
   }, [fetchProperty, fetchSimilar, fetchActiveFlagCount, fetchViewCount, registerPropertyView]);
 
   useEffect(() => {
-    if (!isAuthenticated || !id) return;
-    propertyApi.registerRecentView(id).catch(() => {
-      // No bloquear la pantalla por fallos de registro.
-    });
-  }, [id, isAuthenticated]);
+    const syncRecentProperties = async () => {
+      if (!id || !isAuthenticated) {
+        fetchRecentProperties();
+        return;
+      }
 
-  useEffect(() => {
-    fetchRecentProperties();
-  }, [fetchRecentProperties, property?.id]);
+      await propertyApi.registerRecentView(id).catch(() => {
+        // No bloquear la pantalla por fallos de registro.
+      });
+      fetchRecentProperties();
+    };
+
+    syncRecentProperties();
+  }, [id, isAuthenticated, fetchRecentProperties]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
