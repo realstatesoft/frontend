@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { FiSend, FiUser, FiPlus, FiArrowLeft } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';

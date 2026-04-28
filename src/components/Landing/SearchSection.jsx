@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import fotoSearch from "../../assets/fotoSearch.png";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
-import { CATEGORY } from "../../constants/propertyEnums";
 
 const SearchSection = () => {
   const { t } = useTranslation("landing");
@@ -153,11 +152,6 @@ const SearchSection = () => {
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
                   {t("search.propertyType")}
                 </label>
-                <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>{t("search.typePlaceholder")}</option>
-                  <option>{t("search.house")}</option>
-                  <option>{t("search.apartment")}</option>
-                  <option>{t("search.land")}</option>
                 <select 
                   className="form-select border-0 bg-light rounded-3 py-2" 
                   style={{ fontSize: "0.9rem" }}
@@ -174,12 +168,6 @@ const SearchSection = () => {
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
                   {t("search.bedrooms")}
                 </label>
-                <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>{t("search.bedroomsPlaceholder")}</option>
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4+</option>
                 <select 
                   className="form-select border-0 bg-light rounded-3 py-2" 
                   style={{ fontSize: "0.9rem" }}
@@ -197,11 +185,6 @@ const SearchSection = () => {
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
                   {t("search.price")}
                 </label>
-                <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>{t("search.pricePlaceholder")}</option>
-                  <option>$50k - $100k</option>
-                  <option>$100k - $200k</option>
-                  <option>$200k+</option>
                 <select 
                   className="form-select border-0 bg-light rounded-3 py-2" 
                   style={{ fontSize: "0.9rem" }}

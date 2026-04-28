@@ -1,45 +1,9 @@
-import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
-import casita from "../../assets/Home.png"
-import eye from "../../assets/Eye.png"
 import { Link } from "react-router-dom";
-import { useScrollReveal } from "../../hooks/useScrollReveal";
-import casita from "../../assets/Home.png"
-import eye from "../../assets/Eye.png"
-const services = [
-    {
-        icon: <img src={casita} alt="CIU" style={{ width: 300, height: 30, objectFit: "contain" }} />,
-        title: "Comprar una casa",
-        description:
-            "Encuentra la casa perfecta con nuestra herramienta de búsqueda avanzada.",
-        linkText: "Explorar propiedades →",
-        to: "/properties",
-        state: { availability: "VENTA" },
-        color: "#dbeafe",
-    },
-    {
-        icon: <img src={eye} alt="Eye" style={{ width: 300, height: 30, objectFit: "contain" }} />,
-        title: "Alquilar una casa",
-        description:
-            "Encuentra tu próximo hogar en alquiler con precios competitivos.",
-        linkText: "Ver alquileres →",
-        to: "/properties",
-        state: { availability: "ALQUILER" },
-        color: "#fef3c7",
-    },
-    {
-        icon: <span style={{ fontSize: "1.5rem", color: "#000000" }}>$</span>,
-        title: "Vender tu casa",
-        description:
-            "Publica tu propiedad y conecta con miles de compradores potenciales.",
-        linkText: "Publicar propiedad →",
-        to: "/properties/create",
-        state: null,
-        color: "#d1fae5",
-    },
-];
+import casita from "../../assets/Home.png";
+import eye from "../../assets/Eye.png";
 
 const ServicesSection = () => {
     const { t } = useTranslation("landing");
@@ -49,21 +13,27 @@ const ServicesSection = () => {
             icon: <img src={casita} alt="CIU" style={{ width: 300, height: 30, objectFit: "contain" }} />,
             title: t("services.buy.title"),
             description: t("services.buy.description"),
-            link: t("services.buy.link"),
+            linkText: t("services.buy.link"),
+            to: "/properties",
+            state: { availability: "VENTA" },
             color: "#dbeafe",
         },
         {
             icon: <img src={eye} alt="Eye" style={{ width: 300, height: 30, objectFit: "contain" }} />,
             title: t("services.rent.title"),
             description: t("services.rent.description"),
-            link: t("services.rent.link"),
+            linkText: t("services.rent.link"),
+            to: "/properties",
+            state: { availability: "ALQUILER" },
             color: "#fef3c7",
         },
         {
             icon: <span style={{ fontSize: "1.5rem", color: "#000000" }}>$</span>,
             title: t("services.sell.title"),
             description: t("services.sell.description"),
-            link: t("services.sell.link"),
+            linkText: t("services.sell.link"),
+            to: "/properties/create",
+            state: null,
             color: "#d1fae5",
         },
     ];

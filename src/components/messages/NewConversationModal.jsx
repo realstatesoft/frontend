@@ -182,9 +182,6 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
             <h6 className={styles.sectionTitle}>{t('newConversation.clients')}</h6>
             {clientsLoading ? (
               <div className={styles.loading}><Spinner size="sm" /> {t('newConversation.loading')}</div>
-            <h6 className={styles.sectionTitle}>Clientes</h6>
-            {clientsLoading ? (
-              <div className={styles.loading}><Spinner size="sm" /> Cargando...</div>
             ) : clientsError ? (
               <div className={styles.error}>Error cargando clientes</div>
             ) : clients.length === 0 ? (

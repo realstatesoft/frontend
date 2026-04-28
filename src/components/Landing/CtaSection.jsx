@@ -44,9 +44,6 @@ const CtaSection = () => {
                                     }}
                                 >
                                     {t("cta.explore")}
-                                </button>
-                                <button
-                                    Explorar ahora
                                 </Link>
                                 <Link
                                     to="/properties/create"
@@ -60,8 +57,6 @@ const CtaSection = () => {
                                     }}
                                 >
                                     {t("cta.sell")}
-                                </button>
-                                    Vende tu propiedad
                                 </Link>
                             </div>
 

@@ -134,7 +134,6 @@ export default function OwnerMessagesPage() {
   const { data: response, isLoading, refetch } = useConversations();
   const conversations = response?.data || [];
   const [activeConversation, setActiveConversation] = useState(null);
-  const [showNewConvModal, setShowNewConvModal] = useState(false);
   const { t } = useTranslation('owner');
   const location = useLocation();
   const navigate = useNavigate();
