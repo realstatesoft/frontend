@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FiSend, FiPlus } from 'react-icons/fi';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
 import { formatTime } from '../../utils/formatters';
@@ -126,15 +126,18 @@ export default function MessagesPage() {
   const [activeConversation, setActiveConversation] = useState(null);
   const [showNewConvModal, setShowNewConvModal] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const [preSelectedUser, setPreSelectedUser] = useState(null);
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
-    if (location.state?.openNewConversation) {
+    if (location.state?.openNewConversation && !isInitializedRef.current) {
+      isInitializedRef.current = true;
       setShowNewConvModal(true);
       setPreSelectedUser(location.state.preSelectedAgent);
-      window.history.replaceState({}, document.title);
+      navigate(window.location.pathname, { replace: true, state: null });
     }
-  }, [location.state]);
+  }, [location.state, navigate]);
 
   if (isLoading) return <p>Cargando mensajes...</p>;
 
@@ -165,7 +168,11 @@ export default function MessagesPage() {
 
       <NewConversationModal
         isOpen={showNewConvModal}
-        onClose={() => { setShowNewConvModal(false); setPreSelectedUser(null); }}
+        onClose={() => { 
+          setShowNewConvModal(false); 
+          setPreSelectedUser(null); 
+          navigate(window.location.pathname, { replace: true, state: null });
+        }}
         onSuccess={() => refetch()}
         preSelectedAgent={preSelectedUser}
       />

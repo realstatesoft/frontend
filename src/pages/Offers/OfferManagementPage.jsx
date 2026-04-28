@@ -417,11 +417,11 @@ export default function OfferManagementPage() {
                         )}
                         {isReceived && offer.status === 'ACCEPTED' && (
                           <Button
-                            variant="info"
-                            className="text-white d-flex align-items-center gap-1"
+                            variant="dark"
+                            className="d-flex align-items-center gap-1"
                             size="sm"
                             onClick={() => {
-                              const messagesPath = role === 'AGENT' ? '/agent/mensajes' : role === 'OWNER' ? '/owner/mensajes' : '/mensajes';
+                              const messagesPath = role === 'AGENT' ? '/agent/mensajes' : (role === 'OWNER' || role === 'USER') ? '/owner/mensajes' : '/mensajes';
                               navigate(messagesPath, { 
                                 state: { 
                                   openNewConversation: true, 
