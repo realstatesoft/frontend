@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import fotoSearch from "../../assets/fotoSearch.png";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
+import { CATEGORY } from "../../constants/propertyEnums";
 
 const SearchSection = () => {
   const navigate = useNavigate();
@@ -19,19 +20,17 @@ const SearchSection = () => {
   const handleSearch = () => {
     let minPrice = "";
     let maxPrice = "";
-    if (priceRange === "$50k - $100k") { minPrice = "50000"; maxPrice = "100000"; }
-    else if (priceRange === "$100k - $200k") { minPrice = "100000"; maxPrice = "200000"; }
-    else if (priceRange === "$200k+") { minPrice = "200000"; }
+    if (priceRange) {
+      const parts = priceRange.split("-");
+      minPrice = parts[0];
+      if (parts[1]) maxPrice = parts[1];
+    }
 
     let availability = "";
-    if (activeTab === "comprar") availability = "VENTA";
-    else if (activeTab === "alquilar") availability = "ALQUILER";
+    if (activeTab === "comprar") availability = "Venta";
+    else if (activeTab === "alquilar") availability = "Alquiler";
 
-    let minBedrooms = "";
-    if (bedrooms === "1") minBedrooms = "1";
-    else if (bedrooms === "2") minBedrooms = "2";
-    else if (bedrooms === "3") minBedrooms = "3";
-    else if (bedrooms === "4+") minBedrooms = "4";
+    let minBedrooms = bedrooms === "4+" ? "4" : bedrooms;
 
     let typeFilter = "";
     if (type === "Casa") typeFilter = "HOUSE";
@@ -192,9 +191,9 @@ const SearchSection = () => {
                   onChange={(e) => setPriceRange(e.target.value)}
                 >
                   <option value="">Rango de Precios</option>
-                  <option value="$50k - $100k">$50k - $100k</option>
-                  <option value="$100k - $200k">$100k - $200k</option>
-                  <option value="$200k+">$200k+</option>
+                  <option value="50000-100000">$50k - $100k</option>
+                  <option value="100000-200000">$100k - $200k</option>
+                  <option value="200000-">$200k+</option>
                 </select>
               </div>
               <div className="col-md-2">

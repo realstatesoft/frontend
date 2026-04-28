@@ -30,13 +30,8 @@ const Properties = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const res = await propertyService.getFeatured({ limit: 12 });
-        // The API wraps it in ApiResponse { success, data, ... } depending on the client interceptor.
-        // Assuming propertyService returns res.data directly if configured that way, wait, let's check.
-        // Usually, in IISS2 it returns the wrapped data from `then(res => res.data)`.
-        // Wait, propertyService has: `return api.get(...).then(res => res.data);`. 
-        // Our backend returns `ApiResponse.ok(data)` which translates to `{ success: true, data: [...] }`.
-        const responseData = res.data || res;
+        const apiResponse = await propertyService.getFeatured({ limit: 12 });
+        const responseData = apiResponse?.data;
         setProperties(Array.isArray(responseData) ? responseData : []);
       } catch (error) {
         console.error("Error fetching featured properties:", error);
@@ -104,9 +99,9 @@ const Properties = () => {
               <Carousel indicators={true} variant="dark" controls={true} interval={5000} pause="hover">
                 {propertyGroups.map((group, index) => (
                   <Carousel.Item key={index} className="px-3">
-                    <Row className="mb-5 flex-nowrap overflow-hidden g-3">
+                    <Row className="mb-5 flex-md-nowrap overflow-hidden g-3">
                       {group.map((property) => (
-                        <Col md={3} key={property.id} className="p-1">
+                        <Col xs={6} sm={6} md={3} key={property.id} className="p-1">
                           <Link to={`/properties/${property.id}`} className="text-decoration-none text-dark d-block h-100">
                             <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100" style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"} onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
                               <div className="position-relative">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
@@ -30,6 +30,15 @@ export default function PropertiesPage() {
     const [minBathrooms, setMinBathrooms] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);
+
+    useEffect(() => {
+        setSearch(locationState.search || "");
+        setTypeFilter(locationState.typeFilter || "");
+        setAvailability(locationState.availability || "");
+        setMinPrice(locationState.minPrice || "");
+        setMaxPrice(locationState.maxPrice || "");
+        setMinBedrooms(locationState.minBedrooms || "");
+    }, [locationState.search, locationState.typeFilter, locationState.availability, locationState.minPrice, locationState.maxPrice, locationState.minBedrooms]);
 
     // Convertir labels a valores enum del backend
     const backendType = typeFilter ? PROPERTY_TYPE[typeFilter] : undefined;
