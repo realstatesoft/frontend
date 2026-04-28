@@ -5,7 +5,8 @@ import {
 } from 'react-bootstrap';
 import { FiCheckCircle, FiXCircle, FiCreditCard } from 'react-icons/fi';
 import paymentApi from '../../services/payments/paymentApi';
-import { formatDateTime } from '../../utils/formatters';
+import { formatDateTime, formatGs } from '../../utils/formatters';
+import { buildPageItems, PAGE_ELLIPSIS } from '../../utils/pagination';
 import styles from './AdminPaymentsPage.module.scss';
 
 const PAGE_SIZE = 15;
@@ -47,25 +48,6 @@ const TYPE_LABEL = {
   OTHER:              'Otro',
 };
 
-function formatGs(amount) {
-  return new Intl.NumberFormat('es-PY', {
-    style: 'currency', currency: 'PYG', minimumFractionDigits: 0,
-  }).format(amount ?? 0);
-}
-
-function buildPageItems(current, total) {
-  const items = [];
-  let last = -1;
-  for (let i = 0; i < total; i++) {
-    if (i === 0 || i === total - 1 || Math.abs(i - current) <= 2) {
-      if (last !== -1 && i - last > 1) items.push('…');
-      items.push(i);
-      last = i;
-    }
-  }
-  return items;
-}
-
 export default function AdminPaymentsPage() {
   const [items, setItems]           = useState([]);
   const [loading, setLoading]       = useState(true);
@@ -76,7 +58,10 @@ export default function AdminPaymentsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [actionId, setActionId]     = useState(null);
   const [stats, setStats]           = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
-  const fetchRef = useRef(0);
+  const fetchRef        = useRef(0);
+  const successTimerRef = useRef(null);
+
+  useEffect(() => () => { if (successTimerRef.current) clearTimeout(successTimerRef.current); }, []);
 
   const loadStats = useCallback(async () => {
     try {
@@ -102,20 +87,22 @@ export default function AdminPaymentsPage() {
       const data = res?.data?.data ?? {};
       setItems(data.content ?? []);
       setTotalPages(data.page?.totalPages ?? 0);
-      loadStats();
     } catch {
       if (id !== fetchRef.current) return;
+      setItems([]);
       setError('No se pudieron cargar los pagos. Intente más tarde.');
     } finally {
       if (id === fetchRef.current) setLoading(false);
     }
-  }, [page, filter, loadStats]);
+  }, [page, filter]);
 
   useEffect(() => { fetchPayments(); }, [fetchPayments]);
+  useEffect(() => { loadStats(); }, [loadStats]);
 
   function showSuccess(msg) {
+    if (successTimerRef.current) clearTimeout(successTimerRef.current);
     setSuccessMsg(msg);
-    setTimeout(() => setSuccessMsg(null), 3000);
+    successTimerRef.current = setTimeout(() => setSuccessMsg(null), 3000);
   }
 
   async function handleApprove(id) {
@@ -123,7 +110,7 @@ export default function AdminPaymentsPage() {
     try {
       await paymentApi.approvePayment(id);
       showSuccess('Pago aprobado correctamente.');
-      fetchPayments();
+      await Promise.all([fetchPayments(), loadStats()]);
     } catch {
       setError('Error al aprobar el pago.');
     } finally {
@@ -132,11 +119,12 @@ export default function AdminPaymentsPage() {
   }
 
   async function handleReject(id) {
+    if (!window.confirm('¿Estás seguro de rechazar este pago?')) return;
     setActionId(id);
     try {
       await paymentApi.rejectPayment(id);
       showSuccess('Pago rechazado.');
-      fetchPayments();
+      await Promise.all([fetchPayments(), loadStats()]);
     } catch {
       setError('Error al rechazar el pago.');
     } finally {
@@ -215,7 +203,7 @@ export default function AdminPaymentsPage() {
           </Alert>
         ) : (
           <Card className={styles.tableCard}>
-            <Table responsive hover className="mb-0 align-middle">
+            <Table responsive hover className="mb-0 align-middle" aria-label="Lista de pagos">
               <thead className="table-light">
                 <tr>
                   <th style={{ width: 100 }}>#</th>
@@ -298,7 +286,9 @@ export default function AdminPaymentsPage() {
                                 title="Rechazar pago"
                                 className="d-flex align-items-center gap-1"
                               >
-                                <FiXCircle /> Rechazar
+                                {isBusy
+                                  ? <Spinner animation="border" size="sm" />
+                                  : <><FiXCircle /> Rechazar</>}
                               </Button>
                             </>
                           ) : (
@@ -319,7 +309,7 @@ export default function AdminPaymentsPage() {
           <Pagination className="mt-3 justify-content-center">
             <Pagination.Prev disabled={page === 0} onClick={() => setPage((p) => p - 1)} />
             {buildPageItems(page, totalPages).map((item, idx) =>
-              item === '…' ? (
+              item === PAGE_ELLIPSIS ? (
                 <Pagination.Ellipsis key={`e${idx}`} disabled />
               ) : (
                 <Pagination.Item key={item} active={item === page} onClick={() => setPage(item)}>
