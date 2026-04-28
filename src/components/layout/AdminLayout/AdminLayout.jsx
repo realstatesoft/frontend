@@ -9,6 +9,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import RoleRedirect from '../../commons/RoleRedirect';
 
+
 export default function AdminLayout() {
   const { user } = useAuth();
   const { t } = useTranslation('navigation');
@@ -27,6 +28,7 @@ export default function AdminLayout() {
     { section: t('sidebar.sectionMain') },
     { to: ADMIN_ROUTES.DASHBOARD, icon: <FiGrid />, label: t('layouts.admin.dashboard') },
     { to: ADMIN_ROUTES.APPROVAL, icon: <FiCheckSquare />, label: t('layouts.admin.approval') },
+    { to: ADMIN_ROUTES.PAYMENTS, icon: <FiDollarSign />, label: t('layouts.admin.payments') },
     { to: ADMIN_ROUTES.AUDIT_LOGS, icon: <FiShield />, label: t('layouts.admin.auditLogs') },
     { to: ADMIN_ROUTES.FLAGS, icon: <FiFlag />, label: t('layouts.admin.reports') },
     { to: ADMIN_ROUTES.DOCUMENTS, icon: <FiFileText />, label: t('layouts.admin.documents') },

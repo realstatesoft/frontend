@@ -31,6 +31,7 @@ export const ADMIN_ROUTES = {
   DOCUMENTS: '/admin/documents',
   RENT_CONFIG: '/admin/rent-config',
   CONTRACT_TEMPLATES: '/admin/contract-templates',
+  PAYMENTS: '/admin/payments',
 };
 
 export const STATUS_COLORS = {

@@ -8,6 +8,7 @@ import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import useMyPayments from '../../hooks/useMyPayments';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
+import { buildPageItems, PAGE_ELLIPSIS } from '../../utils/pagination';
 import styles from './MyPaymentsPage.module.scss';
 
 const STATUS_OPTIONS = [
@@ -34,27 +35,6 @@ const STATUS_LABEL = {
   REJECTED:  'Rechazado',
   FAILED:    'Fallido',
 };
-
-const WINDOW_SIZE = 2;
-
-function buildPageItems(current, total) {
-  const items = [];
-  let lastPushed = -1;
-
-  for (let i = 0; i < total; i++) {
-    const isFirst = i === 0;
-    const isLast = i === total - 1;
-    const inWindow = Math.abs(i - current) <= WINDOW_SIZE;
-
-    if (isFirst || isLast || inWindow) {
-      if (lastPushed !== -1 && i - lastPushed > 1) items.push('...');
-      items.push(i);
-      lastPushed = i;
-    }
-  }
-
-  return items;
-}
 
 export default function MyPaymentsPage() {
   const navigate = useNavigate();
@@ -156,7 +136,7 @@ export default function MyPaymentsPage() {
                   onClick={() => setPage((p) => p - 1)}
                 />
                 {buildPageItems(page, totalPages).map((item, idx) =>
-                  item === '...' ? (
+                  item === PAGE_ELLIPSIS ? (
                     <Pagination.Ellipsis key={`ellipsis-${idx}`} disabled />
                   ) : (
                     <Pagination.Item

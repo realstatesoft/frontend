@@ -40,3 +40,9 @@ export function formatPercentage(value) {
   if (value == null) return '0%';
   return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
 }
+
+export function formatGs(amount) {
+  return new Intl.NumberFormat('es-PY', {
+    style: 'currency', currency: 'PYG', minimumFractionDigits: 0,
+  }).format(amount ?? 0);
+}

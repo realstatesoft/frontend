@@ -61,6 +61,7 @@ import PreferencesPage from "../pages/PreferencesPage";
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
 import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
 import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
+import AdminPaymentsPage from "../pages/Admin/AdminPaymentsPage";
 import PaymentPage from "../pages/Payment/PaymentPage";
 import MyPaymentsPage from "../pages/MyPayments/MyPaymentsPage";
 
@@ -163,6 +164,7 @@ export default function AppRouter() {
                     <Route path="documents" element={<AdminDocumentsPage />} />
                     <Route path="rent-config" element={<RentConfigPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
+                    <Route path="payments" element={<AdminPaymentsPage />} />
                 </Route>
             </Route>
 
