@@ -1,0 +1,79 @@
+{
+  "hero": {
+    "title": "The Smartest Way to Buy, Sell, or Rent",
+    "subtitle": "Thousands of properties are waiting for you. Find your ideal home with the most advanced technology on the market."
+  },
+  "search": {
+    "title": "Start searching for your ideal property",
+    "buy": "Buy",
+    "rent": "Rent",
+    "location": "LOCATION",
+    "propertyType": "TYPE",
+    "bedrooms": "BEDROOMS",
+    "price": "PRICE",
+    "locationPlaceholder": "City, Neighborhood / MLS ID",
+    "typePlaceholder": "Property Type",
+    "house": "House",
+    "apartment": "Apartment",
+    "land": "Land",
+    "bedroomsPlaceholder": "All",
+    "pricePlaceholder": "Price Range",
+    "button": "Search"
+  },
+  "about": {
+    "eyebrow": "About Us",
+    "title": "We are a boutique real estate agency specializing in the Paraguayan market.",
+    "description": "With years of experience and a passionate team, we help our clients find the perfect home. Our mission is to make every transaction simple, transparent, and successful."
+  },
+  "services": {
+    "buy": {
+      "title": "Buy a home",
+      "description": "Find the perfect house with our advanced search tool.",
+      "link": "Browse properties →"
+    },
+    "rent": {
+      "title": "Rent a home",
+      "description": "Find your next rental home with competitive prices.",
+      "link": "See rentals →"
+    },
+    "sell": {
+      "title": "Sell your home",
+      "description": "List your property and connect with thousands of potential buyers.",
+      "link": "List your property →"
+    }
+  },
+  "stats": {
+    "activeProperties": "Active properties",
+    "happyClients": "Happy clients",
+    "partners": "Partners",
+    "cities": "Cities"
+  },
+  "cta": {
+    "title": "Ready for your next home in Paraguay?",
+    "description": "With years of local market experience, we offer the best options for you. Whether you want to buy, sell, or rent, our agents will guide you every step of the way.",
+    "explore": "Explore now",
+    "sell": "Sell your property",
+    "sales": "Properties sold",
+    "rentals": "Properties rented",
+    "agents": "Agents"
+  },
+  "footer": {
+    "description": "Your trusted ally in Paraguay's real estate market. We find your ideal home.",
+    "company": "Company",
+    "properties": "Properties",
+    "contact": "Contact",
+    "about": "About us",
+    "services": "Services",
+    "agents": "Agents",
+    "buy": "Buy",
+    "rent": "Rent",
+    "sell": "Sell",
+    "rights": "© 2026 OpenRoof. All rights reserved."
+  },
+  "status": {
+    "available": "Available",
+    "sold": "Sold",
+    "reserved": "Reserved",
+    "offer": "On offer"
+  }
+}

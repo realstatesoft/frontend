@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../i18n';
 import NotFoundPage from '../../pages/NotFoundPage';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────────
@@ -15,14 +17,19 @@ vi.mock('../../constants/clientConstants', () => ({
 // ── Helper ────────────────────────────────────────────────────────────────────
 const renderNotFound = () =>
   render(
-    <MemoryRouter>
-      <NotFoundPage />
-    </MemoryRouter>
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <NotFoundPage />
+      </MemoryRouter>
+    </I18nextProvider>
   );
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 describe('NotFoundPage (404)', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await initializeI18n();
+  });
 
   it('renderiza sin errores (smoke test)', () => {
     expect(() => renderNotFound()).not.toThrow();

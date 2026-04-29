@@ -1,8 +1,10 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Check2Circle } from 'react-bootstrap-icons';
+import { useTranslation } from 'react-i18next';
 
 const ActionMessageModal = ({ show, onHide, title, description, buttons = [] }) => {
+  const { t } = useTranslation('common');
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Body className="py-5 text-center px-4">
@@ -27,7 +29,7 @@ const ActionMessageModal = ({ show, onHide, title, description, buttons = [] }) 
             ))
           ) : (
             <Button variant="primary" onClick={onHide} className="rounded-pill px-4">
-              Cerrar
+              {t('close')}
             </Button>
           )}
         </div>

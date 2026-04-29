@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   StarFill,
   Search,
@@ -19,6 +20,7 @@ const PAGE_SIZE = 10;
 
 export default function AgentSearchPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation("agents");
 
   // Server data
   const [agents, setAgents]               = useState([]);
@@ -84,7 +86,7 @@ export default function AgentSearchPage() {
     } catch (err) {
       if (requestId !== fetchIdRef.current) return;
       console.error("Error fetching agents:", err);
-      setError("No se pudieron cargar los agentes.");
+      setError(t("search.noAgents"));
     } finally {
       if (requestId === fetchIdRef.current) setLoading(false);
     }
@@ -177,14 +179,14 @@ export default function AgentSearchPage() {
 
       {/* Filter Bar */}
       <div className="search-filter-bar">
-        <h1 className="search-title">Buscar un Agente</h1>
+        <h1 className="search-title">{t("search.title")}</h1>
 
         <div className="filter-row">
           <div className="search-input-wrapper">
             <input
               id="agent-search-input"
               type="text"
-              placeholder="Nombre, empresa, licencia"
+              placeholder={t("search.placeholder")}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -197,7 +199,7 @@ export default function AgentSearchPage() {
             value={selectedSpecialty}
             onChange={(e) => setSelectedSpecialty(e.target.value)}
           >
-            <option value="">Tipo ▾</option>
+            <option value="">{t("search.type")}</option>
             {specialties.map((s) => (
               <option key={s.id} value={s.name}>
                 {s.name
@@ -213,7 +215,7 @@ export default function AgentSearchPage() {
             value={minRating}
             onChange={(e) => setMinRating(e.target.value)}
           >
-            <option value="">Puntuación ▾</option>
+            <option value="">{t("search.rating")}</option>
             <option value="3">≥ 3.0</option>
             <option value="4">≥ 4.0</option>
             <option value="4.5">≥ 4.5</option>
@@ -224,8 +226,8 @@ export default function AgentSearchPage() {
             type="button"
             className="search-action-btn"
             onClick={applyFilters}
-            title="Buscar"
-            aria-label="Buscar"
+            title={t("search.search")}
+            aria-label={t("search.search")}
           >
             <Search size={16} />
           </button>
@@ -236,8 +238,8 @@ export default function AgentSearchPage() {
               type="button"
               className="filter-reset-btn"
               onClick={handleClearFilters}
-              title="Limpiar filtros"
-              aria-label="Limpiar filtros"
+              title={t("search.clear")}
+              aria-label={t("search.clear")}
             >
               <XLg size={14} />
             </button>
@@ -247,23 +249,23 @@ export default function AgentSearchPage() {
         {/* Active filter chips */}
         {hasFilters && (
           <div className="active-filters">
-            <span className="filters-label"><Funnel size={13} /> Filtros:</span>
+            <span className="filters-label"><Funnel size={13} /> {t("search.filters")}</span>
             {applied.keyword && (
               <span className="filter-chip">
                 &quot;{applied.keyword}&quot;
-                <button className="chip-remove" aria-label={`Eliminar filtro: "${applied.keyword}"`} onClick={() => removeFilter("keyword")}>✕</button>
+                <button className="chip-remove" aria-label={t("search.removeKeyword", { value: applied.keyword })} onClick={() => removeFilter("keyword")}>✕</button>
               </span>
             )}
             {applied.specialty && (
               <span className="filter-chip">
                 {applied.specialty.charAt(0).toUpperCase() + applied.specialty.slice(1).toLowerCase()}
-                <button className="chip-remove" aria-label={`Eliminar filtro de especialidad: ${applied.specialty}`} onClick={() => removeFilter("specialty")}>✕</button>
+                <button className="chip-remove" aria-label={t("search.removeSpecialty", { value: applied.specialty })} onClick={() => removeFilter("specialty")}>✕</button>
               </span>
             )}
             {applied.minRating && (
               <span className="filter-chip">
                 ★ ≥ {applied.minRating}
-                <button className="chip-remove" aria-label={`Eliminar filtro de puntuación mínima: ${applied.minRating}`} onClick={() => removeFilter("minRating")}>✕</button>
+                <button className="chip-remove" aria-label={t("search.removeRating", { value: applied.minRating })} onClick={() => removeFilter("minRating")}>✕</button>
               </span>
             )}
           </div>
@@ -275,7 +277,7 @@ export default function AgentSearchPage() {
         {loading && (
           <div className="search-loading">
             <Spinner animation="border" variant="primary" />
-            <p>Cargando agentes...</p>
+            <p>{t("search.loading")}</p>
           </div>
         )}
 
@@ -284,15 +286,15 @@ export default function AgentSearchPage() {
         {!loading && !error && agents.length === 0 && (
           <div className="search-empty">
             <Search size={48} />
-            <h3>No se encontraron agentes</h3>
-            <p>Intenta ajustar los filtros de búsqueda.</p>
+            <h3>{t("search.empty")}</h3>
+            <p>{t("search.emptyHint")}</p>
           </div>
         )}
 
         {!loading && !error && agents.length > 0 && (
           <>
             <div className="search-results-info">
-              Página {currentPage + 1} de {totalPages} — {totalElements} agentes
+              {t("search.pageInfo", { page: currentPage + 1, totalPages, totalElements })}
             </div>
 
             <div className="agents-grid">
@@ -309,8 +311,8 @@ export default function AgentSearchPage() {
                   <div className="card-info">
                     <h3 className="card-name">{agent.userName}</h3>
                     <div className="card-details">
-                      <span>{agent.companyName || "Agente independiente"}</span>
-                      <span>{agent.experienceYears || 0} años de experiencia</span>
+                      <span>{agent.companyName || t("search.companyFallback")}</span>
+                      <span>{t(agent.experienceYears === 1 ? "search.years_one" : "search.years", { count: agent.experienceYears || 0 })}</span>
                     </div>
                   </div>
 
@@ -329,7 +331,7 @@ export default function AgentSearchPage() {
                         className="btn-contactar btn-seleccionar"
                         onClick={() => handleSeleccionar(agent)}
                       >
-                        Seleccionar
+                        {t("search.select")}
                       </button>
                     ) : (
                       <button
@@ -337,7 +339,7 @@ export default function AgentSearchPage() {
                         className="btn-contactar"
                         onClick={() => handleContactar(agent)}
                       >
-                        Contactar
+                        {t("search.contact")}
                       </button>
                     )}
                   </div>
@@ -352,9 +354,9 @@ export default function AgentSearchPage() {
                   className="pagination-btn"
                   disabled={currentPage === 0}
                   onClick={() => handlePageChange(currentPage - 1)}
-                  aria-label="Página anterior"
+                  aria-label={t("search.previous")}
                 >
-                  <ChevronLeft size={16} /> Anterior
+                  <ChevronLeft size={16} /> {t("search.previous")}
                 </button>
                 <div className="pagination-pages">
                   {/* Windowed pagination: avoids rendering hundreds of buttons */}
@@ -380,7 +382,7 @@ export default function AgentSearchPage() {
                           type="button"
                           className={`pagination-page${i === currentPage ? " pagination-page--active" : ""}`}
                           onClick={() => handlePageChange(i)}
-                          aria-label={`Página ${i + 1}`}
+                          aria-label={t("search.page", { page: i + 1 })}
                           aria-current={i === currentPage ? "page" : undefined}
                         >
                           {i + 1}
@@ -395,9 +397,9 @@ export default function AgentSearchPage() {
                   className="pagination-btn"
                   disabled={currentPage >= totalPages - 1}
                   onClick={() => handlePageChange(currentPage + 1)}
-                  aria-label="Página siguiente"
+                  aria-label={t("search.next")}
                 >
-                  Siguiente <ChevronRight size={16} />
+                  {t("search.next")} <ChevronRight size={16} />
                 </button>
               </div>
             )}

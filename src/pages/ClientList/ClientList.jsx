@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Container, Row, Col, Card, Form, Table, Button,
     Spinner, InputGroup, Badge,
@@ -18,6 +19,7 @@ import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 
 export default function ClientList() {
+    const { t } = useTranslation('clients');
     const { user } = useAuth();
     const {
         clients,
@@ -91,16 +93,16 @@ export default function ClientList() {
             link.parentNode.removeChild(link);
             await Swal.fire({
                 icon: "success",
-                title: "Exportación exitosa",
-                text: "El archivo CSV fue descargado.",
+                title: t('exportSuccessTitle', { defaultValue: 'Exportación exitosa' }),
+                text: t('exportSuccessText', { defaultValue: 'El archivo CSV fue descargado.' }),
                 timer: 1800,
                 showConfirmButton: false,
             });
         } catch (err) {
             await Swal.fire({
                 icon: "error",
-                title: "Error al exportar",
-                text: err?.response?.data?.message || err.message || "No se pudo exportar.",
+                title: t('exportErrorTitle', { defaultValue: 'Error al exportar' }),
+                text: err?.response?.data?.message || err.message || t('exportErrorText', { defaultValue: 'No se pudo exportar.' }),
             });
         } finally {
             setExporting(false);
@@ -111,11 +113,11 @@ export default function ClientList() {
     const handleBatchInactive = async () => {
         const result = await Swal.fire({
             icon: "warning",
-            title: "Marcar como inactivos",
-            text: `¿Marcar ${selectedIds.size} cliente(s) como inactivo(s)?`,
+            title: t('batchInactiveTitle', { defaultValue: 'Marcar como inactivos' }),
+            text: t('batchInactiveText', { count: selectedIds.size, defaultValue: `¿Marcar ${selectedIds.size} cliente(s) como inactivo(s)?` }),
             showCancelButton: true,
-            confirmButtonText: "Confirmar",
-            cancelButtonText: "Cancelar",
+            confirmButtonText: t('confirm', { ns: 'common' }),
+            cancelButtonText: t('cancel', { ns: 'common' }),
         });
         if (result.isConfirmed) {
             await batchMarkInactive(selectedIds);
@@ -145,22 +147,20 @@ export default function ClientList() {
                     {/* ── Header ──────────────────────────────────────────── */}
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h2 className="mb-0 fw-bold">Mis Clientes</h2>
-                            <p className="text-muted mb-0 small">
-                                Gestiona los clientes asignados a tu cartera
-                            </p>
+                            <h2 className="mb-0 fw-bold">{t('page.title')}</h2>
+                            <p className="text-muted mb-0 small">{t('page.subtitle')}</p>
                         </div>
                         <div className="d-flex gap-2">
-                            {canEdit && (
-                                <Link to="/clientes/registrar" className="btn btn-primary">
-                                    <i className="bi bi-person-plus me-2"></i>
-                                    Nuevo Prospecto
-                                </Link>
-                            )}
+                                    {canEdit && (
+                                        <Link to="/clientes/registrar" className="btn btn-primary">
+                                            <i className="bi bi-person-plus me-2"></i>
+                                    {t('page.newProspect')}
+                                        </Link>
+                                    )}
                             {canExport && (
                                 <Button variant="outline-primary" onClick={handleExport} disabled={exporting}>
                                     {exporting ? <Spinner size="sm" className="me-2" /> : <Download className="me-2" />}
-                                    Exportar CSV
+                                    {t('page.exportCsv')}
                                 </Button>
                             )}
                         </div>
@@ -171,20 +171,20 @@ export default function ClientList() {
                         <Card className="border-primary shadow-sm mb-3">
                             <Card.Body className="py-2 d-flex align-items-center gap-3">
                                 <Badge bg="primary" className="fs-6 px-3 py-2">
-                                    {selectedIds.size} seleccionado(s)
+                                    {t('page.selection', { count: selectedIds.size })}
                                 </Badge>
                                 {canExport && (
                                     <Button size="sm" variant="outline-primary" onClick={handleExport} disabled={exporting}>
-                                        <Download className="me-1" /> Exportar CSV
+                                        <Download className="me-1" /> {t('page.exportCsv')}
                                     </Button>
                                 )}
                                 {canEdit && (
                                     <Button size="sm" variant="outline-warning" onClick={handleBatchInactive}>
-                                        <XCircle className="me-1" /> Marcar inactivo
+                                        <XCircle className="me-1" /> {t('batchInactiveTitle', { defaultValue: 'Marcar como inactivos' })}
                                     </Button>
                                 )}
                                 <Button size="sm" variant="outline-secondary" onClick={clearSelection}>
-                                    Deseleccionar todo
+                                    {t('page.deselect')}
                                 </Button>
                             </Card.Body>
                         </Card>
@@ -196,60 +196,60 @@ export default function ClientList() {
                             <Form onSubmit={handleSearch}>
                                 <Row className="g-3 align-items-end">
                                     <Col md={2}>
-                                        <Form.Label className="text-muted small mb-1">Buscar</Form.Label>
+                                        <Form.Label className="text-muted small mb-1">{t('page.search')}</Form.Label>
                                         <InputGroup>
                                             <InputGroup.Text className="bg-white"><Search size={14} /></InputGroup.Text>
                                             <Form.Control
                                                 type="text"
-                                                placeholder="Nombre, Email..."
+                                                placeholder={t('page.searchPlaceholder')}
                                                 value={searchInput}
                                                 onChange={(e) => setSearchInput(e.target.value)}
                                             />
                                             {searchInput && (
                                                 <Button variant="outline-secondary" onClick={clearSearch}>✕</Button>
                                             )}
-                                            <Button variant="primary" type="submit">Buscar</Button>
+                                            <Button variant="primary" type="submit">{t('page.search')}</Button>
                                         </InputGroup>
                                     </Col>
 
                                     <Col md={2}>
-                                        <Form.Label className="text-muted small mb-1">Estado</Form.Label>
+                                        <Form.Label className="text-muted small mb-1">{t('page.status')}</Form.Label>
                                         <Form.Select
                                             value={filters.status || ""}
                                             onChange={(e) => handleFilterChange("status", e.target.value)}
                                         >
-                                            <option value="">Todos</option>
-                                            <option value="ACTIVE">Activo</option>
-                                            <option value="INACTIVE">Inactivo</option>
+                                            <option value="">{t('all', { ns: 'common' })}</option>
+                                            <option value="ACTIVE">{t('status.active')}</option>
+                                            <option value="INACTIVE">{t('status.inactive')}</option>
                                         </Form.Select>
                                     </Col>
 
                                     <Col md={2}>
-                                        <Form.Label className="text-muted small mb-1">Origen</Form.Label>
+                                        <Form.Label className="text-muted small mb-1">{t('page.origin')}</Form.Label>
                                         <Form.Select
                                             value={filters.internalType || ""}
                                             onChange={(e) => handleFilterChange("internalType", e.target.value)}
                                         >
-                                            <option value="">Todos</option>
-                                            <option value="AGENT">Interno</option>
-                                            <option value="EXTERNAL">Externo</option>
+                                            <option value="">{t('all', { ns: 'common' })}</option>
+                                            <option value="AGENT">{t('status.internal')}</option>
+                                            <option value="EXTERNAL">{t('status.external')}</option>
                                         </Form.Select>
                                     </Col>
 
                                     <Col md={2}>
-                                        <Form.Label className="text-muted small mb-1">Tipo</Form.Label>
+                                        <Form.Label className="text-muted small mb-1">{t('page.type')}</Form.Label>
                                         <Form.Select
                                             value={filters.clientType || ""}
                                             onChange={(e) => handleFilterChange("clientType", e.target.value)}
                                         >
-                                            <option value="">Todos</option>
-                                            <option value="INDIVIDUAL">Particular</option>
-                                            <option value="COMPANY">Empresa</option>
+                                            <option value="">{t('all', { ns: 'common' })}</option>
+                                            <option value="INDIVIDUAL">{t('status.individual')}</option>
+                                            <option value="COMPANY">{t('status.company')}</option>
                                         </Form.Select>
                                     </Col>
 
                                     <Col md={2}>
-                                        <Form.Label className="text-muted small mb-1">Ordenar por</Form.Label>
+                                        <Form.Label className="text-muted small mb-1">{t('page.order')}</Form.Label>
                                         <Form.Select
                                             value={filters.sort || "createdAt,desc"}
                                             onChange={(e) => handleFilterChange("sort", e.target.value)}
@@ -317,7 +317,7 @@ export default function ClientList() {
                                                         type="checkbox"
                                                         checked={allSelected}
                                                         onChange={selectAll}
-                                                        title="Seleccionar todos"
+                                                        title={t('selectAll', { defaultValue: 'Seleccionar todos' })}
                                                     />
                                                 </th>
                                             )}
@@ -336,7 +336,7 @@ export default function ClientList() {
                                             <tr>
                                                 <td colSpan={canEdit ? 9 : 8} className="text-center py-5">
                                                     <Spinner animation="border" variant="primary" />
-                                                    <p className="text-muted mt-2 mb-0">Cargando clientes...</p>
+                                                    <p className="text-muted mt-2 mb-0">{t('page.loading', { defaultValue: 'Cargando clientes...' })}</p>
                                                 </td>
                                             </tr>
                                         ) : clients.length === 0 ? (

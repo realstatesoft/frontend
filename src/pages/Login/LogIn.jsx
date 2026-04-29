@@ -7,9 +7,11 @@ import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
 import { ADMIN_ROUTES } from '../../utils/constants';
 import './Login.scss'; 
+import { useTranslation } from 'react-i18next';
 
 export default function LogIn() {
     const { login } = useAuth(); 
+    const { t } = useTranslation('auth');
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
@@ -77,7 +79,7 @@ export default function LogIn() {
 
         } catch (error) {
             console.error("Error en login:", error);
-            setErrorMessage(error.response?.data?.message || "Error conectando al servidor");
+            setErrorMessage(error.response?.data?.message || t("loginServerError"));
         } finally {
             setIsSubmitting(false);
         }
@@ -96,19 +98,19 @@ export default function LogIn() {
                     </div>
 
                     <h4 className="login-title">
-                        Inicia sesión en tu cuenta
+                        {t("loginTitle")}
                     </h4>
                     <p className="login-subtitle">
-                        ¿Eres nuevo por aquí?{' '}
+                        {t("loginSubtitle")}{' '}
                         <a href="/signup">
-                            Regístrate aquí
+                            {t("loginLink")}
                         </a>
                     </p>
 
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
                             <Form.Label className="form-label">
-                                Correo Electrónico
+                                {t("email")}
                             </Form.Label>
                             <InputGroup className="input-group-custom">
                                 <InputGroup.Text>
@@ -119,7 +121,7 @@ export default function LogIn() {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    placeholder="tu@email.com"
+                                    placeholder={t("emailPlaceholder")}
                                     required
                                 />
                             </InputGroup>
@@ -127,7 +129,7 @@ export default function LogIn() {
 
                         <Form.Group className="mb-3 password-group">
                             <Form.Label className="form-label">
-                                Contraseña
+                                {t("password")}
                             </Form.Label>
                             <InputGroup className="input-group-custom">
                                 <InputGroup.Text>
@@ -138,7 +140,7 @@ export default function LogIn() {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    placeholder="••••••••"
+                                    placeholder={t("passwordPlaceholder")}
                                     required
                                 />
                                 <InputGroup.Text
@@ -146,7 +148,7 @@ export default function LogIn() {
                                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowPassword(!showPassword); }}
                                     role="button"
                                     tabIndex={0}
-                                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                                    aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                                 >
                                     {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
                                 </InputGroup.Text>
@@ -157,11 +159,11 @@ export default function LogIn() {
                             <Form.Check
                                 type="checkbox"
                                 id="recordarme"
-                                label={<span className="remember-checkbox">Recuérdame</span>}
+                                label={<span className="remember-checkbox">{t("rememberMe")}</span>}
                                 className="mb-0"
                             />
                             <a href="/forgot-password" className="forgot-link">
-                                ¿Olvidaste tu contraseña?
+                                {t("forgotPassword")}
                             </a>
                         </div>
 
@@ -182,14 +184,14 @@ export default function LogIn() {
                                 disabled={isSubmitting}
                                 className="submit-button"
                             >
-                                {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
+                                {isSubmitting ? t("signingIn") : t("signIn")}
                             </Button>
                         </div>
                     </Form>
 
                     <div className="divider-container">
                         <hr />
-                        <span>O continúa con</span>
+                        <span>{t("continueWith")}</span>
                         <hr />
                     </div>
 

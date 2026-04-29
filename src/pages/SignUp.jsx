@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { IoCheckmark, IoArrowForwardOutline } from 'react-icons/io5';
 import PreferencesForm from '../components/preferences/PreferencesForm';
 import { useUserPreferences } from '../hooks/useUserPreferences';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUp() {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { t } = useTranslation('auth');
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,11 +69,11 @@ export default function SignUp() {
     if (isSubmitting) return;
 
     if (formData.password !== formData.confirmPassword) {
-      setErrorMessage('Las contraseñas no coinciden');
+      setErrorMessage(t('passwordMismatch'));
       return;
     }
     if (!formData.terminos) {
-      setErrorMessage('Debes aceptar los términos y condiciones');
+      setErrorMessage(t('termsRequired'));
       return;
     }
 
@@ -95,10 +97,10 @@ export default function SignUp() {
         nextStep();
       } else {
         // Si no tenemos ID, algo falló en la respuesta
-        setErrorMessage('Error al obtener el ID del usuario tras el registro.');
+        setErrorMessage(t('registrationIdError'));
       }
     } catch (error) {
-      setErrorMessage(error.message || 'Error al registrar usuario');
+      setErrorMessage(error.message || t('registrationError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -127,9 +129,9 @@ export default function SignUp() {
   // ── Render de Stepper ──────────────────────────────────────────────────────
 
   const steps = [
-    { num: 1, label: 'Personales' },
-    { num: 2, label: 'Cuenta' },
-    { num: 3, label: 'Preferencias' }
+    { num: 1, label: t('signupStepPersonal') },
+    { num: 2, label: t('signupStepAccount') },
+    { num: 3, label: t('signupStepPreferences') }
   ];
 
   const renderStepper = () => (
@@ -159,36 +161,36 @@ export default function SignUp() {
       <Row className="g-3 mb-3">
         <Col xs={6}>
           <Form.Group>
-            <Form.Label className="fw-semibold small">Nombre</Form.Label>
+            <Form.Label className="fw-semibold small">{t('firstName')}</Form.Label>
             <Form.Control
               type="text" name="nombre" value={formData.nombre} onChange={handleChange}
-              placeholder="Ej: Ayumu" required
+              placeholder={t('firstNamePlaceholder')} required
               className="signup-input"
             />
           </Form.Group>
         </Col>
         <Col xs={6}>
           <Form.Group>
-            <Form.Label className="fw-semibold small">Apellido</Form.Label>
+            <Form.Label className="fw-semibold small">{t('lastName')}</Form.Label>
             <Form.Control
               type="text" name="apellido" value={formData.apellido} onChange={handleChange}
-              placeholder="Apellido" required
+              placeholder={t('lastNamePlaceholder')} required
               className="signup-input"
             />
           </Form.Group>
         </Col>
       </Row>
       <Form.Group className="mb-4">
-        <Form.Label className="fw-semibold small">Teléfono</Form.Label>
+        <Form.Label className="fw-semibold small">{t('phone')}</Form.Label>
         <Form.Control
           type="tel" name="phone" value={formData.phone} onChange={handleChange}
-          placeholder="+595 9..."
+          placeholder={t('phonePlaceholder')}
           className="signup-input"
         />
       </Form.Group>
       <div className="d-grid">
         <Button variant="primary" type="submit" className="signup-btn">
-          Siguiente paso
+          {t('nextStep')}
         </Button>
       </div>
     </Form>
@@ -197,26 +199,26 @@ export default function SignUp() {
   const renderStep2 = () => (
     <Form onSubmit={handleStep2Submit}>
       <Form.Group className="mb-3">
-        <Form.Label className="fw-semibold small">Correo Electrónico</Form.Label>
+        <Form.Label className="fw-semibold small">{t('email')}</Form.Label>
         <Form.Control
           type="email" name="email" value={formData.email} onChange={handleChange}
-          placeholder="tu@email.com" required
+          placeholder={t('emailPlaceholder')} required
           className="signup-input"
         />
       </Form.Group>
       <Form.Group className="mb-3">
-        <Form.Label className="fw-semibold small">Contraseña</Form.Label>
+        <Form.Label className="fw-semibold small">{t('password')}</Form.Label>
         <Form.Control
           type="password" name="password" value={formData.password} onChange={handleChange}
-          placeholder="Min. 8 caracteres" required
+          placeholder={t('passwordPlaceholder')} required
           className="signup-input"
         />
       </Form.Group>
       <Form.Group className="mb-3">
-        <Form.Label className="fw-semibold small">Confirmar contraseña</Form.Label>
+        <Form.Label className="fw-semibold small">{t('confirmPassword')}</Form.Label>
         <Form.Control
           type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-          placeholder="Repite tu contraseña" required
+          placeholder={t('confirmPasswordPlaceholder')} required
           className="signup-input"
         />
       </Form.Group>
@@ -226,7 +228,7 @@ export default function SignUp() {
           className="me-2" required
         />
         <Form.Label htmlFor="terminos" className="text-dark mb-0 small">
-          Acepto los <a href="#" className="text-decoration-none">términos y condiciones</a>
+          {t('acceptTermsPrefix')} <a href="#" className="text-decoration-none">{t('termsAndConditions')}</a>
         </Form.Label>
       </Form.Group>
 
@@ -234,10 +236,10 @@ export default function SignUp() {
 
       <div className="d-flex gap-2">
         <Button variant="outline-secondary" onClick={prevStep} className="signup-btn-prev">
-          Atrás
+          {t('back')}
         </Button>
         <Button variant="primary" type="submit" disabled={isSubmitting} className="signup-btn flex-grow-1">
-          {isSubmitting ? 'Registrando...' : 'Crear cuenta'}
+          {isSubmitting ? t('registering') : t('signUp')}
         </Button>
       </div>
     </Form>
@@ -246,9 +248,9 @@ export default function SignUp() {
   const renderStep3 = () => (
     <div className="signup-step-preferences">
       <div className="text-center mb-4">
-        <h4 className="fw-bold mb-2">¡Casi listo!</h4>
+        <h4 className="fw-bold mb-2">{t('almostDone')}</h4>
         <p className="text-muted small">
-          Contanos qué buscás para que podamos mostrarte propiedades ideales para vos.
+          {t('signupPreferencesCopy')}
         </p>
       </div>
       
@@ -264,11 +266,11 @@ export default function SignUp() {
         isSaving={isSavingPrefs}
         submitLabel={
           <>
-            Guardar y continuar <IoArrowForwardOutline className="ms-1" />
+            {t('saveAndContinue')} <IoArrowForwardOutline className="ms-1" />
           </>
         }
         onSkip={handleSkipPreferences}
-        skipLabel="Saltar por ahora, lo haré después"
+        skipLabel={t('skipForNow')}
       />
     </div>
   );
@@ -282,9 +284,9 @@ export default function SignUp() {
               <img src={logo} alt="Logo" className="signup-logo mb-3" />
               {currentStep < 3 && (
                 <>
-                  <h3 className="fw-bold mb-1">Crea tu cuenta</h3>
+                  <h3 className="fw-bold mb-1">{t('createAccountTitle')}</h3>
                   <p className="text-muted small">
-                    ¿Ya tienes una cuenta? <a href="/login" className="text-decoration-none">Inicia sesión</a>
+                    {t('signupLoginPrompt')} <a href="/login" className="text-decoration-none">{t('loginLink')}</a>
                   </p>
                 </>
               )}
@@ -300,7 +302,7 @@ export default function SignUp() {
               <>
                 <div className="d-flex align-items-center my-4">
                   <hr className="flex-grow-1" />
-                  <span className="mx-3 text-muted small">O regístrate con</span>
+                  <span className="mx-3 text-muted small">{t('orSignUpWith')}</span>
                   <hr className="flex-grow-1" />
                 </div>
                 <Stack direction="horizontal" gap={3} className="justify-content-center">

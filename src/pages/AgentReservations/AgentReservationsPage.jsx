@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Container, Card, Spinner, Alert, Badge, Table, Form, Pagination } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { FiMessageSquare } from 'react-icons/fi';
+import Swal from 'sweetalert2';
 import reservationApi from '../../services/reservations/reservationApi';
+import NewConversationModal from '../../components/messages/NewConversationModal';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { statusVariant, statusLabel } from '../../utils/reservationStatus';
 import styles from './AgentReservationsPage.module.scss';
@@ -24,6 +27,8 @@ export default function AgentReservationsPage() {
   const [status, setStatus]   = useState('');
   const [page, setPage]       = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedBuyer, setSelectedBuyer] = useState(null);
 
   const load = useCallback(async (currentPage, currentStatus) => {
     setLoading(true);
@@ -88,7 +93,19 @@ export default function AgentReservationsPage() {
                 {items.map((r) => (
                   <tr key={r.id}>
                     <td><Link to={`/properties/${r.propertyId}`}>{r.propertyTitle}</Link></td>
-                    <td>{r.buyerName}</td>
+                    <td>
+                      {r.buyerName}
+                      <button 
+                        className="btn btn-link btn-sm p-0 ms-2 text-primary"
+                        onClick={() => {
+                          setSelectedBuyer({ id: r.buyerId, name: r.buyerName });
+                          setShowMessageModal(true);
+                        }}
+                        title="Enviar mensaje"
+                      >
+                        <FiMessageSquare />
+                      </button>
+                    </td>
                     <td>{formatCurrency(r.amount)}</td>
                     <td><Badge bg={statusVariant(r.status)}>{statusLabel(r.status)}</Badge></td>
                     <td>{formatDate(r.createdAt)}</td>
@@ -111,6 +128,24 @@ export default function AgentReservationsPage() {
           )}
         </>
       )}
+
+      <NewConversationModal
+        isOpen={showMessageModal}
+        onClose={() => {
+          setShowMessageModal(false);
+          setSelectedBuyer(null);
+        }}
+        preSelectedAgent={selectedBuyer}
+        onSuccess={() => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Mensaje enviado!',
+            text: 'Tu mensaje ha sido enviado correctamente.',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        }}
+      />
     </Container>
   );
 }

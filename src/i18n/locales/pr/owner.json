@@ -1,0 +1,80 @@
+{
+  "title": "Meu painel",
+  "subtitle": "Resumo dos seus imóveis e transações",
+  "loading": "Carregando painel...",
+  "actionRequired": "Ação necessária",
+  "urgentContracts": "Você tem {{count}} contrato(s) aguardando sua assinatura digital.",
+  "newVisits": "Novas visitas",
+  "pendingVisits": "Você tem {{count}} solicitação(ões) de visita aguardando resposta.",
+  "signNow": "Assinar agora",
+  "manageVisits": "Gerenciar visitas",
+  "contractHint": "Dados baseados em contratos fechados",
+  "successTitle": "Sucesso!",
+  "successText": "Você assinou o contrato digitalmente.",
+  "properties": {
+    "title": "Meus imóveis",
+    "subtitle": "Gerencie seus imóveis publicados",
+    "new": "Novo imóvel",
+    "view": "Ver cliente",
+    "empty": "Nenhum imóvel encontrado"
+  },
+  "messages": {
+    "title": "Mensagens",
+    "subtitle": "Comunicação com seu corretor",
+    "loading": "Carregando mensagens...",
+    "inbox": "Conversas",
+    "emptyInbox": "Nenhuma conversa",
+    "emptyConversation": "Selecione uma conversa para começar a conversar",
+    "newConversation": "Nova conversa",
+    "placeholder": "Digite uma mensagem..."
+  },
+  "visits": {
+    "title": "Solicitações de visita",
+    "subtitle": "Revise e aprove solicitações de visita para seus imóveis",
+    "loading": "Carregando solicitações...",
+    "empty": "Não há solicitações de visita no momento.",
+    "emptyFiltered": "Não há solicitações de visita com status \"{{status}}\".",
+    "stats": {
+      "pending": "Pendentes",
+      "accepted": "Aceitas",
+      "rejected": "Rejeitadas",
+      "total": "Total"
+    },
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendentes",
+      "accepted": "Aceitas",
+      "counterProposed": "Contra-propostas",
+      "rejected": "Rejeitadas",
+      "cancelled": "Canceladas"
+    },
+    "actions": {
+      "confirm": "Confirmar",
+      "suggest": "Sugerir outro horário",
+      "reject": "Rejeitar"
+    }
+  },
+  "dashboard": {
+    "recentProperties": "Imóveis recentes",
+    "pendingSignatures": "Assinaturas pendentes",
+    "pendingVisitsTitle": "Visitas pendentes",
+    "pendingVisits": "Visitas pendentes",
+    "viewAll": "Ver todos",
+    "viewProperty": "Ver ficha",
+    "sign": "Assinar",
+    "manage": "Gerenciar",
+    "emptyRecentProperties": "Você ainda não tem imóveis publicados.",
+    "emptyContracts": "Você não tem contratos aguardando assinatura.",
+    "emptyVisits": "Você não tem solicitações de visita pendentes.",
+    "contractPrefix": "Contrato #",
+    "loading": "Carregando painel..."
+  },
+  "visits": {
+    "title": "Solicitações de visita",
+    "subtitle": "Gerencie as solicitações de visita recebidas",
+    "loading": "Carregando solicitações de visita...",
+    "error": "Erro ao carregar as solicitações",
+    "unknownError": "Erro desconhecido",
+    "empty": "Não há solicitações de visita"
+  }
+}

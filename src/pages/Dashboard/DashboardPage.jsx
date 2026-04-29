@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FiUsers, FiShoppingBag, FiMapPin, FiDollarSign } from 'react-icons/fi';
 import StatCard from '../../components/common/StatCard/StatCard';
 import QuickActions from '../../components/widgets/QuickActions/QuickActions';
@@ -10,6 +11,7 @@ import { useAutoStartTour } from '../../hooks/useAutoStartTour';
 import styles from './DashboardPage.module.scss';
 
 export default function DashboardPage() {
+  const { t } = useTranslation('dashboard');
   const { data: response } = useAgentStats();
   const stats = response?.data || {};
 
@@ -19,35 +21,35 @@ export default function DashboardPage() {
     <div className={styles.dashboard}>
       <div className={styles.dashboard__header}>
         <div>
-          <h1 className={styles.dashboard__title}>Dashboard</h1>
-          <p className={styles.dashboard__subtitle}>Resumen de tu actividad</p>
+          <h1 className={styles.dashboard__title}>{t('agent.title')}</h1>
+          <p className={styles.dashboard__subtitle}>{t('agent.subtitle')}</p>
         </div>
       </div>
 
       <div className={styles.dashboard__stats} data-tour="dashboard-stats">
         <StatCard
-          label="Clientes Activos"
+          label={t('agent.stats.activeClients')}
           value={stats.activeClients?.value ?? 0}
           trend={stats.activeClients?.trend}
           icon={<FiUsers />}
           colorAccent="accent"
         />
         <StatCard
-          label="Ventas del Mes"
+          label={t('agent.stats.monthlySales')}
           value={stats.totalSales?.value ?? 0}
           trend={stats.totalSales?.trend}
           icon={<FiShoppingBag />}
           colorAccent="success"
         />
         <StatCard
-          label="Visitas Programadas"
+          label={t('agent.stats.scheduledVisits')}
           value={stats.scheduledVisits?.value ?? 0}
           trend={stats.scheduledVisits?.trend}
           icon={<FiMapPin />}
           colorAccent="warning"
         />
         <StatCard
-          label="Comisiones"
+          label={t('agent.stats.commissions')}
           value={formatCurrency(stats.commissions?.value)}
           trend={stats.commissions?.trend}
           icon={<FiDollarSign />}

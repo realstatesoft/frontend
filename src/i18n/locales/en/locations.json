@@ -1,0 +1,18 @@
+{
+  "title": "Select location",
+  "help": "Click on the map to choose the property's exact location.",
+  "address": "Address",
+  "addressPlaceholder": "Address detected by the map (editable)",
+  "loadingAddress": "Searching address...",
+  "zone": "Zone",
+  "loadingZone": "Searching zone...",
+  "zonePlaceholder": "Select a zone...",
+  "matchedZones": "Found {{count}} zones for this city.",
+  "autoCreated": "New zone created automatically.",
+  "noZoneDetected": "Could not detect the zone for this location.",
+  "cancel": "Cancel",
+  "useLocation": "Use this location",
+  "errors": {
+    "reverseGeocode": "The address could not be fetched automatically. You can edit it manually."
+  }
+}

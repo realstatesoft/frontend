@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { useAuth } from "./useAuth";
 import { getUserInfo } from "../utils/authToken";
@@ -67,6 +68,7 @@ const getErrorMessage = (err) =>
  */
 export function usePropertyForm(propertyId) {
   const navigate = useNavigate();
+  const { t } = useTranslation("validation");
   const isEditMode = Boolean(propertyId);
   const { user } = useAuth();
   // userId desde userInfo en localStorage (guardado al iniciar sesión)
@@ -78,6 +80,7 @@ export function usePropertyForm(propertyId) {
   const [fetchLoading, setFetchLoading] = useState(isEditMode);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const propertySchema = useMemo(() => createPropertySchema(t), [t]);
 
   useEffect(() => {
     if (!propertyId) return;
@@ -544,7 +547,7 @@ export function usePropertyForm(propertyId) {
       geolocation: form.geolocation,
     };
 
-    const result = createPropertySchema.safeParse(dataToValidate);
+    const result = propertySchema.safeParse(dataToValidate);
 
     if (!result.success) {
       const { fieldErrors: zodFieldErrors } = result.error.flatten();
