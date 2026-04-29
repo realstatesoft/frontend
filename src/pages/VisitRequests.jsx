@@ -73,13 +73,24 @@ const VisitRequests = ({ mode = 'AGENT' }) => {
       setActionLoading(true);
       const updated = await acceptVisitRequest(id);
       setVisits(prev => prev.map(v => v.id === id ? updated : v));
+      const buttons = [];
+      if (mode === 'AGENT') {
+        buttons.push({ 
+          label: t('visits.viewAgenda', { defaultValue: 'Ver mi agenda' }), 
+          variant: 'outline-primary', 
+          onClick: () => { setShowSuccessModal(false); navigate('/agent/agenda'); } 
+        });
+      }
+      buttons.push({ 
+        label: t('close', { ns: 'common' }), 
+        variant: 'primary', 
+        onClick: () => setShowSuccessModal(false) 
+      });
+
       setSuccessConfig({
         title: t('visits.confirmationTitle', { defaultValue: 'La confirmación ha sido enviada' }),
         description: t('visits.confirmationDescription', { defaultValue: 'Esta visita fue agregada a tu agenda' }),
-        buttons: [
-          { label: t('visits.viewAgenda', { defaultValue: 'Ver mi agenda' }), variant: 'outline-primary', onClick: () => { setShowSuccessModal(false); navigate('/agent/agenda'); } },
-          { label: t('close', { ns: 'common' }), variant: 'primary', onClick: () => setShowSuccessModal(false) },
-        ],
+        buttons: buttons,
       });
       setShowSuccessModal(true);
     } catch (err) {

@@ -156,7 +156,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
                 type="date"
                 name="datePart"
                 value={formData.proposedAt ? formData.proposedAt.split('T')[0] : ''}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toLocaleDateString('en-CA')}
                 onChange={(e) => {
                   const date = e.target.value;
                   setFormData(prev => ({ ...prev, proposedAt: date }));
