@@ -25,6 +25,9 @@ export default function PropertyCard({
     isFavoriteLoading = false,
     canToggleFavorite = false,
     onToggleFavorite,
+    isCompared = false,
+    onToggleCompare,
+    compareDisabled = false,
 }) {
     const { t } = useTranslation("properties");
     // Normalizar campos del API a los que usa el componente
@@ -110,18 +113,29 @@ export default function PropertyCard({
 
             {/* Botón de acción */}
             <Card.Footer className="bg-white border-0 pb-3 px-3">
-                <Button
-                    as={Link}
-                    to={`/properties/${property.id}`}
-                    className="w-100 rounded-pill"
-                    style={{
-                        background: "var(--primary, #2563eb)",
-                        border: "none",
-                        fontSize: "0.85rem",
-                    }}
-                >
-                    {t("card.details")}
-                </Button>
+                <div className="d-grid gap-2">
+                    <Button
+                        as={Link}
+                        to={`/properties/${property.id}`}
+                        className="w-100 rounded-pill"
+                        style={{
+                            background: "var(--primary, #2563eb)",
+                            border: "none",
+                            fontSize: "0.85rem",
+                        }}
+                    >
+                        {t("card.details")}
+                    </Button>
+                    <Button
+                        variant={isCompared ? "outline-danger" : "outline-primary"}
+                        className="w-100 rounded-pill"
+                        style={{ fontSize: "0.85rem" }}
+                        disabled={compareDisabled && !isCompared}
+                        onClick={() => onToggleCompare?.(property)}
+                    >
+                        {isCompared ? "Quitar del comparador" : "Comparar"}
+                    </Button>
+                </div>
             </Card.Footer>
         </Card>
     );

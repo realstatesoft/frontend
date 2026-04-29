@@ -13,6 +13,8 @@ const propertyApi = {
 
   getAll: (params) => api.get(BASE, { params }),
 
+  compare: (ids) => api.get(`${BASE}/compare`, { params: { ids: ids.join(",") } }),
+
   getByOwner: (ownerId, params) => api.get(`${BASE}/owner/${ownerId}`, { params }),
 
   getMe: (params) => api.get(`${BASE}/me`, { params }),
@@ -36,6 +38,10 @@ const propertyApi = {
   clearTrashcan: (id) => api.post(`${BASE}/clear-trashcan`),
 
   getSimilar: (id, limit) => api.get(`${BASE}/${id}/similar?size=${limit}`),
+
+  registerRecentView: (id) => api.post(`${BASE}/${id}/recent-views`),
+
+  getRecentProperties: () => api.get("/users/me/recent-properties"),
 
   /** Propiedades asignadas al agente autenticado (solo AGENT) */
   getMyAssignments: () => api.get("/assignments/me"),

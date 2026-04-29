@@ -68,13 +68,5 @@
     "emptyVisits": "You have no pending visit requests.",
     "contractPrefix": "Contract #",
     "loading": "Loading dashboard..."
-  },
-  "visits": {
-    "title": "Visit Requests",
-    "subtitle": "Manage received visit requests",
-    "loading": "Loading visit requests...",
-    "error": "Error loading requests",
-    "unknownError": "Unknown error",
-    "empty": "No visit requests"
   }
 }
