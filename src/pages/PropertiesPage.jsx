@@ -6,6 +6,7 @@ import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
 import PropertiesGrid from "../components/properties/PropertiesGrid";
 import PropertiesMap from "../components/properties/PropertiesMap";
+import CompareFloatingBar from "../components/properties/CompareFloatingBar";
 import PreferencesBanner, { shouldShowBanner } from "../components/preferences/PreferencesBanner";
 import useProperties from "../hooks/useProperties";
 import useFavoriteProperties from "../hooks/useFavoriteProperties";
@@ -14,6 +15,7 @@ import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
 import useCurrencyStore from "../store/useCurrencyStore";
 import useExchangeRates from "../hooks/useExchangeRates";
 import { convertPriceFilterToPyg } from "../utils/propertyPriceFormatter";
+import usePropertyCompareStore, { MAX_COMPARE_PROPERTIES } from "../store/usePropertyCompareStore";
 
 const PAGE_SIZE = 12;
 
@@ -23,6 +25,9 @@ const PAGE_SIZE = 12;
  */
 export default function PropertiesPage() {
     const { isAuthenticated: authCheck, preferencesCompleted } = useAuth();
+    const comparedProperties = usePropertyCompareStore((state) => state.comparedProperties);
+    const toggleComparedProperty = usePropertyCompareStore((state) => state.toggleProperty);
+    const clearComparedProperties = usePropertyCompareStore((state) => state.clearProperties);
     const locationState = useLocation().state || {};
 
     const [search, setSearch] = useState(locationState.search || "");
@@ -154,10 +159,19 @@ export default function PropertiesPage() {
                     togglingIds={togglingIds}
                     canToggleFavorite={isAuthenticated}
                     onToggleFavorite={toggleFavorite}
+                    comparedPropertyIds={comparedProperties.map((property) => property.id)}
+                    compareLimitReached={comparedProperties.length >= MAX_COMPARE_PROPERTIES}
+                    onToggleCompare={toggleComparedProperty}
                     onPageChange={(page) => {
                         setCurrentPage(page);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
+                />
+
+                <CompareFloatingBar
+                    selectedProperties={comparedProperties}
+                    maxProperties={MAX_COMPARE_PROPERTIES}
+                    onClear={clearComparedProperties}
                 />
             </div>
 

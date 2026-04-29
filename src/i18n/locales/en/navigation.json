@@ -42,6 +42,7 @@
     "admin": {
       "dashboard": "Panel",
       "approval": "Property approval",
+      "payments": "Payment Management",
       "auditLogs": "Audit",
       "reports": "Reports",
       "documents": "Document validation",

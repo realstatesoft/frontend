@@ -3,34 +3,34 @@ import api from '../api';
 const contractApi = {
   /** Contratos donde el agente autenticado actúa como agente listador */
   getAsListingAgent() {
-    return api.get('/contracts/as-listing-agent').then((res) => res.data?.data ?? res.data);
+    return api.get('/contracts/as-listing-agent').then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /** Contratos donde el agente autenticado actúa como agente del comprador */
   getAsBuyerAgent() {
-    return api.get('/contracts/as-buyer-agent').then((res) => res.data?.data ?? res.data);
+    return api.get('/contracts/as-buyer-agent').then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /** Contratos donde el usuario autenticado es el vendedor/propietario */
   getAsSeller() {
-    return api.get('/contracts/as-seller').then((res) => res.data?.data ?? res.data);
+    return api.get('/contracts/as-seller').then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /** Contratos donde el usuario autenticado es el comprador/inquilino */
   getAsBuyer() {
-    return api.get('/contracts/as-buyer').then((res) => res.data?.data ?? res.data);
+    return api.get('/contracts/as-buyer').then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /** Obtener un contrato por ID (detalle completo) */
   getById(id) {
     const encodedId = encodeURIComponent(id);
-    return api.get(`/contracts/${encodedId}`).then((res) => res.data?.data ?? res.data);
+    return api.get(`/contracts/${encodedId}`).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /** Obtener contratos asociados a una propiedad */
   getByProperty(propertyId) {
     const encodedId = encodeURIComponent(propertyId);
-    return api.get(`/contracts/property/${encodedId}`).then((res) => res.data?.data ?? res.data);
+    return api.get(`/contracts/property/${encodedId}`).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /**
@@ -38,7 +38,7 @@ const contractApi = {
    * @param {Object} payload - ContractRequest
    */
   create(payload) {
-    return api.post('/contracts', payload).then((res) => res.data?.data ?? res.data);
+    return api.post('/contracts', payload).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /**
@@ -48,7 +48,7 @@ const contractApi = {
    */
   update(id, payload) {
     const encodedId = encodeURIComponent(id);
-    return api.put(`/contracts/${encodedId}`, payload).then((res) => res.data?.data ?? res.data);
+    return api.put(`/contracts/${encodedId}`, payload).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /**
@@ -58,7 +58,7 @@ const contractApi = {
    */
   updateStatus(id, status) {
     const encodedId = encodeURIComponent(id);
-    return api.patch(`/contracts/${encodedId}/status`, { status }).then((res) => res.data?.data ?? res.data);
+    return api.patch(`/contracts/${encodedId}/status`, { status }).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /**
@@ -68,7 +68,7 @@ const contractApi = {
    */
   sign(id, payload) {
     const encodedId = encodeURIComponent(id);
-    return api.post(`/contracts/${encodedId}/sign`, payload).then((res) => res.data?.data ?? res.data);
+    return api.post(`/contracts/${encodedId}/sign`, payload).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /**
@@ -77,7 +77,7 @@ const contractApi = {
    */
   getSignatures(id) {
     const encodedId = encodeURIComponent(id);
-    return api.get(`/contracts/${encodedId}/signatures`).then((res) => res.data?.data ?? res.data);
+    return api.get(`/contracts/${encodedId}/signatures`).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
   },
 
   /**

@@ -12,7 +12,7 @@ import propertyApi from '../../services/properties/propertyApi';
 const queryClient = new QueryClient();
 
 vi.mock('../../hooks/useAuth', () => ({
-  useAuth: () => ({ isAuthenticated: false }),
+  useAuth: () => ({ isAuthenticated: false, preferencesCompleted: false }),
 }));
 
 vi.mock('../../hooks/useFavoriteProperties', () => ({
@@ -118,5 +118,17 @@ describe('PropertiesPage', () => {
         })
       );
     });
+  });
+
+  it('does not render the compare button before selecting properties', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <PropertiesPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(screen.queryByRole('button', { name: /Comparar/i })).not.toBeInTheDocument();
   });
 });

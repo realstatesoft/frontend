@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
 import PropertiesPage from "../pages/PropertiesPage";
+import PropertyComparePage from "../pages/PropertyComparePage";
 import AgentsPage from "../pages/AgentsPage";
 import PropertiesTrashCan from "../pages/PropertiesTrashCan/PropertiesTrashCan";
 import ShowProperty from "../pages/ShowProperty/ShowProperty";
@@ -61,6 +62,7 @@ import PreferencesPage from "../pages/PreferencesPage";
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
 import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
 import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
+import AdminPaymentsPage from "../pages/Admin/AdminPaymentsPage";
 import PaymentPage from "../pages/Payment/PaymentPage";
 import MyPaymentsPage from "../pages/MyPayments/MyPaymentsPage";
 
@@ -74,6 +76,7 @@ export default function AppRouter() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/properties" element={<PropertiesPage />} />
+            <Route path="/properties/compare" element={<PropertyComparePage />} />
             <Route path="/properties/:id" element={<ShowProperty />} />
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/agents/:id" element={<PublicAgentProfilePage />} />
@@ -163,6 +166,7 @@ export default function AppRouter() {
                     <Route path="documents" element={<AdminDocumentsPage />} />
                     <Route path="rent-config" element={<RentConfigPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
+                    <Route path="payments" element={<AdminPaymentsPage />} />
                 </Route>
             </Route>
 
