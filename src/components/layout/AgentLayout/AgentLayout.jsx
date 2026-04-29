@@ -55,6 +55,7 @@ export default function AgentLayout() {
     { to: AGENT_ROUTES.CLIENTS, icon: <FiUsers />, label: t('layouts.agent.clients') },
     { to: AGENT_ROUTES.PROPERTIES, icon: <FiHome />, label: t('layouts.agent.properties') },
     { to: AGENT_ROUTES.VISIT_REQUESTS, icon: <FiClipboard />, label: t('layouts.agent.visitRequests') },
+    { to: AGENT_ROUTES.LEADS, icon: <FiTarget />, label: t('layouts.agent.leads') },
     { to: AGENT_ROUTES.OFFERS, icon: <FiDollarSign />, label: t('layouts.agent.offers') },
     { section: t('sidebar.sectionManagement') },
     { to: AGENT_ROUTES.AGENDA, icon: <FiCalendar />, label: t('layouts.agent.agenda') },
