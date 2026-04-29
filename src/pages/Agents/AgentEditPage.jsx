@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import agentApi from "../../services/agents/agentApi";
 import {
@@ -21,6 +22,7 @@ const SOCIAL_PLATFORMS = [
 ];
 
 export default function AgentEditPage() {
+  const { t } = useTranslation("agent");
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -109,7 +111,7 @@ export default function AgentEditPage() {
       .catch((err) => {
         if (!cancelled) {
           console.error(err);
-          setError("No se pudo cargar los datos del agente.");
+          setError(t("edit.loadError"));
           setLoading(false);
         }
       });
@@ -192,7 +194,7 @@ export default function AgentEditPage() {
       const serverMsg =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
-        "No se pudo guardar los cambios. Intenta de nuevo.";
+        t("edit.saveError");
       setSaveError(serverMsg);
     } finally {
       setSaving(false);
@@ -211,13 +213,13 @@ export default function AgentEditPage() {
   if (error || !agent) {
     return (
       <Container className="py-5 bg-light min-vh-100">
-        <Alert variant="warning">{error || "Agente no encontrado."}</Alert>
+        <Alert variant="warning">{error || t("edit.notFound")}</Alert>
         <button
           className="btn btn-outline-secondary mt-3"
           onClick={() => navigate(-1)}
         >
           <IoArrowBack size={16} className="me-1" />
-          Volver
+          {t("back")}
         </button>
       </Container>
     );
@@ -236,13 +238,13 @@ export default function AgentEditPage() {
             <button
               className="btn-back-circle"
               onClick={() => navigate("/agent/perfil")}
-              title="Volver al perfil"
-              aria-label="Volver al perfil"
+              title={t("edit.backToProfile")}
+              aria-label={t("edit.backToProfile")}
             >
               <IoArrowBack size={20} />
             </button>
             <div>
-              <h2 className="banner-title mb-0">Editar Perfil</h2>
+              <h2 className="banner-title mb-0">{t("edit.title")}</h2>
               <p className="banner-subtitle mb-0">
                 {name} — {email}
               </p>
@@ -256,7 +258,7 @@ export default function AgentEditPage() {
         {saveSuccess && (
           <div className="edit-toast edit-toast--success">
             <IoCheckmarkOutline size={18} />
-            Perfil actualizado correctamente. Redirigiendo…
+            {t("edit.success")}
           </div>
         )}
 

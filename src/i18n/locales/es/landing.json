@@ -1,0 +1,79 @@
+{
+  "hero": {
+    "title": "La Forma Más Inteligente de Comprar, Vender o Alquilar",
+    "subtitle": "Miles de propiedades te esperan. Encuentra tu hogar ideal con la tecnología más avanzada del mercado."
+  },
+  "search": {
+    "title": "Empieza a buscar tu propiedad ideal",
+    "buy": "Comprar",
+    "rent": "Alquilar",
+    "location": "UBICACIÓN",
+    "propertyType": "TIPO",
+    "bedrooms": "DORMITORIOS",
+    "price": "PRECIO",
+    "locationPlaceholder": "Ciudad, Barrio / MLS ID",
+    "typePlaceholder": "Tipo de Propiedad",
+    "house": "Casa",
+    "apartment": "Departamento",
+    "land": "Terreno",
+    "bedroomsPlaceholder": "Todos",
+    "pricePlaceholder": "Rango de Precios",
+    "button": "Buscar"
+  },
+  "about": {
+    "eyebrow": "Sobre Nosotros",
+    "title": "Somos una agencia inmobiliaria boutique especializada en el mercado de Paraguay.",
+    "description": "Con años de experiencia y un equipo apasionado, ayudamos a nuestros clientes a encontrar el hogar perfecto. Nuestra misión es hacer que cada transacción sea simple, transparente y exitosa."
+  },
+  "services": {
+    "buy": {
+      "title": "Comprar una casa",
+      "description": "Encuentra la casa perfecta con nuestra herramienta de búsqueda avanzada.",
+      "link": "Explorar propiedades →"
+    },
+    "rent": {
+      "title": "Alquilar una casa",
+      "description": "Encuentra tu próximo hogar en alquiler con precios competitivos.",
+      "link": "Ver alquileres →"
+    },
+    "sell": {
+      "title": "Vender tu casa",
+      "description": "Publica tu propiedad y conecta con miles de compradores potenciales.",
+      "link": "Publicar propiedad →"
+    }
+  },
+  "stats": {
+    "activeProperties": "Propiedades activas",
+    "happyClients": "Clientes Satisfechos",
+    "partners": "Asociados",
+    "cities": "Ciudades"
+  },
+  "cta": {
+    "title": "¿Listo para tu próximo hogar en Paraguay?",
+    "description": "Con años de experiencia en el mercado local, te ofrecemos las mejores opciones para ti. Ya sea que busques comprar, vender o alquilar, nuestros agentes te acompañan en cada paso del camino.",
+    "explore": "Explorar ahora",
+    "sell": "Vende tu propiedad",
+    "sales": "Propiedades vendidas",
+    "rentals": "Propiedades alquiladas",
+    "agents": "Agentes"
+  },
+  "footer": {
+    "description": "Tu aliado de confianza en el mercado inmobiliario de Paraguay. Encontramos tu hogar ideal.",
+    "company": "Empresa",
+    "properties": "Propiedades",
+    "contact": "Contacto",
+    "about": "Sobre nosotros",
+    "services": "Servicios",
+    "agents": "Agentes",
+    "buy": "Comprar",
+    "rent": "Alquilar",
+    "sell": "Vender",
+    "rights": "© 2026 OpenRoof. Todos los derechos reservados."
+  },
+  "status": {
+    "available": "Disponible",
+    "sold": "Vendido",
+    "reserved": "Reservado",
+    "offer": "En oferta"
+  }
+}

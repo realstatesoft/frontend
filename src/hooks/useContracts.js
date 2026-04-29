@@ -90,6 +90,7 @@ export function useSignContract() {
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['contracts', 'signatures', id] });
+      queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
   });
 }

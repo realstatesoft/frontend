@@ -1,0 +1,12 @@
+{
+  "detail": {
+    "downloadPdf": "Descargar PDF",
+    "comingSoon": "Próximamente",
+    "comingSoonText": "La generación de PDF estará disponible pronto."
+  },
+  "templates": {
+    "success": "¡Éxito!",
+    "loading": "Cargando editor...",
+    "title": "Plantillas de contrato"
+  }
+}

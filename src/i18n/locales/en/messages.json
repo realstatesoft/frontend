@@ -1,0 +1,24 @@
+{
+  "newConversation": {
+    "title": "New conversation",
+    "searchPlaceholder": "Search...",
+    "agents": "Agents",
+    "clients": "My clients",
+    "loading": "Loading...",
+    "emptyAgents": "No agents available",
+    "emptyClients": "No clients available",
+    "invalidContact": "Cannot send message: invalid contact",
+    "composeTitle": "New message",
+    "messagePlaceholder": "Write your message...",
+    "sending": "Sending...",
+    "send": "Send",
+    "back": "Back",
+    "error": "Error sending the message",
+    "agentFallback": "Real estate agent",
+    "contactFallback": "No name"
+  },
+  "page": {
+    "loading": "Loading messages...",
+    "empty": "Select a conversation to get started"
+  }
+}

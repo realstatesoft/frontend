@@ -1,0 +1,84 @@
+{
+  "home": "Início",
+  "properties": "Imóveis",
+  "sellRent": "Vender / Alugar",
+  "about": "Sobre nós",
+  "projects": "Projetos",
+  "agents": "Corretores",
+  "services": "Serviços",
+  "contactUs": "Fale conosco",
+  "profileMenu": "Menu de perfil",
+  "welcome": "Bem-vindo",
+  "notifications": "Notificações",
+  "messages": "Mensagens",
+  "login": "Entrar",
+  "logout": "Sair",
+  "myProfile": "Meu perfil",
+  "myOffers": "Minhas ofertas",
+  "myProperties": "Meus imóveis",
+  "myReservations": "Minhas reservas",
+  "receivedReservations": "Reservas recebidas",
+  "trash": "Lixeira",
+  "favorites": "Favoritos",
+  "preferences": "Minhas preferências",
+  "dashboard": "Painel",
+  "adminPanel": "Painel de administração",
+  "settings": "Configurações",
+  "agenda": "Agenda",
+  "propertyApproval": "Aprovação de imóveis",
+  "sidebar": {
+    "sectionMain": "Principal",
+    "sectionManagement": "Gestão",
+    "sectionCommunication": "Comunicação",
+    "toggleOpen": "Abrir menu",
+    "toggleClose": "Fechar menu",
+    "logoAlt": "OpenRoof"
+  },
+  "theme": {
+    "light": "Mudar para modo claro",
+    "dark": "Mudar para modo escuro"
+  },
+  "layouts": {
+    "admin": {
+      "dashboard": "Painel",
+      "approval": "Aprovação de imóveis",
+      "payments": "Gestão de pagamentos",
+      "auditLogs": "Auditoria",
+      "reports": "Relatórios",
+      "documents": "Validação de documentos",
+      "rentConfig": "Configuração de aluguel",
+      "contractTemplates": "Modelos de contrato"
+    },
+    "owner": {
+      "dashboard": "Meu painel",
+      "properties": "Meus imóveis",
+      "visits": "Visitas",
+      "offers": "Ofertas",
+      "contracts": "Meus contratos",
+      "messages": "Mensagens"
+    },
+    "agent": {
+      "profile": "Meu perfil",
+      "dashboard": "Painel",
+      "clients": "Clientes",
+      "properties": "Imóveis",
+      "visitRequests": "Solicitações de visita",
+      "offers": "Ofertas recebidas",
+      "agenda": "Agenda",
+      "sales": "Vendas",
+      "contracts": "Contratos",
+      "reports": "Relatórios",
+      "messages": "Mensagens"
+    }
+  },
+  "role": {
+    "agent": "Corretor",
+    "owner": "Proprietário"
+  },
+  "language": {
+    "label": "Idioma",
+    "es": "Espanhol",
+    "en": "Inglês",
+    "pr": "Português"
+  }
+}

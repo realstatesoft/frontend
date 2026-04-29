@@ -1,0 +1,33 @@
+{
+  "title": "Criar evento",
+  "fields": {
+    "title": "Título",
+    "date": "Data",
+    "startTime": "Horário inicial",
+    "endTime": "Horário final",
+    "type": "Tipo",
+    "location": "Local",
+    "description": "Descrição",
+    "notes": "Notas"
+  },
+  "placeholders": {
+    "title": "Ex.: Ligação com a cliente María López",
+    "type": "Selecionar tipo...",
+    "location": "Ex.: Escritório central, Av. España 123",
+    "description": "Breve descrição do evento...",
+    "notes": ""
+  },
+  "options": {
+    "visit": "Visita",
+    "meeting": "Reunião",
+    "blocked": "Bloqueado",
+    "other": "Outro"
+  },
+  "cancel": "Cancelar",
+  "save": "Salvar",
+  "saving": "Salvando...",
+  "errors": {
+    "endAfterStart": "O horário final deve ser posterior ao inicial.",
+    "createFailed": "Erro ao criar o evento. Tente novamente."
+  }
+}

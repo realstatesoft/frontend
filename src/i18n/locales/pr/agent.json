@@ -1,0 +1,70 @@
+{
+  "dashboard": {
+    "title": "Painel",
+    "subtitle": "Resumo da sua atividade",
+    "stats": {
+      "activeClients": "Clientes ativos",
+      "monthlySales": "Vendas do mês",
+      "scheduledVisits": "Visitas agendadas",
+      "commissions": "Comissões"
+    }
+  },
+  "quickActions": {
+    "title": "Ações rápidas",
+    "newClient": "Novo cliente",
+    "newProperty": "Novo imóvel",
+    "scheduleVisit": "Agendar visita",
+    "viewOffers": "Ver ofertas"
+  },
+  "clients": {
+    "title": "Clientes",
+    "subtitle": "Gerencie sua carteira de clientes",
+    "new": "Novo cliente",
+    "view": "Ver cliente",
+    "empty": "Nenhum cliente encontrado",
+    "searchPlaceholder": "Nome, Email...",
+    "filters": {
+      "status": "Status",
+      "origin": "Origem",
+      "type": "Tipo"
+    }
+  },
+  "properties": {
+    "title": "Imóveis",
+    "subtitle": "Gerencie seus imóveis",
+    "new": "Novo imóvel",
+    "empty": "Nenhum imóvel encontrado"
+  },
+  "visitRequests": {
+    "title": "Solicitações de visita",
+    "subtitle": "Revise e aprove solicitações de visita para seus imóveis",
+    "loading": "Carregando solicitações...",
+    "empty": "Não há solicitações de visita{{suffix}}.",
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendentes",
+      "accepted": "Aceitas",
+      "counterProposed": "Contra-propostas",
+      "rejected": "Rejeitadas",
+      "cancelled": "Canceladas"
+    }
+  },
+  "messages": {
+    "title": "Mensagens",
+    "subtitle": "Comunicação com clientes",
+    "loading": "Carregando mensagens...",
+    "inbox": "Conversas",
+    "emptyInbox": "Nenhuma conversa",
+    "emptyConversation": "Selecione uma conversa para começar a conversar",
+    "newConversation": "Nova conversa",
+    "placeholder": "Digite uma mensagem..."
+  },
+  "edit": {
+    "title": "Editar perfil",
+    "backToProfile": "Voltar ao perfil",
+    "loadError": "Não foi possível carregar os dados do agente.",
+    "saveError": "Não foi possível salvar as alterações. Tente novamente.",
+    "notFound": "Agente não encontrado.",
+    "success": "Perfil atualizado com sucesso. Redirecionando…"
+  }
+}

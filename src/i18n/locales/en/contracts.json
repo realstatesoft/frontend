@@ -1,0 +1,12 @@
+{
+  "detail": {
+    "downloadPdf": "Download PDF",
+    "comingSoon": "Coming soon",
+    "comingSoonText": "PDF generation will be available soon."
+  },
+  "templates": {
+    "success": "Success!",
+    "loading": "Loading editor...",
+    "title": "Contract templates"
+  }
+}

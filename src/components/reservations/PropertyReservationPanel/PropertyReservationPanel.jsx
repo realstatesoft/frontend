@@ -6,10 +6,12 @@ import { formatCurrency } from '../../../utils/formatters';
 import { statusVariant, statusLabel } from '../../../utils/reservationStatus';
 import ReserveModal from '../ReserveModal/ReserveModal';
 import styles from './PropertyReservationPanel.module.scss';
+import { useTranslation } from 'react-i18next';
 
 const BLOCKING = new Set(['PENDING', 'ACTIVE']);
 
 export default function PropertyReservationPanel({ property, currentUser, defaultPercent }) {
+  const { t } = useTranslation('reservations');
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -31,7 +33,7 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
       setReservations(res.data?.data ?? []);
     } catch (err) {
       if (err?.response?.status !== 404) {
-        setError('No se pudieron cargar las reservas.');
+        setError(t('panel.loadError'));
       }
     } finally {
       setLoading(false);
@@ -64,7 +66,7 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
       await reservationApi.confirm(id);
       refresh();
     } catch {
-      setError('No se pudo confirmar la reserva.');
+      setError(t('panel.confirmError'));
     }
   };
 
@@ -75,29 +77,29 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
       await reservationApi.cancel(id, { reason: reasonResult });
       refresh();
     } catch {
-      setError('No se pudo rechazar la reserva.');
+      setError(t('panel.rejectError'));
     }
   };
 
   return (
     <Card className={styles.panel}>
       <Card.Body>
-        <h5>Reserva online</h5>
+        <h5>{t('panel.title')}</h5>
 
         {canReserve && myReservation && (
           <Alert variant="success" className="mb-0">
-            Ya reservaste esta propiedad por <strong>{formatCurrency(myReservation.amount)}</strong>.
+            {t('panel.alreadyReserved')} <strong>{formatCurrency(myReservation.amount)}</strong>.
             Estado actual: <Badge bg={statusVariant(myReservation.status)}>{statusLabel(myReservation.status)}</Badge>
           </Alert>
         )}
         {canReserve && !myReservation && !hasBlocking && (
           <Button variant="primary" onClick={() => setShowModal(true)}>
-            Reservar propiedad
+            {t('panel.reserve')}
           </Button>
         )}
         {canReserve && !myReservation && hasBlocking && (
           <Alert variant="info" className="mb-0">
-            Esta propiedad tiene una reserva activa.
+            {t('panel.active')}
           </Alert>
         )}
 
@@ -112,12 +114,12 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
             </div>
             <div className="d-flex gap-2">
               {pending.status === 'PENDING' && (
-                <Button size="sm" variant="success" onClick={() => handleConfirm(pending.id)}>
-                  Confirmar
-                </Button>
+              <Button size="sm" variant="success" onClick={() => handleConfirm(pending.id)}>
+                  {t('panel.confirm')}
+              </Button>
               )}
               <Button size="sm" variant="outline-danger" onClick={() => handleReject(pending.id)}>
-                Rechazar
+                {t('panel.reject')}
               </Button>
             </div>
           </div>
@@ -132,13 +134,13 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
             setMyReservation(created ?? null);
             await Swal.fire({
               icon: 'success',
-              title: 'Reserva enviada',
-              text: created?.amount != null
-                ? `Tu reserva por ${formatCurrency(created.amount)} quedó en estado ${created.status}.`
-                : 'Tu reserva fue registrada y está pendiente de confirmación.',
-              timer: 2000,
-              showConfirmButton: false,
-            });
+                title: t('panel.sentTitle'),
+                text: created?.amount != null
+                  ? `Tu reserva por ${formatCurrency(created.amount)} quedó en estado ${created.status}.`
+                : t('panel.sentText'),
+                timer: 2000,
+                showConfirmButton: false,
+              });
             refresh();
           }}
         />

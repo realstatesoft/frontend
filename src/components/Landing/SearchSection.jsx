@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import fotoSearch from "../../assets/fotoSearch.png";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
-import { CATEGORY } from "../../constants/propertyEnums";
 
 const SearchSection = () => {
+  const { t } = useTranslation("landing");
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("comprar");
   const [hover, setHover] = useState(false);
@@ -60,9 +61,9 @@ const SearchSection = () => {
           opacity: headerVisible ? 1 : 0,
           transform: headerVisible ? "translateY(0)" : "translateY(-20px)",
         }}
-      >
-        <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
-          Empieza a buscar tu propiedad ideal
+        >
+          <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
+          {t("search.title")}
         </h3>
       </div>
 
@@ -104,7 +105,7 @@ const SearchSection = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                Comprar
+                {t("search.buy")}
               </button>
               <button
                 onClick={() => setActiveTab("alquilar")}
@@ -118,7 +119,7 @@ const SearchSection = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                Alquilar
+                {t("search.rent")}
               </button>
             </div>
           </div>
@@ -136,11 +137,11 @@ const SearchSection = () => {
             <div className="row g-3 align-items-end">
               <div className="col-md-4">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  UBICACIÓN
+                  {t("search.location")}
                 </label>
                 <input
                   className="form-control border-0 bg-light rounded-3 py-2"
-                  placeholder="Ciudad, Barrio / MLS ID"
+                  placeholder={t("search.locationPlaceholder")}
                   style={{ fontSize: "0.9rem" }}
                   value={locationStr}
                   onChange={(e) => setLocationStr(e.target.value)}
@@ -149,7 +150,7 @@ const SearchSection = () => {
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  TIPO
+                  {t("search.propertyType")}
                 </label>
                 <select 
                   className="form-select border-0 bg-light rounded-3 py-2" 
@@ -165,7 +166,7 @@ const SearchSection = () => {
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  DORMITORIOS
+                  {t("search.bedrooms")}
                 </label>
                 <select 
                   className="form-select border-0 bg-light rounded-3 py-2" 
@@ -182,7 +183,7 @@ const SearchSection = () => {
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  PRECIO
+                  {t("search.price")}
                 </label>
                 <select 
                   className="form-select border-0 bg-light rounded-3 py-2" 
@@ -210,7 +211,7 @@ const SearchSection = () => {
                     cursor: "pointer",
                   }}
                 >
-                  Buscar
+                  {t("search.button")}
                 </button>
               </div>
             </div>

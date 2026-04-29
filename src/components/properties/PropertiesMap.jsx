@@ -2,10 +2,10 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo } from "react";
 import { Alert } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { Link } from "react-router-dom";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
-import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 
 const DEFAULT_CENTER = [-27.3369, -55.8668];
 const DEFAULT_ZOOM = 12;
@@ -42,14 +42,21 @@ function MapBoundsController({ points }) {
   return null;
 }
 
-function formatPrice(price) {
-  if (price == null || price === "") return "Precio no disponible";
+function formatPrice(price, t) {
+  if (price == null || price === "") return t("map.priceUnavailable");
 
   const numericPrice = Number(price);
-  return Number.isFinite(numericPrice) ? `Gs ${numericPrice.toLocaleString()}` : "Precio no disponible";
+  return Number.isFinite(numericPrice) ? `Gs ${numericPrice.toLocaleString()}` : t("map.priceUnavailable");
+}
+
+function formatStat(value, t, key) {
+  if (value == null || value === "—") return "—";
+  return t(`map.stats.${key}`, { count: value });
 }
 
 export default function PropertiesMap({ properties = [] }) {
+  const { t } = useTranslation("properties");
+
   useEffect(() => {
     fixLeafletMarkerIcon();
   }, []);
@@ -66,10 +73,14 @@ export default function PropertiesMap({ properties = [] }) {
 
           return {
             id: property.id,
-            title: property.title || "Propiedad",
-            address: property.address || property.locationName || "Ubicación no disponible",
-            type: PROPERTY_TYPE_LABELS[property.propertyType] ?? property.propertyType ?? "Propiedad",
-            price: formatPrice(property.price),
+            title: property.title || t("map.propertyFallback"),
+            address: property.address || property.locationName || t("map.locationUnavailable"),
+            type: property.propertyType
+              ? t(`types.${property.propertyType.toLowerCase()}`, {
+                  defaultValue: property.propertyType,
+                })
+              : t("map.propertyFallback"),
+            price: formatPrice(property.price, t),
             image: property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE,
             bedrooms: property.bedrooms ?? "—",
             bathrooms: property.bathrooms ?? "—",
@@ -78,27 +89,27 @@ export default function PropertiesMap({ properties = [] }) {
           };
         })
         .filter(Boolean),
-    [properties]
+    [properties, t]
   );
 
   return (
     <section className="properties-map-section">
       <div className="properties-map-section__header">
         <div>
-          <p className="properties-map-section__eyebrow mb-1">Mapa de resultados</p>
-          <h2 className="properties-map-section__title mb-1">Ubicación de las propiedades</h2>
+          <p className="properties-map-section__eyebrow mb-1">{t("map.eyebrow")}</p>
+          <h2 className="properties-map-section__title mb-1">{t("map.title")}</h2>
           <p className="properties-map-section__subtitle mb-0">
-            Explorá en el mapa las propiedades visibles con los filtros actuales.
+            {t("map.subtitle")}
           </p>
         </div>
         <span className="properties-map-section__count">
-          {points.length} punto{points.length !== 1 ? "s" : ""}
+          {t("map.points", { count: points.length })}
         </span>
       </div>
 
       {points.length === 0 ? (
         <Alert variant="light" className="properties-map-section__empty mb-0">
-          No hay propiedades con coordenadas disponibles para mostrar en el mapa con los filtros actuales.
+          {t("map.empty")}
         </Alert>
       ) : (
         <div className="properties-map-section__canvas">
@@ -127,12 +138,12 @@ export default function PropertiesMap({ properties = [] }) {
                     <p className="properties-map-popup__type mb-1">{point.type}</p>
                     <p className="properties-map-popup__address mb-2">{point.address}</p>
                     <div className="properties-map-popup__stats">
-                      <span>🛏 {point.bedrooms} hab.</span>
-                      <span>🚿 {point.bathrooms} baños</span>
-                      <span>📐 {point.area} m²</span>
+                      <span>🛏 {formatStat(point.bedrooms, t, "bedrooms")}</span>
+                      <span>🚿 {formatStat(point.bathrooms, t, "bathrooms")}</span>
+                      <span>📐 {formatStat(point.area, t, "area")}</span>
                     </div>
                     <Link to={`/properties/${point.id}`} className="properties-map-popup__link">
-                      Ver detalles
+                      {t("map.details")}
                     </Link>
                   </div>
                 </Popup>

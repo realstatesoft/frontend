@@ -1,0 +1,33 @@
+{
+  "title": "Create Event",
+  "fields": {
+    "title": "Title",
+    "date": "Date",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "type": "Type",
+    "location": "Location",
+    "description": "Description",
+    "notes": "Notes"
+  },
+  "placeholders": {
+    "title": "e.g. Call with client María López",
+    "type": "Select type...",
+    "location": "e.g. Main office, Av. España 123",
+    "description": "Short event description...",
+    "notes": ""
+  },
+  "options": {
+    "visit": "Visit",
+    "meeting": "Meeting",
+    "blocked": "Blocked",
+    "other": "Other"
+  },
+  "cancel": "Cancel",
+  "save": "Save",
+  "saving": "Saving...",
+  "errors": {
+    "endAfterStart": "End time must be later than start time.",
+    "createFailed": "Error creating the event. Please try again."
+  }
+}
