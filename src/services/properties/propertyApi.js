@@ -37,6 +37,10 @@ const propertyApi = {
 
   getSimilar: (id, limit) => api.get(`${BASE}/${id}/similar?size=${limit}`),
 
+  registerRecentView: (id) => api.post(`${BASE}/${id}/recent-views`),
+
+  getRecentProperties: () => api.get("/users/me/recent-properties"),
+
   /** Propiedades asignadas al agente autenticado (solo AGENT) */
   getMyAssignments: () => api.get("/assignments/me"),
 
