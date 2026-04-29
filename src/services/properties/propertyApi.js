@@ -13,6 +13,8 @@ const propertyApi = {
 
   getAll: (params) => api.get(BASE, { params }),
 
+  compare: (ids) => api.get(`${BASE}/compare`, { params: { ids: ids.join(",") } }),
+
   getByOwner: (ownerId, params) => api.get(`${BASE}/owner/${ownerId}`, { params }),
 
   getMe: (params) => api.get(`${BASE}/me`, { params }),
