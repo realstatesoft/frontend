@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Dropdown, Spinner, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import StatsCards from '../components/visits/StatsCards';
@@ -17,6 +18,7 @@ const FILTER_VALUES = ['ALL', 'PENDING', 'ACCEPTED', 'COUNTER_PROPOSED', 'REJECT
 
 const VisitRequests = ({ mode = 'AGENT' }) => {
   const { t } = useTranslation('owner');
+  const navigate = useNavigate();
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,7 +77,7 @@ const VisitRequests = ({ mode = 'AGENT' }) => {
         title: t('visits.confirmationTitle', { defaultValue: 'La confirmación ha sido enviada' }),
         description: t('visits.confirmationDescription', { defaultValue: 'Esta visita fue agregada a tu agenda' }),
         buttons: [
-          { label: t('visits.viewAgenda', { defaultValue: 'Ver mi agenda' }), variant: 'outline-primary', onClick: () => setShowSuccessModal(false) },
+          { label: t('visits.viewAgenda', { defaultValue: 'Ver mi agenda' }), variant: 'outline-primary', onClick: () => { setShowSuccessModal(false); navigate('/agent/agenda'); } },
           { label: t('close', { ns: 'common' }), variant: 'primary', onClick: () => setShowSuccessModal(false) },
         ],
       });

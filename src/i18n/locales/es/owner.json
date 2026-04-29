@@ -68,13 +68,5 @@
     "emptyVisits": "No tienes solicitudes de visita pendientes.",
     "contractPrefix": "Contrato #",
     "loading": "Cargando dashboard..."
-  },
-  "visits": {
-    "title": "Solicitudes de Visita",
-    "subtitle": "Gestiona las solicitudes de visita recibidas",
-    "loading": "Cargando solicitudes de visita...",
-    "error": "Error al cargar las solicitudes",
-    "unknownError": "Error desconocido",
-    "empty": "No hay solicitudes de visita"
   }
 }
