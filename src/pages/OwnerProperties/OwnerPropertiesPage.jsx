@@ -19,16 +19,16 @@ export default function OwnerPropertiesPage() {
     {
       key: 'price',
       label: 'Precio',
-      render: (row) => formatPrice(row.price).label || '—',
+      render: (price) => formatPrice(price).label || '—',
     },
     { key: 'views', label: 'Vistas' },
     { key: 'inquiries', label: 'Consultas' },
     {
       key: 'status',
       label: 'Estado',
-      render: (row) => (
-        <Badge variant={STATUS_COLORS[row.status] || 'default'}>
-          {row.status}
+      render: (status) => (
+        <Badge variant={STATUS_COLORS[status] || 'default'}>
+          {status}
         </Badge>
       ),
     },

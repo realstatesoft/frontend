@@ -78,8 +78,8 @@ describe('propertyPriceFormatter', () => {
   it('falls back to the original amount when exchange rates are not available', () => {
     const result = convertPriceFilterToPyg(100, 'BRL', null);
 
-    expect(result.currencyCode).toBe('PYG');
-    expect(result.convertedAmount).toBe(100);
-    expect(result.fallbackToPyg).toBe(true);
+    expect(result.currencyCode).toBe('BRL');
+    expect(result.convertedAmount).toBe(null);
+    expect(result.fallbackToPyg).toBe(false);
   });
 });

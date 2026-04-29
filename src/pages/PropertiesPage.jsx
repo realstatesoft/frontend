@@ -60,10 +60,14 @@ export default function PropertiesPage() {
             minPrice !== "" ? convertPriceFilterToPyg(minPrice, selectedCurrency, exchangeRates) : null;
         const maxPriceConversion =
             maxPrice !== "" ? convertPriceFilterToPyg(maxPrice, selectedCurrency, exchangeRates) : null;
+        const shouldOmitMinPrice =
+            minPriceConversion?.fallbackToPyg && selectedCurrency !== "PYG";
+        const shouldOmitMaxPrice =
+            maxPriceConversion?.fallbackToPyg && selectedCurrency !== "PYG";
 
         return {
-            minPrice: minPriceConversion?.convertedAmount,
-            maxPrice: maxPriceConversion?.convertedAmount,
+            minPrice: shouldOmitMinPrice ? null : minPriceConversion?.convertedAmount,
+            maxPrice: shouldOmitMaxPrice ? null : maxPriceConversion?.convertedAmount,
         };
     }, [minPrice, maxPrice, selectedCurrency, exchangeRates]);
 

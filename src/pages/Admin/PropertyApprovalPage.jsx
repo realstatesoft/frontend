@@ -193,6 +193,7 @@ export default function PropertyApprovalPage() {
             </div>
           ) : properties.length > 0 ? (
             properties.map(property => {
+              const formattedPrice = formatPrice(property.price);
               const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
               const type = property.propertyType || property.type || t('propertyApproval.property');
               const dateStr = property.createdAt 
@@ -232,8 +233,8 @@ export default function PropertyApprovalPage() {
                       </div>
 
                       <div className="price">
-                        {property.price != null && property.price !== ''
-                          ? formatPrice(property.price).label
+                        {formattedPrice.label
+                          ? formattedPrice.label
                           : t('propertyApproval.noPrice')}
                       </div>
 

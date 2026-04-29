@@ -129,10 +129,10 @@ export function convertPriceFilterToPyg(priceAmount, currencyCode, exchangeRates
   if (!sellRate) {
     return {
       baseAmount: price,
-      currencyCode: DEFAULT_CURRENCY,
-      convertedAmount: price,
+      currencyCode: normalizedCurrency,
+      convertedAmount: null,
       exchangeRate: null,
-      fallbackToPyg: true,
+      fallbackToPyg: false,
     };
   }
 

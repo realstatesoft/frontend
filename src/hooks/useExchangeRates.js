@@ -8,7 +8,7 @@ export default function useExchangeRates(options = {}) {
     enabled = true,
     staleTime = 10 * 60 * 1000,
     retry = 1,
-    select = (response) => response?.data ?? null,
+    select = (response) => response?.data ?? response ?? null,
   } = options;
 
   return useQuery({

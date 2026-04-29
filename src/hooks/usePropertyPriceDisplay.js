@@ -25,7 +25,6 @@ export default function usePropertyPriceDisplay(pricePyg) {
 
   return {
     ...priceDisplay,
-    currencyCode: normalizedCurrency,
     isForeignCurrency,
     formatPrice,
     showReferenceNote: isForeignCurrency && !priceDisplay.fallbackToPyg,

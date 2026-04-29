@@ -29,6 +29,7 @@ export default function PropertiesHero({
 
     const [showAdvanced, setShowAdvanced] = useState(false);
     const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+    const setCurrency = useCurrencyStore((state) => state.setCurrency);
     const activePriceCurrency = priceCurrency || selectedCurrency || "PYG";
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [savedSearches, setSavedSearches] = useState([]);
@@ -63,6 +64,7 @@ export default function PropertiesHero({
         availability,
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
+        priceCurrency: activePriceCurrency,
         minBedrooms: minBedrooms || null,
         minBathrooms: minBathrooms || null,
     };
@@ -108,6 +110,7 @@ export default function PropertiesHero({
                                     className="d-flex justify-content-between"
                                     onClick={() => {
                                         const f = s.filters || {};
+                                        setCurrency(f.priceCurrency ?? "PYG");
                                         onSearch(f.q ?? "");
                                         onTypeChange(f.propertyType ?? "");
                                         onAvailabilityChange(f.availability ?? "");
