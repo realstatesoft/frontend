@@ -227,9 +227,9 @@ export default function PropertyContactCard({ property }) {
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
         preSelectedAgent={{
-          id: agent?.userId || property?.agentId,
+          id: agent?.userId || property?.ownerId,
           name: name,
-          email: agent?.userEmail,
+          email: agent?.userEmail || property?.ownerEmail,
         }}
         onSuccess={() => {
           Swal.fire({

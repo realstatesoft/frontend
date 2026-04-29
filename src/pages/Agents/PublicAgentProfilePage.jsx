@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { ArrowLeft, CheckLg } from "react-bootstrap-icons";
+import { FiMessageSquare } from "react-icons/fi";
+import NewConversationModal from "../../components/messages/NewConversationModal";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
@@ -16,6 +18,7 @@ export default function PublicAgentProfilePage() {
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -146,7 +149,7 @@ export default function PublicAgentProfilePage() {
                 </div>
               </div>
             </div>
-            <div className="pb-2">
+            <div className="pb-2 d-flex gap-2">
               <button
                 className="btn btn-primary px-4 py-2"
                 style={{ borderRadius: "8px", fontWeight: 600 }}
@@ -168,6 +171,13 @@ export default function PublicAgentProfilePage() {
                 }}
               >
                 <CheckLg className="me-1" /> Seleccionar
+              </button>
+              <button
+                className="btn btn-outline-primary px-4 py-2"
+                style={{ borderRadius: "8px", fontWeight: 600 }}
+                onClick={() => setShowMessageModal(true)}
+              >
+                <FiMessageSquare className="me-1" /> Mensaje
               </button>
             </div>
           </div>
@@ -300,6 +310,19 @@ export default function PublicAgentProfilePage() {
           </div>
         </Container>
       </div>
+      <NewConversationModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        preSelectedAgent={{
+          id: agent.id ?? parseInt(id),
+          name: agent.userName,
+          email: agent.userEmail,
+        }}
+        onSuccess={() => {
+          setShowMessageModal(false);
+          alert("Mensaje enviado correctamente");
+        }}
+      />
       <Footer />
     </>
   );
