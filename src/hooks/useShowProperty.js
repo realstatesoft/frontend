@@ -36,6 +36,7 @@ export function useShowProperty() {
 
   const similarRequestRef = useRef(0);
   const viewCountRequestRef = useRef(0);
+  const latestRecentRequestIdRef = useRef(0);
   const registeredViewRef = useRef(registeredViewIds);
 
   const [property, setProperty] = useState(null);
@@ -131,10 +132,14 @@ export function useShowProperty() {
   }, [id]);
 
   const fetchRecentProperties = useCallback(() => {
+    const requestId = ++latestRecentRequestIdRef.current;
+
     if (!isAuthenticated) {
-      setRecentProperties([]);
-      setRecentError(null);
-      setLoadingRecent(false);
+      if (requestId === latestRecentRequestIdRef.current) {
+        setRecentProperties([]);
+        setRecentError(null);
+        setLoadingRecent(false);
+      }
       return;
     }
 
@@ -143,6 +148,7 @@ export function useShowProperty() {
     propertyApi
       .getRecentProperties()
       .then(({ data }) => {
+        if (requestId !== latestRecentRequestIdRef.current || !isAuthenticated) return;
         if (data?.success && Array.isArray(data?.data)) {
           setRecentProperties(data.data);
         } else {
@@ -151,10 +157,15 @@ export function useShowProperty() {
         }
       })
       .catch(() => {
+        if (requestId !== latestRecentRequestIdRef.current || !isAuthenticated) return;
         setRecentProperties([]);
         setRecentError("No se pudieron cargar las propiedades recientes");
       })
-      .finally(() => setLoadingRecent(false));
+      .finally(() => {
+        if (requestId === latestRecentRequestIdRef.current) {
+          setLoadingRecent(false);
+        }
+      });
   }, [isAuthenticated]);
 
   const fetchActiveFlagCount = useCallback(() => {
@@ -242,6 +253,9 @@ export function useShowProperty() {
   }, [fetchProperty, fetchSimilar, fetchActiveFlagCount, fetchViewCount, registerPropertyView]);
 
   useEffect(() => {
+    latestRecentRequestIdRef.current += 1;
+    let isCurrent = true;
+
     const syncRecentProperties = async () => {
       if (!id || !isAuthenticated) {
         fetchRecentProperties();
@@ -251,10 +265,16 @@ export function useShowProperty() {
       await propertyApi.registerRecentView(id).catch(() => {
         // No bloquear la pantalla por fallos de registro.
       });
+      if (!isCurrent) return;
       fetchRecentProperties();
     };
 
     syncRecentProperties();
+
+    return () => {
+      isCurrent = false;
+      latestRecentRequestIdRef.current += 1;
+    };
   }, [id, isAuthenticated, fetchRecentProperties]);
 
   const hideConfirm = useCallback(() => {
