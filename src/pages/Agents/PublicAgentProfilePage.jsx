@@ -76,11 +76,11 @@ export default function PublicAgentProfilePage() {
   }
 
   const name = agent.userName || t("contactCard.agent");
-  const email = agent.userEmail || "Sin registro";
-  const phone = agent.userPhone || "No especificado";
+  const email = agent.userEmail || t("profile.notRegistered");
+  const phone = agent.userPhone || t("profile.notSpecified");
   const avatarUrl = agent.userAvatarUrl || null;
-  const companyName = agent.companyName || "No especificado";
-  const licenseNumber = agent.licenseNumber || "No especificado";
+  const companyName = agent.companyName || t("profile.notSpecified");
+  const licenseNumber = agent.licenseNumber || t("profile.notSpecified");
   const experienceYears = agent.experienceYears || 0;
   const bio = agent.bio || t("profile.noBio");
 
@@ -183,7 +183,7 @@ export default function PublicAgentProfilePage() {
                   style={{ borderRadius: "8px", fontWeight: 600 }}
                   onClick={() => setShowMessageModal(true)}
                 >
-                  <FiMessageSquare className="me-1" /> Mensaje
+                  <FiMessageSquare className="me-1" /> {t("message")}
                 </button>
               )}
             </div>
@@ -228,7 +228,7 @@ export default function PublicAgentProfilePage() {
                     className="form-control profile-input"
                     value={
                       experienceYears +
-                      (experienceYears === 1 ? " año" : " años")
+                      (experienceYears === 1 ? " " + t("profile.year") : " " + t("profile.years_plural"))
                     }
                     readOnly
                   />
@@ -297,19 +297,19 @@ export default function PublicAgentProfilePage() {
                 <div className="agent-stats">
                   <div className="stat-card stat-blue">
                     <span className="stat-value">{stats.vendidas}</span>
-                    <span className="stat-label">Vendidas</span>
+                    <span className="stat-label">{t("profile.statsVendidas")}</span>
                   </div>
                   <div className="stat-card stat-green">
                     <span className="stat-value">{stats.alquiladas}</span>
-                    <span className="stat-label">Alquiladas</span>
+                    <span className="stat-label">{t("profile.statsAlquiladas")}</span>
                   </div>
                   <div className="stat-card stat-purple">
                     <span className="stat-value">{stats.total}</span>
-                    <span className="stat-label">Total</span>
+                    <span className="stat-label">{t("profile.statsTotal")}</span>
                   </div>
                   <div className="stat-card stat-orange">
                     <span className="stat-value">{stats.precioPromedio}</span>
-                    <span className="stat-label">Precio promedio</span>
+                    <span className="stat-label">{t("profile.statsAveragePrice")}</span>
                   </div>
                 </div>
               </div>
@@ -330,8 +330,8 @@ export default function PublicAgentProfilePage() {
           setShowMessageModal(false);
           Swal.fire({
             icon: "success",
-            title: "¡Mensaje enviado!",
-            text: "Tu mensaje ha sido enviado correctamente.",
+            title: t("contactCard.messageSuccessTitle"),
+            text: t("contactCard.messageSuccessText"),
             timer: 2000,
             showConfirmButton: false,
           });
