@@ -127,7 +127,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
   const selectSlot = (slot) => {
     const dateStr = formData.proposedAt.split('T')[0];
     const timeStr = slot.start.toTimeString().split(' ')[0].substring(0, 5);
-    setFormData(prev => ({ ...prev, proposedAt: `${dateStr}T${timeStr}` }));
+    setFormData(prev => ({ ...prev, proposedAt: `${dateStr}T${timeStr}:00` }));
   };
 
   return (
@@ -156,6 +156,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
                 type="date"
                 name="datePart"
                 value={formData.proposedAt ? formData.proposedAt.split('T')[0] : ''}
+                min={new Date().toLocaleDateString('en-CA')}
                 onChange={(e) => {
                   const date = e.target.value;
                   setFormData(prev => ({ ...prev, proposedAt: date }));
