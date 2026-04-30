@@ -1,6 +1,6 @@
 import api from "../api";
 
-const BASE = "/search-preferences";
+const BASE = "search-preferences";
 
 export const searchPreferencesApi = {
   create: (data) => api.post(BASE, data).then(res => res.data),

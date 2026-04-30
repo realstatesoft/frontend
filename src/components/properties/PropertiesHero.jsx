@@ -35,7 +35,7 @@ export default function PropertiesHero({
     const fetchSavedSearches = async () => {
         try {
             const res = await searchPreferencesApi.getMine();
-            const items = res?.content || [];
+            const items = res?.data?.content || [];
             setSavedSearches(items);
         } catch (err) {
             console.error("Error loading saved searches:", err);
