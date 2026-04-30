@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../../i18n';
 import ClientMessagesPage from '../../../pages/ClientMessages/ClientMessagesPage';
 import { AuthProvider } from '../../../context/AuthContext';
 import * as useMessagesData from '../../../hooks/useMessagesData';
@@ -22,9 +24,11 @@ const createWrapper = () => {
   const queryClient = new QueryClient();
   return ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>{children}</AuthProvider>
-      </BrowserRouter>
+      <I18nextProvider i18n={i18n}>
+        <BrowserRouter>
+          <AuthProvider>{children}</AuthProvider>
+        </BrowserRouter>
+      </I18nextProvider>
     </QueryClientProvider>
   );
 };
@@ -32,6 +36,11 @@ const createWrapper = () => {
 describe('ClientMessagesPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  beforeEach(async () => {
+    await initializeI18n();
+    useMessagesData.useUnreadMessagesCount?.mockReturnValue({ data: 0 });
   });
 
   it('should render loading state when isLoading is true', () => {
@@ -68,7 +77,7 @@ describe('ClientMessagesPage', () => {
     render(<ClientMessagesPage />, { wrapper: createWrapper() });
 
     expect(screen.getByText('Mensajes')).toBeInTheDocument();
-    expect(screen.getByText('Comunicación con agentes')).toBeInTheDocument();
+    expect(screen.getByText(/Comunicación con tu agente/i)).toBeInTheDocument();
   });
 
   it('should render conversations list with name, last message, and unread count', () => {

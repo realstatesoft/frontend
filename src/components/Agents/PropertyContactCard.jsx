@@ -9,6 +9,7 @@ import CreateVisitModal from "../visits/CreateVisitModal";
 import NewConversationModal from "../messages/NewConversationModal";
 import CreateOfferModal from "../offers/CreateOfferModal";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
 
@@ -19,6 +20,7 @@ const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/women/68.jpg";
  */
 export default function PropertyContactCard({ property }) {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation("agents");
   const [agent, setAgent] = useState(null);
   const [loadingAgent, setLoadingAgent] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
@@ -63,7 +65,7 @@ export default function PropertyContactCard({ property }) {
     };
   }, [hasAgent, property?.agentId]);
 
-  const name = agent?.userName ?? property?.ownerName ?? "Propietario";
+  const name = agent?.userName ?? property?.ownerName ?? t("contactCard.owner");
   const avatarUrl = agent?.userAvatarUrl ?? DEFAULT_AVATAR;
   const phone = agent?.userPhone ?? property?.ownerPhone ?? null;
   const experienceYears = agent?.experienceYears ?? null;
@@ -137,10 +139,10 @@ export default function PropertyContactCard({ property }) {
           style={{ fontSize: "0.85rem", color: "#666" }}
         >
           {experienceYears != null
-            ? `${experienceYears} años de experiencia`
+            ? t("contactCard.years", { count: experienceYears })
             : hasAgent
-              ? "Agente inmobiliario"
-              : "Propietario"}
+              ? t("contactCard.agent")
+              : t("contactCard.owner")}
         </p>
 
         {(rating != null || totalReviews > 0) && (
@@ -149,7 +151,7 @@ export default function PropertyContactCard({ property }) {
               {"★".repeat(5)}
             </span>
             <span style={{ fontSize: "0.85rem", color: "#111" }}>
-              {rating ?? "—"} ({totalReviews} reseñas)
+              {rating ?? "—"} ({t("profile.reviews", { count: totalReviews })})
             </span>
           </div>
         )}
@@ -158,7 +160,7 @@ export default function PropertyContactCard({ property }) {
           <div className="mb-3 d-flex align-items-center justify-content-center gap-1">
             <StarFill size={14} style={{ color: "#f0ad4e" }} />
             <span style={{ fontSize: "0.85rem", color: "#666" }}>
-              Sin valoraciones aún
+              {t("contactCard.noRatings")}
             </span>
           </div>
         )}
@@ -173,7 +175,7 @@ export default function PropertyContactCard({ property }) {
           rel={whatsappUrl ? "noopener noreferrer" : undefined}
           disabled={!whatsappUrl}
         >
-          Contactar {hasAgent ? "Agente" : "Propietario"}
+          {hasAgent ? t("contactCard.contactAgent") : t("contactCard.contactOwner")}
         </Button>
 
         <Button
@@ -183,7 +185,7 @@ export default function PropertyContactCard({ property }) {
           onClick={() => setShowMessageModal(true)}
         >
           <FiMessageSquare className="me-2" />
-          Enviar mensaje
+          {t("contactCard.sendMessage")}
         </Button>
 
         <Button
@@ -192,7 +194,7 @@ export default function PropertyContactCard({ property }) {
           style={{ borderRadius: "8px" }}
           onClick={() => setShowVisitModal(true)}
         >
-          Agendar Visita
+          {t("contactCard.scheduleVisit")}
         </Button>
 
         {!hideOfferButton && (
@@ -202,7 +204,7 @@ export default function PropertyContactCard({ property }) {
             style={{ borderRadius: "8px", backgroundColor: "#28a745", borderColor: "#28a745" }}
             onClick={() => setShowOfferModal(true)}
           >
-            Realizar Oferta
+            {t("contactCard.makeOffer")}
           </Button>
         )}
       </div>
@@ -215,8 +217,8 @@ export default function PropertyContactCard({ property }) {
         onSuccess={() =>
           Swal.fire({
             icon: "success",
-            title: "¡Éxito!",
-            text: "¡Solicitud de visita enviada con éxito!",
+            title: t("contactCard.visitSuccessTitle"),
+            text: t("contactCard.visitSuccessText"),
             timer: 2000,
             showConfirmButton: false,
           })
@@ -234,8 +236,8 @@ export default function PropertyContactCard({ property }) {
         onSuccess={() => {
           Swal.fire({
             icon: "success",
-            title: "¡Mensaje enviado!",
-            text: "Tu mensaje ha sido enviado correctamente.",
+            title: t("contactCard.messageSuccessTitle"),
+            text: t("contactCard.messageSuccessText"),
             timer: 2000,
             showConfirmButton: false,
           });

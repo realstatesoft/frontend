@@ -4,7 +4,8 @@ import { FiArrowLeft, FiEdit3, FiPenTool, FiDownload, FiCheckCircle, FiClock } f
 import { 
   useContractDetail, 
   useContractSignatures, 
-  useSignContract 
+  useSignContract,
+  useDownloadContract
 } from '../../hooks/useContracts';
 import { useAuth } from '../../hooks/useAuth';
 import { 
@@ -41,9 +42,10 @@ export default function ContractDetailPage() {
 
   const { data: contractRes, isLoading: loadingContract, refetch: refetchContract } = useContractDetail(id);
   const { data: signaturesRes, isLoading: loadingSigs, refetch: refetchSigs } = useContractSignatures(id);
+  const downloadMutation = useDownloadContract();
   
-  const contract = contractRes?.data;
-  const signatures = signaturesRes?.data ?? [];
+  const contract = contractRes;
+  const signatures = signaturesRes ?? [];
 
   if (loadingContract || !contract) {
     return (
@@ -59,12 +61,23 @@ export default function ContractDetailPage() {
   const pctSigned = totalCount > 0 ? Math.round((signedCount / totalCount) * 100) : 0;
 
   // Verificar si el usuario actual ya firmó
-  const userHasSigned = signatures.some(s => s.userId === user?.id && s.signed);
+  const userHasSigned = signatures.some(s => (s.signerId === user?.userId || s.signerEmail === user?.email) && s.signed);
   const canSign = (contract.status === 'SENT' || contract.status === 'PARTIALLY_SIGNED') && !userHasSigned;
 
   const handleRefresh = () => {
     refetchContract();
     refetchSigs();
+  };
+
+  const handleDownload = async () => {
+    try {
+      await downloadMutation.mutateAsync({ 
+        id: contract.id, 
+        filename: `contrato-${contract.id}-${contract.propertyTitle.replace(/\s+/g, '-').toLowerCase()}.pdf` 
+      });
+    } catch (err) {
+      Swal.fire('Error', 'No se pudo generar el PDF del contrato.', 'error');
+    }
   };
 
   return (
@@ -104,12 +117,18 @@ export default function ContractDetailPage() {
                 <FiPenTool /> Firmar Contrato
               </button>
             )}
-            <button className={styles.btnGhost} title="Descargar PDF" onClick={() => Swal.fire('Próximamente', 'La generación de PDF estará disponible pronto.', 'info')}>
-              <FiDownload />
+            <button 
+              className={styles.btnGhost} 
+              title="Descargar PDF" 
+              onClick={handleDownload}
+              disabled={downloadMutation.isPending}
+            >
+              {downloadMutation.isPending ? <div className={styles.miniLoader} /> : <FiDownload />}
             </button>
           </div>
         </div>
       </header>
+
 
       <main className={styles.container}>
         <div className={styles.grid}>

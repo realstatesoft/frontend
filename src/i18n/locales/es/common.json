@@ -1,0 +1,22 @@
+{
+  "cancel": "Cancelar",
+  "close": "Cerrar",
+  "confirm": "Confirmar",
+  "loading": "Cargando...",
+  "processing": "Procesando...",
+  "retry": "Reintentar",
+  "search": "Buscar",
+  "save": "Guardar",
+  "view": "Ver",
+  "back": "Volver",
+  "all": "Todos",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "comingSoon": "Próximamente",
+  "empty": "No hay resultados",
+  "noData": "No hay datos",
+  "select": "Seleccionar",
+  "yes": "Sí",
+  "fallbackDemo": "Texto de respaldo en español",
+  "fallbackOnlyInSpanish": "Solo existe en español"
+}

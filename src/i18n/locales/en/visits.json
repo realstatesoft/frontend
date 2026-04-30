@@ -1,0 +1,31 @@
+{
+  "create": {
+    "title": "Schedule Visit",
+    "step1": "1. Select your visit day",
+    "step2": "2. Select an available time slot (1 hour)",
+    "step3": "3. Contact information",
+    "step4": "4. Optional comments",
+    "noAgent": "No agent is assigned; select a suggested time.",
+    "noSlots": "You have no available time slots for this day. Try another date.",
+    "hint": "Click a time slot to select it:",
+    "selected": "Selected time slot: {{value}}",
+    "contactPlaceholder": "Your full name",
+    "messagePlaceholder": "Write a message...",
+    "submit": "Send request",
+    "submitting": "Sending...",
+    "successTitle": "Success!",
+    "successText": "Visit request sent successfully!",
+    "error": "Error sending visit request"
+  },
+  "suggest": {
+    "title": "Suggest another visit time",
+    "step1": "1. Choose the new date",
+    "step2": "2. Select an available time slot in your calendar",
+    "step3": "3. Message for the buyer",
+    "busy": "Currently busy:",
+    "messagePlaceholder": "Example: Hi, that time works better for me. Does it work for you?",
+    "submit": "Send proposal",
+    "loading": "Loading...",
+    "noSlots": "You have no available time slots for this day. Try another date."
+  }
+}

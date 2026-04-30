@@ -1,0 +1,42 @@
+{
+  "reportsWarning": "Este imóvel tem denúncias ativas de outros usuários. Prossiga com cautela.",
+  "views": {
+    "one": "1 pessoa visualizou este imóvel",
+    "other": "{{count}} pessoas visualizaram este imóvel"
+  },
+  "reservationPanel": {
+    "title": "Reserva online",
+    "reserve": "Reservar imóvel",
+    "active": "Este imóvel já possui uma reserva ativa.",
+    "amount": "Valor: {{amount}}",
+    "confirm": "Confirmar",
+    "reject": "Rejeitar",
+    "loadError": "As reservas não puderam ser carregadas.",
+    "confirmError": "A reserva não pôde ser confirmada.",
+    "rejectError": "A reserva não pôde ser rejeitada."
+  },
+  "reportProperty": {
+    "title": "Denunciar imóvel",
+    "submit": "Enviar denúncia",
+    "intro": "Se você acredita que este imóvel é fraudulento, ilegal ou suspeito, preencha o formulário. Sua denúncia será revisada pela nossa equipe.",
+    "placeholder": "Conte o que aconteceu...",
+    "successTitle": "Denúncia enviada!",
+    "successText": "Obrigado por ajudar a manter a comunidade segura.",
+    "error": "Ocorreu um erro ao enviar a denúncia. Tente novamente."
+  },
+  "actions": {
+    "back": "Voltar",
+    "select": "Selecionar",
+    "generalInfo": "Informações gerais",
+    "professionalInfo": "Informações profissionais",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "published": "Publicado",
+    "loadingTour": "Carregando configuração do tour...",
+    "noTours": "Nenhum tour disponível",
+    "noToursHint": "Este imóvel ainda não possui conteúdo 360 ou modelos 3D.",
+    "noFeatures": "Nenhuma característica carregada.",
+    "reportProperty": "Denunciar imóvel",
+    "reportUser": "Denunciar usuário"
+  }
+}

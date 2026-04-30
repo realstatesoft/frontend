@@ -22,7 +22,7 @@ export default function ContractEditPage() {
   const { user } = useAuth();
 
   const { data: contractRes, isLoading: loadingContract } = useContractDetail(id);
-  const contract = contractRes?.data;
+  const contract = contractRes;
 
   const [form, setForm] = useState(null);
   const [sellerName, setSellerName] = useState('');
