@@ -50,7 +50,7 @@ export default function PropertyCard({
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "";
+                e.currentTarget.style.boxShadow = property.highlighted ? "0 0 0 2px #fef3c7" : "";
             }}
         >
             {/* Imagen con badge de estado y botón favorito */}

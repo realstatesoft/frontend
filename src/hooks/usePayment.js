@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import paymentApi from '../services/payments/paymentApi';
-import { property } from 'zod';
-
 function luhnCheck(num) {
   const digits = num.replace(/\D/g, '').split('').reverse();
   let sum = 0;
@@ -92,9 +90,12 @@ export default function usePayment({ amount, concept, type, description, referen
 
   function buildPaymentData() {
     if (type === 'PROPERTY_HIGHLIGHT') {
+      const parsedDays = parseInt(planDays, 10);
+      if (!referenceId || !String(referenceId).trim()) return null;
+      if (!Number.isInteger(parsedDays) || parsedDays <= 0) return null;
       return {
         propertyId: referenceId,
-        highlightDays: planDays
+        highlightDays: parsedDays
       };
     }
     // TO DO agregar otros tipos de pago si es necesario
@@ -108,6 +109,12 @@ export default function usePayment({ amount, concept, type, description, referen
       return false;
     }
 
+    const metadata = buildPaymentData();
+    if (metadata === null) {
+      setFieldErrors({ form: 'Datos de pago inválidos. Verificá el plan y la propiedad seleccionada.' });
+      return false;
+    }
+
     setStatus('processing');
     setFieldErrors({});
 
@@ -117,7 +124,7 @@ export default function usePayment({ amount, concept, type, description, referen
         amount: parseFloat(amount) || 0,
         concept: concept ?? '',
         description: description ?? '',
-        metadata: buildPaymentData()
+        metadata
       });
 
       setStatus('success');

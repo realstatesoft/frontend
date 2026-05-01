@@ -38,7 +38,8 @@ export default function PaymentPage() {
   const referenceId = searchParams.get('referenceId') ?? '';
   const planLabel = searchParams.get('planLabel') ?? '';
 
-  const typeDefaults = PAYMENT_TYPE_DEFAULTS[type] ?? PAYMENT_TYPE_DEFAULTS.OTHER;
+  const normalizedType = PAYMENT_TYPE_DEFAULTS[type] ? type : 'OTHER';
+  const typeDefaults = PAYMENT_TYPE_DEFAULTS[normalizedType];
   const concept = typeDefaults.concept(planLabel);
   const redirectUrl = typeDefaults.redirectUrl;
   const cancelUrl = typeDefaults.cancelUrl(referenceId);
@@ -49,7 +50,7 @@ export default function PaymentPage() {
     amount,
     concept,
     description,
-    type,
+    type: normalizedType,
     referenceId,
     planDays
   });

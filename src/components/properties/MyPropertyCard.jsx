@@ -163,7 +163,11 @@ export default function MyPropertyCard({ property }) {
                         className="d-flex align-items-center gap-1 text-center"
                         style={{ fontSize: "0.78rem", fontWeight: 600 }}
                     >
-                        <StarFill size={13} /> Destacada hasta el {new Date(property.highlightedUntil).toLocaleDateString()}
+                        <StarFill size={13} /> Destacada{(() => {
+                            if (!property.highlightedUntil) return " hasta fecha desconocida";
+                            const d = new Date(property.highlightedUntil);
+                            return isNaN(d.getTime()) ? " hasta fecha desconocida" : ` hasta el ${d.toLocaleDateString()}`;
+                        })()}
                     </div>
                 ) : (
                     <Button

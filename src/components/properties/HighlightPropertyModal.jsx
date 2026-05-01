@@ -110,7 +110,7 @@ export default function HighlightPropertyModal({ property, show, onHide }) {
                 </div>
 
                 {/* Plan selector */}
-                <div className={styles.plansRow}>
+                <div className={styles.plansRow} role="radiogroup">
                     {PLANS.map((plan) => (
                         <div
                             key={plan.id}
@@ -119,7 +119,7 @@ export default function HighlightPropertyModal({ property, show, onHide }) {
                             role="radio"
                             aria-checked={selectedPlanId === plan.id}
                             tabIndex={0}
-                            onKeyDown={(e) => e.key === 'Enter' && setSelectedPlanId(plan.id)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); setSelectedPlanId(plan.id); } }}
                         >
                             {plan.popular && (
                                 <span className={styles.popularBadge}>⭐ Más popular</span>

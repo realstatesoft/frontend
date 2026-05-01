@@ -69,7 +69,8 @@ export default function ShowProperty() {
     activeFlagCount,
     viewCount,
     isAuthenticated,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleRemoveHighlight
   } = useShowProperty();
 
   const { user: authUser } = useAuth();
@@ -289,7 +290,7 @@ export default function ShowProperty() {
                   size="sm"
                   variant={property.highlighted ? "warning" : "outline-warning"}
                   className="d-flex align-items-center"
-                  onClick={() => setShowHighlightModal(true)}
+                  onClick={() => property.highlighted ? handleRemoveHighlight() : setShowHighlightModal(true)}
                 >
                   <Star size={16} className="property__icon-button" />
                   {property.highlighted ? "Destacada" : "Destacar"}
