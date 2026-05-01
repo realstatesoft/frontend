@@ -71,6 +71,12 @@ export default function PropertiesPage() {
         };
     }, [minPrice, maxPrice, selectedCurrency, exchangeRates]);
 
+    const priceConversionAvailable = useMemo(() => {
+        if (selectedCurrency === "PYG") return true;
+        const probe = convertPriceFilterToPyg(1, selectedCurrency, exchangeRates);
+        return probe?.convertedAmount != null;
+    }, [selectedCurrency, exchangeRates]);
+
     const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
         page: currentPage,
         size: PAGE_SIZE,
@@ -122,6 +128,7 @@ export default function PropertiesPage() {
                 minPrice={minPrice}
                 maxPrice={maxPrice}
                 priceCurrency={selectedCurrency}
+                priceConversionAvailable={priceConversionAvailable}
                 minBedrooms={minBedrooms}
                 minBathrooms={minBathrooms}
                 totalResults={totalElements}

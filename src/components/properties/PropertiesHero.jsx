@@ -15,6 +15,7 @@ export default function PropertiesHero({
     minBedrooms,
     minBathrooms,
     priceCurrency,
+    priceConversionAvailable = true,
     totalResults,
     onSearch,
     onTypeChange,
@@ -78,7 +79,9 @@ export default function PropertiesHero({
     const priceRangeNote =
         activePriceCurrency === "PYG"
             ? "Los filtros de precio se envían en PYG."
-            : `Los filtros de precio se convierten a PYG según la cotización disponible de Cambios Chaco.`;
+            : priceConversionAvailable
+                ? "Los filtros de precio se convierten a PYG según la cotización disponible de Cambios Chaco."
+                : "Los filtros de precio no se aplican porque no hay cotización disponible de Cambios Chaco.";
 
     return (
         <div className="bg-light py-4" style={{ overflow: "visible" }}>
