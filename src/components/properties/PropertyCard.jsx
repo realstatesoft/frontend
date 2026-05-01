@@ -1,6 +1,8 @@
 import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { StarFill } from "react-bootstrap-icons";
+import { tagColors, STATUS_LABELS } from "../../data/propertiesData";
+import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import FavoriteToggleButton from "./FavoriteToggleButton";
 import { useTranslation } from "react-i18next";
