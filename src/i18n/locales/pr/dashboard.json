@@ -1,0 +1,64 @@
+{
+  "agent": {
+    "title": "Painel",
+    "subtitle": "Resumo da sua atividade",
+    "stats": {
+      "activeClients": "Clientes ativos",
+      "monthlySales": "Vendas do mês",
+      "scheduledVisits": "Visitas agendadas",
+      "commissions": "Comissões"
+    },
+    "quickActions": {
+      "title": "Ações rápidas",
+      "newClient": "Novo cliente",
+      "newProperty": "Novo imóvel",
+      "scheduleVisit": "Agendar visita",
+      "viewOffers": "Ver ofertas"
+    },
+    "upcomingAppointments": {
+      "title": "Próximos compromissos",
+      "loading": "Carregando...",
+      "empty": "Não há visitas agendadas"
+    },
+    "salesPerformance": {
+      "title": "Desempenho de vendas",
+      "subtitle": "Últimos 6 meses",
+      "loading": "Carregando..."
+    }
+  },
+  "owner": {
+    "title": "Meu painel",
+    "subtitle": "Resumo dos seus imóveis e transações",
+    "loading": "Carregando painel...",
+    "actionRequired": "Ação necessária",
+    "urgentContracts": "Você tem {{count}} contrato(s) aguardando sua assinatura digital.",
+    "newVisits": "Novas visitas",
+    "pendingVisits": "Você tem {{count}} solicitação(ões) de visita aguardando resposta.",
+    "signNow": "Assinar agora",
+    "manageVisits": "Gerenciar visitas",
+    "recentProperties": "Imóveis recentes",
+    "viewAll": "Ver todos",
+    "viewProperty": "Ver ficha",
+    "pendingSignatures": "Assinaturas pendentes",
+    "earnings": "Receitas realizadas",
+    "pendingVisitsTitle": "Visitas pendentes",
+    "emptyRecentProperties": "Você ainda não tem imóveis publicados.",
+    "emptyContracts": "Você não tem contratos aguardando assinatura.",
+    "emptyVisits": "Você não tem solicitações de visita pendentes.",
+    "contractPrefix": "Contrato #",
+    "sign": "Assinar",
+    "contractHint": "Dados baseados em contratos fechados",
+    "quickActions": {
+      "title": "Ações rápidas",
+      "newProperty": "Novo imóvel",
+      "viewVisits": "Ver visitas",
+      "messages": "Mensagens",
+      "viewOffers": "Ver ofertas"
+    },
+    "messages": {
+      "title": "Consultas"
+    },
+    "successTitle": "Sucesso!",
+    "successText": "Você assinou o contrato digitalmente."
+  }
+}

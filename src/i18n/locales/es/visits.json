@@ -1,0 +1,31 @@
+{
+  "create": {
+    "title": "Agendar Visita",
+    "step1": "1. Selecciona el día de tu visita",
+    "step2": "2. Selecciona un horario libre (Slot de 1 hora)",
+    "step3": "3. Información de contacto",
+    "step4": "4. Comentarios opcionales",
+    "noAgent": "No hay un agente asignado; selecciona un horario sugerido.",
+    "noSlots": "No tienes horarios libres para este día. Intenta con otra fecha.",
+    "hint": "Haz clic en un horario para seleccionarlo:",
+    "selected": "Horario Seleccionado: {{value}}",
+    "contactPlaceholder": "Tu nombre completo",
+    "messagePlaceholder": "Escribe un mensaje...",
+    "submit": "Enviar solicitud",
+    "submitting": "Enviando...",
+    "successTitle": "¡Éxito!",
+    "successText": "¡Solicitud de visita enviada con éxito!",
+    "error": "Error al enviar la solicitud de visita"
+  },
+  "suggest": {
+    "title": "Sugerir otro horario de visita",
+    "step1": "1. Elige la nueva fecha",
+    "step2": "2. Selecciona un horario libre en tu agenda",
+    "step3": "3. Mensaje para el comprador",
+    "busy": "Ocupado actualmente:",
+    "messagePlaceholder": "Ej: Hola, ese horario me queda mejor. ¿Te parece bien?",
+    "submit": "Enviar propuesta",
+    "loading": "Cargando...",
+    "noSlots": "No tienes horarios libres para este día. Intenta con otra fecha."
+  }
+}

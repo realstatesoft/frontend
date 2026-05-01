@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './Tour.module.scss';
 
 const GAP = 12;
@@ -38,6 +39,7 @@ function computePosition(rect, placement, tooltipEl) {
 }
 
 export default function TourTooltip({ step, stepIndex, totalSteps, targetRect, onNext, onPrev, onEnd }) {
+  const { t } = useTranslation('tour');
   const tooltipRef = useRef(null);
   const [pos, setPos] = useState({});
 
@@ -66,15 +68,15 @@ export default function TourTooltip({ step, stepIndex, totalSteps, targetRect, o
         </span>
         <div className={styles.tooltip__actions}>
           <button className={`${styles.btn} ${styles['btn--skip']}`} onClick={onEnd}>
-            Omitir
+            {t('skip')}
           </button>
           {!isFirst && (
             <button className={`${styles.btn} ${styles['btn--prev']}`} onClick={onPrev}>
-              Anterior
+              {t('previous')}
             </button>
           )}
           <button className={`${styles.btn} ${styles['btn--next']}`} onClick={onNext}>
-            {isLast ? 'Finalizar' : 'Siguiente'}
+            {isLast ? t('finish') : t('next')}
           </button>
         </div>
       </div>

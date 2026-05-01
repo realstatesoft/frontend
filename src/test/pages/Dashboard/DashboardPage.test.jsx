@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../../i18n';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────────
 
@@ -22,9 +24,11 @@ import DashboardPage from '../../../pages/Dashboard/DashboardPage';
 
 const renderDashboard = () =>
   render(
-    <MemoryRouter>
-      <DashboardPage />
-    </MemoryRouter>
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <DashboardPage />
+      </MemoryRouter>
+    </I18nextProvider>
   );
 
 // ── Tests ──────────────────────────────────────────────────────────────────────
@@ -32,6 +36,10 @@ const renderDashboard = () =>
 describe('DashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  beforeEach(async () => {
+    await initializeI18n();
   });
 
   describe('encabezado', () => {

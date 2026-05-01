@@ -1,0 +1,70 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Activity overview",
+    "stats": {
+      "activeClients": "Active Clients",
+      "monthlySales": "Monthly Sales",
+      "scheduledVisits": "Scheduled Visits",
+      "commissions": "Commissions"
+    }
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "newClient": "New Client",
+    "newProperty": "New Property",
+    "scheduleVisit": "Schedule Visit",
+    "viewOffers": "View Offers"
+  },
+  "clients": {
+    "title": "Clients",
+    "subtitle": "Manage your client portfolio",
+    "new": "New Client",
+    "view": "View Client",
+    "empty": "No clients found",
+    "searchPlaceholder": "Name, Email...",
+    "filters": {
+      "status": "Status",
+      "origin": "Origin",
+      "type": "Type"
+    }
+  },
+  "properties": {
+    "title": "Properties",
+    "subtitle": "Manage your properties",
+    "new": "New Property",
+    "empty": "No properties found"
+  },
+  "visitRequests": {
+    "title": "Visit Requests",
+    "subtitle": "Review and approve visit requests for your properties",
+    "loading": "Loading requests...",
+    "empty": "There are no visit requests{{suffix}}.",
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "counterProposed": "Counter-proposed",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Communication with clients",
+    "loading": "Loading messages...",
+    "inbox": "Conversations",
+    "emptyInbox": "No conversations",
+    "emptyConversation": "Select a conversation to start chatting",
+    "newConversation": "New conversation",
+    "placeholder": "Type a message..."
+  },
+  "edit": {
+    "title": "Edit Profile",
+    "backToProfile": "Back to profile",
+    "loadError": "Could not load agent data.",
+    "saveError": "Could not save changes. Try again.",
+    "notFound": "Agent not found.",
+    "success": "Profile updated successfully. Redirecting…"
+  }
+}

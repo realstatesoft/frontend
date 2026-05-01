@@ -37,9 +37,11 @@ import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour
 import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
+import { useTranslation } from "react-i18next";
 import "./show-property.scss";
 
 export default function ShowProperty() {
+  const { t } = useTranslation("showProperty");
   const BASE_URL = import.meta.env.VITE_DEPLOY_URL
 
   const {
@@ -65,6 +67,9 @@ export default function ShowProperty() {
     PROPERTY_VISIBILITY_OPTIONS,
     similarProperties,
     loadingSimilar,
+    recentProperties,
+    loadingRecent,
+    recentError,
     copyLink,
     activeFlagCount,
     viewCount,
@@ -94,9 +99,9 @@ export default function ShowProperty() {
   const [loadingConfig, setLoadingConfig] = useState(false);
   const viewBadgeText =
     viewCount === 1
-      ? "1 ha visto esta propiedad"
+      ? t("views.one")
       : viewCount > 1
-      ? `${viewCount} han visto esta propiedad`
+      ? t("views.other", { count: viewCount })
       : null;
 
   // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
@@ -196,7 +201,7 @@ export default function ShowProperty() {
           {activeFlagCount > 0 && (
             <Alert variant="warning" className="d-flex align-items-center mb-4">
               <Flag size={20} className="me-2" />
-              <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.</span>
+              <span>{t("reportsWarning")}</span>
             </Alert>
           )}
 
@@ -280,7 +285,7 @@ export default function ShowProperty() {
                   as={Link}
                   to={`/properties/${property.id}/edit`}
                 >
-                  <Pencil size={16} className="property__icon-button" /> Editar
+                  <Pencil size={16} className="property__icon-button" /> {t("actions.edit")}
                 </Button>
               )}
 
@@ -305,7 +310,7 @@ export default function ShowProperty() {
                   className="d-flex align-items-center"
                   onClick={openDeleteConfirm}
                 >
-                  <Trash size={16} className="property__icon-button" /> Eliminar
+                  <Trash size={16} className="property__icon-button" /> {t("actions.delete")}
                 </Button>
               )}
               <Dropdown as={ButtonGroup}>
@@ -500,7 +505,7 @@ export default function ShowProperty() {
                         <>
                           {property.createdAt && (
                             <>
-                            Publicado{" "}
+                            {t("actions.published")}{" "}
                               <strong>
                                 {formatTimeAgo(property.createdAt)}
                               </strong>
@@ -573,7 +578,7 @@ export default function ShowProperty() {
                         ) : finalTourConfig ? (
                           <Property360Tour config={finalTourConfig} />
                         ) : (
-                          <Alert variant="info">Cargando configuración del recorrido...</Alert>
+                          <Alert variant="info">{t("actions.loadingTour")}</Alert>
                         )
                       )}
 
@@ -593,8 +598,8 @@ export default function ShowProperty() {
                         <div className="property__empty-3d">
                           <div className="property__empty-3d-box">
                             <CameraVideo size={48} className="mb-3 text-muted" />
-                            <p className="mb-1 fw-bold">No hay recorridos disponibles</p>
-                            <p className="text-muted small">Esta propiedad aun no cuenta con contenido 360 o modelos 3D.</p>
+                            <p className="mb-1 fw-bold">{t("actions.noTours")}</p>
+                            <p className="text-muted small">{t("actions.noToursHint")}</p>
                           </div>
                         </div>
                       )}
@@ -631,7 +636,7 @@ export default function ShowProperty() {
                       ) : (
                         <Col>
                           <p className="text-muted">
-                            No hay caracteristicas cargadas.
+                            {t("actions.noFeatures")}
                           </p>
                         </Col>
                       )}
@@ -669,7 +674,7 @@ export default function ShowProperty() {
                     onClick={() => setShowReportModal(true)}
                     style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                   >
-                    <Flag className="me-2" /> Reportar propiedad
+                    <Flag className="me-2" /> {t("actions.reportProperty")}
                   </Button>
                   {!isPropertyOwner && (property.ownerId || property.userId) && (
                     <Button 
@@ -678,7 +683,7 @@ export default function ShowProperty() {
                       onClick={() => setShowReportUserModal(true)}
                       style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                     >
-                      <Flag className="me-2" /> Reportar usuario
+                      <Flag className="me-2" /> {t("actions.reportUser")}
                     </Button>
                   )}
                 </div>
@@ -686,6 +691,30 @@ export default function ShowProperty() {
             </Col>
           </Row>
           
+          <h5 className="property__section-title mt-5 mb-3">
+            Propiedades vistas recientemente
+          </h5>
+
+          {loadingRecent ? (
+            <div className="d-flex justify-content-center py-4">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : recentError ? (
+            <Alert variant="warning" className="mb-3">
+              {recentError}
+            </Alert>
+          ) : recentProperties?.length > 0 ? (
+            <Row className="g-3 mx-0">
+              {recentProperties.map((recent) => (
+                <Col key={recent.id} xs={6} sm={4} lg={2}>
+                  <PropertySummaryCard property={recent} />
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <p className="text-muted">Aún no hay propiedades recientes para mostrar.</p>
+          )}
+
           <h5 className="property__section-title mt-5 mb-3">
             Propiedades similares
           </h5>

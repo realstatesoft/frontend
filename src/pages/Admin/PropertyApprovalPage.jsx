@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Container, Dropdown, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import propertyApi from '../../services/properties/propertyApi';
 import PLACEHOLDER_IMAGE from '../../assets/placeholder_img.png';
 import Pagination from '../../components/properties/Pagination';
@@ -14,6 +15,7 @@ const FILTER_OPTIONS = [
 ];
 
 export default function PropertyApprovalPage() {
+  const { t } = useTranslation('admin');
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,7 +73,7 @@ export default function PropertyApprovalPage() {
     } catch (err) {
       if (fetchId !== latestFetchRef.current) return;
       console.error('Error al cargar propiedades:', err);
-      setError('No se pudieron cargar las propiedades. Intente más tarde.');
+      setError(t('propertyApproval.loadError'));
     } finally {
       if (fetchId === latestFetchRef.current) setLoading(false);
     }
@@ -88,14 +90,14 @@ export default function PropertyApprovalPage() {
       setActionLoading(true);
       await propertyApi.changeStatus(id, 'APPROVED');
       
-      setSuccessMsg("Propiedad Aprobada");
+      setSuccessMsg(t('propertyApproval.approved'));
       setTimeout(() => setSuccessMsg(null), 3000);
       
       // Refresh data authoritatively to keep pagination/stats in sync
       await fetchProperties();
     } catch (err) {
       console.error(err);
-      setError("Error al aprobar propiedad");
+      setError(t('propertyApproval.approveError'));
     } finally {
       setActionLoading(false);
     }
@@ -106,45 +108,45 @@ export default function PropertyApprovalPage() {
       setActionLoading(true);
       await propertyApi.changeStatus(id, 'REJECTED');
       
-      setSuccessMsg("Propiedad Rechazada");
+      setSuccessMsg(t('propertyApproval.rejected'));
       setTimeout(() => setSuccessMsg(null), 3000);
       
       // Refresh data authoritatively
       await fetchProperties();
     } catch (err) {
       console.error(err);
-      setError("Error al rechazar propiedad");
+      setError(t('propertyApproval.rejectError'));
     } finally {
       setActionLoading(false);
     }
   };
 
-  const activeFilterLabel = FILTER_OPTIONS.find(o => o.value === filter)?.label || 'Todos';
+  const activeFilterLabel = FILTER_OPTIONS.find(o => o.value === filter)?.label || t('propertyApproval.filters.all');
 
   return (
     <div className="approval-page">
       <Container className="py-4">
         <header className="approval-header">
-          <h1>Aprobación de Propiedades</h1>
-          <p className="text-muted mb-0">Revisa y aprueba las propiedades enviadas por los agentes y propietarios</p>
+          <h1>{t('propertyApproval.title')}</h1>
+          <p className="text-muted mb-0">{t('propertyApproval.subtitle')}</p>
         </header>
 
         <section className="stats-container">
           <div className="stat-card pending">
             <div className="stat-value">{stats.pending}</div>
-            <div className="stat-label">Pendientes</div>
+            <div className="stat-label">{t('propertyApproval.stats.pending')}</div>
           </div>
           <div className="stat-card approved">
             <div className="stat-value">{stats.approved}</div>
-            <div className="stat-label">Aprobadas</div>
+            <div className="stat-label">{t('propertyApproval.stats.approved')}</div>
           </div>
           <div className="stat-card rejected">
             <div className="stat-value">{stats.rejected}</div>
-            <div className="stat-label">Rechazadas</div>
+            <div className="stat-label">{t('propertyApproval.stats.rejected')}</div>
           </div>
           <div className="stat-card total">
             <div className="stat-value text-primary">{stats.total}</div>
-            <div className="stat-label">Total</div>
+            <div className="stat-label">{t('propertyApproval.stats.total')}</div>
           </div>
         </section>
 
@@ -185,12 +187,12 @@ export default function PropertyApprovalPage() {
           {loading ? (
             <div className="text-center py-5">
               <Spinner animation="border" variant="primary" />
-              <p className="mt-3 text-muted">Cargando propiedades...</p>
+              <p className="mt-3 text-muted">{t('propertyApproval.loading')}</p>
             </div>
           ) : properties.length > 0 ? (
             properties.map(property => {
               const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
-              const type = property.propertyType || property.type || "Inmueble";
+              const type = property.propertyType || property.type || t('propertyApproval.property');
               const dateStr = property.createdAt 
                 ? new Date(property.createdAt).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })
                 : "—";
@@ -205,10 +207,10 @@ export default function PropertyApprovalPage() {
                       <div className="top-row">
                         <div>
                           <Link to={`/properties/${property.id}`} className="text-decoration-none">
-                            <h4 className="title">{property.title || 'Propiedad sin título'}</h4>
+                            <h4 className="title">{property.title || t('propertyApproval.untitled')}</h4>
                           </Link>
                           <div className="location">
-                            {property.address || property.locationName || property.location || 'Ubicación no especificada'}
+                            {property.address || property.locationName || property.location || t('propertyApproval.noLocation')}
                           </div>
                         </div>
                         <div>
@@ -228,12 +230,12 @@ export default function PropertyApprovalPage() {
                       </div>
 
                       <div className="price">
-                        {property.price ? `$ ${Number(property.price).toLocaleString()}` : 'Precio no disponible'}
+                        {property.price ? `$ ${Number(property.price).toLocaleString()}` : t('propertyApproval.noPrice')}
                       </div>
 
                       <div className="meta-info">
-                        <span>Agente: {property.agentName || property.ownerName || 'N/A'}</span>
-                        <span>Enviado: {dateStr}</span>
+                        <span>{t('propertyApproval.agent')}: {property.agentName || property.ownerName || 'N/A'}</span>
+                        <span>{t('propertyApproval.sent')}: {dateStr}</span>
                       </div>
                     </div>
 
@@ -242,7 +244,7 @@ export default function PropertyApprovalPage() {
                         to={`/properties/${property.id}`} 
                         className="btn-details shadow-sm"
                       >
-                        Ver Detalles
+                        {t('propertyApproval.viewDetails')}
                       </Link>
                       
                       {isPending && (
@@ -252,14 +254,14 @@ export default function PropertyApprovalPage() {
                             disabled={actionLoading}
                             onClick={() => handleApprove(property.id)}
                           >
-                            Aprobar
+                            {t('propertyApproval.approve')}
                           </button>
                           <button 
                             className="btn-reject shadow-sm"
                             disabled={actionLoading}
                             onClick={() => handleReject(property.id)}
                           >
-                            Rechazar
+                            {t('propertyApproval.reject')}
                           </button>
                         </>
                       )}
@@ -270,7 +272,7 @@ export default function PropertyApprovalPage() {
             })
           ) : (
             <div className="text-center py-5">
-              <p className="text-muted h5">No hay propiedades con estado "{activeFilterLabel}".</p>
+              <p className="text-muted h5">{t('propertyApproval.empty', { status: activeFilterLabel })}</p>
             </div>
           )}
         </section>

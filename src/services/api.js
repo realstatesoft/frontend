@@ -118,10 +118,10 @@ export default api;
 
 // ─── Agentes ───────────────────────────────────────────────────────────────────
 export const getAgents = (page = 0, size = 20) =>
-  api.get('/agents', { params: { page, size } }).then((res) => res.data);
+  api.get('/agents', { params: { page, size } }).then((res) => res.data?.data ?? res.data);
 
 export const searchAgents = (query) =>
-  api.get('/agents/search', { params: { q: query } }).then((res) => res.data);
+  api.get('/agents/search', { params: { q: query } }).then((res) => res.data?.data ?? res.data);
 
 // ─── Clientes (solo para agentes) ─────────────────────────────────────────────
 export const getClients = (page = 0, size = 50) =>

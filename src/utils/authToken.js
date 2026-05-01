@@ -1,8 +1,8 @@
 import Cookies from "js-cookie";
 
 const BASE_COOKIE_OPTIONS = {
-  secure: import.meta.env.PROD,
-  sameSite: "Strict",
+  secure: Boolean(import.meta.env?.PROD),
+  sameSite: "Lax",
 };
 
 // ─── Access Token (cookie de sesión, sin expires — lo controla el JWT) ────────
@@ -13,7 +13,7 @@ export function setAccessToken(token) {
   Cookies.set("accessToken", token, BASE_COOKIE_OPTIONS);
 }
 export function removeAccessToken() {
-  Cookies.remove("accessToken");
+  Cookies.remove("accessToken", BASE_COOKIE_OPTIONS);
 }
 
 // ─── Refresh Token (cookie persistente 7 días) ────────────────────────────────
@@ -24,7 +24,7 @@ export function setRefreshToken(token) {
   Cookies.set("refreshToken", token, { ...BASE_COOKIE_OPTIONS, expires: 7 });
 }
 export function removeRefreshToken() {
-  Cookies.remove("refreshToken");
+  Cookies.remove("refreshToken", BASE_COOKIE_OPTIONS);
 }
 
 // ─── Información del usuario (localStorage) ───────────────────────────────────

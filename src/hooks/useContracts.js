@@ -90,6 +90,23 @@ export function useSignContract() {
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['contracts', 'signatures', id] });
+      queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
   });
 }
+
+export function useDownloadContract() {
+  return useMutation({
+    mutationFn: ({ id, filename }) => contractApi.downloadPdf(id, filename),
+    onSuccess: ({ url, filename }) => {
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      URL.revokeObjectURL(url);
+    },
+  });
+}
+

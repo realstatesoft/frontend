@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../../i18n';
 
 vi.mock('../../../hooks/useSalesData');
 import { useSalesSummary } from '../../../hooks/useSalesData';
@@ -29,14 +31,20 @@ import SalesPerformanceChart from '../../../components/widgets/SalesPerformanceC
 
 const renderChart = () =>
   render(
-    <MemoryRouter>
-      <SalesPerformanceChart />
-    </MemoryRouter>
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <SalesPerformanceChart />
+      </MemoryRouter>
+    </I18nextProvider>
   );
 
 describe('SalesPerformanceChart', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  beforeEach(async () => {
+    await initializeI18n();
   });
 
   describe('encabezado', () => {

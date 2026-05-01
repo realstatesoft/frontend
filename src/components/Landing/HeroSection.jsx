@@ -1,9 +1,10 @@
 import React from "react";
 import { Container } from "react-bootstrap";
-import { Search } from "react-bootstrap-icons";
+import { useTranslation } from "react-i18next";
 import fotoHero from "../../assets/FotoHero.png";
 
 const HeroSection = () => {
+    const { t } = useTranslation("landing");
     return (
         <section
             style={{
@@ -36,18 +37,13 @@ const HeroSection = () => {
                     className="text-white fw-bold mb-3"
                     style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}
                 >
-                    La Forma Más Inteligente de
-                    <br />
-                    <span style={{ color: "#60a5fa" }}>Comprar</span>,{" "}
-                    <span style={{ color: "#34d399" }}>Vender</span> o{" "}
-                    <span style={{ color: "#fbbf24" }}>Alquilar</span>
+                    {t("hero.title")}
                 </h1>
                 <p
                     className="text-white mb-4"
                     style={{ opacity: 0.85, fontSize: "1.05rem", maxWidth: 600, margin: "0 auto" }}
                 >
-                    Miles de propiedades te esperan. Encuentra tu hogar ideal con la
-                    tecnología más avanzada del mercado.
+                    {t("hero.subtitle")}
                 </p>
             </Container>
         </section>
