@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { StarFill, Search, GraphUpArrow, Eye, GeoAlt } from 'react-bootstrap-icons';
+import { StarFill, Search, GraphUpArrow } from 'react-bootstrap-icons';
 import { buildPaymentUrl } from '../../services/payments/buildPaymentUrl';
+import { useTranslation } from 'react-i18next';
 import styles from './HighlightPropertyModal.module.scss';
 
 // TO-DO: configurar precios y planes desde la config del admin
@@ -36,22 +37,10 @@ const PLANS = [
     },
 ];
 
-const BENEFITS = [
-    {
-        icon: <Search size={14} />,
-        title: 'Primero en búsquedas',
-        desc: 'Tu propiedad aparece antes que las demás en los resultados.',
-    },
-    {
-        icon: <StarFill size={12} />,
-        title: 'Badge dorado "Destacada"',
-        desc: 'Un sello visible que genera más confianza en los compradores.',
-    },
-    {
-        icon: <GraphUpArrow size={14} />,
-        title: '3× más visitas',
-        desc: 'Las propiedades destacadas reciben en promedio 3 veces más consultas.',
-    },
+const BENEFIT_ICONS = [
+    { icon: <Search size={14} />, key: 'first' },
+    { icon: <StarFill size={12} />, key: 'second' },
+    { icon: <GraphUpArrow size={14} />, key: 'third' },
 ];
 
 function formatGs(amount) {
@@ -64,6 +53,7 @@ function formatGs(amount) {
 
 export default function HighlightPropertyModal({ property, show, onHide }) {
     const navigate = useNavigate();
+    const { t } = useTranslation('showProperty');
     const [selectedPlanId, setSelectedPlanId] = useState('semester');
 
     const selectedPlan = PLANS.find((p) => p.id === selectedPlanId);
@@ -86,23 +76,23 @@ export default function HighlightPropertyModal({ property, show, onHide }) {
                 <div className={styles.starRing}>
                     <StarFill />
                 </div>
-                <h5 className={styles.heroTitle}>Destacá tu propiedad</h5>
+                <h5 className={styles.heroTitle}>{t('highlightModal.hero.title')}</h5>
                 <p className={styles.heroSub}>
-                    Llegá a más compradores y alquilantes potenciales
+                    {t('highlightModal.hero.subtitle')}
                 </p>
             </div>
 
             <div className={styles.body}>
                 {/* Benefits */}
                 <div className={styles.benefitsGrid}>
-                    {BENEFITS.map((b) => (
-                        <div key={b.title} className={styles.benefitItem}>
+                    {BENEFIT_ICONS.map((b) => (
+                        <div key={b.key} className={styles.benefitItem}>
                             <span className={styles.benefitIcon}>{b.icon}</span>
                             <div>
-                                <strong style={{ fontSize: '0.87rem' }}>{b.title}</strong>
+                                <strong style={{ fontSize: '0.87rem' }}>{t(`highlightModal.benefits.${b.key}.title`)}</strong>
                                 <br />
                                 <span className="text-muted" style={{ fontSize: '0.78rem' }}>
-                                    {b.desc}
+                                    {t(`highlightModal.benefits.${b.key}.desc`)}
                                 </span>
                             </div>
                         </div>
@@ -122,16 +112,16 @@ export default function HighlightPropertyModal({ property, show, onHide }) {
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); setSelectedPlanId(plan.id); } }}
                         >
                             {plan.popular && (
-                                <span className={styles.popularBadge}>⭐ Más popular</span>
+                                <span className={styles.popularBadge}>{t('highlightModal.plans.popular')}</span>
                             )}
-                            <p className={styles.planLabel}>{plan.label}</p>
+                            <p className={styles.planLabel}>{t(`highlightModal.plans.${plan.id}.label`)}</p>
                             <p className={styles.planPrice}>{formatGs(plan.price)}</p>
                             <p className={styles.planPerMonth}>
-                                {formatGs(plan.perMonth)} / mes · {plan.days} días
+                                {t('highlightModal.plans.perMonth', { amount: formatGs(plan.perMonth), days: plan.days })}
                             </p>
                             {plan.savings && (
                                 <span className={styles.planSavings}>
-                                    Ahorrás {plan.savings}%
+                                    {t('highlightModal.plans.savings', { percent: plan.savings })}
                                 </span>
                             )}
                         </div>
@@ -140,7 +130,7 @@ export default function HighlightPropertyModal({ property, show, onHide }) {
 
                 <Button className={`w-100 ${styles.ctaButton}`} onClick={handleProceed}>
                     <StarFill size={15} />
-                    Destacar – {selectedPlan.label} por {formatGs(selectedPlan.price)}
+                    {t('highlightModal.cta.label', { planLabel: t(`highlightModal.plans.${selectedPlan.id}.label`), price: formatGs(selectedPlan.price) })}
                 </Button>
                 <Button
                     variant="link"
@@ -148,7 +138,7 @@ export default function HighlightPropertyModal({ property, show, onHide }) {
                     style={{ fontSize: '0.85rem' }}
                     onClick={onHide}
                 >
-                    Ahora no
+                    {t('highlightModal.dismiss')}
                 </Button>
             </div>
         </Modal>

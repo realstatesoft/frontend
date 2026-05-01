@@ -420,11 +420,16 @@ export function useShowProperty() {
   }, [handleConfirmChangeVisibility]);
 
   const handleRemoveHighlight = useCallback(async () => {
-    if (!id) return;
+    if (!id || actionLoading) return;
     setActionLoading(true);
     try {
-      await propertyApi.removeHighlight(id);
-      setProperty((prev) => prev ? { ...prev, highlighted: false, highlightedUntil: null } : prev);
+      const { data } = await propertyApi.removeHighlight(id);
+      if (!data?.success) throw new Error(data?.message || 'Backend reported failure');
+      if (data.property) {
+        setProperty(data.property);
+      } else {
+        setProperty((prev) => prev ? { ...prev, highlighted: false, highlightedUntil: null } : prev);
+      }
       await Swal.fire({
         icon: "success",
         title: "Destacado removido",
@@ -441,7 +446,7 @@ export function useShowProperty() {
     } finally {
       setActionLoading(false);
     }
-  }, [id]);
+  }, [id, actionLoading]);
 
   const openDeleteConfirm = useCallback(() => {
     setConfirmData({

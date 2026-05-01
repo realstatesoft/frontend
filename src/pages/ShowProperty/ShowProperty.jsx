@@ -295,6 +295,7 @@ export default function ShowProperty() {
                   size="sm"
                   variant={property.highlighted ? "warning" : "outline-warning"}
                   className="d-flex align-items-center"
+                  disabled={actionLoading}
                   onClick={() => property.highlighted ? handleRemoveHighlight() : setShowHighlightModal(true)}
                 >
                   <Star size={16} className="property__icon-button" />
