@@ -33,11 +33,12 @@ import ReportUserModal from "../../components/users/ReportUserModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
-const Property360Tour = lazy(() => import("../../components/properties/Property360Tour/Property360Tour"));
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
 import { useTranslation } from "react-i18next";
 import "./show-property.scss";
+
+const Property360Tour = lazy(() => import("../../components/properties/Property360Tour/Property360Tour"));
 
 export default function ShowProperty() {
   const { t } = useTranslation("showProperty");

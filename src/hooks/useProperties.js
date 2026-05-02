@@ -6,6 +6,7 @@ export default function useProperties({
     size = 12,
     search = "",
     propertyType,
+    category,
     status,
     availability,
     minPrice,
@@ -16,19 +17,20 @@ export default function useProperties({
     const { data, isLoading: loading, error: queryError, refetch } = useQuery({
         queryKey: [
             "properties",
-            { page, size, search, propertyType, status, availability, minPrice, maxPrice, minBedrooms, minBathrooms }
+            { page, size, search, propertyType, category, status, availability, minPrice, maxPrice, minBedrooms, minBathrooms }
         ],
         queryFn: async () => {
             const springPage = Math.max(page - 1, 0);
             const params = { page: springPage, size };
 
             if (propertyType) params.propertyType = propertyType;
+            if (category) params.category = category;
             if (status) params.status = status;
             if (availability) params.availability = availability;
-            if (minPrice) params.minPrice = minPrice;
-            if (maxPrice) params.maxPrice = maxPrice;
-            if (minBedrooms) params.minBedrooms = minBedrooms;
-            if (minBathrooms) params.minBathrooms = minBathrooms;
+            if (minPrice !== undefined && minPrice !== null) params.minPrice = minPrice;
+            if (maxPrice !== undefined && maxPrice !== null) params.maxPrice = maxPrice;
+            if (minBedrooms !== undefined && minBedrooms !== null) params.minBedrooms = minBedrooms;
+            if (minBathrooms !== undefined && minBathrooms !== null) params.minBathrooms = minBathrooms;
 
             let res;
             if (search.trim()) {

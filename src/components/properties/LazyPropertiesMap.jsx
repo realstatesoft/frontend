@@ -14,7 +14,7 @@ export default function LazyPropertiesMap(props) {
       fallback={
         <div
           style={{
-            height: 440,
+            height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

@@ -230,7 +230,7 @@ export function useShowProperty() {
       registeredViewRef.current.delete(propertyId);
       return null;
     });
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   useEffect(() => {
     fetchProperty();

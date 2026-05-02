@@ -139,11 +139,11 @@ function CustomNavbar() {
 
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto ms-5 gap-4 fw-semibold" style={{ fontSize: "0.95rem" }}>
-            <Nav.Link as={Link} to="/properties" state={{ availability: "Venta" }} onMouseEnter={() => {
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Venta" }} onMouseEnter={() => {
               queryClient.prefetchQuery({
-                queryKey: ["properties", { page: 1, size: 12, availability: "Venta" }],
+                queryKey: ["properties", { page: 1, size: 12, search: "", propertyType: undefined, category: "SALE", status: undefined, availability: undefined, minPrice: undefined, maxPrice: undefined, minBedrooms: undefined, minBathrooms: undefined }],
                 queryFn: async () => {
-                  const res = await propertyApi.getAll({ page: 0, size: 12 });
+                  const res = await propertyApi.getAll({ page: 0, size: 12, category: "SALE" });
                   const pageData = res?.data ? (res.data.data ?? res.data) : { content: [], totalPages: 0, totalElements: 0 };
                   return { properties: pageData.content ?? [], totalPages: Number(pageData.totalPages ?? 0), totalElements: Number(pageData.totalElements ?? 0) };
                 },
@@ -153,7 +153,7 @@ function CustomNavbar() {
               {t('buy') || 'Comprar'}
             </Nav.Link>
             
-            <Nav.Link as={Link} to="/properties" state={{ availability: "Alquiler" }}>
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Alquiler" }}>
               {t('rent') || 'Alquilar'}
             </Nav.Link>
 

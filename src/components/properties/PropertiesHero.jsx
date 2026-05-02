@@ -17,6 +17,7 @@ export default function PropertiesHero({
     totalResults,
     onSearch,
     onTypeChange,
+    onSaleRentChange,
     onAvailabilityChange,
     onMinPriceChange,
     onMaxPriceChange,
@@ -44,6 +45,8 @@ export default function PropertiesHero({
     useEffect(() => {
         if (isAuthenticated) {
             fetchSavedSearches();
+        } else {
+            setSavedSearches([]);
         }
     }, [isAuthenticated]);
 
@@ -106,6 +109,7 @@ export default function PropertiesHero({
                                         const f = s.filters || {};
                                         onSearch(f.q ?? "");
                                         onTypeChange(f.propertyType ?? "");
+                                        if (onSaleRentChange) onSaleRentChange(f.category ?? f.saleRent ?? "");
                                         onAvailabilityChange(f.availability ?? "");
                                         onMinPriceChange(f.minPrice ?? "");
                                         onMaxPriceChange(f.maxPrice ?? "");

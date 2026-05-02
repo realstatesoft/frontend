@@ -12,7 +12,7 @@ import useProperties from "../hooks/useProperties";
 import useFavoriteProperties from "../hooks/useFavoriteProperties";
 import useDebounce from "../hooks/useDebounce";
 import { useAuth } from "../hooks/useAuth";
-import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
+import { PROPERTY_TYPE, AVAILABILITY, CATEGORY } from "../constants/propertyEnums";
 import usePropertyCompareStore, { MAX_COMPARE_PROPERTIES } from "../store/usePropertyCompareStore";
 
 const PAGE_SIZE = 12;
@@ -30,6 +30,7 @@ export default function PropertiesPage() {
 
     const [search, setSearch] = useState(locationState.search || "");
     const [typeFilter, setTypeFilter] = useState(locationState.typeFilter || "");
+    const [saleRent, setSaleRent] = useState(locationState.saleRent || locationState.transactionIntent || "");
     const [availability, setAvailability] = useState(locationState.availability || "");
     const [minPrice, setMinPrice] = useState(locationState.minPrice || "");
     const [maxPrice, setMaxPrice] = useState(locationState.maxPrice || "");
@@ -57,14 +58,16 @@ export default function PropertiesPage() {
     useEffect(() => {
         setSearch(locationState.search || "");
         setTypeFilter(locationState.typeFilter || "");
+        setSaleRent(locationState.saleRent || locationState.transactionIntent || "");
         setAvailability(locationState.availability || "");
         setMinPrice(locationState.minPrice || "");
         setMaxPrice(locationState.maxPrice || "");
         setMinBedrooms(locationState.minBedrooms || "");
-    }, [locationState.search, locationState.typeFilter, locationState.availability, locationState.minPrice, locationState.maxPrice, locationState.minBedrooms]);
+    }, [locationState.search, locationState.typeFilter, locationState.saleRent, locationState.transactionIntent, locationState.availability, locationState.minPrice, locationState.maxPrice, locationState.minBedrooms]);
 
     // Convertir labels a valores enum del backend
     const backendType = typeFilter ? PROPERTY_TYPE[typeFilter] : undefined;
+    const backendCategory = saleRent ? CATEGORY[saleRent] : undefined;
     const backendAvailability = availability ? AVAILABILITY[availability] : undefined;
 
     const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
@@ -72,6 +75,7 @@ export default function PropertiesPage() {
         size: PAGE_SIZE,
         search: debouncedSearch,
         propertyType: backendType,
+        category: backendCategory,
         availability: backendAvailability,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
@@ -85,6 +89,7 @@ export default function PropertiesPage() {
 
     const handleSearch = (val) => { setSearch(val); resetPage(); };
     const handleType = (val) => { setTypeFilter(val); resetPage(); };
+    const handleSaleRent = (val) => { setSaleRent(val); resetPage(); };
     const handleAvailability = (val) => { setAvailability(val); resetPage(); };
     const handleMinPrice = (val) => { setMinPrice(val); resetPage(); };
     const handleMaxPrice = (val) => { setMaxPrice(val); resetPage(); };
@@ -94,6 +99,7 @@ export default function PropertiesPage() {
     const handleClear = () => {
         setSearch("");
         setTypeFilter("");
+        setSaleRent("");
         setAvailability("");
         setMinPrice("");
         setMaxPrice("");
@@ -114,6 +120,7 @@ export default function PropertiesPage() {
             <PropertiesHero
                 search={search}
                 typeFilter={typeFilter}
+                saleRent={saleRent}
                 availability={availability}
                 minPrice={minPrice}
                 maxPrice={maxPrice}
@@ -122,6 +129,7 @@ export default function PropertiesPage() {
                 totalResults={totalElements}
                 onSearch={handleSearch}
                 onTypeChange={handleType}
+                onSaleRentChange={handleSaleRent}
                 onAvailabilityChange={handleAvailability}
                 onMinPriceChange={handleMinPrice}
                 onMaxPriceChange={handleMaxPrice}
