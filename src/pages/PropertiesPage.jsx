@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { ArrowUp } from "react-bootstrap-icons";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import PropertiesHero from "../components/properties/PropertiesHero";
 import PropertiesGrid from "../components/properties/PropertiesGrid";
-import PropertiesMap from "../components/properties/PropertiesMap";
+import LazyPropertiesMap from "../components/properties/LazyPropertiesMap";
 import CompareFloatingBar from "../components/properties/CompareFloatingBar";
 import PreferencesBanner, { shouldShowBanner } from "../components/preferences/PreferencesBanner";
 import useProperties from "../hooks/useProperties";
 import useFavoriteProperties from "../hooks/useFavoriteProperties";
+import useDebounce from "../hooks/useDebounce";
 import { useAuth } from "../hooks/useAuth";
 import { PROPERTY_TYPE, AVAILABILITY } from "../constants/propertyEnums";
 import usePropertyCompareStore, { MAX_COMPARE_PROPERTIES } from "../store/usePropertyCompareStore";
@@ -35,6 +37,22 @@ export default function PropertiesPage() {
     const [minBathrooms, setMinBathrooms] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 400) {
+                setShowScrollTop(true);
+            } else {
+                setShowScrollTop(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const debouncedSearch = useDebounce(search, 200);
 
     useEffect(() => {
         setSearch(locationState.search || "");
@@ -52,7 +70,7 @@ export default function PropertiesPage() {
     const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
         page: currentPage,
         size: PAGE_SIZE,
-        search,
+        search: debouncedSearch,
         propertyType: backendType,
         availability: backendAvailability,
         minPrice: minPrice ? Number(minPrice) : undefined,
@@ -90,7 +108,7 @@ export default function PropertiesPage() {
         shouldShowBanner(preferencesCompleted, authCheck);
 
     return (
-        <>
+        <div className="bg-light min-vh-100 d-flex flex-column">
             <CustomNavbar />
 
             <PropertiesHero
@@ -112,51 +130,106 @@ export default function PropertiesPage() {
                 onClear={handleClear}
             />
 
-            <div style={{ backgroundColor: "#f8f9fa", minHeight: "60vh" }}>
-                {/* Banner de preferencias (entre filtros y grilla) */}
-                {showBanner && (
-                    <div className="container pt-3">
-                        <PreferencesBanner
-                            onDismiss={() => setBannerDismissed(true)}
+            <div className="container-fluid px-0 flex-grow-1 d-flex flex-column flex-lg-row">
+                {/* Lado del Mapa (Izquierda) - Sticky */}
+                <div className="d-none d-lg-block w-50 p-3" style={{ position: "sticky", top: 0, height: "100vh" }}>
+                    <div className="h-100 w-100 position-relative" style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 24px 50px rgba(15, 23, 42, 0.1)" }}>
+                        <LazyPropertiesMap properties={properties || []} isSplit={true} />
+                        
+                        {/* Overlay semi-transparente cuando está cargando pero ya hay mapa */}
+                        {loading && (
+                            <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(255,255,255,0.6)", zIndex: 1000 }}>
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        )}
+                        {!loading && !error && (!properties || properties.length === 0) && (
+                            <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(255,255,255,0.8)", zIndex: 1000 }}>
+                                <p className="text-muted fw-semibold">No hay propiedades que coincidan con la búsqueda.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Lado de Resultados (Derecha) - Scroll normal */}
+                <div id="properties-list-container" className="w-100 w-lg-50 pb-5 pt-3">
+                    {/* Banner de preferencias */}
+                    {showBanner && (
+                        <div className="px-3 px-lg-4 mb-3">
+                            <PreferencesBanner
+                                onDismiss={() => setBannerDismissed(true)}
+                            />
+                        </div>
+                    )}
+
+                    {/* Mapa en móvil */}
+                    <div className="d-block d-lg-none px-3 mb-4">
+                        <div className="position-relative" style={{ height: "300px", borderRadius: "24px", overflow: "hidden", boxShadow: "0 24px 50px rgba(15, 23, 42, 0.1)" }}>
+                            <LazyPropertiesMap properties={properties || []} isSplit={true} />
+                            
+                            {loading && (
+                                <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(255,255,255,0.6)", zIndex: 1000 }}>
+                                    <div className="spinner-border text-primary" role="status" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="px-lg-2">
+                        <PropertiesGrid
+                            properties={properties}
+                            onClear={handleClear}
+                            onRetry={refetch}
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            loading={loading}
+                            error={error}
+                            favoriteIds={favoriteIds}
+                            togglingIds={togglingIds}
+                            canToggleFavorite={isAuthenticated}
+                            onToggleFavorite={toggleFavorite}
+                            comparedPropertyIds={comparedProperties.map((property) => property.id)}
+                            compareLimitReached={comparedProperties.length >= MAX_COMPARE_PROPERTIES}
+                            onToggleCompare={toggleComparedProperty}
+                            onPageChange={(page) => {
+                                setCurrentPage(page);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
                         />
                     </div>
-                )}
-
-                {!loading && !error && properties?.length > 0 && (
-                    <div className="properties-page__map-wrap">
-                        <PropertiesMap properties={properties} />
-                    </div>
-                )}
-
-                <PropertiesGrid
-                    properties={properties}
-                    onClear={handleClear}
-                    onRetry={refetch}
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    loading={loading}
-                    error={error}
-                    favoriteIds={favoriteIds}
-                    togglingIds={togglingIds}
-                    canToggleFavorite={isAuthenticated}
-                    onToggleFavorite={toggleFavorite}
-                    comparedPropertyIds={comparedProperties.map((property) => property.id)}
-                    compareLimitReached={comparedProperties.length >= MAX_COMPARE_PROPERTIES}
-                    onToggleCompare={toggleComparedProperty}
-                    onPageChange={(page) => {
-                        setCurrentPage(page);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                />
-
-                <CompareFloatingBar
-                    selectedProperties={comparedProperties}
-                    maxProperties={MAX_COMPARE_PROPERTIES}
-                    onClear={clearComparedProperties}
-                />
+                </div>
             </div>
 
             <Footer />
-        </>
+
+            <CompareFloatingBar
+                selectedProperties={comparedProperties}
+                maxProperties={MAX_COMPARE_PROPERTIES}
+                onClear={clearComparedProperties}
+            />
+
+            {showScrollTop && (
+                <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                    className="btn btn-primary rounded-circle shadow-lg"
+                    style={{
+                        position: "fixed",
+                        bottom: "30px",
+                        right: "30px",
+                        width: "50px",
+                        height: "50px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 1000,
+                        transition: "all 0.3s ease",
+                    }}
+                    aria-label="Volver arriba"
+                >
+                    <ArrowUp size={24} />
+                </button>
+            )}
+        </div>
     );
 }

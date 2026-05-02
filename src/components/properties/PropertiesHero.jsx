@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
 import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function PropertiesHero({
     search,
@@ -24,6 +25,7 @@ export default function PropertiesHero({
     onClear,
 }) {
     const { t } = useTranslation("properties");
+    const { isAuthenticated } = useAuth();
 
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
@@ -40,8 +42,10 @@ export default function PropertiesHero({
     };
 
     useEffect(() => {
-        fetchSavedSearches();
-    }, []);
+        if (isAuthenticated) {
+            fetchSavedSearches();
+        }
+    }, [isAuthenticated]);
 
     const handleDeleteSearch = async (id, evt) => {
         evt.stopPropagation();
@@ -71,8 +75,8 @@ export default function PropertiesHero({
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
 
     return (
-        <div className="bg-light py-4" style={{ overflow: "visible" }}>
-            <Container>
+        <div className="bg-white py-3 border-bottom" style={{ overflow: "visible", position: "relative", zIndex: 1030 }}>
+            <Container fluid className="px-3 px-lg-5">
                 <div className="filter-bar">
 
                     {/* Búsqueda */}
@@ -134,10 +138,10 @@ export default function PropertiesHero({
                         onChange={onTypeChange}
                         active={!!typeFilter}
                     >
-                        <option value="">Todos</option>
+                        <option key="default-type" value="">Todos</option>
                         {PROPERTY_TYPE_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                                {opt.label}
+                            <option key={opt} value={opt}>
+                                {opt}
                             </option>
                         ))}
                     </PillSelect>
@@ -149,21 +153,21 @@ export default function PropertiesHero({
                         onChange={onMinBedroomsChange}
                         active={!!minBedrooms}
                     >
-                        <option value="">Cualquiera</option>
+                        <option key="default-bed" value="">Cualquiera</option>
                         {[1, 2, 3, 4, 5].map((n) => (
-                            <option key={n} value={n}>{n}+</option>
+                            <option key={`bed-${n}`} value={n}>{n}+</option>
                         ))}
                     </PillSelect>
 
                     {/* Más filtros */}
-                    <button onClick={() => setShowAdvanced(!showAdvanced)}>
+                    <button className="filter-pill" onClick={() => setShowAdvanced(!showAdvanced)}>
                         {t("search.moreFilters")}
                     </button>
 
                     {hasAnyFilter && (
                         <>
-                            <button onClick={onClear}>Limpiar</button>
-                            <button onClick={() => setShowSaveModal(true)}>Guardar</button>
+                            <button className="filter-pill" onClick={onClear}>Limpiar</button>
+                            <button className="filter-pill" onClick={() => setShowSaveModal(true)}>Guardar</button>
                         </>
                     )}
                 </div>
@@ -176,10 +180,10 @@ export default function PropertiesHero({
                                     value={availability}
                                     onChange={(e) => onAvailabilityChange(e.target.value)}
                                 >
-                                    <option value="">Cualquiera</option>
+                                    <option key="default-avail" value="">Cualquiera</option>
                                     {AVAILABILITY_OPTIONS.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>
-                                            {opt.label}
+                                        <option key={opt} value={opt}>
+                                            {opt}
                                         </option>
                                     ))}
                                 </Form.Select>
@@ -208,9 +212,9 @@ export default function PropertiesHero({
                                     value={minBathrooms}
                                     onChange={(e) => onMinBathroomsChange(e.target.value)}
                                 >
-                                    <option value="">Baños</option>
+                                    <option key="default-bath" value="">Baños</option>
                                     {[1, 2, 3, 4].map((n) => (
-                                        <option key={n} value={n}>{n}+</option>
+                                        <option key={`bath-${n}`} value={n}>{n}+</option>
                                     ))}
                                 </Form.Select>
                             </Col>

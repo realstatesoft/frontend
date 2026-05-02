@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import {
   Container,
   Row,
@@ -33,7 +33,7 @@ import ReportUserModal from "../../components/users/ReportUserModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
-import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
+const Property360Tour = lazy(() => import("../../components/properties/Property360Tour/Property360Tour"));
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
 import { useTranslation } from "react-i18next";
@@ -340,6 +340,10 @@ export default function ShowProperty() {
                   src={images[0]}
                   alt="Fachada"
                   className="property__main-image"
+                  width={800}
+                  height={420}
+                  fetchPriority="high"
+                  style={{ aspectRatio: '800 / 420' }}
                 />
                 {viewBadgeText && (
                   <div className="property__views-badge">
@@ -363,6 +367,10 @@ export default function ShowProperty() {
                           ? "radius-bottom-right-lg"
                           : ""
                       }`}
+                      width={400}
+                      height={207}
+                      loading="lazy"
+                      style={{ aspectRatio: '400 / 207' }}
                     />
                   </Col>
                 ))}
@@ -478,6 +486,7 @@ export default function ShowProperty() {
                         style={{ border: 0 }}
                         src={mapUrl}
                         allowFullScreen
+                        loading="lazy"
                       />
                     </div>
 
@@ -558,7 +567,9 @@ export default function ShowProperty() {
                             <span className="text-muted">Iniciando recorrido...</span>
                           </div>
                         ) : finalTourConfig ? (
-                          <Property360Tour config={finalTourConfig} />
+                          <Suspense fallback={<div className="d-flex justify-content-center py-5"><Spinner animation="border" variant="primary" /></div>}>
+                            <Property360Tour config={finalTourConfig} />
+                          </Suspense>
                         ) : (
                           <Alert variant="info">{t("actions.loadingTour")}</Alert>
                         )

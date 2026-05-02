@@ -21,6 +21,61 @@ export default defineConfig(({ mode }) => ({
     allowedHosts: ['openroof.duckdns.org'],
   },
 
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    cssMinify: true,
+    cssCodeSplit: true,
+    sourcemap: false,
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+
+          // Core React — always loaded
+          if (/react\/|react-dom\/|react-router/.test(id)) return 'vendor-react';
+
+          // UI Framework
+          if (/bootstrap|react-bootstrap/.test(id)) return 'vendor-bootstrap';
+
+          // Animations
+          if (id.includes('framer-motion')) return 'vendor-framer';
+
+          // Maps (heavy, lazy loaded)
+          if (/leaflet|react-leaflet/.test(id)) return 'vendor-leaflet';
+
+          // Charts (heavy, lazy loaded)
+          if (/recharts|d3-/.test(id)) return 'vendor-charts';
+
+          // 360 / 3D viewers (heavy, lazy loaded)
+          if (/photo-sphere|three|model-viewer/.test(id)) return 'vendor-3d';
+
+          // Rich text editor (lazy loaded)
+          if (/tiptap|prosemirror|@tiptap/.test(id)) return 'vendor-editor';
+
+          // Calendar (lazy loaded)
+          if (id.includes('fullcalendar')) return 'vendor-calendar';
+
+          // Icons
+          if (/react-icons|react-bootstrap-icons|bootstrap-icons/.test(id)) return 'vendor-icons';
+
+          // State & Data fetching
+          if (/tanstack|zustand|axios|zod/.test(id)) return 'vendor-data';
+
+          // i18n
+          if (/i18next/.test(id)) return 'vendor-i18n';
+
+          // Swiper
+          if (id.includes('swiper')) return 'vendor-swiper';
+
+          // Everything else
+          return 'vendor-misc';
+        }
+      }
+    }
+  },
+
   css: {
     preprocessorOptions: {
       scss: {
