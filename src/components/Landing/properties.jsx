@@ -157,7 +157,7 @@ const Properties = () => {
                                       zIndex: 2,
                                     }}
                                   >
-                                    <StarFill size={10} /> Destacada
+                                    <StarFill size={10} aria-hidden="true" /> Destacada
                                   </Badge>
                                 )}
 

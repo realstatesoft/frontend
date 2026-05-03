@@ -233,7 +233,7 @@ export default function ShowProperty() {
                   <Star size={15} /> Destacada
                 </Badge>
               )}
-              {property.highlighted && visibility.value !== "PUBLIC" && (
+              {property.highlighted && visibility.value !== "PUBLIC" && canChangeVisibility && (
                 <OverlayTrigger
                   placement="right"
                   overlay={<Tooltip>Esta propiedad no aparecerá en el inicio porque su visibilidad es "{visibility.label}". Cámbiala a "Público".</Tooltip>}
