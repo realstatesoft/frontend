@@ -419,6 +419,35 @@ export function useShowProperty() {
     setShowConfirm(true);
   }, [handleConfirmChangeVisibility]);
 
+  const handleRemoveHighlight = useCallback(async () => {
+    if (!id || actionLoading) return;
+    setActionLoading(true);
+    try {
+      const { data } = await propertyApi.removeHighlight(id);
+      if (!data?.success) throw new Error(data?.message || 'Backend reported failure');
+      if (data.property) {
+        setProperty(data.property);
+      } else {
+        setProperty((prev) => prev ? { ...prev, highlighted: false, highlightedUntil: null } : prev);
+      }
+      await Swal.fire({
+        icon: "success",
+        title: "Destacado removido",
+        text: "La propiedad ya no está destacada.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id, actionLoading]);
+
   const openDeleteConfirm = useCallback(() => {
     setConfirmData({
       title: "Eliminar propiedad",
@@ -502,6 +531,6 @@ export function useShowProperty() {
     activeFlagCount,
     viewCount,
     fetchActiveFlagCount,
-    handleToggleHighlight
+    handleRemoveHighlight
   };
 }
