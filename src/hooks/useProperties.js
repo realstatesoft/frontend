@@ -14,7 +14,7 @@ export default function useProperties({
     minBedrooms,
     minBathrooms,
 } = {}) {
-    const { data, isLoading: loading, error: queryError, refetch } = useQuery({
+    const { data, isLoading: loading, isFetching, error: queryError, refetch } = useQuery({
         queryKey: [
             "properties",
             { page, size, search, propertyType, category, status, availability, minPrice, maxPrice, minBedrooms, minBathrooms }
@@ -58,6 +58,7 @@ export default function useProperties({
     return {
         properties: data?.properties ?? [],
         loading,
+        fetching: isFetching,
         error,
         totalPages: data?.totalPages ?? 0,
         totalElements: data?.totalElements ?? 0,

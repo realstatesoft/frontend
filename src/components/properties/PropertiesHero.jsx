@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
@@ -24,7 +24,6 @@ export default function PropertiesHero({
     totalResults,
     onSearch,
     onTypeChange,
-    onSaleRentChange,
     onAvailabilityChange,
     onMinPriceChange,
     onMaxPriceChange,
@@ -39,7 +38,7 @@ export default function PropertiesHero({
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [savedSearches, setSavedSearches] = useState([]);
 
-    const fetchSavedSearches = async () => {
+    const fetchSavedSearches = useCallback(async () => {
         try {
             const res = await searchPreferencesApi.getMine();
             const items = res?.data?.content || [];
@@ -47,7 +46,7 @@ export default function PropertiesHero({
         } catch (err) {
             console.error("Error loading saved searches:", err);
         }
-    };
+    }, []);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -55,7 +54,7 @@ export default function PropertiesHero({
         } else {
             setSavedSearches([]);
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, fetchSavedSearches]);
 
     const handleDeleteSearch = async (id, evt) => {
         evt.stopPropagation();
@@ -102,12 +101,13 @@ export default function PropertiesHero({
                     </div>
 
                     {/* Mis búsquedas */}
-                    <Dropdown>
+                    {isAuthenticated && (
+                        <Dropdown>
                         <Dropdown.Toggle className="filter-pill">
-                            Mis búsquedas
+                            {t("savedSearches.title")}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            <Dropdown.Header>Mis búsquedas guardadas</Dropdown.Header>
+                            <Dropdown.Header>{t("savedSearches.header")}</Dropdown.Header>
 
                             {savedSearches.map((s) => (
                                 <Dropdown.Item
@@ -140,11 +140,12 @@ export default function PropertiesHero({
 
                             {savedSearches.length === 0 && (
                                 <Dropdown.Item disabled>
-                                    Sin búsquedas guardadas
+                                    {t("savedSearches.empty")}
                                 </Dropdown.Item>
                             )}
                         </Dropdown.Menu>
                     </Dropdown>
+                    )}
 
                     {/* Pill: Tipo */}
                     <PillSelect
@@ -199,9 +200,13 @@ export default function PropertiesHero({
                                 ✕
                             </button>
                             <div className="filter-bar__divider" />
-                            <button className="filter-bar__save" onClick={() => setShowSaveModal(true)} title={t("actions.saveTooltip")} type="button">
-                                {t("actions.save")}
-                            </button>
+                            {isAuthenticated && (
+                                <>
+                                    <button className="filter-bar__save" onClick={() => setShowSaveModal(true)} title={t("actions.saveTooltip")} type="button">
+                                        {t("actions.save")}
+                                    </button>
+                                </>
+                            )}
                         </>
                     )}
                 </div>

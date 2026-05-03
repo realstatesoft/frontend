@@ -28,14 +28,14 @@ export default function PropertiesPage() {
     const clearComparedProperties = usePropertyCompareStore((state) => state.clearProperties);
     const locationState = useLocation().state || {};
 
-    const [search, setSearch] = useState(locationState.search || "");
-    const [typeFilter, setTypeFilter] = useState(locationState.typeFilter || "");
-    const [saleRent, setSaleRent] = useState(locationState.saleRent || locationState.transactionIntent || "");
-    const [availability, setAvailability] = useState(locationState.availability || "");
-    const [minPrice, setMinPrice] = useState(locationState.minPrice || "");
-    const [maxPrice, setMaxPrice] = useState(locationState.maxPrice || "");
-    const [minBedrooms, setMinBedrooms] = useState(locationState.minBedrooms || "");
-    const [minBathrooms, setMinBathrooms] = useState("");
+    const [search, setSearch] = useState(locationState.search ?? "");
+    const [typeFilter, setTypeFilter] = useState(locationState.typeFilter ?? "");
+    const [saleRent, setSaleRent] = useState(locationState.saleRent ?? locationState.transactionIntent ?? "");
+    const [availability, setAvailability] = useState(locationState.availability ?? "");
+    const [minPrice, setMinPrice] = useState(locationState.minPrice ?? "");
+    const [maxPrice, setMaxPrice] = useState(locationState.maxPrice ?? "");
+    const [minBedrooms, setMinBedrooms] = useState(locationState.minBedrooms ?? "");
+    const [minBathrooms, setMinBathrooms] = useState(locationState.minBathrooms ?? "");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -56,14 +56,16 @@ export default function PropertiesPage() {
     const debouncedSearch = useDebounce(search, 200);
 
     useEffect(() => {
-        setSearch(locationState.search || "");
-        setTypeFilter(locationState.typeFilter || "");
-        setSaleRent(locationState.saleRent || locationState.transactionIntent || "");
-        setAvailability(locationState.availability || "");
-        setMinPrice(locationState.minPrice || "");
-        setMaxPrice(locationState.maxPrice || "");
-        setMinBedrooms(locationState.minBedrooms || "");
-    }, [locationState.search, locationState.typeFilter, locationState.saleRent, locationState.transactionIntent, locationState.availability, locationState.minPrice, locationState.maxPrice, locationState.minBedrooms]);
+        setSearch(locationState.search ?? "");
+        setTypeFilter(locationState.typeFilter ?? "");
+        setSaleRent(locationState.saleRent ?? locationState.transactionIntent ?? "");
+        setAvailability(locationState.availability ?? "");
+        setMinPrice(locationState.minPrice ?? "");
+        setMaxPrice(locationState.maxPrice ?? "");
+        setMinBedrooms(locationState.minBedrooms ?? "");
+        setMinBathrooms(locationState.minBathrooms ?? "");
+        setCurrentPage(1);
+    }, [locationState.search, locationState.typeFilter, locationState.saleRent, locationState.transactionIntent, locationState.availability, locationState.minPrice, locationState.maxPrice, locationState.minBedrooms, locationState.minBathrooms]);
 
     // Convertir labels a valores enum del backend
     const backendType = typeFilter ? PROPERTY_TYPE[typeFilter] : undefined;
@@ -129,7 +131,6 @@ export default function PropertiesPage() {
                 totalResults={totalElements}
                 onSearch={handleSearch}
                 onTypeChange={handleType}
-                onSaleRentChange={handleSaleRent}
                 onAvailabilityChange={handleAvailability}
                 onMinPriceChange={handleMinPrice}
                 onMaxPriceChange={handleMaxPrice}
@@ -138,9 +139,9 @@ export default function PropertiesPage() {
                 onClear={handleClear}
             />
 
-            <div className="container-fluid px-0 flex-grow-1 d-flex flex-column flex-lg-row">
+            <div className="container-fluid px-0 flex-grow-1 row mx-0">
                 {/* Lado del Mapa (Izquierda) - Sticky */}
-                <div className="d-none d-lg-block w-50 p-3" style={{ position: "sticky", top: 0, height: "100vh" }}>
+                <div className="d-none d-lg-block col-lg-6 p-3" style={{ position: "sticky", top: 0, height: "100vh" }}>
                     <div className="h-100 w-100 position-relative" style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 24px 50px rgba(15, 23, 42, 0.1)" }}>
                         <LazyPropertiesMap properties={properties || []} isSplit={true} />
                         
@@ -161,7 +162,7 @@ export default function PropertiesPage() {
                 </div>
 
                 {/* Lado de Resultados (Derecha) - Scroll normal */}
-                <div id="properties-list-container" className="w-100 w-lg-50 pb-5 pt-3">
+                <div id="properties-list-container" className="col-12 col-lg-6 pb-5 pt-3">
                     {/* Banner de preferencias */}
                     {showBanner && (
                         <div className="px-3 px-lg-4 mb-3">
