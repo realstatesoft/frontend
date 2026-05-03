@@ -20,6 +20,12 @@ const getErrorMessage = (err) =>
   "No se pudo conectar con el servidor. Verificá que el backend esté activo.";
 
 const SIMILAR_LIMIT = 6
+const registeredViewIds = new Set();
+
+export function __resetShowPropertyViewRegistrationForTests() {
+  registeredViewIds.clear();
+}
+
 /**
  * Hook con toda la lógica de la página ShowProperty:
  * fetch de propiedad, estado, visibilidad, changeStatus, changeVisibility, delete.
@@ -29,14 +35,23 @@ export function useShowProperty() {
   const navigate = useNavigate();
 
   const similarRequestRef = useRef(0);
+  const viewCountRequestRef = useRef(0);
+  const latestRecentRequestIdRef = useRef(0);
+  const registeredViewRef = useRef(registeredViewIds);
 
   const [property, setProperty] = useState(null);
+  const propertyRef = useRef(property);
+  propertyRef.current = property;
   const [similarProperties, setSimilarProperties] = useState([]);
+  const [recentProperties, setRecentProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingSimilar, setLoadingSimilar] = useState(true);
+  const [loadingRecent, setLoadingRecent] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [similarError, setSimilarError] = useState(null);
+  const [recentError, setRecentError] = useState(null);
+  const [viewCount, setViewCount] = useState(null);
 
   const [status, setStatus] = useState(PROPERTY_STATUS_OPTIONS[0]);
   const [visibility, setVisibility] = useState(PROPERTY_VISIBILITY_OPTIONS[0]);
@@ -116,6 +131,43 @@ export function useShowProperty() {
       });
   }, [id]);
 
+  const fetchRecentProperties = useCallback(() => {
+    const requestId = ++latestRecentRequestIdRef.current;
+
+    if (!isAuthenticated) {
+      if (requestId === latestRecentRequestIdRef.current) {
+        setRecentProperties([]);
+        setRecentError(null);
+        setLoadingRecent(false);
+      }
+      return;
+    }
+
+    setLoadingRecent(true);
+    setRecentError(null);
+    propertyApi
+      .getRecentProperties()
+      .then(({ data }) => {
+        if (requestId !== latestRecentRequestIdRef.current || !isAuthenticated) return;
+        if (data?.success && Array.isArray(data?.data)) {
+          setRecentProperties(data.data);
+        } else {
+          setRecentProperties([]);
+          setRecentError("No se pudieron cargar las propiedades recientes");
+        }
+      })
+      .catch(() => {
+        if (requestId !== latestRecentRequestIdRef.current || !isAuthenticated) return;
+        setRecentProperties([]);
+        setRecentError("No se pudieron cargar las propiedades recientes");
+      })
+      .finally(() => {
+        if (requestId === latestRecentRequestIdRef.current) {
+          setLoadingRecent(false);
+        }
+      });
+  }, [isAuthenticated]);
+
   const fetchActiveFlagCount = useCallback(() => {
     if (!id) {
       setActiveFlagCount(0);
@@ -133,11 +185,97 @@ export function useShowProperty() {
       });
   }, [id]);
 
+  const fetchViewCount = useCallback(() => {
+    if (!id) {
+      setViewCount(null);
+      return Promise.resolve(null);
+    }
+
+    const requestId = ++viewCountRequestRef.current;
+    const currentId = String(id);
+
+    return propertyApi
+      .getViewCount(id)
+      .then(({ data }) => {
+        if (
+          requestId !== viewCountRequestRef.current ||
+          String(id) !== currentId
+        ) {
+          return null;
+        }
+        const count = typeof data === "number" ? data : (data?.data ?? data?.count ?? data);
+        setViewCount(Number.isFinite(Number(count)) ? Number(count) : null);
+        return count;
+      })
+      .catch(() => {
+        if (
+          requestId !== viewCountRequestRef.current ||
+          String(id) !== currentId
+        ) {
+          return null;
+        }
+        setViewCount(null);
+        return null;
+      });
+  }, [id]);
+
+  const registerPropertyView = useCallback(() => {
+    if (!id || !isAuthenticated) return Promise.resolve(null);
+    const propertyId = String(id);
+    if (registeredViewRef.current.has(propertyId)) {
+      return Promise.resolve(null);
+    }
+    registeredViewRef.current.add(propertyId);
+    return propertyApi.registerView(id).catch(() => {
+      registeredViewRef.current.delete(propertyId);
+      return null;
+    });
+  }, [id, isAuthenticated]);
+
   useEffect(() => {
     fetchProperty();
     fetchSimilar();
     fetchActiveFlagCount();
-  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount]);
+
+    let cancelled = false;
+
+    const registerAndCountViews = async () => {
+      await registerPropertyView();
+      if (cancelled) return;
+      await fetchViewCount();
+    };
+
+    registerAndCountViews();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchProperty, fetchSimilar, fetchActiveFlagCount, fetchViewCount, registerPropertyView]);
+
+  useEffect(() => {
+    latestRecentRequestIdRef.current += 1;
+    let isCurrent = true;
+
+    const syncRecentProperties = async () => {
+      if (!id || !isAuthenticated) {
+        fetchRecentProperties();
+        return;
+      }
+
+      await propertyApi.registerRecentView(id).catch(() => {
+        // No bloquear la pantalla por fallos de registro.
+      });
+      if (!isCurrent) return;
+      fetchRecentProperties();
+    };
+
+    syncRecentProperties();
+
+    return () => {
+      isCurrent = false;
+      latestRecentRequestIdRef.current += 1;
+    };
+  }, [id, isAuthenticated, fetchRecentProperties]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -229,6 +367,34 @@ export function useShowProperty() {
     }
   }, [id, hideConfirm, navigate]);
 
+  const handleToggleHighlight = useCallback(async () => {
+    const currentProp = propertyRef.current;
+    if (!id || !currentProp) return;
+    setActionLoading(true);
+    const newHighlightState = !currentProp.highlighted;
+    try {
+      const { data } = await propertyApi.toggleHighlight(id, newHighlightState);
+      if (!data?.success || !data?.data) throw new Error(data?.message || 'Backend reported failure');
+      
+      setProperty(data.data);
+      await Swal.fire({
+        icon: "success",
+        title: "Éxito",
+        text: newHighlightState ? "Propiedad destacada correctamente" : "Se ha quitado el destacado de la propiedad",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id]);
+
   const openChangeStatusConfirm = useCallback((option) => {
     setConfirmData({
       title: `Cambiar estado a "${option.label}"`,
@@ -252,6 +418,35 @@ export function useShowProperty() {
     });
     setShowConfirm(true);
   }, [handleConfirmChangeVisibility]);
+
+  const handleRemoveHighlight = useCallback(async () => {
+    if (!id || actionLoading) return;
+    setActionLoading(true);
+    try {
+      const { data } = await propertyApi.removeHighlight(id);
+      if (!data?.success) throw new Error(data?.message || 'Backend reported failure');
+      if (data.property) {
+        setProperty(data.property);
+      } else {
+        setProperty((prev) => prev ? { ...prev, highlighted: false, highlightedUntil: null } : prev);
+      }
+      await Swal.fire({
+        icon: "success",
+        title: "Destacado removido",
+        text: "La propiedad ya no está destacada.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id, actionLoading]);
 
   const openDeleteConfirm = useCallback(() => {
     setConfirmData({
@@ -329,8 +524,13 @@ export function useShowProperty() {
     loadingSimilar,
     similarProperties,
     similarError,
+    recentProperties,
+    loadingRecent,
+    recentError,
     copyLink,
     activeFlagCount,
-    fetchActiveFlagCount
+    viewCount,
+    fetchActiveFlagCount,
+    handleRemoveHighlight
   };
 }

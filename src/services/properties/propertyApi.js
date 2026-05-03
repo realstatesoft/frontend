@@ -7,7 +7,13 @@ const propertyApi = {
 
   getById: (id) => api.get(`${BASE}/${id}`),
 
+  registerView: (id) => api.post(`${BASE}/${id}/views`),
+
+  getViewCount: (id) => api.get(`${BASE}/${id}/views/count`),
+
   getAll: (params) => api.get(BASE, { params }),
+
+  compare: (ids) => api.get(`${BASE}/compare`, { params: { ids: ids.join(",") } }),
 
   getByOwner: (ownerId, params) => api.get(`${BASE}/owner/${ownerId}`, { params }),
 
@@ -21,6 +27,8 @@ const propertyApi = {
 
   changeStatus: (id, newStatus) => api.patch(`${BASE}/${id}/status`, { newStatus }),
 
+  toggleHighlight: (id, highlighted) => api.patch(`${BASE}/${id}/highlight`, null, { params: { highlighted } }),
+
   trash: (id) => api.patch(`${BASE}/${id}/trash`),
 
   restore: (id) => api.patch(`${BASE}/${id}/restore`),
@@ -31,11 +39,21 @@ const propertyApi = {
 
   getSimilar: (id, limit) => api.get(`${BASE}/${id}/similar?size=${limit}`),
 
+  registerRecentView: (id) => api.post(`${BASE}/${id}/recent-views`),
+
+  getRecentProperties: () => api.get("/users/me/recent-properties"),
+
   /** Propiedades asignadas al agente autenticado (solo AGENT) */
   getMyAssignments: () => api.get("/assignments/me"),
 
   /** Propiedades del agente (Scope completo: asignadas + clientes) */
   getAgentScope: (params) => api.get(`${BASE}/agent/me`, { params }),
+
+  /** Marca la propiedad como destacada (requiere pago previo aprobado) */
+  highlight: (id) => api.post(`${BASE}/${id}/highlight`),
+
+  /** Quita el destacado de una propiedad */
+  removeHighlight: (id) => api.delete(`${BASE}/${id}/highlight`),
 };
 
 export default propertyApi;

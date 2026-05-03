@@ -1,0 +1,116 @@
+@import '../../styles/variables';
+
+.page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 2.5rem 0 3rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.25rem;
+
+  h1 {
+    font-weight: 700;
+    color: $text-dark;
+    font-size: 1.75rem;
+  }
+}
+
+/* ── Stats ──────────────────────────────────────── */
+.statsRow {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 2.25rem;
+
+  @media (max-width: 576px) {
+    flex-wrap: wrap;
+  }
+}
+
+.statCard {
+  flex: 1;
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e5e7eb;
+  transition: transform 0.18s;
+
+  &:hover { transform: translateY(-3px); }
+  &.pending  { border-bottom: 4px solid #f59e0b; }
+  &.approved { border-bottom: 4px solid #10b981; }
+  &.rejected { border-bottom: 4px solid #ef4444; }
+  &.total    { border-bottom: 4px solid $primary;  }
+}
+
+.statValue {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: $text-dark;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Toolbar ─────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Table card ──────────────────────────────────── */
+.tableCard {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.conceptCell {
+  max-width: 240px;
+}
+
+.conceptTitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.1rem;
+}
+
+.conceptDesc {
+  font-size: 0.78rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.typeBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.amountCell {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}

@@ -444,7 +444,7 @@ function DocumentCard({ doc, onReplace, onDelete }) {
         {!confirmDelete ? (
           <div className="doc-card__actions">
             <OverlayTrigger placement="top" overlay={(p) => renderTooltip(p, "Ver documento")}>
-              <a href={doc.url} target="_blank" rel="noreferrer" className="doc-action-btn doc-action-btn--view">
+              <a href={doc.url} target="_blank" rel="noopener noreferrer" className="doc-action-btn doc-action-btn--view">
                 <IoEyeOutline size={18} />
               </a>
             </OverlayTrigger>

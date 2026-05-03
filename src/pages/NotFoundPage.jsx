@@ -2,8 +2,10 @@ import React from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FIGMA_COLORS } from '../constants/clientConstants';
+import { useTranslation } from 'react-i18next';
 
 const NotFoundPage = () => {
+  const { t } = useTranslation('errors');
   return (
     <div 
       className="d-flex align-items-center justify-content-center min-vh-100 bg-light" 
@@ -16,9 +18,9 @@ const NotFoundPage = () => {
         >
           404
         </h1>
-        <h2 className="fw-bold mb-3" style={{ color: FIGMA_COLORS.deepDark }}>Página no encontrada</h2>
+        <h2 className="fw-bold mb-3" style={{ color: FIGMA_COLORS.deepDark }}>{t('notFoundTitle')}</h2>
         <p className="text-muted mb-5 px-md-5">
-          La página o el cliente que buscas no existe, no está disponible o no tienes permisos suficientes para verlo.
+          {t('notFoundBody')}
         </p>
         <Button 
           as={Link} 
@@ -27,7 +29,7 @@ const NotFoundPage = () => {
           className="rounded-pill px-5 py-3 border-0 shadow-sm"
           style={{ backgroundColor: '#0D6EFD', fontWeight: '600' }}
         >
-          Volver al inicio
+          {t('notFoundBack')}
         </Button>
       </Container>
     </div>

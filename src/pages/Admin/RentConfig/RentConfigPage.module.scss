@@ -1,0 +1,44 @@
+.container {
+  max-width: 600px;
+  padding: 24px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #212529;
+}
+
+.subtitle {
+  color: #6c757d;
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+}
+
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.input {
+  max-width: 200px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.button {
+  min-width: 140px;
+}

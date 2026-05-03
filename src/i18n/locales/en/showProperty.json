@@ -1,0 +1,74 @@
+{
+  "reportsWarning": "This property has active reports from other users. Proceed with caution.",
+  "views": {
+    "one": "1 person has viewed this property",
+    "other": "{{count}} people have viewed this property"
+  },
+  "reservationPanel": {
+    "title": "Online booking",
+    "reserve": "Reserve property",
+    "active": "This property already has an active reservation.",
+    "amount": "Amount: {{amount}}",
+    "confirm": "Confirm",
+    "reject": "Reject",
+    "loadError": "Reservations could not be loaded.",
+    "confirmError": "The reservation could not be confirmed.",
+    "rejectError": "The reservation could not be rejected."
+  },
+  "reportProperty": {
+    "title": "Report property",
+    "submit": "Send report",
+    "intro": "If you believe this property is fraudulent, illegal, or suspicious, fill out the form. Your report will be reviewed by our team.",
+    "placeholder": "Tell us what happened...",
+    "successTitle": "Report sent!",
+    "successText": "Thanks for helping us keep the community safe.",
+    "error": "An error occurred while sending the report. Please try again."
+  },
+  "actions": {
+    "back": "Back",
+    "select": "Select",
+    "generalInfo": "General Information",
+    "professionalInfo": "Professional Information",
+    "edit": "Edit",
+    "delete": "Delete",
+    "published": "Published",
+    "loadingTour": "Loading tour configuration...",
+    "noTours": "No tours available",
+    "noToursHint": "This property does not yet have 360 content or 3D models.",
+    "noFeatures": "No features loaded.",
+    "reportProperty": "Report property",
+    "reportUser": "Report user"
+  },
+  "highlightModal": {
+    "hero": {
+      "title": "Highlight your property",
+      "subtitle": "Reach more potential buyers and renters"
+    },
+    "benefits": {
+      "first": {
+        "title": "First in searches",
+        "desc": "Your property appears before others in results."
+      },
+      "second": {
+        "title": "Golden \"Featured\" badge",
+        "desc": "A visible seal that builds more trust with buyers."
+      },
+      "third": {
+        "title": "3× more views",
+        "desc": "Featured properties receive on average 3 times more inquiries."
+      }
+    },
+    "plans": {
+      "monthly": { "label": "Monthly" },
+      "semester": { "label": "Semiannual" },
+      "annual": { "label": "Annual" },
+      "popular": "⭐ Most popular",
+      "perMonth": "{{amount}} / mo · {{days}} days",
+      "savings": "Save {{percent}}%"
+    },
+    "cta": {
+      "label": "Highlight – {{planLabel}} for {{price}}"
+    },
+    "dismiss": "Not now"
+  }
+}

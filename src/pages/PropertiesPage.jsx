@@ -123,6 +123,7 @@ export default function PropertiesPage() {
                 search={search}
                 category={saleRent}
                 typeFilter={typeFilter}
+                saleRent={saleRent}
                 availability={availability}
                 minPrice={minPrice}
                 maxPrice={maxPrice}

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import DataTable from '../../components/common/DataTable/DataTable';
 import Badge from '../../components/common/Badge/Badge';
 import Button from '../../components/common/Button/Button';
@@ -49,6 +50,7 @@ const INTERNAL_TYPE_OPTIONS = [
 ];
 
 export default function ClientsPage() {
+  const { t } = useTranslation('agent');
   const { data: response, isLoading } = useAgentClients();
   const clients = response?.data || [];
   const [search, setSearch] = useState('');
@@ -83,12 +85,12 @@ export default function ClientsPage() {
     <div className={styles.page}>
       <div className={styles.page__header}>
         <div>
-          <h1 className={styles.page__title}>Clientes</h1>
-          <p className={styles.page__subtitle}>Gestiona tu cartera de clientes</p>
+          <h1 className={styles.page__title}>{t('clients.title')}</h1>
+          <p className={styles.page__subtitle}>{t('clients.subtitle')}</p>
         </div>
         <Link to="/clientes/registrar">
           <Button variant="primary" size="sm">
-            <FiUserPlus /> Nuevo Cliente
+            <FiUserPlus /> {t('clients.new')}
           </Button>
         </Link>
       </div>
@@ -105,7 +107,7 @@ export default function ClientsPage() {
             { key: 'internalType', label: 'Origen', value: internalTypeFilter, options: INTERNAL_TYPE_OPTIONS },
           ]}
           onFilter={handleFilter}
-          emptyMessage="No se encontraron clientes"
+          emptyMessage={t('clients.empty')}
         />
       </div>
     </div>

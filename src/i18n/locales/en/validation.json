@@ -1,0 +1,9 @@
+{
+  "titleRequired": "Title is required",
+  "titleTooLong": "Title cannot exceed 255 characters",
+  "addressRequired": "Address is required",
+  "addressTooLong": "Address cannot exceed 500 characters",
+  "priceRequired": "Price is required",
+  "pricePositive": "Price must be greater than 0",
+  "propertyTypeRequired": "Property type is required"
+}

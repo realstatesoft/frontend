@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Badge from '../../components/common/Badge/Badge';
 import useOwnerVisits from '../../hooks/useOwnerVisits';
 import { STATUS_COLORS } from '../../utils/constants';
@@ -18,13 +19,14 @@ function formatDate(dateStr) {
 }
 
 export default function OwnerVisitsPage() {
+  const { t } = useTranslation('owner');
   const { data: response, isLoading, isError, error } = useOwnerVisits();
   const visits = Array.isArray(response?.data) ? response.data : [];
 
   if (isLoading) {
     return (
       <div className={styles.visits}>
-        <div className={styles.visits__loading}>Cargando solicitudes de visita...</div>
+        <div className={styles.visits__loading}>{t('visits.loading')}</div>
       </div>
     );
   }
@@ -33,7 +35,7 @@ export default function OwnerVisitsPage() {
     return (
       <div className={styles.visits}>
         <div className={styles.visits__error}>
-          <p>Error al cargar las solicitudes: {error?.message || 'Error desconocido'}</p>
+          <p>{t('visits.error')}: {error?.message || t('visits.unknownError')}</p>
         </div>
       </div>
     );
@@ -43,15 +45,15 @@ export default function OwnerVisitsPage() {
     <div className={styles.visits}>
       <div className={styles.visits__header}>
         <div>
-          <h1 className={styles.visits__title}>Solicitudes de Visita</h1>
+          <h1 className={styles.visits__title}>{t('visits.title')}</h1>
           <p className={styles.visits__subtitle}>
-            Gestiona las solicitudes de visita recibidas
+            {t('visits.subtitle')}
           </p>
         </div>
       </div>
 
       {visits.length === 0 ? (
-        <div className={styles.visits__empty}>No hay solicitudes de visita</div>
+        <div className={styles.visits__empty}>{t('visits.empty')}</div>
       ) : (
         <div className={styles.visits__list}>
           {visits.map((visit) => (

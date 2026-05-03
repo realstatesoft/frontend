@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-bootstrap';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import propertyFlagsApi from '../../../services/propertyFlagsApi';
 import userReportsApi from '../../../services/userReportsApi';
 import ResolveFlagModal from './ResolveFlagModal';
@@ -19,26 +20,26 @@ import { formatTimeAgo } from '../../../utils/dateFormat';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const FLAG_TYPE_LABELS = {
-  FRAUD: 'Fraude',
-  ILLEGAL: 'Ilegal',
-  SPAM: 'Spam',
-};
+const FLAG_TYPE_LABELS = (t) => ({
+  FRAUD: t('flags.types.fraud'),
+  ILLEGAL: t('flags.types.illegal'),
+  SPAM: t('flags.types.spam'),
+});
 
-const USER_REPORT_REASON_LABELS = {
-  SPAM: 'Spam o publicidad engañosa',
-  COMPORTAMIENTO_INAPROPIADO: 'Comportamiento inapropiado',
-  INFORMACION_FALSA: 'Información falsa o engañosa',
-  ACOSO: 'Acoso o intimidación',
-  FRAUDE: 'Fraude o estafa',
-  OTRO: 'Otro',
-};
+const USER_REPORT_REASON_LABELS = (t) => ({
+  SPAM: t('flags.reasons.spam'),
+  COMPORTAMIENTO_INAPROPIADO: t('flags.reasons.inappropriate'),
+  INFORMACION_FALSA: t('flags.reasons.falseInfo'),
+  ACOSO: t('flags.reasons.harassment'),
+  FRAUDE: t('flags.reasons.fraud'),
+  OTRO: t('flags.reasons.other'),
+});
 
-const USER_REPORT_STATUS_LABELS = {
-  PENDIENTE: 'Pendiente',
-  RESUELTO: 'Resuelto',
-  DESESTIMADO: 'Desestimado',
-};
+const USER_REPORT_STATUS_LABELS = (t) => ({
+  PENDIENTE: t('flags.status.pending'),
+  RESUELTO: t('flags.status.resolved'),
+  DESESTIMADO: t('flags.status.dismissed'),
+});
 
 const STATUS_VARIANTS = {
   PENDIENTE: 'warning',
@@ -54,6 +55,7 @@ function truncate(str, max = 80) {
 // ─── Tab: Reportes de propiedades ─────────────────────────────────────────────
 
 function PropertyFlagsTab() {
+  const { t } = useTranslation('admin');
   const [flags, setFlags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,7 +68,7 @@ function PropertyFlagsTab() {
       const data = await propertyFlagsApi.getAllActiveFlags();
       setFlags(data?.data || data || []);
     } catch {
-      setError('No se pudieron cargar los reportes pendientes.');
+      setError(t('flags.propertyLoadError'));
     } finally {
       setLoading(false);
     }
@@ -86,13 +88,13 @@ function PropertyFlagsTab() {
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <p className="mt-2 text-muted">Cargando reportes...</p>
+          <p className="mt-2 text-muted">{t('flags.loading')}</p>
         </div>
       ) : error ? (
         <Alert variant="danger">{error}</Alert>
       ) : flags.length === 0 ? (
         <div className="text-center py-5 bg-light rounded shadow-sm">
-          <p className="text-muted mb-0 fs-5 mt-2">No hay reportes pendientes.</p>
+          <p className="text-muted mb-0 fs-5 mt-2">{t('flags.empty')}</p>
         </div>
       ) : (
         <div className="table-responsive bg-white rounded shadow-sm">
@@ -100,12 +102,12 @@ function PropertyFlagsTab() {
             <thead className="bg-light">
               <tr>
                 <th className="px-3">ID</th>
-                <th>Propiedad</th>
-                <th>Tipo</th>
-                <th>Motivo</th>
-                <th>Reportado por</th>
-                <th>Fecha</th>
-                <th className="text-end px-3">Acciones</th>
+                <th>{t('flags.table.property')}</th>
+                <th>{t('flags.table.type')}</th>
+                <th>{t('flags.table.reason')}</th>
+                <th>{t('flags.table.reportedBy')}</th>
+                <th>{t('flags.table.date')}</th>
+                <th className="text-end px-3">{t('flags.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -114,7 +116,7 @@ function PropertyFlagsTab() {
                   <td className="px-3 text-muted">#{flag.id}</td>
                   <td>
                     <Link to={`/properties/${flag.propertyId}`} className="text-decoration-none">
-                      Ver Propiedad
+                      {t('flags.viewProperty')}
                     </Link>
                   </td>
                   <td>
@@ -128,7 +130,7 @@ function PropertyFlagsTab() {
                       }
                       text={flag.flagType === 'SPAM' ? 'dark' : 'light'}
                     >
-                      {FLAG_TYPE_LABELS[flag.flagType] || flag.flagType}
+                      {FLAG_TYPE_LABELS(t)[flag.flagType] || flag.flagType}
                     </Badge>
                   </td>
                   <td>
@@ -168,6 +170,7 @@ function PropertyFlagsTab() {
 // ─── Tab: Reportes de usuarios ─────────────────────────────────────────────────
 
 function UserReportsTab() {
+  const { t } = useTranslation('admin');
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -189,7 +192,7 @@ function UserReportsTab() {
       const items = payload?.content || payload || [];
       setReports(Array.isArray(items) ? items : []);
     } catch {
-      setError('No se pudieron cargar los reportes de usuarios.');
+      setError(t('flags.userLoadError'));
     } finally {
       setLoading(false);
     }
@@ -207,11 +210,11 @@ function UserReportsTab() {
   const handleStatusChange = async (reportId, newStatus) => {
     try {
       await userReportsApi.updateUserReportStatus(reportId, newStatus);
-      showSuccess('Estado del reporte actualizado.');
+      showSuccess(t('flags.updateSuccess'));
       fetchReports();
     } catch (err) {
       setError(
-        err.response?.data?.message || 'No se pudo actualizar el estado del reporte.'
+        err.response?.data?.message || t('flags.updateError')
       );
     }
   };
@@ -226,8 +229,8 @@ function UserReportsTab() {
     <>
       {/* Filtro por estado */}
       <div className="d-flex align-items-center gap-2 mb-3">
-        <span className="text-muted small">Filtrar por estado:</span>
-        {[{ value: '', label: 'Todos' }, ...STATUS_OPTIONS].map((opt) => (
+        <span className="text-muted small">{t('flags.filterByStatus')}</span>
+        {[{ value: '', label: t('common.all') }, ...STATUS_OPTIONS].map((opt) => (
           <button
             key={opt.value}
             className={`btn btn-sm ${statusFilter === opt.value ? 'btn-primary' : 'btn-outline-secondary'}`}
@@ -252,11 +255,11 @@ function UserReportsTab() {
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <p className="mt-2 text-muted">Cargando reportes...</p>
+          <p className="mt-2 text-muted">{t('flags.loading')}</p>
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-5 bg-light rounded shadow-sm">
-          <p className="text-muted mb-0 fs-5 mt-2">No hay reportes de usuarios.</p>
+          <p className="text-muted mb-0 fs-5 mt-2">{t('flags.emptyUsers')}</p>
         </div>
       ) : (
         <div className="table-responsive bg-white rounded shadow-sm">
@@ -264,13 +267,13 @@ function UserReportsTab() {
             <thead className="bg-light">
               <tr>
                 <th className="px-3">ID</th>
-                <th>Usuario reportado</th>
-                <th>Reportado por</th>
-                <th>Motivo</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th className="text-end px-3">Acciones</th>
+                <th>{t('flags.table.reportedUser')}</th>
+                <th>{t('flags.table.reporter')}</th>
+                <th>{t('flags.table.reason')}</th>
+                <th>{t('flags.table.description')}</th>
+                <th>{t('flags.table.date')}</th>
+                <th>{t('flags.table.status')}</th>
+                <th className="text-end px-3">{t('flags.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -285,7 +288,7 @@ function UserReportsTab() {
                   </td>
                   <td>
                     <Badge bg="secondary">
-                      {USER_REPORT_REASON_LABELS[report.reason] || report.reason}
+                      {USER_REPORT_REASON_LABELS(t)[report.reason] || report.reason}
                     </Badge>
                   </td>
                   <td>
@@ -307,7 +310,7 @@ function UserReportsTab() {
                   </td>
                   <td>
                     <Badge bg={STATUS_VARIANTS[report.status] || 'secondary'}>
-                      {USER_REPORT_STATUS_LABELS[report.status] || report.status}
+                      {USER_REPORT_STATUS_LABELS(t)[report.status] || report.status}
                     </Badge>
                   </td>
                   <td className="text-end px-3">

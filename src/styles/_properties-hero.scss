@@ -3,34 +3,24 @@
 @import "./variables";
 
 .filter-bar {
-    background-color: #fff;
-    border: 1px solid $border-color-soft;
-    border-radius: 999px; // píldora completa
-    box-shadow: $shadow-soft;
-    padding: 8px 16px;
     display: flex;
     align-items: center;
-    gap: 0;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-
-    // Ocultar scrollbar en mobile
-    &::-webkit-scrollbar {
-        display: none;
-    }
-
-    scrollbar-width: none;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
 }
 
-// Buscador de texto (zona izquierda)
 .filter-bar__search {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex: 1 1 220px;
-    min-width: 0;
-    padding-right: 12px;
-    border-right: 1px solid $border-color-soft;
+    flex: 1 1 240px;
+    min-width: 200px;
+    padding: 8px 16px;
+    background-color: #fff;
+    border: 1px solid $border-color-soft;
+    border-radius: 999px;
+    box-shadow: $shadow-soft;
 
     input {
         border: none;
@@ -53,45 +43,43 @@
     }
 }
 
-// Separador vertical entre pills
 .filter-bar__divider {
-    width: 1px;
-    height: 24px;
-    background-color: $border-color-soft;
-    flex-shrink: 0;
-    margin: 0 4px;
+    display: none; // No longer needed
 }
 
-// Cada pill-botón de filtro
-.filter-pill {
+%filter-pill {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 999px;
-    border: 1.5px solid transparent;
-    background: transparent;
+    border: 1px solid $border-color-soft;
+    background: #fff;
     font-family: $font-family-sans-serif;
     font-size: 0.875rem;
     font-weight: $font-weight-medium;
     color: $text-dark;
     cursor: pointer;
     white-space: nowrap;
+    box-shadow: $shadow-soft;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.filter-pill {
+    @extend %filter-pill;
 
     &:hover {
         background-color: $neutral-soft;
         border-color: $border-color-soft;
     }
 
-    // Estado activo (filtro seleccionado)
     &--active {
         background-color: color.adjust($primary, $lightness: 42%);
         border-color: $primary;
         color: $primary;
     }
 
-    // Chevron CSS
     .filter-pill__chevron {
         display: inline-block;
         width: 8px;
@@ -107,7 +95,6 @@
         }
     }
 
-    // Badge de cantidad
     .filter-pill__badge {
         background-color: $primary;
         color: #fff;
@@ -123,7 +110,6 @@
     }
 }
 
-// Botón limpiar (solo ícono)
 .filter-bar__clear {
     display: inline-flex;
     align-items: center;
@@ -146,7 +132,97 @@
     }
 }
 
-// Dropdown panel avanzado
+.filter-bar__save {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1.5px solid $border-color-soft;
+    background: transparent;
+    font-family: $font-family-sans-serif;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+    color: $text-dark;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+
+    &:hover {
+        background-color: $neutral-soft;
+        border-color: $border-color-soft;
+    }
+}
+
+.filter-bar__saved-dropdown {
+    position: relative;
+
+    .dropdown-toggle {
+        @extend %filter-pill;
+
+        &::after {
+            display: none;
+        }
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        z-index: 1000;
+        border: 1px solid $border-color-soft;
+        border-radius: $radius-md;
+        box-shadow: $shadow-soft;
+        min-width: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+        background: #fff;
+    }
+
+    .dropdown-item {
+        font-family: $font-family-sans-serif;
+        font-size: 0.875rem;
+        padding: 8px 12px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $neutral-soft;
+        }
+
+        &:disabled {
+            color: $text-muted;
+            cursor: default;
+        }
+    }
+
+    .dropdown-header {
+        font-size: 0.75rem;
+        font-weight: $font-weight-semibold;
+        color: $text-muted;
+        padding: 8px 12px;
+        border-bottom: 1px solid $border-color-soft;
+    }
+
+    .filter-bar__delete-search {
+        background: none;
+        border: none;
+        color: $text-muted;
+        font-size: 1.2rem;
+        line-height: 1;
+        padding: 0 4px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.15s, color 0.15s;
+
+        &:hover {
+            color: $danger;
+        }
+    }
+
+    .dropdown-item:hover .filter-bar__delete-search {
+        opacity: 1;
+    }
+}
+
 .filter-bar__advanced-panel {
     background: #fff;
     border: 1px solid $border-color-soft;
@@ -182,7 +258,6 @@
     }
 }
 
-// Contador de resultados
 .filter-bar__results {
     font-family: $font-family-sans-serif;
     font-size: 0.875rem;

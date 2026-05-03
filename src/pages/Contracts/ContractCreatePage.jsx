@@ -81,8 +81,8 @@ export default function ContractCreatePage() {
   const isAgent = role === 'AGENT';
   const isPublicContractsFlow = !isAgent;
   const isGuidedSellerFlow = !isAgent;
-  const contractsHomePath = isAgent ? '/agent/contratos' : (role === 'OWNER' ? '/owner/ofertas' : '/ofertas');
-  const backLabel = isAgent ? 'Volver a contratos' : 'Volver a ofertas';
+  const contractsHomePath = isAgent ? '/agent/contratos' : '/owner/contratos';
+  const backLabel = 'Volver a contratos';
 
   const { id: contractIdFromUrl } = useParams();
   const isEditing = Boolean(contractIdFromUrl);
@@ -95,13 +95,12 @@ export default function ContractCreatePage() {
   const { data: existingContract, isLoading: isLoadingContract } = useContractDetail(contractIdFromUrl);
 
   useEffect(() => {
-    if (isEditing && existingContract?.data) {
-      const c = existingContract.data;
+    if (isEditing && existingContract) {
+      const c = existingContract;
       
       // Si la propiedad no está en la lista de 'properties', traerla
       if (c.propertyId && !properties.find(p => p.id === c.propertyId)) {
-        propertyApi.getById(c.propertyId).then(res => {
-          const prop = res?.data?.data ?? res?.data;
+        propertyApi.getById(c.propertyId).then(prop => {
           if (prop) setProperties(prev => [prop, ...prev]);
         }).catch(() => {});
       }
@@ -288,8 +287,7 @@ export default function ContractCreatePage() {
     if (!mlsSearch.trim()) return;
     setIsSearchingMls(true);
     try {
-      const res = await propertyApi.getById(mlsSearch.trim());
-      const prop = res?.data?.data ?? res?.data ?? null;
+      const prop = await propertyApi.getById(mlsSearch.trim());
       
       if (prop) {
         setProperties(prev => {
@@ -332,8 +330,7 @@ export default function ContractCreatePage() {
     setSellerName('');
     if (!propId) return;
     try {
-      const res = await propertyApi.getById(propId);
-      const prop = res?.data?.data ?? res?.data ?? {};
+      const prop = await propertyApi.getById(propId);
       setForm((prev) => ({
         ...prev,
         propertyId: propId,
@@ -480,7 +477,7 @@ export default function ContractCreatePage() {
         res = await createContract.mutateAsync(payload);
       }
       
-      const contractId = res?.data?.id ?? res?.id ?? contractIdFromUrl;
+      const contractId = res?.id ?? contractIdFromUrl;
 
       if (sendAfterCreate && contractId) {
         try {

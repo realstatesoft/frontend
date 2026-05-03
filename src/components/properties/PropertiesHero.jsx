@@ -149,7 +149,6 @@ export default function PropertiesHero({
                         </Dropdown.Menu>
                     </Dropdown>
                     )}
-
                     {/* Pill: Operación */}
                     <PillSelect
                         label="Operación"

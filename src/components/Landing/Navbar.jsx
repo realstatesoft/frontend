@@ -1,6 +1,7 @@
 import { Container, Navbar, Nav, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   BoxArrowInRight,
   BoxArrowRight,
@@ -11,13 +12,16 @@ import {
   Trash,
 } from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
+import useHasPublishedProperties from "../../hooks/useHasPublishedProperties";
 import { CiUser } from "react-icons/ci";
 import {
   IoHomeOutline,
   IoSettingsOutline,
   IoLogOutOutline,
   IoLogInOutline,
+  IoBookmarkOutline,
   IoCalendarClearOutline,
+  IoCalendarOutline,
   IoSpeedometerOutline,
   IoOptionsOutline,
   IoShieldOutline,
@@ -32,9 +36,14 @@ import Logotipo from "../../assets/Logotipo.png";
 import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
 import { useUnreadMessagesCount } from "../../hooks/useMessagesData";
+import LanguageSelector from "../common/LanguageSelector";
+import { useQueryClient } from "@tanstack/react-query";
+import propertyApi from "../../services/properties/propertyApi";
 
 function CustomNavbar() {
   const navigate = useNavigate();
+  const { t } = useTranslation('navigation');
+  const queryClient = useQueryClient();
 
   // Obtiene el estado de autenticacion, datos del usuario y funcion de logout del contexto global
   const { isAuthenticated, user, logout } = useAuth();
@@ -49,11 +58,13 @@ function CustomNavbar() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   // ── Messages unread count ──────────────────────────────
-  const { data: messagesUnread = 0 } = useUnreadMessagesCount();
+  const { data: messagesUnread = 0 } = useUnreadMessagesCount({ enabled: isAuthenticated });
 
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
   const isAgent = user?.role?.toUpperCase() === "AGENT";
+
+  const hasPublishedProperties = useHasPublishedProperties();
 
   useEffect(() => {
     const fetchCount = () => {
@@ -117,36 +128,51 @@ function CustomNavbar() {
   };
 
   return (
-    <Navbar expand="lg" className="bg-light py-3">
-      <Container className="bg-white rounded-pill shadow-sm px-4 py-2">
+    <Navbar expand="lg" className="bg-white border-bottom shadow-sm py-2" style={{ zIndex: 1040, borderRadius: "0 0 24px 24px" }}>
+      <Container fluid className="px-3 px-lg-5">
 
-        <Navbar.Brand as={Link} to="/" className="fw-bold">
+        <Navbar.Brand as={Link} to="/" className="fw-bold me-4">
           <img src={Logotipo} alt="OpenRoof" style={{ height: '40px', transform: 'scale(2.3)', transformOrigin: 'left center' }} />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
-          <Nav className="mx-auto gap-4">
-            <Nav.Link as={Link} to="/">Inicio</Nav.Link>
-            <Nav.Link href="#about">About us</Nav.Link>
-            <Nav.Link href="#projects">Projects</Nav.Link>
-            <Nav.Link href="#agents">Agents</Nav.Link>
-            <Nav.Link href="#services">Services</Nav.Link>
-            <Nav.Link as={Link} to="/properties">
-              Propiedades
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto ms-5 gap-4 fw-semibold" style={{ fontSize: "0.95rem" }}>
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Venta" }} onMouseEnter={() => {
+              queryClient.prefetchQuery({
+                queryKey: ["properties", { page: 1, size: 12, search: "", propertyType: undefined, category: "SALE", status: undefined, availability: undefined, minPrice: undefined, maxPrice: undefined, minBedrooms: undefined, minBathrooms: undefined }],
+                queryFn: async () => {
+                  const res = await propertyApi.getAll({ page: 0, size: 12, category: "SALE" });
+                  const pageData = res?.data ? (res.data.data ?? res.data) : { content: [], totalPages: 0, totalElements: 0 };
+                  return { properties: pageData.content ?? [], totalPages: Number(pageData.totalPages ?? 0), totalElements: Number(pageData.totalElements ?? 0) };
+                },
+                staleTime: 5 * 60 * 1000,
+              });
+            }}>
+              {t('buy') || 'Comprar'}
             </Nav.Link>
+            
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Alquiler" }}>
+              {t('rent') || 'Alquilar'}
+            </Nav.Link>
+
             <Nav.Link as={Link} to="/property-management">
-              Vender / Alquilar
+              {t('sell') || 'Vender'}
+            </Nav.Link>
+
+            <Nav.Link as={Link} to="/agents">
+              {t('agents') || 'Agentes'}
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
 
         {/* Bell icon for ADMIN + Profile icon with dropdown */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <LanguageSelector />
 
         {isAuthenticated && isAdmin && (
-          <Link to="/admin/notifications" className="navbar-notification-bell" aria-label="Notificaciones">
+          <Link to="/admin/notifications" className="navbar-notification-bell" aria-label={t('notifications')}>
             <IoNotificationsOutline size={20} />
             {unreadCount > 0 && (
               <span className="bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
@@ -155,17 +181,18 @@ function CustomNavbar() {
         )}
 
         {isAuthenticated && messagesUnread > 0 && (
-          <Link to="/mensajes" className="navbar-messages-link" aria-label="Mensajes">
+          <Link to="/mensajes" className="navbar-messages-link" aria-label={t('messages')}>
             <IoChatbubblesOutline size={20} />
             <span className="bell-badge">{Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}</span>
           </Link>
         )}
 
+
         <div className="profile-dropdown-wrapper" ref={dropdownRef}>
           <button
             className="profile-avatar-btn"
             onClick={() => setDropdownOpen((o) => !o)}
-            aria-label="Menu de perfil"
+            aria-label={t('profileMenu')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
               <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
@@ -179,26 +206,39 @@ function CustomNavbar() {
                 <>
                   {/* Seccion 1: navegacion personal */}
                   <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <Person size={17} style={{ flexShrink: 0 }} /> Mi perfil
+                    <Person size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
                   </Link>
                   <Link to={getOffersLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoCashOutline size={16} style={{ flexShrink: 0 }} /> Mis Ofertas
+                    <IoCashOutline size={16} style={{ flexShrink: 0 }} /> {t('myOffers')}
                   </Link>
                   <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <HouseDoor size={16} style={{ flexShrink: 0 }} /> Mis propiedades
+                    <HouseDoor size={16} style={{ flexShrink: 0 }} /> {t('myProperties')}
                   </Link>
+                  <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> {t('myReservations')}
+                  </Link>
+                  {hasPublishedProperties && user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
+                    </Link>
+                  )}
                   <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <Trash size={14} style={{ flexShrink: 0 }} /> Papelera
+                    <Trash size={14} style={{ flexShrink: 0 }} /> {t('trash')}
                   </Link>
                   <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <Heart size={16} style={{ flexShrink: 0 }} /> Favoritos
+                    <Heart size={16} style={{ flexShrink: 0 }} /> {t('favorites')}
                   </Link>
                   <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> Mis preferencias
+                    <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> {t('preferences')}
                   </Link>
+                  {user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
+                    </Link>
+                  )}
                   {!isAgent && !isAdmin && (
                     <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> Mis mensajes
+                      <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
                       {messagesUnread > 0 && (
                         <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
                           {Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}
@@ -208,18 +248,22 @@ function CustomNavbar() {
                   )}
                   {user?.role?.toUpperCase() === "ADMIN" && (
                     <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> Panel de administración
+                      <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('adminPanel')}
                     </Link>
                   )}
 
                   {isAgent && (
                     <>
+                      {hasPublishedProperties && (
+                        <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                          <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
+                        </Link>
+                      )}
                       <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> Agenda
+                        <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> {t('agenda')}
                       </Link>
-                    
                       <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> Ver Dashboard
+                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
                       </Link>
                     </>
                   )}
@@ -227,7 +271,7 @@ function CustomNavbar() {
                   {isAdmin && (
                     <>
                       <Link to="/admin/notifications" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoNotificationsOutline size={16} style={{ flexShrink: 0 }} /> Notificaciones
+                        <IoNotificationsOutline size={16} style={{ flexShrink: 0 }} /> {t('notifications')}
                         {unreadCount > 0 && (
                           <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
                             {unreadCount}
@@ -235,7 +279,7 @@ function CustomNavbar() {
                         )}
                       </Link>
                       <Link to="/admin/approval" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoCheckmarkDoneOutline size={16} style={{ flexShrink: 0 }} /> Aprobación de propiedades
+                        <IoCheckmarkDoneOutline size={16} style={{ flexShrink: 0 }} /> {t('propertyApproval')}
                       </Link>
                     </>
                   )}
@@ -244,16 +288,16 @@ function CustomNavbar() {
 
                   {/* Seccion 2: configuracion y sesion */}
                   <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <Gear size={16} style={{ flexShrink: 0 }} /> Ajustes
+                    <Gear size={16} style={{ flexShrink: 0 }} /> {t('settings')}
                   </Link>
                   <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
-                    <BoxArrowRight size={16} style={{ flexShrink: 0 }} /> Cerrar sesión
+                    <BoxArrowRight size={16} style={{ flexShrink: 0 }} /> {t('logout')}
                   </button>
                 </>
               ) : (
                 /* ── Usuario no logueado ──────────────────────── */
                 <button className="profile-dropdown-item" onClick={handleLogin}>
-                  <BoxArrowInRight size={16} style={{ flexShrink: 0 }} /> Iniciar sesión
+                  <BoxArrowInRight size={16} style={{ flexShrink: 0 }} /> {t('login')}
                 </button>
               )}
             </div>
@@ -262,15 +306,7 @@ function CustomNavbar() {
 
         </div>
 
-        {!isAuthenticated && (
-          <Button
-            variant="outline-dark"
-            className="rounded-pill px-4"
-            onClick={() => navigate("/properties")}
-          >
-            Contactanos
-          </Button>
-        )}
+
 
       </Container>
     </Navbar>

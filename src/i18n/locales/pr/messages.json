@@ -1,0 +1,24 @@
+{
+  "newConversation": {
+    "title": "Nova conversa",
+    "searchPlaceholder": "Pesquisar...",
+    "agents": "Corretores",
+    "clients": "Meus clientes",
+    "loading": "Carregando...",
+    "emptyAgents": "Não há corretores disponíveis",
+    "emptyClients": "Não há clientes disponíveis",
+    "invalidContact": "Não é possível enviar mensagem: contato inválido",
+    "composeTitle": "Nova mensagem",
+    "messagePlaceholder": "Escreva sua mensagem...",
+    "sending": "Enviando...",
+    "send": "Enviar",
+    "back": "Voltar",
+    "error": "Erro ao enviar a mensagem",
+    "agentFallback": "Corretor imobiliário",
+    "contactFallback": "Sem nome"
+  },
+  "page": {
+    "loading": "Carregando mensagens...",
+    "empty": "Selecione uma conversa para começar"
+  }
+}

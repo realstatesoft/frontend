@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Spinner, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import notificationApi from '../../services/notifications/notificationApi';
@@ -63,6 +64,7 @@ function timeAgo(dateStr) {
 }
 
 export default function AdminNotificationsPage() {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,7 +114,7 @@ export default function AdminNotificationsPage() {
     } catch (err) {
       if (fetchId !== latestFetchRef.current) return;
       console.error('Error al cargar notificaciones:', err);
-      setError('No se pudieron cargar las notificaciones. Intente más tarde.');
+      setError(t('notifications.loadError'));
     } finally {
       if (fetchId === latestFetchRef.current) setLoading(false);
     }
@@ -133,7 +135,7 @@ export default function AdminNotificationsPage() {
       window.dispatchEvent(new Event('notificationsUpdated'));
     } catch (err) {
       console.error(err);
-      setError('Error al marcar como leída');
+      setError(t('notifications.markReadError'));
     } finally {
       setActionLoading(false);
     }
@@ -143,13 +145,13 @@ export default function AdminNotificationsPage() {
     try {
       setActionLoading(true);
       await notificationApi.markAllAsRead();
-      setSuccessMsg('Todas las notificaciones marcadas como leídas');
+      setSuccessMsg(t('notifications.markAllReadSuccess'));
       setTimeout(() => setSuccessMsg(null), 3000);
       await fetchNotifications();
       window.dispatchEvent(new Event('notificationsUpdated'));
     } catch (err) {
       console.error(err);
-      setError('Error al marcar todas como leídas');
+      setError(t('notifications.markAllReadError'));
     } finally {
       setActionLoading(false);
     }
@@ -165,9 +167,10 @@ export default function AdminNotificationsPage() {
       
       await notificationApi.deleteAllNotifications(params);
       
-      setSuccessMsg(filter 
-        ? `Notificaciones de '${activeFilterLabel}' eliminadas` 
-        : 'Todas las notificaciones han sido eliminadas'
+      setSuccessMsg(
+        filter
+          ? t('notifications.deletedFiltered', { label: activeFilterLabel })
+          : t('notifications.deletedAll')
       );
       setTimeout(() => setSuccessMsg(null), 3000);
       
@@ -175,7 +178,7 @@ export default function AdminNotificationsPage() {
       window.dispatchEvent(new Event('notificationsUpdated'));
     } catch (err) {
       console.error(err);
-      setError('Error al eliminar las notificaciones');
+      setError(t('notifications.deleteError'));
     } finally {
       setActionLoading(false);
     }
@@ -194,12 +197,12 @@ export default function AdminNotificationsPage() {
         await fetchNotifications();
       }
       
-      setSuccessMsg('Notificación eliminada');
+      setSuccessMsg(t('notifications.deletedOne'));
       setTimeout(() => setSuccessMsg(null), 3000);
       window.dispatchEvent(new Event('notificationsUpdated'));
     } catch (err) {
       console.error(err);
-      setError('Error al eliminar notificación');
+      setError(t('notifications.deleteOneError'));
     } finally {
       setActionLoading(false);
     }
@@ -215,7 +218,7 @@ export default function AdminNotificationsPage() {
   };
 
   // Active filter label for display
-  const activeFilterLabel = FILTER_TABS.find(t => t.key === filter)?.label || 'Todas';
+  const activeFilterLabel = FILTER_TABS.find(t => t.key === filter)?.label || t('notifications.filters.all');
 
   return (
     <div className="notifications-page">
@@ -224,11 +227,11 @@ export default function AdminNotificationsPage() {
       <Container className="py-4">
         {/* ── Header ──────────────────────────────────── */}
         <header className="notifications-header">
-          <h1>Notificaciones</h1>
+          <h1>{t('notifications.title')}</h1>
           <p className="notifications-subtitle">
             {totalElements > 0
-              ? `Viendo ${totalElements} notificación${totalElements !== 1 ? 'es' : ''} en total (${unreadCount} sin leer)`
-              : 'No hay notificaciones en esta vista'
+              ? t('notifications.subtitle', { count: totalElements, suffix: totalElements !== 1 ? 'es' : '', unread: unreadCount })
+              : t('notifications.empty')
             }
           </p>
           <div className="header-actions">
@@ -238,7 +241,7 @@ export default function AdminNotificationsPage() {
                 onClick={handleMarkAllAsRead}
                 disabled={actionLoading}
               >
-                ✓ Marcar leídas
+                {t('notifications.markAllRead')}
               </button>
             )}
             {totalElements > 0 && (
@@ -248,7 +251,7 @@ export default function AdminNotificationsPage() {
                 disabled={actionLoading}
                 style={{ backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '20px', padding: '0.4rem 1rem', fontSize: '0.85rem', fontWeight: 600 }}
               >
-                🗑️ Eliminar todas
+                {t('notifications.deleteAll')}
               </button>
             )}
           </div>
@@ -293,7 +296,7 @@ export default function AdminNotificationsPage() {
           {loading ? (
             <div className="text-center py-5">
               <Spinner animation="border" variant="primary" />
-              <p className="mt-3 text-muted">Cargando notificaciones...</p>
+              <p className="mt-3 text-muted">{t('notifications.loading')}</p>
             </div>
           ) : notifications.length > 0 ? (
             notifications.map(notification => {
@@ -359,14 +362,14 @@ export default function AdminNotificationsPage() {
               <div className="empty-icon">
                 <IoNotificationsOutline size={48} />
               </div>
-              <p className="empty-title">No hay notificaciones</p>
+              <p className="empty-title">{t('notifications.emptyTitle')}</p>
               <p className="empty-message">
                 {filter === 'UNREAD'
                   ? 'No tienes notificaciones sin leer.'
                   : filter === 'READ'
                     ? 'No tienes notificaciones leídas.'
                     : filter === 'PROPERTY'
-                      ? 'No hay notificaciones de propiedades.'
+                      ? t('notifications.emptyProperty')
                       : 'Aún no has recibido ninguna notificación.'
                 }
               </p>

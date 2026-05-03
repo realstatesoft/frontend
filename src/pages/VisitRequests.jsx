@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Dropdown, Spinner, Alert } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import StatsCards from '../components/visits/StatsCards';
 import VisitCard from '../components/visits/VisitCard';
 import SuggestTimeModal from '../components/visits/SuggestTimeModal';
@@ -12,16 +14,11 @@ import {
   counterProposeVisitRequest,
 } from '../services/visits/visitApi';
 
-const FILTER_OPTIONS = [
-  { label: 'Todas', value: 'ALL' },
-  { label: 'Pendientes', value: 'PENDING' },
-  { label: 'Aceptadas', value: 'ACCEPTED' },
-  { label: 'Contra-propuestas', value: 'COUNTER_PROPOSED' },
-  { label: 'Rechazadas', value: 'REJECTED' },
-  { label: 'Canceladas', value: 'CANCELLED' },
-];
+const FILTER_VALUES = ['ALL', 'PENDING', 'ACCEPTED', 'COUNTER_PROPOSED', 'REJECTED', 'CANCELLED'];
 
 const VisitRequests = ({ mode = 'AGENT' }) => {
+  const { t } = useTranslation('owner');
+  const navigate = useNavigate();
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -76,19 +73,30 @@ const VisitRequests = ({ mode = 'AGENT' }) => {
       setActionLoading(true);
       const updated = await acceptVisitRequest(id);
       setVisits(prev => prev.map(v => v.id === id ? updated : v));
+      const buttons = [];
+      if (mode === 'AGENT') {
+        buttons.push({ 
+          label: t('visits.viewAgenda', { defaultValue: 'Ver mi agenda' }), 
+          variant: 'outline-primary', 
+          onClick: () => { setShowSuccessModal(false); navigate('/agent/agenda'); } 
+        });
+      }
+      buttons.push({ 
+        label: t('close', { ns: 'common' }), 
+        variant: 'primary', 
+        onClick: () => setShowSuccessModal(false) 
+      });
+
       setSuccessConfig({
-        title: 'La confirmación ha sido enviada',
-        description: 'Esta visita fue agregada a tu agenda',
-        buttons: [
-          { label: 'Ver mi agenda', variant: 'outline-primary', onClick: () => setShowSuccessModal(false) },
-          { label: 'Cerrar', variant: 'primary', onClick: () => setShowSuccessModal(false) },
-        ],
+        title: t('visits.confirmationTitle', { defaultValue: 'La confirmación ha sido enviada' }),
+        description: t('visits.confirmationDescription', { defaultValue: 'Esta visita fue agregada a tu agenda' }),
+        buttons: buttons,
       });
       setShowSuccessModal(true);
     } catch (err) {
       console.error('Error al aceptar solicitud:', err);
       const serverMessage = err.response?.data?.message;
-      setError(serverMessage || 'Error al confirmar la solicitud');
+      setError(serverMessage || t('visits.confirmError', { defaultValue: 'Error al confirmar la solicitud' }));
     } finally {
       setActionLoading(false);
     }
@@ -125,31 +133,39 @@ const VisitRequests = ({ mode = 'AGENT' }) => {
       setVisits(prev => prev.map(v => v.id === id ? updated : v));
       setShowSuggestModal(false);
       setSuccessConfig({
-        title: 'Sugerencia enviada',
-        description: 'El solicitante será informado sobre tu propuesta de nuevo horario',
+        title: t('visits.suggestionTitle', { defaultValue: 'Sugerencia enviada' }),
+        description: t('visits.suggestionDescription', { defaultValue: 'El solicitante será informado sobre tu propuesta de nuevo horario' }),
         buttons: [
-          { label: 'Cerrar', variant: 'primary', onClick: () => setShowSuccessModal(false) },
+          { label: t('close', { ns: 'common' }), variant: 'primary', onClick: () => setShowSuccessModal(false) },
         ],
       });
       setShowSuccessModal(true);
     } catch (err) {
       console.error('Error al contra-proponer:', err);
       const serverMessage = err.response?.data?.message;
-      setError(serverMessage || 'Error al enviar la sugerencia');
+      setError(serverMessage || t('visits.suggestError', { defaultValue: 'Error al enviar la sugerencia' }));
     } finally {
       setActionLoading(false);
     }
   };
 
   // ─── Active filter label ────────────────────────────────────
-  const activeFilterLabel = FILTER_OPTIONS.find(o => o.value === filter)?.label || 'Todas';
+  const filterLabelMap = {
+    ALL: t('visits.filters.all'),
+    PENDING: t('visits.filters.pending'),
+    ACCEPTED: t('visits.filters.accepted'),
+    COUNTER_PROPOSED: t('visits.filters.counterProposed'),
+    REJECTED: t('visits.filters.rejected'),
+    CANCELLED: t('visits.filters.cancelled'),
+  };
+  const activeFilterLabel = filterLabelMap[filter] || t('visits.filters.all');
 
   return (
     <div className="visit-requests-page">
       <Container className="py-4">
         <header className="visit-requests-header">
-          <h1 className="fw-bold mb-2">Solicitudes de Visitas</h1>
-          <p className="text-muted mb-0">Revisa y aprueba las solicitudes de visitas a sus propiedades</p>
+          <h1 className="fw-bold mb-2">{t('visits.title')}</h1>
+          <p className="text-muted mb-0">{t('visits.subtitle')}</p>
         </header>
 
         <StatsCards stats={stats} />
@@ -166,14 +182,14 @@ const VisitRequests = ({ mode = 'AGENT' }) => {
               {activeFilterLabel} <span className="ms-2 small">▼</span>
             </Dropdown.Toggle>
             <Dropdown.Menu className="shadow border-0">
-              {FILTER_OPTIONS.map(opt => (
+              {FILTER_VALUES.map(value => (
                 <Dropdown.Item
-                  key={opt.value}
+                  key={value}
                   className="py-2"
-                  active={filter === opt.value}
-                  onClick={() => setFilter(opt.value)}
+                  active={filter === value}
+                  onClick={() => setFilter(value)}
                 >
-                  {opt.label}
+                  {filterLabelMap[value]}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>
@@ -184,7 +200,7 @@ const VisitRequests = ({ mode = 'AGENT' }) => {
           {loading ? (
             <div className="text-center py-5">
               <Spinner animation="border" variant="primary" />
-              <p className="text-muted mt-3">Cargando solicitudes...</p>
+              <p className="text-muted mt-3">{t('visits.loading')}</p>
             </div>
           ) : filteredVisits.length > 0 ? (
             filteredVisits.map(visit => (
@@ -199,7 +215,11 @@ const VisitRequests = ({ mode = 'AGENT' }) => {
             ))
           ) : (
             <div className="text-center py-5">
-              <p className="text-muted">No hay solicitudes de visitas {filter !== 'ALL' ? `con estado "${activeFilterLabel}"` : 'en este momento'}.</p>
+              <p className="text-muted">
+                {filter !== 'ALL'
+                  ? t('visits.emptyFiltered', { status: activeFilterLabel })
+                  : t('visits.empty')}
+              </p>
             </div>
           )}
         </section>

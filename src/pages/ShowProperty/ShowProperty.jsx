@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import {
   Container,
   Row,
@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag } from "react-bootstrap-icons";
+import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -24,17 +24,25 @@ import ConfirmDialog from "../../components/commons/ConfirmDialog";
 import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
+import { useAuth } from "../../hooks/useAuth";
 import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
+import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
+import HighlightPropertyModal from "../../components/properties/HighlightPropertyModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
-import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
+import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
+import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
+import { useTranslation } from "react-i18next";
 import "./show-property.scss";
 
+const Property360Tour = lazy(() => import("../../components/properties/Property360Tour/Property360Tour"));
+
 export default function ShowProperty() {
+  const { t } = useTranslation("showProperty");
   const BASE_URL = import.meta.env.VITE_DEPLOY_URL
 
   const {
@@ -60,14 +68,22 @@ export default function ShowProperty() {
     PROPERTY_VISIBILITY_OPTIONS,
     similarProperties,
     loadingSimilar,
+    recentProperties,
+    loadingRecent,
+    recentError,
     copyLink,
     activeFlagCount,
+    viewCount,
     isAuthenticated,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleRemoveHighlight
   } = useShowProperty();
+
+  const { user: authUser } = useAuth();
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
+  const [showHighlightModal, setShowHighlightModal] = useState(false);
 
   const {
     canChangeStatus,
@@ -82,15 +98,21 @@ export default function ShowProperty() {
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
+  const viewBadgeText =
+    viewCount === 1
+      ? t("views.one")
+      : viewCount > 1
+      ? t("views.other", { count: viewCount })
+      : null;
 
-  // Resetear estados cuando cambia la propiedad (navegación entre propiedades similares)
+  // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
   useEffect(() => {
     setTourSubTab(null);
     setTourConfig(null);
     setLoadingConfig(false);
   }, [property?.id]);
 
-  // Determinar pestañas disponibles y subpestaña inicial
+  // Determinar pestanas disponibles y subpestana inicial
   const hasModel = property?.media?.some(m => m.type === 'MODEL_3D');
   const scenes360 = useMemo(() => {
     return property?.media?.filter(m => m.type === 'IMAGE_360') || [];
@@ -104,7 +126,7 @@ export default function ShowProperty() {
     }
   }, [hasModel, hasTour360]);
 
-  // Cargar configuración de tour 360 si aplica
+  // Cargar configuracion de tour 360 si aplica
   useEffect(() => {
     const configMedia = property?.media?.find(m => m.type === 'VIRTUAL_TOUR_CONFIG');
     if (configMedia?.url) {
@@ -112,14 +134,14 @@ export default function ShowProperty() {
       fetch(configMedia.url)
         .then(res => res.json())
         .then(data => setTourConfig(data))
-        .catch(err => console.error("Error al cargar configuración 360:", err))
+        .catch(err => console.error("Error al cargar configuracion 360:", err))
         .finally(() => setLoadingConfig(false));
     } else {
       setTourConfig(null);
     }
   }, [property?.id, property?.media]);
 
-  // Generar config de respaldo si no hay una oficial pero sí hay fotos 360
+  // Generar config de respaldo si no hay una oficial pero si hay fotos 360
   // Usamos useMemo para evitar que el visor se reinicie en cada render del padre
   const finalTourConfig = useMemo(() => {
     if (tourConfig) return tourConfig;
@@ -128,7 +150,7 @@ export default function ShowProperty() {
         nodes: scenes360.map((m, idx) => ({
           id: `media_${m.id || idx}`,
           panorama: m.url,
-          name: m.title || `Habitación ${idx + 1}`,
+          name: m.title || `Habitacion ${idx + 1}`,
           links: []
         }))
       };
@@ -161,6 +183,9 @@ export default function ShowProperty() {
 
   if (!property) return null;
 
+  // Determinar si es una propiedad para alquilar
+  const showRentCost = property.category === 'RENT' || property.category === 'SALE_OR_RENT';
+
   return (
     <>
       <CustomNavbar />
@@ -177,13 +202,48 @@ export default function ShowProperty() {
           {activeFlagCount > 0 && (
             <Alert variant="warning" className="d-flex align-items-center mb-4">
               <Flag size={20} className="me-2" />
-              <span>Esta propiedad tiene reportes activos de otros usuarios. Procedé con precaución.</span>
+              <span>{t("reportsWarning")}</span>
             </Alert>
+          )}
+
+          {/* Panel de reserva solo para owner/agent/admin — buyer lo ve en el sidebar */}
+          {(isPropertyOwner || isAdmin || authUser?.role?.toUpperCase() === 'AGENT') && (
+            <PropertyReservationPanel
+              property={property}
+              currentUser={authUser}
+              defaultPercent={1}
+            />
           )}
 
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h1>{property.title}</h1>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              <h1 className="mb-0">{property.title}</h1>
+              {property.highlighted && (
+                <Badge
+                  className="d-flex align-items-center gap-2"
+                  style={{
+                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                    fontSize: "1rem",
+                    padding: "8px 16px",
+                    borderRadius: "20px",
+                    fontWeight: 600,
+                  }}
+                >
+                  <Star size={15} /> Destacada
+                </Badge>
+              )}
+              {property.highlighted && visibility.value !== "PUBLIC" && canChangeVisibility && (
+                <OverlayTrigger
+                  placement="right"
+                  overlay={<Tooltip>Esta propiedad no aparecerá en el inicio porque su visibilidad es "{visibility.label}". Cámbiala a "Público".</Tooltip>}
+                >
+                  <Badge bg="danger" className="d-flex align-items-center ms-2" style={{ borderRadius: "20px" }}>
+                    ⚠️ Visibilidad Restringida
+                  </Badge>
+                </OverlayTrigger>
+              )}
+            </div>
             <div className="d-flex gap-2 align-items-center mt-2">
               {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
               {(canChangeStatus || canEdit) && (
@@ -236,18 +296,21 @@ export default function ShowProperty() {
                   as={Link}
                   to={`/properties/${property.id}/edit`}
                 >
-                  <Pencil size={16} className="property__icon-button" /> Editar
+                  <Pencil size={16} className="property__icon-button" /> {t("actions.edit")}
                 </Button>
               )}
 
-              {/* Destacar — cualquier usuario autenticado */}
+              {/* Destacar — owner, asignado o admin */}
               {canFeature && (
                 <Button
                   size="sm"
-                  variant="warning"
+                  variant={property.highlighted ? "warning" : "outline-warning"}
                   className="d-flex align-items-center"
+                  disabled={actionLoading}
+                  onClick={() => property.highlighted ? handleRemoveHighlight() : setShowHighlightModal(true)}
                 >
-                  <Star size={16} className="property__icon-button" /> Destacar
+                  <Star size={16} className="property__icon-button" />
+                  {property.highlighted ? "Destacada" : "Destacar"}
                 </Button>
               )}
 
@@ -259,7 +322,7 @@ export default function ShowProperty() {
                   className="d-flex align-items-center"
                   onClick={openDeleteConfirm}
                 >
-                  <Trash size={16} className="property__icon-button" /> Eliminar
+                  <Trash size={16} className="property__icon-button" /> {t("actions.delete")}
                 </Button>
               )}
               <Dropdown as={ButtonGroup}>
@@ -267,14 +330,14 @@ export default function ShowProperty() {
                   <Share size={16} className="property__icon-button"/> Compartir
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                 <Dropdown.Item onClick={copyLink}>
+                  <Dropdown.Item onClick={copyLink}>
                     <Link45deg size={16} className="property__icon-button"/> Copiar enlace
                   </Dropdown.Item>
 
                   <Dropdown.Item
                     as="a"
                     href={`https://wa.me/?text=${encodeURIComponent(
-                      `Encontré esta propiedad: ${BASE_URL}/properties/${property.id}`
+                      `Encontre esta propiedad: ${BASE_URL}/properties/${property.id}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -302,11 +365,23 @@ export default function ShowProperty() {
         <Container className="pt-3 pb-2">
           <Row className="g-1">
             <Col xs={6} style={{ height: "420px" }}>
-              <img
-                src={images[0]}
-                alt="Fachada"
-                className="property__main-image"
-              />
+              <div className="property__main-image-wrapper">
+                <img
+                  src={images[0]}
+                  alt="Fachada"
+                  className="property__main-image"
+                  width={800}
+                  height={420}
+                  fetchPriority="high"
+                  style={{ aspectRatio: '800 / 420' }}
+                />
+                {viewBadgeText && (
+                  <div className="property__views-badge">
+                    <Eye size={20} className="property__views-icon" />
+                    <span>{viewBadgeText}</span>
+                  </div>
+                )}
+              </div>
             </Col>
             <Col xs={6}>
               <Row className="g-1 h-100">
@@ -322,6 +397,10 @@ export default function ShowProperty() {
                           ? "radius-bottom-right-lg"
                           : ""
                       }`}
+                      width={400}
+                      height={207}
+                      loading="lazy"
+                      style={{ aspectRatio: '400 / 207' }}
                     />
                   </Col>
                 ))}
@@ -348,7 +427,7 @@ export default function ShowProperty() {
                     },
                     {
                       value: String(property.bathrooms ?? "-"),
-                      label: "baños",
+                      label: "banos",
                     },
                     {
                       value: String(
@@ -374,7 +453,7 @@ export default function ShowProperty() {
                     `Construido en ${property.constructionYear}`,
                   property.surfaceArea &&
                     property.price &&
-                    `₲ ${formatPrice(
+                    `~ ${formatPrice(
                       String(Math.round(property.price / property.surfaceArea)),
                     )}/m²`,
                 ]
@@ -400,11 +479,11 @@ export default function ShowProperty() {
               <Tab.Container defaultActiveKey="descripcion">
                 <Nav variant="tabs" className="mb-4 border-bottom-soft">
                   {[
-                    { key: "descripcion", label: "Descripción" },
+                    { key: "descripcion", label: "Descripcion" },
                     { key: "tours", label: "Tours y Planos" },
                     {
                       key: "caracteristicas",
-                      label: "Datos y Características",
+                      label: "Datos y Caracteristicas",
                     },
                   ].map((tab) => (
                     <Nav.Item key={tab.key}>
@@ -420,9 +499,9 @@ export default function ShowProperty() {
 
                 <Tab.Content>
                   <Tab.Pane eventKey="descripcion">
-                    <h5 className="property__section-title">Descripción</h5>
+                    <h5 className="property__section-title">Descripcion</h5>
                     <p className="property__description">
-                      {property.description || "Sin descripción."}
+                      {property.description || "Sin descripcion."}
                     </p>
 
                     <div
@@ -437,24 +516,24 @@ export default function ShowProperty() {
                         style={{ border: 0 }}
                         src={mapUrl}
                         allowFullScreen
+                        loading="lazy"
                       />
                     </div>
 
                     <div className="property__meta-box mt-4">
                       {(property.createdAt ||
-                        property.viewCount != null ||
                         property.favoriteCount != null) && (
                         <>
                           {property.createdAt && (
                             <>
-                              Publicado{" "}
+                            {t("actions.published")}{" "}
                               <strong>
                                 {formatTimeAgo(property.createdAt)}
                               </strong>
                             </>
                           )}
                           {property.viewCount != null && (
-                            <> &nbsp;|&nbsp; {property.viewCount} vistas</> //componente que diga el padding que vas a usar etc
+                            <> &nbsp;|&nbsp; {property.viewCount} vistas</>
                           )}
                           {property.favoriteCount != null && (
                             <>
@@ -467,7 +546,7 @@ export default function ShowProperty() {
                       )}
                       {property.updatedAt && (
                         <>
-                          Revisado por última vez:{" "}
+                          Revisado por ultima vez:{" "}
                           {formatTimeAgo(property.updatedAt)}
                           <br />
                           Actualizado hace: {formatTimeAgo(property.updatedAt)}
@@ -486,7 +565,7 @@ export default function ShowProperty() {
 
                   <Tab.Pane eventKey="tours">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                      <h5 className="property__section-title mb-0">Recorridos e Interacción</h5>
+                      <h5 className="property__section-title mb-0">Recorridos e Interaccion</h5>
                       {(hasModel || hasTour360) && (
                         <ButtonGroup size="sm">
                           {hasTour360 && (
@@ -518,9 +597,11 @@ export default function ShowProperty() {
                             <span className="text-muted">Iniciando recorrido...</span>
                           </div>
                         ) : finalTourConfig ? (
-                          <Property360Tour config={finalTourConfig} />
+                          <Suspense fallback={<div className="d-flex justify-content-center py-5"><Spinner animation="border" variant="primary" /></div>}>
+                            <Property360Tour config={finalTourConfig} />
+                          </Suspense>
                         ) : (
-                          <Alert variant="info">Cargando configuración del recorrido...</Alert>
+                          <Alert variant="info">{t("actions.loadingTour")}</Alert>
                         )
                       )}
 
@@ -540,31 +621,24 @@ export default function ShowProperty() {
                         <div className="property__empty-3d">
                           <div className="property__empty-3d-box">
                             <CameraVideo size={48} className="mb-3 text-muted" />
-                            <p className="mb-1 fw-bold">No hay recorridos disponibles</p>
-                            <p className="text-muted small">Esta propiedad aún no cuenta con contenido 360 o modelos 3D.</p>
+                            <p className="mb-1 fw-bold">{t("actions.noTours")}</p>
+                            <p className="text-muted small">{t("actions.noToursHint")}</p>
                           </div>
                         </div>
                       )}
                     </div>
 
                     <div className="mt-4">
-                      <Row className="g-4">
-                        <Col sm={6}>
-                          <div className="property__tour-card property__tour-card--static">
-                            <div className="mb-2">
-                              <FileText size={28} color="#555" />
-                            </div>
-                            <p className="property__tour-label">Planos de la propiedad</p>
-                            <span className="text-muted small">Próximamente disponible</span>
-                          </div>
-                        </Col>
-                      </Row>
+                      <h6 className="property__section-title mb-3" style={{ fontSize: "0.95rem" }}>
+                        Planos de la propiedad
+                      </h6>
+                      <PropertyFloorPlansViewer propertyId={property.id} />
                     </div>
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="caracteristicas">
                     <h5 className="property__section-title">
-                      Datos y Características
+                      Datos y Caracteristicas
                     </h5>
                     <Row className="g-4">
                       {features.length ? (
@@ -585,7 +659,7 @@ export default function ShowProperty() {
                       ) : (
                         <Col>
                           <p className="text-muted">
-                            No hay características cargadas.
+                            {t("actions.noFeatures")}
                           </p>
                         </Col>
                       )}
@@ -596,7 +670,24 @@ export default function ShowProperty() {
             </Col>
 
             <Col lg={4} className="mt-4 mt-lg-0">
+              {/* Panel de reserva para comprador (sticky en desktop) */}
+              {!isPropertyOwner && !isAdmin && authUser?.role?.toUpperCase() !== 'AGENT' && (
+                <div style={{ position: 'sticky', top: '1.5rem' }}>
+                  <PropertyReservationPanel
+                    property={property}
+                    currentUser={authUser}
+                    defaultPercent={1}
+                  />
+                </div>
+              )}
+
               <PropertyContactCard property={property} />
+
+              {showRentCost && (
+                <div className="mt-4">
+                  <RentCostBreakdown propertyId={property.id} />
+                </div>
+              )}
 
               {isAuthenticated && (
                 <div className="mt-4 text-center d-flex flex-column align-items-center gap-2">
@@ -606,7 +697,7 @@ export default function ShowProperty() {
                     onClick={() => setShowReportModal(true)}
                     style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                   >
-                    <Flag className="me-2" /> Reportar propiedad
+                    <Flag className="me-2" /> {t("actions.reportProperty")}
                   </Button>
                   {!isPropertyOwner && (property.ownerId || property.userId) && (
                     <Button 
@@ -615,7 +706,7 @@ export default function ShowProperty() {
                       onClick={() => setShowReportUserModal(true)}
                       style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                     >
-                      <Flag className="me-2" /> Reportar usuario
+                      <Flag className="me-2" /> {t("actions.reportUser")}
                     </Button>
                   )}
                 </div>
@@ -623,6 +714,30 @@ export default function ShowProperty() {
             </Col>
           </Row>
           
+          <h5 className="property__section-title mt-5 mb-3">
+            Propiedades vistas recientemente
+          </h5>
+
+          {loadingRecent ? (
+            <div className="d-flex justify-content-center py-4">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : recentError ? (
+            <Alert variant="warning" className="mb-3">
+              {recentError}
+            </Alert>
+          ) : recentProperties?.length > 0 ? (
+            <Row className="g-3 mx-0">
+              {recentProperties.map((recent) => (
+                <Col key={recent.id} xs={6} sm={4} lg={2}>
+                  <PropertySummaryCard property={recent} />
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <p className="text-muted">Aún no hay propiedades recientes para mostrar.</p>
+          )}
+
           <h5 className="property__section-title mt-5 mb-3">
             Propiedades similares
           </h5>
@@ -646,9 +761,15 @@ export default function ShowProperty() {
         </Container>
       </div>
 
-      <ReportPropertyModal 
-        propertyId={property.id} 
-        isOpen={showReportModal} 
+      <HighlightPropertyModal
+        property={property}
+        show={showHighlightModal}
+        onHide={() => setShowHighlightModal(false)}
+      />
+
+      <ReportPropertyModal
+        propertyId={property.id}
+        isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
         onSuccess={() => fetchActiveFlagCount && fetchActiveFlagCount()}
       />

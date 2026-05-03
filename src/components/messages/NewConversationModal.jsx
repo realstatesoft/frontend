@@ -3,8 +3,10 @@ import { Modal, Form, ListGroup, Spinner, Button } from 'react-bootstrap';
 import { useAgents, useClients, useContacts } from '../../hooks/useContacts';
 import { useSendMessage } from '../../hooks/useMessagesData';
 import styles from './NewConversationModal.module.scss';
+import { useTranslation } from 'react-i18next';
 
 export default function NewConversationModal({ isOpen, onClose, preSelectedAgent, onSuccess }) {
+  const { t } = useTranslation('messages');
   const [step, setStep] = useState('select');
   const [search, setSearch] = useState('');
   const [selectedContact, setSelectedContact] = useState(null);
@@ -12,8 +14,8 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const [error, setError] = useState('');
   
   const { canSeeAgents, canSeeClients } = useContacts();
-  const { data: agentsData, isLoading: agentsLoading } = useAgents(search);
-  const { data: clientsData, isLoading: clientsLoading, refetch: refetchClients } = useClients();
+  const { data: agentsData, isLoading: agentsLoading, error: agentsError } = useAgents(search);
+  const { data: clientsData, isLoading: clientsLoading, error: clientsError, refetch: refetchClients } = useClients();
   const sendMessage = useSendMessage();
 
   useEffect(() => {
@@ -29,12 +31,17 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     }
   }, [canSeeClients, isOpen, refetchClients]);
 
-  const agents = agentsData?.data?.content || agentsData || [];
-  const clients = clientsData?.data?.content || clientsData || [];
+  const agents = Array.isArray(agentsData?.content) 
+    ? agentsData.content 
+    : (Array.isArray(agentsData) ? agentsData : []);
+
+  const clients = Array.isArray(clientsData?.content) 
+    ? clientsData.content 
+    : (Array.isArray(clientsData) ? clientsData : []);
 
   const handleSelectContact = (contact) => {
     if (!contact?.id) {
-      setError('No se puede enviar mensaje: contacto inválido');
+      setError(t('newConversation.invalidContact'));
       return;
     }
     setError('');
@@ -48,7 +55,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     setError('');
     try {
       await sendMessage.mutateAsync({
-        receiverId: selectedContact.id,
+        receiverId: selectedContact.userId || selectedContact.id,
         content: message.trim()
       });
       
@@ -58,7 +65,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err?.response?.data?.message || 'Error al enviar el mensaje');
+      setError(err?.response?.data?.message || t('newConversation.error'));
     }
   };
 
@@ -71,7 +78,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     onClose();
   };
 
-  const getContactName = (contact) => contact.name || contact.email || 'Sin nombre';
+  const getContactName = (contact) => contact.name || contact.email || t('newConversation.contactFallback');
   const getContactInitials = (contact) => {
     const name = contact.name || contact.email || '??';
     const parts = name.trim().split(' ');
@@ -84,7 +91,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     return (
       <Modal show={isOpen} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Nuevo mensaje</Modal.Title>
+          <Modal.Title>{t('newConversation.composeTitle')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className={styles.selectedContact}>
@@ -102,7 +109,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
             <Form.Control
               as="textarea"
               rows={4}
-              placeholder="Escribe tu mensaje..."
+              placeholder={t('newConversation.messagePlaceholder')}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
@@ -110,14 +117,14 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setStep('select')}>
-            Atrás
+            {t('newConversation.back')}
           </Button>
           <Button 
             variant="primary" 
             onClick={handleSend}
             disabled={!message.trim() || sendMessage.isPending}
           >
-            {sendMessage.isPending ? 'Enviando...' : 'Enviar'}
+            {sendMessage.isPending ? t('newConversation.sending') : t('newConversation.send')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -127,13 +134,13 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   return (
     <Modal show={isOpen} onHide={handleClose} centered size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Nueva conversación</Modal.Title>
+        <Modal.Title>{t('newConversation.title')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form.Group className="mb-3">
           <Form.Control
             type="text"
-            placeholder="Buscar..."
+            placeholder={t('newConversation.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className={styles.searchInput}
@@ -142,11 +149,13 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
 
         {canSeeAgents && (
           <div className={styles.section}>
-            <h6 className={styles.sectionTitle}>Agentes</h6>
+            <h6 className={styles.sectionTitle}>{t('newConversation.agents')}</h6>
             {agentsLoading ? (
               <div className={styles.loading}><Spinner size="sm" /> Cargando...</div>
+            ) : agentsError ? (
+              <div className={styles.error}>Error cargando agentes</div>
             ) : agents.length === 0 ? (
-              <div className={styles.empty}>No hay agentes disponibles</div>
+              <div className={styles.empty}>{t('newConversation.emptyAgents')}</div>
             ) : (
               <ListGroup>
                 {agents.map((agent) => (
@@ -159,7 +168,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
                     <div className={styles.avatar}>{getContactInitials(agent)}</div>
                     <div className={styles.info}>
                       <div className={styles.name}>{agent.name}</div>
-                      <div className={styles.subtext}>{agent.company || 'Agente inmobiliario'}</div>
+                      <div className={styles.subtext}>{agent.company || t('newConversation.agentFallback')}</div>
                     </div>
                   </ListGroup.Item>
                 ))}
@@ -170,11 +179,13 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
 
         {canSeeClients && (
           <div className={styles.section}>
-            <h6 className={styles.sectionTitle}>Mis clientes</h6>
+            <h6 className={styles.sectionTitle}>{t('newConversation.clients')}</h6>
             {clientsLoading ? (
-              <div className={styles.loading}><Spinner size="sm" /> Cargando...</div>
+              <div className={styles.loading}><Spinner size="sm" /> {t('newConversation.loading')}</div>
+            ) : clientsError ? (
+              <div className={styles.error}>Error cargando clientes</div>
             ) : clients.length === 0 ? (
-              <div className={styles.empty}>No hay clientes disponibles</div>
+              <div className={styles.empty}>{t('newConversation.emptyClients')}</div>
             ) : (
               <ListGroup>
                 {clients.map((client) => (

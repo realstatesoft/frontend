@@ -3,6 +3,7 @@ export const AGENT_ROUTES = {
   CLIENTS: '/agent/clientes',
   PROPERTIES: '/agent/propiedades',
   VISIT_REQUESTS: '/agent/solicitudes-visita',
+  LEADS: '/agent/leads',
   AGENDA: '/agent/agenda',
   SALES: '/agent/ventas',
   CONTRACTS: '/agent/contratos',
@@ -19,6 +20,7 @@ export const OWNER_ROUTES = {
   VISITS: '/owner/visitas',
   MESSAGES: '/owner/mensajes',
   OFFERS: '/owner/ofertas',
+  CONTRACTS: '/owner/contratos',
 };
 
 export const ADMIN_ROUTES = {
@@ -27,7 +29,9 @@ export const ADMIN_ROUTES = {
   AUDIT_LOGS: '/admin/audit-logs',
   FLAGS: '/admin/flags',
   DOCUMENTS: '/admin/documents',
+  RENT_CONFIG: '/admin/rent-config',
   CONTRACT_TEMPLATES: '/admin/contract-templates',
+  PAYMENTS: '/admin/payments',
 };
 
 export const STATUS_COLORS = {

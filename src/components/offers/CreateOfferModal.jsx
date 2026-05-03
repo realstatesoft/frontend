@@ -4,8 +4,10 @@ import { ChatLeftText } from 'react-bootstrap-icons';
 import offerApi from '../../services/offers/offerApi';
 import Swal from 'sweetalert2';
 import { formatPrice, parsePriceInput } from '../../utils/priceFormat';
+import { useTranslation } from 'react-i18next';
 
 export default function CreateOfferModal({ show, onHide, property, onSuccess, offerToEdit = null }) {
+  const { t } = useTranslation('offers');
   const [displayAmount, setDisplayAmount] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,7 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
     const numericAmount = parseFloat(parsePriceInput(displayAmount));
     
     if (!numericAmount || numericAmount <= 0) {
-      Swal.fire('Error', 'Por favor ingresa un monto válido mayor a 0', 'error');
+      Swal.fire(t('modal.invalidAmountTitle'), t('modal.invalidAmount'), 'error');
       return;
     }
 
@@ -47,8 +49,8 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
         });
         Swal.fire({
           icon: 'success',
-          title: '¡Oferta actualizada!',
-          text: 'Tu propuesta ha sido modificada correctamente.',
+          title: t('modal.updateSuccessTitle'),
+          text: t('modal.updateSuccessText'),
           timer: 2000,
           showConfirmButton: false
         });
@@ -60,8 +62,8 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
         });
         Swal.fire({
           icon: 'success',
-          title: '¡Oferta enviada!',
-          text: 'Tu propuesta ha sido enviada al propietario/agente.',
+          title: t('modal.createSuccessTitle'),
+          text: t('modal.createSuccessText'),
           timer: 2000,
           showConfirmButton: false
         });
@@ -75,7 +77,7 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
         status: error?.response?.status,
         apiMessage: error?.response?.data?.message,
       });
-      Swal.fire('Error', error.response?.data?.message || 'No se pudo procesar la oferta. Intenta de nuevo.', 'error');
+      Swal.fire(t('modal.invalidAmountTitle'), error.response?.data?.message || t('modal.error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -86,17 +88,17 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
   return (
     <Modal show={show} onHide={onHide} centered backdrop="static">
       <Modal.Header closeButton className="border-0 pb-0">
-        <Modal.Title className="fw-bold">{isEditing ? 'Editar Oferta' : 'Realizar Oferta'}</Modal.Title>
+        <Modal.Title className="fw-bold">{isEditing ? t('modal.editTitle') : t('modal.createTitle')}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body className="pt-3">
           <div className="mb-4 p-3 bg-light rounded-3">
-            <p className="text-muted small mb-1">Propiedad:</p>
+            <p className="text-muted small mb-1">{t('modal.propertyLabel')}</p>
             <h6 className="text-dark fw-bold mb-0">{property?.title || offerToEdit?.propertyTitle}</h6>
           </div>
 
           <Form.Group className="mb-3">
-            <Form.Label className="small fw-bold">Monto Propuesto</Form.Label>
+            <Form.Label className="small fw-bold">{t('modal.amountLabel')}</Form.Label>
             <InputGroup>
               <InputGroup.Text className="bg-white border-end-0 fw-bold text-dark">
                 ₲
@@ -104,7 +106,7 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
               <Form.Control
                 type="text"
                 inputMode="numeric"
-                placeholder="Ej: 500.000.000"
+                placeholder={t('modal.amountPlaceholder')}
                 value={displayAmount}
                 onChange={handleAmountChange}
                 required
@@ -114,13 +116,13 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
             </InputGroup>
             {property && (
               <Form.Text className="text-muted">
-                Precio de lista: ₲ {formatPrice(property.price)}
+                {t('modal.priceLabel', { price: `₲ ${formatPrice(property.price)}` })}
               </Form.Text>
             )}
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="small fw-bold">Mensaje o Condiciones (Opcional)</Form.Label>
+            <Form.Label className="small fw-bold">{t('modal.messageLabel')}</Form.Label>
             <InputGroup>
               <InputGroup.Text className="bg-white border-end-0 align-items-start pt-2">
                 <ChatLeftText className="text-muted" />
@@ -128,7 +130,7 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder="Escribe aquí cualquier condición adicional..."
+                placeholder={t('modal.messagePlaceholder')}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className="border-start-0 ps-0"
@@ -138,16 +140,16 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
         </Modal.Body>
         <Modal.Footer className="border-0 pt-0">
           <Button variant="outline-secondary" onClick={onHide} disabled={loading} className="px-4 border-0">
-            Cancelar
+            {t('modal.cancel')}
           </Button>
           <Button variant="dark" type="submit" disabled={loading} className="px-5 rounded-3">
             {loading ? (
               <>
                 <Spinner animation="border" size="sm" className="me-2" />
-                {isEditing ? 'Guardando...' : 'Enviando...'}
+                {isEditing ? t('modal.saving') : t('modal.sending')}
               </>
             ) : (
-              isEditing ? 'Guardar Cambios' : 'Enviar Oferta'
+              isEditing ? t('modal.save') : t('modal.send')
             )}
           </Button>
         </Modal.Footer>

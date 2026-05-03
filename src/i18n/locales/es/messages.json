@@ -1,0 +1,24 @@
+{
+  "newConversation": {
+    "title": "Nueva conversación",
+    "searchPlaceholder": "Buscar...",
+    "agents": "Agentes",
+    "clients": "Mis clientes",
+    "loading": "Cargando...",
+    "emptyAgents": "No hay agentes disponibles",
+    "emptyClients": "No hay clientes disponibles",
+    "invalidContact": "No se puede enviar mensaje: contacto inválido",
+    "composeTitle": "Nuevo mensaje",
+    "messagePlaceholder": "Escribe tu mensaje...",
+    "sending": "Enviando...",
+    "send": "Enviar",
+    "back": "Atrás",
+    "error": "Error al enviar el mensaje",
+    "agentFallback": "Agente inmobiliario",
+    "contactFallback": "Sin nombre"
+  },
+  "page": {
+    "loading": "Cargando mensajes...",
+    "empty": "Selecciona una conversación para comenzar"
+  }
+}
