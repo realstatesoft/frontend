@@ -61,7 +61,10 @@ import PreferencesPage from "../pages/PreferencesPage";
 
 import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
 import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
+import AdminSettingsPage from "../pages/Admin/Settings/AdminSettingsPage";
 import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
+import AgentSettingsPage from "../pages/AgentSettings/AgentSettingsPage";
+import UserSettingsPage from "../pages/UserSettings/UserSettingsPage";
 import AdminPaymentsPage from "../pages/Admin/AdminPaymentsPage";
 import PaymentPage from "../pages/Payment/PaymentPage";
 import MyPaymentsPage from "../pages/MyPayments/MyPaymentsPage";
@@ -130,6 +133,7 @@ export default function AppRouter() {
           <Route path="leads/:id" element={<LeadDetailPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
                     <Route path="prospectos/:id" element={<LeadDetailPage />} />
+                    <Route path="settings" element={<AgentSettingsPage />} />
                 </Route>
             </Route>
 
@@ -145,6 +149,7 @@ export default function AppRouter() {
                     <Route path="contratos" element={<ContractsPage />} />
                     <Route path="contratos/nuevo" element={<ContractCreatePage />} />
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="settings" element={<UserSettingsPage />} />
                 </Route>
             </Route>
 
@@ -165,6 +170,7 @@ export default function AppRouter() {
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
                     <Route path="rent-config" element={<RentConfigPage />} />
+                    <Route path="settings" element={<AdminSettingsPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                     <Route path="payments" element={<AdminPaymentsPage />} />
                 </Route>

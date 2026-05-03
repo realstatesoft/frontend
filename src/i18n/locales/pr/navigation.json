@@ -47,7 +47,8 @@
       "reports": "Relatórios",
       "documents": "Validação de documentos",
       "rentConfig": "Configuração de aluguel",
-      "contractTemplates": "Modelos de contrato"
+      "contractTemplates": "Modelos de contrato",
+      "settings": "Configurações"
     },
     "owner": {
       "dashboard": "Meu painel",
@@ -55,7 +56,8 @@
       "visits": "Visitas",
       "offers": "Ofertas",
       "contracts": "Meus contratos",
-      "messages": "Mensagens"
+      "messages": "Mensagens",
+      "settings": "Configurações"
     },
     "agent": {
       "profile": "Meu perfil",
@@ -69,7 +71,8 @@
       "sales": "Vendas",
       "contracts": "Contratos",
       "reports": "Relatórios",
-      "messages": "Mensagens"
+      "messages": "Mensagens",
+      "settings": "Configurações"
     }
   },
   "role": {

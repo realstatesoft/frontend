@@ -124,6 +124,15 @@ function CustomNavbar() {
     return '/ofertas';
   };
 
+  const getSettingsLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'ADMIN') return '/admin/settings';
+    if (role === 'AGENT') return '/agent/settings';
+    return '/settings';
+  };
+
+
+
   return (
     <Navbar expand="lg" className="bg-light py-3">
       <Container className="bg-white rounded-pill shadow-sm px-4 py-2">
@@ -270,7 +279,7 @@ function CustomNavbar() {
                   <hr className="profile-dropdown-divider" />
 
                   {/* Seccion 2: configuracion y sesion */}
-                  <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to={getSettingsLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Gear size={16} style={{ flexShrink: 0 }} /> {t('settings')}
                   </Link>
                   <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
