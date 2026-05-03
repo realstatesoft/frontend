@@ -79,7 +79,7 @@ export default function PropertyContactCard({ property }) {
   }, [hasAgent, property?.agentId]);
 
   const name = agent?.userName ?? property?.ownerName ?? t("contactCard.owner");
-  const avatarUrl = agent?.userAvatarUrl ?? DEFAULT_AVATAR;
+  const avatarUrl = agent?.userAvatarUrl ?? property?.ownerAvatarUrl ?? DEFAULT_AVATAR;
   const phone = agent?.userPhone ?? property?.ownerPhone ?? null;
   const experienceYears = agent?.experienceYears ?? null;
   const rating = agent?.avgRating != null ? Number(agent.avgRating).toFixed(1) : null;
@@ -242,9 +242,9 @@ export default function PropertyContactCard({ property }) {
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
         preSelectedAgent={{
-          id: agent?.userId || property?.agentId,
+          id: agent?.userId || agent?.id || property?.ownerId,
           name: name,
-          email: agent?.userEmail,
+          email: agent?.userEmail || agent?.email || property?.ownerEmail,
         }}
         onSuccess={() => {
           Swal.fire({

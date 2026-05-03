@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
-import { useTranslation } from "react-i18next";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
 import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
+import { useTranslation } from "react-i18next";
+
+/**
+ * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
+ *
+ * Filtros básicos en la barra: Tipo · Precio · Dormitorios · Más (avanzados)
+ * Panel avanzado: disponibilidad, precio min/max, dormitorios mín., baños mín.
+ */
 import { useAuth } from "../../hooks/useAuth";
 
 export default function PropertiesHero({
@@ -35,7 +42,7 @@ export default function PropertiesHero({
     const fetchSavedSearches = async () => {
         try {
             const res = await searchPreferencesApi.getMine();
-            const items = res?.content || [];
+            const items = res?.data?.content || [];
             setSavedSearches(items);
         } catch (err) {
             console.error("Error loading saved searches:", err);
@@ -71,6 +78,7 @@ export default function PropertiesHero({
     };
 
     const handleSaveSuccess = () => {
+        console.log("Búsqueda guardada");
         fetchSavedSearches();
     };
 
@@ -78,12 +86,13 @@ export default function PropertiesHero({
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
 
     return (
-        <div className="bg-white py-3 border-bottom" style={{ overflow: "visible", position: "relative", zIndex: 1030 }}>
-            <Container fluid className="px-3 px-lg-5">
+        <div className="bg-light py-4" style={{ overflow: "visible" }}>
+            <Container>
                 <div className="filter-bar">
 
                     {/* Búsqueda */}
                     <div className="filter-bar__search">
+                        <span className="filter-bar__search-icon"></span>
                         <input
                             type="text"
                             placeholder={t("search.placeholder")}
@@ -109,7 +118,6 @@ export default function PropertiesHero({
                                         const f = s.filters || {};
                                         onSearch(f.q ?? "");
                                         onTypeChange(f.propertyType ?? "");
-                                        if (onSaleRentChange) onSaleRentChange(f.category ?? f.saleRent ?? "");
                                         onAvailabilityChange(f.availability ?? "");
                                         onMinPriceChange(f.minPrice ?? "");
                                         onMaxPriceChange(f.maxPrice ?? "");
@@ -119,6 +127,9 @@ export default function PropertiesHero({
                                 >
                                     <span>{s.name}</span>
                                     <button
+                                        className="filter-bar__delete-search"
+                                        title={t("savedSearches.delete")}
+                                        aria-label={t("savedSearches.deleteLabel", { name: s.name })}
                                         onClick={(evt) => handleDeleteSearch(s.id, evt)}
                                         type="button"
                                     >
@@ -135,14 +146,14 @@ export default function PropertiesHero({
                         </Dropdown.Menu>
                     </Dropdown>
 
-                    {/* Tipo */}
+                    {/* Pill: Tipo */}
                     <PillSelect
                         label={t("search.type")}
                         value={typeFilter}
                         onChange={onTypeChange}
                         active={!!typeFilter}
                     >
-                        <option key="default-type" value="">Todos</option>
+                        <option value="">{t("search.all")}</option>
                         {PROPERTY_TYPE_OPTIONS.map((opt) => (
                             <option key={opt} value={opt}>
                                 {opt}
@@ -150,41 +161,63 @@ export default function PropertiesHero({
                         ))}
                     </PillSelect>
 
-                    {/* Dormitorios */}
+                    <div className="filter-bar__divider" />
+
+                    {/* Pill: Dormitorios */}
                     <PillSelect
                         label={t("search.bedrooms")}
                         value={minBedrooms}
                         onChange={onMinBedroomsChange}
                         active={!!minBedrooms}
                     >
-                        <option key="default-bed" value="">Cualquiera</option>
+                        <option value="">{t("search.any")}</option>
                         {[1, 2, 3, 4, 5].map((n) => (
                             <option key={`bed-${n}`} value={n}>{n}+</option>
                         ))}
                     </PillSelect>
 
+                    <div className="filter-bar__divider" />
+
                     {/* Más filtros */}
-                    <button className="filter-pill" onClick={() => setShowAdvanced(!showAdvanced)}>
+                    <button
+                        className={`filter-pill${showAdvanced || advancedActiveCount > 0 ? " filter-pill--active" : ""}`}
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                        type="button"
+                    >
                         {t("search.moreFilters")}
+                        {advancedActiveCount > 0
+                            ? <span className="filter-pill__badge">{advancedActiveCount}</span>
+                            : <span className={`filter-pill__chevron${showAdvanced ? " filter-pill__chevron--open" : ""}`} />
+                        }
                     </button>
 
+                    {/* Limpiar — solo aparece cuando hay algo activo */}
                     {hasAnyFilter && (
                         <>
-                            <button className="filter-pill" onClick={onClear}>Limpiar</button>
-                            <button className="filter-pill" onClick={() => setShowSaveModal(true)}>Guardar</button>
+                            <div className="filter-bar__divider" />
+                            <button className="filter-bar__clear" onClick={onClear} title={t("search.clearFilters")} type="button">
+                                ✕
+                            </button>
+                            <div className="filter-bar__divider" />
+                            <button className="filter-bar__save" onClick={() => setShowSaveModal(true)} title={t("actions.saveTooltip")} type="button">
+                                {t("actions.save")}
+                            </button>
                         </>
                     )}
                 </div>
 
+                {/* ── Panel de filtros avanzados ─────────────────────────── */}
                 <Collapse in={showAdvanced}>
                     <div>
                         <Row className="g-3 mt-3">
                             <Col md={3}>
+                                <span className="filter-bar__panel-label">{t("search.availability")}</span>
                                 <Form.Select
                                     value={availability}
                                     onChange={(e) => onAvailabilityChange(e.target.value)}
+                                    size="sm"
                                 >
-                                    <option key="default-avail" value="">Cualquiera</option>
+                                    <option value="">{t("search.any")}</option>
                                     {AVAILABILITY_OPTIONS.map((opt) => (
                                         <option key={opt} value={opt}>
                                             {opt}
@@ -193,32 +226,34 @@ export default function PropertiesHero({
                                 </Form.Select>
                             </Col>
 
-                            <Col md={2}>
-                                <Form.Control
-                                    type="number"
-                                    placeholder="Precio mínimo"
-                                    value={minPrice}
-                                    onChange={(e) => onMinPriceChange(e.target.value)}
-                                />
-                            </Col>
+                                <Col md={2}>
+                                    <span className="filter-bar__panel-label">{t("search.minPrice")}</span>
+                                    <Form.Control
+                                        type="number" size="sm" placeholder="0" min={0}
+                                        value={minPrice}
+                                        onChange={(e) => onMinPriceChange(e.target.value)}
+                                    />
+                                </Col>
+
+                                <Col md={2}>
+                                    <span className="filter-bar__panel-label">{t("search.maxPrice")}</span>
+                                    <Form.Control
+                                        type="number" size="sm" placeholder={t("search.noLimit")} min={0}
+                                        value={maxPrice}
+                                        onChange={(e) => onMaxPriceChange(e.target.value)}
+                                    />
+                                </Col>
 
                             <Col md={2}>
-                                <Form.Control
-                                    type="number"
-                                    placeholder="Precio máximo"
-                                    value={maxPrice}
-                                    onChange={(e) => onMaxPriceChange(e.target.value)}
-                                />
-                            </Col>
-
-                            <Col md={2}>
+                                <span className="filter-bar__panel-label">{t("search.minBathrooms")}</span>
                                 <Form.Select
                                     value={minBathrooms}
                                     onChange={(e) => onMinBathroomsChange(e.target.value)}
+                                    size="sm"
                                 >
-                                    <option key="default-bath" value="">Baños</option>
+                                    <option value="">{t("search.any")}</option>
                                     {[1, 2, 3, 4].map((n) => (
-                                        <option key={`bath-${n}`} value={n}>{n}+</option>
+                                        <option key={n} value={n}>{n}+</option>
                                     ))}
                                 </Form.Select>
                             </Col>
@@ -226,8 +261,9 @@ export default function PropertiesHero({
                     </div>
                 </Collapse>
 
-                <p className="mt-3">
-                    {totalResults} resultados
+                {/* Contador de resultados */}
+                <p className="filter-bar__results">
+                    {t("results.count", { count: totalResults })}
                 </p>
 
                 <SaveSearchModal
@@ -241,11 +277,13 @@ export default function PropertiesHero({
     );
 }
 
+/* ── Componente interno: pill que envuelve un <select> nativo invisible ── */
 function PillSelect({ label, value, onChange, active, children }) {
     return (
         <div style={{ position: "relative" }}>
-            <div className={`filter-pill${active ? " active" : ""}`}>
-                {value || label}
+            <div className={`filter-pill${active ? " filter-pill--active" : ""}`} style={{ pointerEvents: "none" }}>
+                {value ? value : label}
+                <span className="filter-pill__chevron" />
             </div>
             <select
                 value={value}
@@ -255,7 +293,10 @@ function PillSelect({ label, value, onChange, active, children }) {
                     inset: 0,
                     opacity: 0,
                     cursor: "pointer",
+                    width: "100%",
+                    height: "100%",
                 }}
+                aria-label={label}
             >
                 {children}
             </select>

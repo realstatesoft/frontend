@@ -44,7 +44,16 @@
     "reviews": "{{count}} reseñas",
     "selectedAgent": "Agente seleccionado: {{name}}",
     "notFound": "Agente no encontrado.",
-    "loadError": "No se pudo cargar el perfil del agente."
+    "loadError": "No se pudo cargar el perfil del agente.",
+    "message": "Mensaje",
+    "notRegistered": "Sin registro",
+    "notSpecified": "No especificado",
+    "year": "año",
+    "years_plural": "años",
+    "statsVendidas": "Vendidas",
+    "statsAlquiladas": "Alquiladas",
+    "statsTotal": "Total",
+    "statsAveragePrice": "Precio promedio"
   },
   "contactCard": {
     "years": "{{count}} años de experiencia",
