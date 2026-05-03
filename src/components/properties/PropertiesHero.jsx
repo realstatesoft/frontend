@@ -24,8 +24,8 @@ export default function PropertiesHero({
     minBathrooms,
     totalResults,
     onSearch,
-    onCategoryChange,
     onTypeChange,
+    onCategoryChange,
     onAvailabilityChange,
     onMinPriceChange,
     onMaxPriceChange,
@@ -121,6 +121,7 @@ export default function PropertiesHero({
                                         const f = s.filters || {};
                                         onSearch(f.q ?? "");
                                         onTypeChange(f.propertyType ?? "");
+                                        onCategoryChange(f.category ?? "");
                                         onAvailabilityChange(f.availability ?? "");
                                         onMinPriceChange(f.minPrice ?? "");
                                         onMaxPriceChange(f.maxPrice ?? "");
