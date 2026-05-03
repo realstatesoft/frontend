@@ -41,12 +41,12 @@ export default function useProperties({
 
             const pageData = res?.data
                 ? (res.data.data ?? res.data)
-                : { content: [], totalPages: 0, totalElements: 0 };
+                : { content: [], page: { totalPages: 0, totalElements: 0 } };
 
             return {
                 properties: pageData.content ?? [],
-                totalPages: Number(pageData.totalPages ?? 0),
-                totalElements: Number(pageData.totalElements ?? 0),
+                totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? 0),
+                totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? 0),
             };
         },
         staleTime: 5 * 60 * 1000, // 5 minutos de caché para navegación súper rápida
