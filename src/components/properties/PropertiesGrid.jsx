@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import PropertyCard from "./PropertyCard";
 import Pagination from "./Pagination";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 12;
 
 export default function PropertiesGrid({
     properties,
@@ -23,15 +23,18 @@ export default function PropertiesGrid({
     compareLimitReached = false,
 }) {
     const { t } = useTranslation("properties");
-    // Si se pasa totalPages externo (del backend), usarlo; sino calcular client-side
-    const totalPages =
-        externalTotalPages != null
-            ? externalTotalPages
-            : Math.ceil(properties.length / ITEMS_PER_PAGE);
+    
+    // Calcular totalPages más robustamente. Si el backend nos da un externalTotalPages válido (> 1), usarlo.
+    // Si da 0 o 1, pero sabemos que hay items cargados, podríamos recalcularlo (aunque usualmente el backend es fuente de verdad).
+    // Si no hay externalTotalPages, paginar localmente.
+    const hasExternalPagination = externalTotalPages != null && externalTotalPages > 0;
+    
+    const totalPages = hasExternalPagination 
+        ? externalTotalPages 
+        : Math.ceil(properties.length / ITEMS_PER_PAGE);
 
     // Si la paginación es client-side, paginar acá; sino mostrar todo (ya viene paginado)
-    const paginated =
-        externalTotalPages != null
+    const paginated = hasExternalPagination
             ? properties
             : properties.slice(
                 (currentPage - 1) * ITEMS_PER_PAGE,

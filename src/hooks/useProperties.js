@@ -45,8 +45,8 @@ export default function useProperties({
 
             return {
                 properties: pageData.content ?? [],
-                totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? 0),
-                totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? 0),
+                totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? (pageData.content ? Math.ceil(pageData.content.length / size) : 0)),
+                totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? (pageData.content ? pageData.content.length : 0)),
             };
         },
         staleTime: 5 * 60 * 1000, // 5 minutos de caché para navegación súper rápida

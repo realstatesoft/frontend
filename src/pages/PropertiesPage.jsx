@@ -131,6 +131,7 @@ export default function PropertiesPage() {
                 totalResults={totalElements}
                 onSearch={handleSearch}
                 onTypeChange={handleType}
+                onSaleRentChange={handleSaleRent}
                 onAvailabilityChange={handleAvailability}
                 onMinPriceChange={handleMinPrice}
                 onMaxPriceChange={handleMaxPrice}
