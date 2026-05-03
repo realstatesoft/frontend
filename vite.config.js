@@ -5,6 +5,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
 
+  // SOLUCIÓN 1: Evitar que choquen las dos versiones de three.js
+  resolve: {
+    dedupe: ['three'],
+  },
+
   server: {
     host: true,
     allowedHosts: mode === 'development' ? true : ['openroof.duckdns.org'],
@@ -70,8 +75,9 @@ export default defineConfig(({ mode }) => ({
           // Swiper
           if (id.includes('swiper')) return 'vendor-swiper';
 
-          // Everything else
-          return 'vendor-misc';
+          // SOLUCIÓN 2: Eliminamos el "return 'vendor-misc';"
+          // Al no forzar un archivo genérico, Rollup separa las dependencias 
+          // cruzadas automáticamente y se elimina el error "Circular chunk".
         }
       }
     }

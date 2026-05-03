@@ -233,6 +233,16 @@ export default function ShowProperty() {
                   <Star size={15} /> Destacada
                 </Badge>
               )}
+              {property.highlighted && visibility.value !== "PUBLIC" && canChangeVisibility && (
+                <OverlayTrigger
+                  placement="right"
+                  overlay={<Tooltip>Esta propiedad no aparecerá en el inicio porque su visibilidad es "{visibility.label}". Cámbiala a "Público".</Tooltip>}
+                >
+                  <Badge bg="danger" className="d-flex align-items-center ms-2" style={{ borderRadius: "20px" }}>
+                    ⚠️ Visibilidad Restringida
+                  </Badge>
+                </OverlayTrigger>
+              )}
             </div>
             <div className="d-flex gap-2 align-items-center mt-2">
               {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
