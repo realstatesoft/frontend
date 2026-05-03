@@ -44,7 +44,16 @@
     "reviews": "{{count}} reviews",
     "selectedAgent": "Selected agent: {{name}}",
     "notFound": "Agent not found.",
-    "loadError": "Unable to load the agent profile."
+    "loadError": "Unable to load the agent profile.",
+    "message": "Message",
+    "notRegistered": "Not registered",
+    "notSpecified": "Not specified",
+    "year": "year",
+    "years_plural": "years",
+    "statsVendidas": "Sold",
+    "statsAlquiladas": "Rented",
+    "statsTotal": "Total",
+    "statsAveragePrice": "Average price"
   },
   "contactCard": {
     "years": "{{count}} years of experience",

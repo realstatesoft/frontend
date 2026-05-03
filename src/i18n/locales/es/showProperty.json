@@ -38,5 +38,37 @@
     "noFeatures": "No hay caracteristicas cargadas.",
     "reportProperty": "Reportar propiedad",
     "reportUser": "Reportar usuario"
+  },
+  "highlightModal": {
+    "hero": {
+      "title": "Destacá tu propiedad",
+      "subtitle": "Llegá a más compradores y alquilantes potenciales"
+    },
+    "benefits": {
+      "first": {
+        "title": "Primero en búsquedas",
+        "desc": "Tu propiedad aparece antes que las demás en los resultados."
+      },
+      "second": {
+        "title": "Badge dorado \"Destacada\"",
+        "desc": "Un sello visible que genera más confianza en los compradores."
+      },
+      "third": {
+        "title": "3× más visitas",
+        "desc": "Las propiedades destacadas reciben en promedio 3 veces más consultas."
+      }
+    },
+    "plans": {
+      "monthly": { "label": "Mensual" },
+      "semester": { "label": "Semestral" },
+      "annual": { "label": "Anual" },
+      "popular": "⭐ Más popular",
+      "perMonth": "{{amount}} / mes · {{days}} días",
+      "savings": "Ahorrás {{percent}}%"
+    },
+    "cta": {
+      "label": "Destacar – {{planLabel}} por {{price}}"
+    },
+    "dismiss": "Ahora no"
   }
 }

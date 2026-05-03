@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import paymentApi from '../services/payments/paymentApi';
-
 function luhnCheck(num) {
   const digits = num.replace(/\D/g, '').split('').reverse();
   let sum = 0;
@@ -57,7 +56,7 @@ function validateFields({ cardholderName, cardNumber, expiry, cvv }) {
 /*
 type = RESERVATION, CONTRACT, PROPERTY_HIGHLIGHT, SUBSCRIPTION
 */
-export default function usePayment({ amount, concept, type, description } = {}) {
+export default function usePayment({ amount, concept, type, description, referenceId, planDays } = {}) {
   const [status, setStatus] = useState('idle'); // idle | processing | success | error
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
@@ -89,10 +88,30 @@ export default function usePayment({ amount, concept, type, description } = {}) 
     };
   }
 
+  function buildPaymentData() {
+    if (type === 'PROPERTY_HIGHLIGHT') {
+      const parsedDays = parseInt(planDays, 10);
+      if (!referenceId || !String(referenceId).trim()) return null;
+      if (!Number.isInteger(parsedDays) || parsedDays <= 0) return null;
+      return {
+        propertyId: referenceId,
+        highlightDays: parsedDays
+      };
+    }
+    // TO DO agregar otros tipos de pago si es necesario
+    return {};
+  }
+
   async function processPayment() {
     const errors = validateFields(form);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
+      return false;
+    }
+
+    const metadata = buildPaymentData();
+    if (metadata === null) {
+      setFieldErrors({ form: 'Datos de pago inválidos. Verificá el plan y la propiedad seleccionada.' });
       return false;
     }
 
@@ -105,6 +124,7 @@ export default function usePayment({ amount, concept, type, description } = {}) 
         amount: parseFloat(amount) || 0,
         concept: concept ?? '',
         description: description ?? '',
+        metadata
       });
 
       setStatus('success');
