@@ -83,7 +83,7 @@ export default function PropertiesGrid({
 
             <Row className="g-4">
                 {paginated.map((property) => (
-                    <Col key={property.id} xs={12} sm={6} md={4} lg={3}>
+                    <Col key={property.id} xs={12} sm={6} xl={6}>
                         <PropertyCard
                             property={property}
                             isFavorite={favoriteIds.includes(property.id)}

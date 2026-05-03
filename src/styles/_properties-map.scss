@@ -61,6 +61,7 @@
 .properties-map-section__leaflet {
   height: 440px;
   width: 100%;
+  contain: layout style;
 }
 
 .properties-map-section__empty {

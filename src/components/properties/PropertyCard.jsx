@@ -106,7 +106,10 @@ export default function PropertyCard({
                 <Card.Img
                     variant="top"
                     src={image}
-                    style={{ height: "195px", objectFit: "cover" }}
+                    alt={property?.title || "Imagen de propiedad"}
+                    width={400}
+                    height={195}
+                    style={{ aspectRatio: "400 / 195", objectFit: "cover", height: "auto" }}
                     loading="lazy"
                 />
             </div>

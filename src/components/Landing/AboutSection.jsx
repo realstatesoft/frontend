@@ -9,6 +9,7 @@ const AboutSection = () => {
 
     return (
         <section
+            id="about"
             ref={ref}
             style={{
                 padding: "80px 0",

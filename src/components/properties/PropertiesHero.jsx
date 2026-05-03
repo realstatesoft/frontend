@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
@@ -11,6 +11,8 @@ import { useTranslation } from "react-i18next";
  * Filtros básicos en la barra: Tipo · Precio · Dormitorios · Más (avanzados)
  * Panel avanzado: disponibilidad, precio min/max, dormitorios mín., baños mín.
  */
+import { useAuth } from "../../hooks/useAuth";
+
 export default function PropertiesHero({
     search,
     typeFilter,
@@ -30,11 +32,13 @@ export default function PropertiesHero({
     onClear,
 }) {
     const { t } = useTranslation("properties");
+    const { isAuthenticated } = useAuth();
+
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [savedSearches, setSavedSearches] = useState([]);
 
-    const fetchSavedSearches = async () => {
+    const fetchSavedSearches = useCallback(async () => {
         try {
             const res = await searchPreferencesApi.getMine();
             const items = res?.data?.content || [];
@@ -42,11 +46,15 @@ export default function PropertiesHero({
         } catch (err) {
             console.error("Error loading saved searches:", err);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchSavedSearches();
-    }, []);
+        if (isAuthenticated) {
+            fetchSavedSearches();
+        } else {
+            setSavedSearches([]);
+        }
+    }, [isAuthenticated, fetchSavedSearches]);
 
     const handleDeleteSearch = async (id, evt) => {
         evt.stopPropagation();
@@ -77,7 +85,7 @@ export default function PropertiesHero({
     const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
 
     return (
-        <div className="bg-light py-4" style={{ overflow: 'visible' }}>
+        <div className="bg-light py-4" style={{ overflow: "visible" }}>
             <Container>
                 <div className="filter-bar">
 
@@ -92,55 +100,52 @@ export default function PropertiesHero({
                         />
                     </div>
 
-                    {/* Mis búsquedas dropdown */}
-                    <div className="filter-bar__saved-dropdown">
+                    {/* Mis búsquedas */}
+                    {isAuthenticated && (
                         <Dropdown>
-                            <Dropdown.Toggle
-                                className="filter-pill"
-                                id="saved-searches-dropdown"
-                            >
-                                {t("savedSearches.title")}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                <Dropdown.Header>{t("savedSearches.header")}</Dropdown.Header>
-                                {savedSearches.map((s) => (
-                                    <Dropdown.Item
-                                        key={s.id}
-                                        as="div"
-                                        className="d-flex justify-content-between align-items-center"
-                                        onClick={() => {
-                                            const f = s.filters || {};
-                                            onSearch(f.q ?? "");
-                                            onTypeChange(f.propertyType ?? "");
-                                            onAvailabilityChange(f.availability ?? "");
-                                            onMinPriceChange(f.minPrice ?? "");
-                                            onMaxPriceChange(f.maxPrice ?? "");
-                                            onMinBedroomsChange(f.minBedrooms ?? "");
-                                            onMinBathroomsChange(f.minBathrooms ?? "");
-                                        }}
-                                    >
-                                        <span>{s.name}</span>
-                                        <button
-                                            className="filter-bar__delete-search"
-                                            onClick={(evt) => handleDeleteSearch(s.id, evt)}
-                                            title={t("savedSearches.delete")}
-                                            aria-label={t("savedSearches.deleteLabel", { name: s.name })}
-                                            type="button"
-                                        >
-                                            ×
-                                        </button>
-                                    </Dropdown.Item>
-                                ))}
-                                {savedSearches.length === 0 && (
-                                    <Dropdown.Item disabled>
-                                        {t("savedSearches.empty")}
-                                    </Dropdown.Item>
-                                )}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </div>
+                        <Dropdown.Toggle className="filter-pill">
+                            {t("savedSearches.title")}
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Header>{t("savedSearches.header")}</Dropdown.Header>
 
-                    <div className="filter-bar__divider" />
+                            {savedSearches.map((s) => (
+                                <Dropdown.Item
+                                    key={s.id}
+                                    as="div"
+                                    className="d-flex justify-content-between"
+                                    onClick={() => {
+                                        const f = s.filters || {};
+                                        onSearch(f.q ?? "");
+                                        onTypeChange(f.propertyType ?? "");
+                                        onAvailabilityChange(f.availability ?? "");
+                                        onMinPriceChange(f.minPrice ?? "");
+                                        onMaxPriceChange(f.maxPrice ?? "");
+                                        onMinBedroomsChange(f.minBedrooms ?? "");
+                                        onMinBathroomsChange(f.minBathrooms ?? "");
+                                    }}
+                                >
+                                    <span>{s.name}</span>
+                                    <button
+                                        className="filter-bar__delete-search"
+                                        title={t("savedSearches.delete")}
+                                        aria-label={t("savedSearches.deleteLabel", { name: s.name })}
+                                        onClick={(evt) => handleDeleteSearch(s.id, evt)}
+                                        type="button"
+                                    >
+                                        ×
+                                    </button>
+                                </Dropdown.Item>
+                            ))}
+
+                            {savedSearches.length === 0 && (
+                                <Dropdown.Item disabled>
+                                    {t("savedSearches.empty")}
+                                </Dropdown.Item>
+                            )}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                    )}
 
                     {/* Pill: Tipo */}
                     <PillSelect
@@ -150,8 +155,10 @@ export default function PropertiesHero({
                         active={!!typeFilter}
                     >
                         <option value="">{t("search.all")}</option>
-                        {PROPERTY_TYPE_OPTIONS.map((l) => (
-                            <option key={l} value={l}>{l}</option>
+                        {PROPERTY_TYPE_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>
+                                {opt}
+                            </option>
                         ))}
                     </PillSelect>
 
@@ -166,16 +173,16 @@ export default function PropertiesHero({
                     >
                         <option value="">{t("search.any")}</option>
                         {[1, 2, 3, 4, 5].map((n) => (
-                            <option key={n} value={n}>{n}+</option>
+                            <option key={`bed-${n}`} value={n}>{n}+</option>
                         ))}
                     </PillSelect>
 
                     <div className="filter-bar__divider" />
 
-                    {/* Pill: Más (abre panel avanzado) */}
+                    {/* Más filtros */}
                     <button
                         className={`filter-pill${showAdvanced || advancedActiveCount > 0 ? " filter-pill--active" : ""}`}
-                        onClick={() => setShowAdvanced((v) => !v)}
+                        onClick={() => setShowAdvanced(!showAdvanced)}
                         type="button"
                     >
                         {t("search.moreFilters")}
@@ -193,14 +200,13 @@ export default function PropertiesHero({
                                 ✕
                             </button>
                             <div className="filter-bar__divider" />
-                            <button
-                                className="filter-bar__save"
-                                onClick={() => setShowSaveModal(true)}
-                                title={t("actions.saveTooltip")}
-                                type="button"
-                            >
-                                {t("actions.save")}
-                            </button>
+                            {isAuthenticated && (
+                                <>
+                                    <button className="filter-bar__save" onClick={() => setShowSaveModal(true)} title={t("actions.saveTooltip")} type="button">
+                                        {t("actions.save")}
+                                    </button>
+                                </>
+                            )}
                         </>
                     )}
                 </div>
@@ -208,21 +214,22 @@ export default function PropertiesHero({
                 {/* ── Panel de filtros avanzados ─────────────────────────── */}
                 <Collapse in={showAdvanced}>
                     <div>
-                        <div className="filter-bar__advanced-panel">
-                            <Row className="g-3">
-                                <Col md={3}>
-                                    <span className="filter-bar__panel-label">{t("search.availability")}</span>
-                                    <Form.Select
-                                        value={availability}
-                                        onChange={(e) => onAvailabilityChange(e.target.value)}
-                                        size="sm"
-                                    >
-                                        <option value="">{t("search.any")}</option>
-                                        {AVAILABILITY_OPTIONS.map((l) => (
-                                            <option key={l} value={l}>{l}</option>
-                                        ))}
-                                    </Form.Select>
-                                </Col>
+                        <Row className="g-3 mt-3">
+                            <Col md={3}>
+                                <span className="filter-bar__panel-label">{t("search.availability")}</span>
+                                <Form.Select
+                                    value={availability}
+                                    onChange={(e) => onAvailabilityChange(e.target.value)}
+                                    size="sm"
+                                >
+                                    <option value="">{t("search.any")}</option>
+                                    {AVAILABILITY_OPTIONS.map((opt) => (
+                                        <option key={opt} value={opt}>
+                                            {opt}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Col>
 
                                 <Col md={2}>
                                     <span className="filter-bar__panel-label">{t("search.minPrice")}</span>
@@ -242,21 +249,20 @@ export default function PropertiesHero({
                                     />
                                 </Col>
 
-                                <Col md={2}>
-                                    <span className="filter-bar__panel-label">{t("search.minBathrooms")}</span>
-                                    <Form.Select
-                                        value={minBathrooms}
-                                        onChange={(e) => onMinBathroomsChange(e.target.value)}
-                                        size="sm"
-                                    >
-                                        <option value="">{t("search.any")}</option>
-                                        {[1, 2, 3, 4].map((n) => (
-                                            <option key={n} value={n}>{n}+</option>
-                                        ))}
-                                    </Form.Select>
-                                </Col>
-                            </Row>
-                        </div>
+                            <Col md={2}>
+                                <span className="filter-bar__panel-label">{t("search.minBathrooms")}</span>
+                                <Form.Select
+                                    value={minBathrooms}
+                                    onChange={(e) => onMinBathroomsChange(e.target.value)}
+                                    size="sm"
+                                >
+                                    <option value="">{t("search.any")}</option>
+                                    {[1, 2, 3, 4].map((n) => (
+                                        <option key={n} value={n}>{n}+</option>
+                                    ))}
+                                </Form.Select>
+                            </Col>
+                        </Row>
                     </div>
                 </Collapse>
 

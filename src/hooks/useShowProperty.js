@@ -220,7 +220,7 @@ export function useShowProperty() {
   }, [id]);
 
   const registerPropertyView = useCallback(() => {
-    if (!id) return Promise.resolve(null);
+    if (!id || !isAuthenticated) return Promise.resolve(null);
     const propertyId = String(id);
     if (registeredViewRef.current.has(propertyId)) {
       return Promise.resolve(null);
@@ -230,7 +230,7 @@ export function useShowProperty() {
       registeredViewRef.current.delete(propertyId);
       return null;
     });
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   useEffect(() => {
     fetchProperty();
