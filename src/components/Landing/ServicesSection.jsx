@@ -40,6 +40,7 @@ const ServicesSection = () => {
 
     return (
         <section
+            id="services"
             ref={ref}
             style={{ padding: "80px 0", backgroundColor: "var(--white, #fff)" }}
         >

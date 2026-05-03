@@ -63,6 +63,7 @@ const Properties = () => {
       <div className="text-center py-4" style={{ backgroundColor: "#fff" }}></div>
 
       <div
+        id="projects"
         style={{
           backgroundColor: "#f3f4f6",
           width: "100vw",
@@ -150,7 +151,10 @@ const Properties = () => {
                                     property.primaryImageUrl ||
                                     "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
                                   }
-                                  style={{ height: "200px", objectFit: "cover" }}
+                                  width={400}
+                                  height={200}
+                                  style={{ aspectRatio: "2 / 1", objectFit: "cover", height: "auto" }}
+                                  loading="lazy"
                                 />
                               </div>
 
