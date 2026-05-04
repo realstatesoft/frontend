@@ -48,8 +48,8 @@ export function usePropertyPermissions(property, propertyAssignments = null) {
   const canAct = isOwner || isAdmin || hasAssignment;
 
   return {
-    /** Solo ADMIN puede cambiar el estado de revisión (Pendiente/Aprobado/etc.). */
-    canChangeStatus: isAdmin,
+    /** ADMIN, Propietario o Agente asignado pueden cambiar el estado. */
+    canChangeStatus: canAct,
 
     /** El propietario, ADMIN o asignado pueden cambiar la visibilidad (Público/Privado/Oculto). */
     canChangeVisibility: canAct,
