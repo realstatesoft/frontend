@@ -16,6 +16,7 @@ import { useAuth } from "../../hooks/useAuth";
 export default function PropertiesHero({
     search,
     typeFilter,
+    saleRent,
     availability,
     minPrice,
     maxPrice,
@@ -24,6 +25,7 @@ export default function PropertiesHero({
     totalResults,
     onSearch,
     onTypeChange,
+    onSaleRentChange,
     onAvailabilityChange,
     onMinPriceChange,
     onMaxPriceChange,
@@ -69,6 +71,7 @@ export default function PropertiesHero({
     const filters = {
         q: search,
         propertyType: typeFilter,
+        category: saleRent,
         availability,
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
@@ -82,7 +85,7 @@ export default function PropertiesHero({
     };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
-    const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
+    const hasAnyFilter = !!(search || typeFilter || saleRent || advancedActiveCount);
 
     return (
         <div className="bg-light py-4" style={{ overflow: "visible" }}>
@@ -118,6 +121,7 @@ export default function PropertiesHero({
                                         const f = s.filters || {};
                                         onSearch(f.q ?? "");
                                         onTypeChange(f.propertyType ?? "");
+                                        onSaleRentChange(f.category ?? "");
                                         onAvailabilityChange(f.availability ?? "");
                                         onMinPriceChange(f.minPrice ?? "");
                                         onMaxPriceChange(f.maxPrice ?? "");
