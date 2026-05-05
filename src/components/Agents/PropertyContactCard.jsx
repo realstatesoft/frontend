@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Image, Spinner } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { StarFill } from "react-bootstrap-icons";
 import { FiMessageSquare } from "react-icons/fi";
 import agentApi from "../../services/agents/agentApi";
@@ -29,10 +30,22 @@ export default function PropertyContactCard({ property }) {
 
   const hasAgent = Boolean(property?.agentId);
   
+  const navigate = useNavigate();
+
   // Lógica para ocultar el botón de oferta
-  const isOwner = user?.userId === property?.ownerId;
-  const isAgent = user?.agentProfileId === property?.agentId;
-  const hideOfferButton = !isAuthenticated || isOwner || isAgent;
+  // Ahora permitimos que se vea aunque no esté autenticado
+  const isOwner = isAuthenticated && user?.userId === property?.ownerId;
+  const isAgent = isAuthenticated && user?.agentProfileId && property?.agentId && user.agentProfileId === property.agentId;
+  const hideOfferButton = isOwner || isAgent;
+
+  const handleAction = (callback) => {
+    if (!isAuthenticated) {
+      const currentPath = window.location.pathname;
+      navigate(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      return;
+    }
+    callback();
+  };
 
   useEffect(() => {
     if (!hasAgent || !property.agentId) return;
@@ -66,7 +79,7 @@ export default function PropertyContactCard({ property }) {
   }, [hasAgent, property?.agentId]);
 
   const name = agent?.userName ?? property?.ownerName ?? t("contactCard.owner");
-  const avatarUrl = agent?.userAvatarUrl ?? DEFAULT_AVATAR;
+  const avatarUrl = agent?.userAvatarUrl ?? property?.ownerAvatarUrl ?? DEFAULT_AVATAR;
   const phone = agent?.userPhone ?? property?.ownerPhone ?? null;
   const experienceYears = agent?.experienceYears ?? null;
   const rating = agent?.avgRating != null ? Number(agent.avgRating).toFixed(1) : null;
@@ -182,7 +195,7 @@ export default function PropertyContactCard({ property }) {
           variant="outline-primary"
           className="w-100 mb-2"
           style={{ borderRadius: "8px" }}
-          onClick={() => setShowMessageModal(true)}
+          onClick={() => handleAction(() => setShowMessageModal(true))}
         >
           <FiMessageSquare className="me-2" />
           {t("contactCard.sendMessage")}
@@ -192,7 +205,7 @@ export default function PropertyContactCard({ property }) {
           variant="dark"
           className="w-100 mb-2"
           style={{ borderRadius: "8px" }}
-          onClick={() => setShowVisitModal(true)}
+          onClick={() => handleAction(() => setShowVisitModal(true))}
         >
           {t("contactCard.scheduleVisit")}
         </Button>
@@ -202,7 +215,7 @@ export default function PropertyContactCard({ property }) {
             variant="success"
             className="w-100"
             style={{ borderRadius: "8px", backgroundColor: "#28a745", borderColor: "#28a745" }}
-            onClick={() => setShowOfferModal(true)}
+            onClick={() => handleAction(() => setShowOfferModal(true))}
           >
             {t("contactCard.makeOffer")}
           </Button>
@@ -229,9 +242,9 @@ export default function PropertyContactCard({ property }) {
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
         preSelectedAgent={{
-          id: agent?.userId || property?.agentId,
+          id: agent?.userId || agent?.id || property?.ownerId,
           name: name,
-          email: agent?.userEmail,
+          email: agent?.userEmail || agent?.email || property?.ownerEmail,
         }}
         onSuccess={() => {
           Swal.fire({

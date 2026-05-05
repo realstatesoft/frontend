@@ -1,14 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import useCurrencyStore from "../../store/useCurrencyStore";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
 import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
+import { useAuth } from "../../hooks/useAuth";
 
+/**
+ * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
+ *
+ * Filtros básicos en la barra: Tipo · Precio · Dormitorios · Más (avanzados)
+ * Panel avanzado: disponibilidad, precio min/max, dormitorios mín., baños mín.
+ */
 export default function PropertiesHero({
     search,
     typeFilter,
+    saleRent,
     availability,
     minPrice,
     maxPrice,
@@ -19,6 +27,7 @@ export default function PropertiesHero({
     totalResults,
     onSearch,
     onTypeChange,
+    onSaleRentChange,
     onAvailabilityChange,
     onMinPriceChange,
     onMaxPriceChange,
@@ -27,27 +36,33 @@ export default function PropertiesHero({
     onClear,
 }) {
     const { t } = useTranslation("properties");
+    const { isAuthenticated } = useAuth();
 
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
-    const setCurrency = useCurrencyStore((state) => state.setCurrency);
-    const activePriceCurrency = priceCurrency || selectedCurrency || "PYG";
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [savedSearches, setSavedSearches] = useState([]);
 
-    const fetchSavedSearches = async () => {
+    const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+    const setCurrency = useCurrencyStore((state) => state.setCurrency);
+    const activePriceCurrency = priceCurrency || selectedCurrency || "PYG";
+
+    const fetchSavedSearches = useCallback(async () => {
         try {
             const res = await searchPreferencesApi.getMine();
-            const items = res?.content || [];
+            const items = res?.data?.content || [];
             setSavedSearches(items);
         } catch (err) {
             console.error("Error loading saved searches:", err);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchSavedSearches();
-    }, []);
+        if (isAuthenticated) {
+            fetchSavedSearches();
+        } else {
+            setSavedSearches([]);
+        }
+    }, [isAuthenticated, fetchSavedSearches]);
 
     const handleDeleteSearch = async (id, evt) => {
         evt.stopPropagation();
@@ -62,6 +77,7 @@ export default function PropertiesHero({
     const filters = {
         q: search,
         propertyType: typeFilter,
+        category: saleRent,
         availability,
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
@@ -75,7 +91,7 @@ export default function PropertiesHero({
     };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
-    const hasAnyFilter = !!(search || typeFilter || advancedActiveCount);
+    const hasAnyFilter = !!(search || typeFilter || saleRent || advancedActiveCount);
     const priceRangeNote =
         activePriceCurrency === "PYG"
             ? "Los filtros de precio se envían en PYG."
@@ -87,9 +103,8 @@ export default function PropertiesHero({
         <div className="bg-light py-4" style={{ overflow: "visible" }}>
             <Container>
                 <div className="filter-bar">
-
-                    {/* Búsqueda */}
                     <div className="filter-bar__search">
+                        <span className="filter-bar__search-icon"></span>
                         <input
                             type="text"
                             placeholder={t("search.placeholder")}
@@ -98,57 +113,61 @@ export default function PropertiesHero({
                         />
                     </div>
 
-                    {/* Mis búsquedas */}
-                    <Dropdown className="filter-bar__saved-dropdown">
-                        <Dropdown.Toggle className="filter-pill">
-                            Mis búsquedas
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Header>Mis búsquedas guardadas</Dropdown.Header>
+                    {isAuthenticated && (
+                        <Dropdown className="filter-bar__saved-dropdown">
+                            <Dropdown.Toggle className="filter-pill">
+                                {t("savedSearches.title")}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Header>{t("savedSearches.header")}</Dropdown.Header>
 
-                            {savedSearches.map((s) => (
-                                <Dropdown.Item
-                                    key={s.id}
-                                    as="div"
-                                    className="d-flex justify-content-between"
-                                    onClick={() => {
-                                        const f = s.filters || {};
-                                        setCurrency(f.priceCurrency ?? "PYG");
-                                        onSearch(f.q ?? "");
-                                        onTypeChange(f.propertyType ?? "");
-                                        onAvailabilityChange(f.availability ?? "");
-                                        onMinPriceChange(f.minPrice ?? "");
-                                        onMaxPriceChange(f.maxPrice ?? "");
-                                        onMinBedroomsChange(f.minBedrooms ?? "");
-                                        onMinBathroomsChange(f.minBathrooms ?? "");
-                                    }}
-                                >
-                                    <span>{s.name}</span>
-                                    <button
-                                        onClick={(evt) => handleDeleteSearch(s.id, evt)}
-                                        type="button"
+                                {savedSearches.map((savedSearch) => (
+                                    <Dropdown.Item
+                                        key={savedSearch.id}
+                                        as="div"
+                                        className="d-flex justify-content-between"
+                                        onClick={() => {
+                                            const savedFilters = savedSearch.filters || {};
+                                            setCurrency(savedFilters.priceCurrency ?? "PYG");
+                                            onSearch(savedFilters.q ?? "");
+                                            onTypeChange(savedFilters.propertyType ?? "");
+                                            onSaleRentChange(savedFilters.category ?? "");
+                                            onAvailabilityChange(savedFilters.availability ?? "");
+                                            onMinPriceChange(savedFilters.minPrice ?? "");
+                                            onMaxPriceChange(savedFilters.maxPrice ?? "");
+                                            onMinBedroomsChange(savedFilters.minBedrooms ?? "");
+                                            onMinBathroomsChange(savedFilters.minBathrooms ?? "");
+                                        }}
                                     >
-                                        ×
-                                    </button>
-                                </Dropdown.Item>
-                            ))}
+                                        <span>{savedSearch.name}</span>
+                                        <button
+                                            className="filter-bar__delete-search"
+                                            title={t("savedSearches.delete")}
+                                            aria-label={t("savedSearches.deleteLabel", { name: savedSearch.name })}
+                                            onClick={(evt) => handleDeleteSearch(savedSearch.id, evt)}
+                                            type="button"
+                                        >
+                                            ×
+                                        </button>
+                                    </Dropdown.Item>
+                                ))}
 
-                            {savedSearches.length === 0 && (
-                                <Dropdown.Item disabled>
-                                    Sin búsquedas guardadas
-                                </Dropdown.Item>
-                            )}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                                {savedSearches.length === 0 && (
+                                    <Dropdown.Item disabled>
+                                        {t("savedSearches.empty")}
+                                    </Dropdown.Item>
+                                )}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    )}
 
-                    {/* Tipo */}
                     <PillSelect
                         label={t("search.type")}
                         value={typeFilter}
                         onChange={onTypeChange}
                         active={!!typeFilter}
                     >
-                        <option value="">Todos</option>
+                        <option value="">{t("search.all")}</option>
                         {PROPERTY_TYPE_OPTIONS.map((opt) => (
                             <option key={opt} value={opt}>
                                 {opt}
@@ -156,28 +175,46 @@ export default function PropertiesHero({
                         ))}
                     </PillSelect>
 
-                    {/* Dormitorios */}
+                    <div className="filter-bar__divider" />
+
                     <PillSelect
                         label={t("search.bedrooms")}
                         value={minBedrooms}
                         onChange={onMinBedroomsChange}
                         active={!!minBedrooms}
                     >
-                        <option value="">Cualquiera</option>
+                        <option value="">{t("search.any")}</option>
                         {[1, 2, 3, 4, 5].map((n) => (
-                            <option key={n} value={n}>{n}+</option>
+                            <option key={`bed-${n}`} value={n}>{n}+</option>
                         ))}
                     </PillSelect>
 
-                    {/* Más filtros */}
-                    <button onClick={() => setShowAdvanced(!showAdvanced)}>
+                    <div className="filter-bar__divider" />
+
+                    <button
+                        className={`filter-pill${showAdvanced || advancedActiveCount > 0 ? " filter-pill--active" : ""}`}
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                        type="button"
+                    >
                         {t("search.moreFilters")}
+                        {advancedActiveCount > 0
+                            ? <span className="filter-pill__badge">{advancedActiveCount}</span>
+                            : <span className={`filter-pill__chevron${showAdvanced ? " filter-pill__chevron--open" : ""}`} />
+                        }
                     </button>
 
                     {hasAnyFilter && (
                         <>
-                            <button onClick={onClear}>Limpiar</button>
-                            <button onClick={() => setShowSaveModal(true)}>Guardar</button>
+                            <div className="filter-bar__divider" />
+                            <button className="filter-bar__clear" onClick={onClear} title={t("search.clearFilters")} type="button">
+                                ✕
+                            </button>
+                            <div className="filter-bar__divider" />
+                            {isAuthenticated && (
+                                <button className="filter-bar__save" onClick={() => setShowSaveModal(true)} title={t("actions.saveTooltip")} type="button">
+                                    {t("actions.save")}
+                                </button>
+                            )}
                         </>
                     )}
                 </div>

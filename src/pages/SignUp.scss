@@ -1,0 +1,284 @@
+// SignUp.scss
+@use 'sass:color';
+@import '../styles/main';
+
+.signup-page {
+  font-family: $font-family-sans-serif;
+  background-color: $light;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+
+  .signup-card {
+    width: 100%;
+    margin: 0 auto;
+    border: none !important;
+    border-radius: $radius-md;
+    box-shadow: $shadow-soft;
+    padding: 2rem;
+
+    @media (min-width: 768px) {
+      padding: 3rem;
+    }
+
+    .logo-container {
+      margin-bottom: 1.5rem;
+      text-align: center;
+
+      .logo-img {
+        max-width: 120px;
+        height: auto;
+        display: inline-block;
+      }
+    }
+
+    .signup-title {
+      text-align: center;
+      font-weight: $font-weight-bold;
+      margin-bottom: 0.5rem;
+      color: $text-dark;
+      font-size: 1.5rem;
+    }
+
+    .signup-subtitle {
+      text-align: center;
+      color: $text-muted;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+
+      a {
+        color: $primary;
+        text-decoration: none;
+        font-weight: $font-weight-bold;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    // Stepper
+    .signup-stepper {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+
+      &__item {
+        display: flex;
+        align-items: center;
+      }
+
+      &__step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &--active .signup-stepper__circle {
+          background-color: $primary;
+          color: white;
+          border-color: $primary;
+        }
+
+        &--active .signup-stepper__label {
+          color: $primary;
+          font-weight: $font-weight-bold;
+        }
+
+        &--done .signup-stepper__circle {
+          background-color: $primary;
+          color: white;
+          border-color: $primary;
+        }
+      }
+
+      &__circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        font-weight: $font-weight-bold;
+        border: 2px solid $border-color-soft;
+        background-color: white;
+        color: $text-muted;
+        margin-bottom: 0.4rem;
+      }
+
+      &__label {
+        font-size: 0.8rem;
+        color: $text-muted;
+        font-weight: $font-weight-medium;
+        text-align: center;
+      }
+
+      &__line {
+        width: 60px;
+        height: 2px;
+        background-color: $border-color-soft;
+        margin: 0 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+    }
+
+    // Form label
+    .form-label {
+      font-weight: $font-weight-bold;
+      color: $text-dark;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    // Input group
+    .input-group-custom {
+      .input-group-text {
+        background-color: $input-bg-light;
+        border: none;
+        border-radius: $radius-sm 0 0 $radius-sm;
+        padding: 0.75rem 1rem;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .form-control {
+        background-color: $input-bg-light;
+        border: none;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        box-shadow: none;
+
+        &:focus {
+          background-color: $input-bg-light;
+          box-shadow: none;
+        }
+
+        &::placeholder {
+          color: $text-light-muted;
+        }
+      }
+
+      .input-group-text:last-child {
+        border-radius: 0 $radius-sm $radius-sm 0;
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+        background-color: $input-bg-light;
+        border: none;
+      }
+    }
+
+    // Error message
+    .error-message {
+      color: $danger;
+      font-weight: $font-weight-medium;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      padding: 0.5rem;
+      background-color: rgba($danger, 0.1);
+      border-radius: $radius-sm;
+    }
+
+    // Submit button
+    .signup-btn {
+      border-radius: $radius-md;
+      padding: 0.75rem 1rem;
+      font-weight: $font-weight-bold;
+      font-size: 1rem;
+      background-color: $primary;
+      border-color: $primary;
+      transition: all 0.3s ease;
+      width: 100%;
+
+      &:hover {
+        background-color: color.adjust($primary, $lightness: -10%);
+        border-color: color.adjust($primary, $lightness: -10%);
+        transform: translateY(-2px);
+        box-shadow: $shadow-soft;
+      }
+
+      &:disabled {
+        opacity: 0.65;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    .signup-btn-prev {
+      border-radius: $radius-md;
+      padding: 0.75rem 1rem;
+      font-weight: $font-weight-bold;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    // Divider
+    .divider-container {
+      display: flex;
+      align-items: center;
+      margin: 2rem 0;
+
+      hr {
+        flex-grow: 1;
+        margin: 0;
+        border: none;
+        border-top: 1px solid $border-color-soft;
+      }
+
+      span {
+        margin: 0 1rem;
+        color: $text-muted;
+        font-size: 0.9rem;
+        font-weight: $font-weight-medium;
+      }
+    }
+
+    // Social buttons
+    .social-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+
+      .social-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+        padding: 0.75rem;
+        border-radius: $radius-sm;
+        background-color: white;
+        color: $text-dark;
+        border: 1px solid $border-color-soft;
+        font-size: 0.95rem;
+        font-weight: $font-weight-medium;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: color.adjust(white, $lightness: -3%);
+          border-color: color.adjust($border-color-soft, $lightness: -10%);
+          transform: translateY(-2px);
+          box-shadow: $shadow-soft;
+        }
+
+        svg {
+          margin-right: 0.5rem;
+          width: 18px;
+          height: 18px;
+        }
+
+        .google-icon {
+          color: $danger;
+        }
+
+        .facebook-icon {
+          color: $primary;
+        }
+      }
+    }
+  }
+}

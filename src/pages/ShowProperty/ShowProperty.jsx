@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import {
   Container,
   Row,
@@ -29,15 +29,17 @@ import PropertySummaryCard from "../../components/properties/PropertySummaryCard
 import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
+import HighlightPropertyModal from "../../components/properties/HighlightPropertyModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
-import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
 import PropertyPriceNotice from "../../components/common/PropertyPriceNotice";
 import { useTranslation } from "react-i18next";
 import "./show-property.scss";
+
+const Property360Tour = lazy(() => import("../../components/properties/Property360Tour/Property360Tour"));
 
 export default function ShowProperty() {
   const { t } = useTranslation("showProperty");
@@ -77,13 +79,14 @@ export default function ShowProperty() {
     viewCount,
     isAuthenticated,
     fetchActiveFlagCount,
-    handleToggleHighlight
+    handleRemoveHighlight
   } = useShowProperty();
 
   const { user: authUser } = useAuth();
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
+  const [showHighlightModal, setShowHighlightModal] = useState(false);
 
   const {
     canChangeStatus,
@@ -217,7 +220,33 @@ export default function ShowProperty() {
 
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h1>{property.title}</h1>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              <h1 className="mb-0">{property.title}</h1>
+              {property.highlighted && (
+                <Badge
+                  className="d-flex align-items-center gap-2"
+                  style={{
+                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                    fontSize: "1rem",
+                    padding: "8px 16px",
+                    borderRadius: "20px",
+                    fontWeight: 600,
+                  }}
+                >
+                  <Star size={15} /> Destacada
+                </Badge>
+              )}
+              {property.highlighted && visibility.value !== "PUBLIC" && canChangeVisibility && (
+                <OverlayTrigger
+                  placement="right"
+                  overlay={<Tooltip>Esta propiedad no aparecerá en el inicio porque su visibilidad es "{visibility.label}". Cámbiala a "Público".</Tooltip>}
+                >
+                  <Badge bg="danger" className="d-flex align-items-center ms-2" style={{ borderRadius: "20px" }}>
+                    ⚠️ Visibilidad Restringida
+                  </Badge>
+                </OverlayTrigger>
+              )}
+            </div>
             <div className="d-flex gap-2 align-items-center mt-2">
               {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
               {(canChangeStatus || canEdit) && (
@@ -274,16 +303,17 @@ export default function ShowProperty() {
                 </Button>
               )}
 
-              {/* Destacar — solo ADMIN */}
+              {/* Destacar — owner, asignado o admin */}
               {canFeature && (
                 <Button
                   size="sm"
-                  variant={property.highlighted ? "secondary" : "warning"}
-                  className="d-flex align-items-center text-white"
-                  onClick={handleToggleHighlight}
+                  variant={property.highlighted ? "warning" : "outline-warning"}
+                  className="d-flex align-items-center"
                   disabled={actionLoading}
+                  onClick={() => property.highlighted ? handleRemoveHighlight() : setShowHighlightModal(true)}
                 >
-                  <Star size={16} className="property__icon-button me-1" /> {property.highlighted ? "Quitar Destacado" : "Destacar"}
+                  <Star size={16} className="property__icon-button" />
+                  {property.highlighted ? "Destacada" : "Destacar"}
                 </Button>
               )}
 
@@ -343,6 +373,10 @@ export default function ShowProperty() {
                   src={images[0]}
                   alt="Fachada"
                   className="property__main-image"
+                  width={800}
+                  height={420}
+                  fetchPriority="high"
+                  style={{ aspectRatio: '800 / 420' }}
                 />
                 {viewBadgeText && (
                   <div className="property__views-badge">
@@ -366,6 +400,10 @@ export default function ShowProperty() {
                           ? "radius-bottom-right-lg"
                           : ""
                       }`}
+                      width={400}
+                      height={207}
+                      loading="lazy"
+                      style={{ aspectRatio: '400 / 207' }}
                     />
                   </Col>
                 ))}
@@ -486,6 +524,7 @@ export default function ShowProperty() {
                         style={{ border: 0 }}
                         src={mapUrl}
                         allowFullScreen
+                        loading="lazy"
                       />
                     </div>
 
@@ -566,7 +605,9 @@ export default function ShowProperty() {
                             <span className="text-muted">Iniciando recorrido...</span>
                           </div>
                         ) : finalTourConfig ? (
-                          <Property360Tour config={finalTourConfig} />
+                          <Suspense fallback={<div className="d-flex justify-content-center py-5"><Spinner animation="border" variant="primary" /></div>}>
+                            <Property360Tour config={finalTourConfig} />
+                          </Suspense>
                         ) : (
                           <Alert variant="info">{t("actions.loadingTour")}</Alert>
                         )
@@ -728,9 +769,15 @@ export default function ShowProperty() {
         </Container>
       </div>
 
-      <ReportPropertyModal 
-        propertyId={property.id} 
-        isOpen={showReportModal} 
+      <HighlightPropertyModal
+        property={property}
+        show={showHighlightModal}
+        onHide={() => setShowHighlightModal(false)}
+      />
+
+      <ReportPropertyModal
+        propertyId={property.id}
+        isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
         onSuccess={() => fetchActiveFlagCount && fetchActiveFlagCount()}
       />

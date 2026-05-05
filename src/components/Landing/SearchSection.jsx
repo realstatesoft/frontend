@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import fotoSearch from "../../assets/fotoSearch.png";
+import fotoSearch from "../../assets/fotoSearch.webp";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 const SearchSection = () => {
