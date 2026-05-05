@@ -49,7 +49,7 @@ export default function SaveSearchModal({
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>💾 Guardar Búsqueda</Modal.Title>
+        <Modal.Title>Guardar Búsqueda</Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body>

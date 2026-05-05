@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
 import PropertiesPage from "../pages/PropertiesPage";
@@ -49,26 +50,97 @@ import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
 import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
 import OwnerReservationsPage from "../pages/OwnerReservations/OwnerReservationsPage";
 import AgentReservationsPage from "../pages/AgentReservations/AgentReservationsPage";
+import { Spinner } from "react-bootstrap";
+
+// ─── Auth guards (lightweight, always needed) ───────────────────────────────
 import RoleRedirect from "../components/commons/RoleRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
-import UserProfilePage from "../pages/UserProfilePage";
-import PropertyApprovalPage from "../pages/Admin/PropertyApprovalPage";
-import AdminDashboardPage from "../pages/Admin/AdminDashboardPage";
-import AdminLayout from "../components/layout/AdminLayout/AdminLayout";
-import AdminNotificationsPage from "../pages/Admin/AdminNotificationsPage";
-import AdminAuditLogsPage from "../pages/Admin/AdminAuditLogsPage";
-import FlagsPage from "../pages/Admin/Flags/FlagsPage";
-import PreferencesPage from "../pages/PreferencesPage";
 
-import AdminDocumentsPage from "../pages/Admin/AdminDocumentsPage";
-import RentConfigPage from "../pages/Admin/RentConfig/RentConfigPage";
-import AdminContractTemplatesPage from "../pages/Admin/AdminContractTemplatesPage";
-import AdminPaymentsPage from "../pages/Admin/AdminPaymentsPage";
-import PaymentPage from "../pages/Payment/PaymentPage";
-import MyPaymentsPage from "../pages/MyPayments/MyPaymentsPage";
+// ─── Lazy-loaded routes (code-split) ────────────────────────────────────────
+const LandingPage = lazy(() => import("../pages/LandingPage"));
+const PropertiesPage = lazy(() => import("../pages/PropertiesPage"));
+const ShowProperty = lazy(() => import("../pages/ShowProperty/ShowProperty"));
+const LogIn = lazy(() => import("../pages/Login/LogIn"));
+const SignUp = lazy(() => import("../pages/SignUp"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
+const AgentsPage = lazy(() => import("../pages/AgentsPage"));
+const PublicAgentProfilePage = lazy(() => import("../pages/Agents/PublicAgentProfilePage"));
+const AgentSearchPage = lazy(() => import("../pages/Agents/AgentSearchPage"));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+
+const PropertyComparePage = lazy(() => import("../pages/PropertyComparePage"));
+const PropertiesTrashCan = lazy(() => import("../pages/PropertiesTrashCan/PropertiesTrashCan"));
+const CreateProperty = lazy(() => import("../pages/properties/CreateProperty"));
+const MyProperties = lazy(() => import("../pages/ShowProperty/MyProperties"));
+const MyFavoriteProperties = lazy(() => import("../pages/ShowProperty/MyFavoriteProperties"));
+const SellWizardPage = lazy(() => import("../pages/sell/SellWizardPage"));
+const VisitRequests = lazy(() => import("../pages/VisitRequests"));
+const ClientProfilePage = lazy(() => import("../pages/ClientProfilePage"));
+const RegisterClient = lazy(() => import("../pages/clients/RegisterClient"));
+const EditClient = lazy(() => import("../pages/clients/EditClient"));
+const ClientMessagesPage = lazy(() => import("../pages/ClientMessages/ClientMessagesPage"));
+const MyReservationsPage = lazy(() => import("../pages/MyReservations/MyReservationsPage"));
+const PropertyManagementOptions = lazy(() => import("../pages/PropertyManagementOptions/PropertyManagementOptions"));
+const ClientList = lazy(() => import("../pages/ClientList/ClientList"));
+const AgentProfilePage = lazy(() => import("../pages/Agents/AgentProfilePage"));
+const AgentEditPage = lazy(() => import("../pages/Agents/AgentEditPage"));
+const UserProfilePage = lazy(() => import("../pages/UserProfilePage"));
+const PreferencesPage = lazy(() => import("../pages/PreferencesPage"));
+const PaymentPage = lazy(() => import("../pages/Payment/PaymentPage"));
+const MyPaymentsPage = lazy(() => import("../pages/MyPayments/MyPaymentsPage"));
+
+// Agent Dashboard (chunk-agent)
+const AgentLayout = lazy(() => import("../components/layout/AgentLayout/AgentLayout"));
+const DashboardPage = lazy(() => import("../pages/Dashboard/DashboardPage"));
+const ClientsPage = lazy(() => import("../pages/clients/ClientsPage"));
+const AgentPropertiesPage = lazy(() => import("../pages/properties/AgentPropertiesPage"));
+const AgendaPage = lazy(() => import("../pages/Agenda/AgendaPage"));
+const SalesPage = lazy(() => import("../pages/Sales/SalesPage"));
+const ReportsPage = lazy(() => import("../pages/Reports/ReportsPage"));
+const MessagesPage = lazy(() => import("../pages/Messages/MessagesPage"));
+const ContractsPage = lazy(() => import("../pages/Contracts/ContractsPage"));
+const ContractCreatePage = lazy(() => import("../pages/Contracts/ContractCreatePage"));
+const ContractEditPage = lazy(() => import("../pages/Contracts/ContractEditPage"));
+const ContractDetailPage = lazy(() => import("../pages/Contracts/ContractDetailPage"));
+const OfferManagementPage = lazy(() => import("../pages/Offers/OfferManagementPage"));
+const AgentLeadsPage = lazy(() => import("../pages/AgentLeads/AgentLeadsPage"));
+const LeadDetailPage = lazy(() => import("../pages/Leads/LeadDetailPage"));
+const AgentReservationsPage = lazy(() => import("../pages/AgentReservations/AgentReservationsPage"));
+
+// Owner Dashboard (chunk-owner)
+const OwnerLayout = lazy(() => import("../components/layout/OwnerLayout/OwnerLayout"));
+const OwnerDashboardPage = lazy(() => import("../pages/OwnerDashboard/OwnerDashboardPage"));
+const OwnerMessagesPage = lazy(() => import("../pages/OwnerMessages/OwnerMessagesPage"));
+const OwnerReservationsPage = lazy(() => import("../pages/OwnerReservations/OwnerReservationsPage"));
+
+// Admin Dashboard (chunk-admin)
+const AdminLayout = lazy(() => import("../components/layout/AdminLayout/AdminLayout"));
+const AdminDashboardPage = lazy(() => import("../pages/Admin/AdminDashboardPage"));
+const PropertyApprovalPage = lazy(() => import("../pages/Admin/PropertyApprovalPage"));
+const AdminNotificationsPage = lazy(() => import("../pages/Admin/AdminNotificationsPage"));
+const AdminAuditLogsPage = lazy(() => import("../pages/Admin/AdminAuditLogsPage"));
+const FlagsPage = lazy(() => import("../pages/Admin/Flags/FlagsPage"));
+const AdminDocumentsPage = lazy(() => import("../pages/Admin/AdminDocumentsPage"));
+const RentConfigPage = lazy(() => import("../pages/Admin/RentConfig/RentConfigPage"));
+const AdminContractTemplatesPage = lazy(() => import("../pages/Admin/AdminContractTemplatesPage"));
+const AdminPaymentsPage = lazy(() => import("../pages/Admin/AdminPaymentsPage"));
+
+const AdminSettingsPage = lazy(() => import("../pages/Admin/Settings/AdminSettingsPage"));
+const AgentSettingsPage = lazy(() => import("../pages/AgentSettings/AgentSettingsPage"));
+const UserSettingsPage = lazy(() => import("../pages/UserSettings/UserSettingsPage"));
+
+// ─── Suspense fallback ──────────────────────────────────────────────────────
+function PageLoader() {
+    return (
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+            <Spinner animation="border" variant="primary" />
+        </div>
+    );
+}
 
 export default function AppRouter() {
     return (
+        <Suspense fallback={<PageLoader />}>
         <Routes>
             {/* -- Rutas públicas -------------------------------------- */}
             <Route path="/" element={<LandingPage />} />
@@ -132,6 +204,7 @@ export default function AppRouter() {
           <Route path="leads/:id" element={<LeadDetailPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
                     <Route path="prospectos/:id" element={<LeadDetailPage />} />
+                    <Route path="settings" element={<AgentSettingsPage />} />
                 </Route>
             </Route>
 
@@ -147,6 +220,7 @@ export default function AppRouter() {
                     <Route path="contratos" element={<ContractsPage />} />
                     <Route path="contratos/nuevo" element={<ContractCreatePage />} />
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="settings" element={<UserSettingsPage />} />
                 </Route>
             </Route>
 
@@ -167,6 +241,7 @@ export default function AppRouter() {
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
                     <Route path="rent-config" element={<RentConfigPage />} />
+                    <Route path="settings" element={<AdminSettingsPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                     <Route path="payments" element={<AdminPaymentsPage />} />
                 </Route>
@@ -177,5 +252,6 @@ export default function AppRouter() {
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        </Suspense>
     );
 }

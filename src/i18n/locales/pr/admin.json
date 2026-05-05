@@ -224,5 +224,50 @@
       "description": "Descrição",
       "status": "Status"
     }
+  },
+  "settings": {
+    "title": "Configurações do sistema",
+    "subtitle": "Ajuste os parâmetros globais da plataforma.",
+    "loadError": "Não foi possível carregar a configuração.",
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "saveError": "Não foi possível salvar. Tente novamente.",
+    "commissions": {
+      "title": "Comissões",
+      "desc": "Percentuais de comissão e depósito para vendas e aluguéis.",
+      "salePercent": "Comissão de venda (%)",
+      "rentPercent": "Comissão de aluguel (%)",
+      "depositMonths": "Meses de depósito",
+      "depositMonthsHelp": "Entre 1 e 12 meses.",
+      "errorSalePercent": "A comissão de venda deve ser entre 0 e 100.",
+      "errorRentPercent": "A comissão de aluguel deve ser entre 0 e 100.",
+      "errorDepositMonths": "Os meses de depósito devem ser entre 1 e 12.",
+      "success": "Comissões atualizadas com sucesso."
+    },
+    "reservations": {
+      "title": "Reservas",
+      "desc": "Tempo de validade e depósito exigido para reservar um imóvel.",
+      "ttlHours": "Validade da reserva (horas)",
+      "ttlHoursHelp": "Tempo antes de a reserva expirar. Máximo 720 h (30 dias).",
+      "depositPercent": "Depósito da reserva (%)",
+      "depositPercentHelp": "Porcentagem do preço do imóvel cobrada como depósito.",
+      "errorTtlHours": "As horas de validade devem ser entre 1 e 720.",
+      "errorDepositPercent": "O percentual de depósito deve ser entre 0,01 e 100.",
+      "success": "Configuração de reservas atualizada."
+    },
+    "properties": {
+      "title": "Imóveis",
+      "desc": "Limites e restrições para o carregamento de imóveis.",
+      "maxImages": "Máximo de imagens por imóvel",
+      "maxImagesHelp": "Entre 1 e 50 imagens.",
+      "errorMaxImages": "O máximo de imagens deve ser entre 1 e 50.",
+      "success": "Configuração de imóveis atualizada."
+    },
+    "system": {
+      "title": "Sistema",
+      "desc": "Configuração geral da plataforma.",
+      "currency": "Moeda padrão",
+      "success": "Configuração do sistema atualizada."
+    }
   }
 }

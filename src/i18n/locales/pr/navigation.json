@@ -6,6 +6,9 @@
   "projects": "Projetos",
   "agents": "Corretores",
   "services": "Serviços",
+  "buy": "Comprar",
+  "rent": "Alugar",
+  "sell": "Vender",
   "contactUs": "Fale conosco",
   "profileMenu": "Menu de perfil",
   "welcome": "Bem-vindo",
@@ -47,7 +50,8 @@
       "reports": "Relatórios",
       "documents": "Validação de documentos",
       "rentConfig": "Configuração de aluguel",
-      "contractTemplates": "Modelos de contrato"
+      "contractTemplates": "Modelos de contrato",
+      "settings": "Configurações"
     },
     "owner": {
       "dashboard": "Meu painel",
@@ -55,7 +59,8 @@
       "visits": "Visitas",
       "offers": "Ofertas",
       "contracts": "Meus contratos",
-      "messages": "Mensagens"
+      "messages": "Mensagens",
+      "settings": "Configurações"
     },
     "agent": {
       "profile": "Meu perfil",
@@ -71,7 +76,8 @@
       "reports": "Relatórios",
       "funnel": "Funil de conversão",
       "funnelNew": "Novo",
-      "messages": "Mensagens"
+      "messages": "Mensagens",
+      "settings": "Configurações"
     }
   },
   "role": {

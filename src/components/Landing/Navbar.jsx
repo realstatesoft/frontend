@@ -37,10 +37,13 @@ import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
 import { useUnreadMessagesCount } from "../../hooks/useMessagesData";
 import LanguageSelector from "../common/LanguageSelector";
+import { useQueryClient } from "@tanstack/react-query";
+import propertyApi from "../../services/properties/propertyApi";
 
 function CustomNavbar() {
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
+  const queryClient = useQueryClient();
 
   // Obtiene el estado de autenticacion, datos del usuario y funcion de logout del contexto global
   const { isAuthenticated, user, logout } = useAuth();
@@ -124,28 +127,51 @@ function CustomNavbar() {
     return '/ofertas';
   };
 
-  return (
-    <Navbar expand="lg" className="bg-light py-3">
-      <Container className="bg-white rounded-pill shadow-sm px-4 py-2">
+  const getSettingsLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'ADMIN') return '/admin/settings';
+    if (role === 'AGENT') return '/agent/settings';
+    return '/owner/settings';
+  };
 
-        <Navbar.Brand as={Link} to="/" className="fw-bold">
+
+
+  return (
+    <Navbar expand="lg" className="bg-white border-bottom shadow-sm py-2" style={{ zIndex: 1040, borderRadius: "0 0 24px 24px" }}>
+      <Container fluid className="px-3 px-lg-5">
+
+        <Navbar.Brand as={Link} to="/" className="fw-bold me-4">
           <img src={Logotipo} alt="OpenRoof" style={{ height: '40px', transform: 'scale(2.3)', transformOrigin: 'left center' }} />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
-          <Nav className="mx-auto gap-4">
-            <Nav.Link as={Link} to="/">{t('home')}</Nav.Link>
-            <Nav.Link href="#about">{t('about')}</Nav.Link>
-            <Nav.Link href="#projects">{t('projects')}</Nav.Link>
-            <Nav.Link href="#agents">{t('agents')}</Nav.Link>
-            <Nav.Link href="#services">{t('services')}</Nav.Link>
-            <Nav.Link as={Link} to="/properties">
-              {t('properties')}
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto ms-5 gap-4 fw-semibold" style={{ fontSize: "0.95rem" }}>
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Venta" }} onMouseEnter={() => {
+              queryClient.prefetchQuery({
+                queryKey: ["properties", { page: 1, size: 12, search: "", propertyType: undefined, category: "SALE", status: undefined, availability: undefined, minPrice: undefined, maxPrice: undefined, minBedrooms: undefined, minBathrooms: undefined }],
+                queryFn: async () => {
+                  const res = await propertyApi.getAll({ page: 0, size: 12, category: "SALE" });
+                  const pageData = res?.data ? (res.data.data ?? res.data) : { content: [], totalPages: 0, totalElements: 0 };
+                  return { properties: pageData.content ?? [], totalPages: Number(pageData.totalPages ?? 0), totalElements: Number(pageData.totalElements ?? 0) };
+                },
+                staleTime: 5 * 60 * 1000,
+              });
+            }}>
+              {t('buy') || 'Comprar'}
             </Nav.Link>
+            
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Alquiler" }}>
+              {t('rent') || 'Alquilar'}
+            </Nav.Link>
+
             <Nav.Link as={Link} to="/property-management">
-              {t('sellRent')}
+              {t('sell') || 'Vender'}
+            </Nav.Link>
+
+            <Nav.Link as={Link} to="/agents">
+              {t('agents') || 'Agentes'}
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
@@ -270,7 +296,7 @@ function CustomNavbar() {
                   <hr className="profile-dropdown-divider" />
 
                   {/* Seccion 2: configuracion y sesion */}
-                  <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to={getSettingsLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Gear size={16} style={{ flexShrink: 0 }} /> {t('settings')}
                   </Link>
                   <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
@@ -289,15 +315,7 @@ function CustomNavbar() {
 
         </div>
 
-        {!isAuthenticated && (
-          <Button
-            variant="outline-dark"
-            className="rounded-pill px-4"
-            onClick={() => navigate("/properties")}
-          >
-            {t('contactUs')}
-          </Button>
-        )}
+
 
       </Container>
     </Navbar>
