@@ -12,6 +12,7 @@ const PropertiesPage = lazy(() => import("../pages/PropertiesPage"));
 const ShowProperty = lazy(() => import("../pages/ShowProperty/ShowProperty"));
 const LogIn = lazy(() => import("../pages/Login/LogIn"));
 const SignUp = lazy(() => import("../pages/SignUp"));
+const AgentSignUp = lazy(() => import("../pages/AgentSignUp"));
 const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 const AgentsPage = lazy(() => import("../pages/AgentsPage"));
 const PublicAgentProfilePage = lazy(() => import("../pages/Agents/PublicAgentProfilePage"));
@@ -94,6 +95,7 @@ export default function AppRouter() {
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/login" element={<LogIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/signup/agent" element={<AgentSignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/compare" element={<PropertyComparePage />} />

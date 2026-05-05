@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { Container, Card, Row, Col, Form, Button, Stack, Alert, InputGroup } from 'react-bootstrap';
+import { Container, Card, Row, Col, Form, Button, Stack, InputGroup } from 'react-bootstrap';
 import { Envelope, Eye, EyeSlash, Facebook, Google, Lock, Person, Telephone } from 'react-bootstrap-icons';
 import logo from '../assets/Logotipo.png';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { IoCheckmark, IoArrowForwardOutline } from 'react-icons/io5';
-import PreferencesForm from '../components/preferences/PreferencesForm';
-import { useUserPreferences } from '../hooks/useUserPreferences';
+import { IoCheckmark } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import './SignUp.scss';
 
-export default function SignUp() {
+export default function AgentSignUp() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   const { t } = useTranslation('auth');
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -20,9 +18,6 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  // Guardamos el userId tras el paso 2 para el paso 3
-  const [registeredUserId, setRegisteredUserId] = useState(null);
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -33,15 +28,6 @@ export default function SignUp() {
     confirmPassword: '',
     terminos: false
   });
-
-  const {
-    options,
-    optionsLoading,
-    error: optionsError,
-    retryLoad,
-    savePreferences,
-    isSaving: isSavingPrefs
-  } = useUserPreferences(registeredUserId);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -60,8 +46,6 @@ export default function SignUp() {
     setErrorMessage('');
     setCurrentStep(prev => prev - 1);
   };
-
-  // ── Handlers de cada paso ──────────────────────────────────────────────────
 
   const handleStep1Submit = (e) => {
     e.preventDefault();
@@ -90,52 +74,31 @@ export default function SignUp() {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
-        role: 'USER'
+        role: 'AGENT'
       };
 
       const result = await register(dataParaBackend);
-      const userId = result?.data?.id; 
-      
-      if (userId) {
-        setRegisteredUserId(userId);
-        nextStep();
+
+      // If backend returned tokens, AuthContext.register already called login().
+      // Redirect to agent dashboard.
+      if (result?.data?.accessToken) {
+        navigate('/agent/dashboard');
       } else {
-        // Si no tenemos ID, algo falló en la respuesta
-        setErrorMessage(t('registrationIdError'));
+        // No tokens returned – redirect to login with a success flag.
+        navigate('/login', { state: { agentRegistered: true } });
       }
     } catch (error) {
-      setErrorMessage(error.message || t('registrationError'));
+      setErrorMessage(error.message || t('agentRegistrationError'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handlePreferencesSubmit = async ({ selectedOptionIds, ranges }) => {
-    setErrorMessage('');
-    try {
-      await savePreferences({
-        userId: registeredUserId,
-        selectedOptionIds,
-        ranges
-      });
-      // Éxito -> al landing
-      navigate('/');
-    } catch (err) {
-      // Si falla el guardado de preferencias, mostramos error pero permitimos saltar
-      setErrorMessage(err.message);
-    }
-  };
-
-  const handleSkipPreferences = () => {
-    navigate('/');
-  };
-
-  // ── Render de Stepper ──────────────────────────────────────────────────────
+  // ── Stepper ──────────────────────────────────────────────────────────────
 
   const steps = [
     { num: 1, label: t('signupStepPersonal') },
-    { num: 2, label: t('signupStepAccount') },
-    { num: 3, label: t('signupStepPreferences') }
+    { num: 2, label: t('signupStepAccount') }
   ];
 
   const renderStepper = () => (
@@ -151,14 +114,14 @@ export default function SignUp() {
               </div>
               <span className="signup-stepper__label">{step.label}</span>
             </div>
-            {step.num < 3 && <div className="signup-stepper__line" />}
+            {step.num < 2 && <div className="signup-stepper__line" />}
           </div>
         );
       })}
     </div>
   );
 
-  // ── Renders de Pasos ───────────────────────────────────────────────────────
+  // ── Steps ─────────────────────────────────────────────────────────────────
 
   const renderStep1 = () => (
     <Form onSubmit={handleStep1Submit}>
@@ -194,7 +157,7 @@ export default function SignUp() {
           <InputGroup.Text><Telephone size={18} /></InputGroup.Text>
           <Form.Control
             type="tel" name="phone" value={formData.phone} onChange={handleChange}
-            placeholder={t('phonePlaceholder')}
+            placeholder={t('phonePlaceholder')} required
           />
         </InputGroup>
       </Form.Group>
@@ -223,8 +186,8 @@ export default function SignUp() {
         <InputGroup className="input-group-custom">
           <InputGroup.Text><Lock size={18} /></InputGroup.Text>
           <Form.Control
-            type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange}
-            placeholder={t('passwordPlaceholder')} required
+            type={showPassword ? 'text' : 'password'} name="password" value={formData.password}
+            onChange={handleChange} placeholder={t('passwordPlaceholder')} required
           />
           <InputGroup.Text
             onClick={() => setShowPassword(!showPassword)}
@@ -241,7 +204,8 @@ export default function SignUp() {
         <InputGroup className="input-group-custom">
           <InputGroup.Text><Lock size={18} /></InputGroup.Text>
           <Form.Control
-            type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
+            type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword"
+            value={formData.confirmPassword} onChange={handleChange}
             placeholder={t('confirmPasswordPlaceholder')} required
           />
           <InputGroup.Text
@@ -256,104 +220,62 @@ export default function SignUp() {
       </Form.Group>
       <Form.Group className="mb-4 d-flex align-items-center">
         <Form.Check
-          type="checkbox" id="terminos" name="terminos" checked={formData.terminos} onChange={handleChange}
-          className="me-2" required
+          type="checkbox" id="terminos" name="terminos" checked={formData.terminos}
+          onChange={handleChange} className="me-2" required
         />
         <Form.Label htmlFor="terminos" className="text-dark mb-0 small">
           {t('acceptTermsPrefix')} <a href="#" className="text-decoration-none">{t('termsAndConditions')}</a>
         </Form.Label>
       </Form.Group>
 
-{errorMessage && (
-            <div className="error-message" role="alert" aria-live="assertive">{errorMessage}</div>
-          )}
+      {errorMessage && (
+        <div className="error-message" role="alert" aria-live="assertive">{errorMessage}</div>
+      )}
 
       <div className="d-flex gap-2">
         <Button variant="outline-secondary" onClick={prevStep} className="signup-btn-prev">
           {t('back')}
         </Button>
         <Button variant="primary" type="submit" disabled={isSubmitting} className="signup-btn flex-grow-1">
-          {isSubmitting ? t('registering') : t('signUp')}
+          {isSubmitting ? t('registering') : t('agentSignUp')}
         </Button>
       </div>
     </Form>
   );
 
-  const renderStep3 = () => (
-    <div className="signup-step-preferences">
-      <div className="text-center mb-4">
-        <h4 className="fw-bold mb-2">{t('almostDone')}</h4>
-        <p className="text-muted small">
-          {t('signupPreferencesCopy')}
-        </p>
-      </div>
-      
-      {errorMessage && <Alert variant="danger" className="py-2 small mb-3">{errorMessage}</Alert>}
-
-      <PreferencesForm
-        options={options}
-        optionsLoading={optionsLoading}
-        error={optionsError}
-        onRetry={retryLoad}
-        initialPreferences={null}
-        onSubmit={handlePreferencesSubmit}
-        isSaving={isSavingPrefs}
-        submitLabel={
-          <>
-            {t('saveAndContinue')} <IoArrowForwardOutline className="ms-1" />
-          </>
-        }
-        onSkip={handleSkipPreferences}
-        skipLabel={t('skipForNow')}
-      />
-    </div>
-  );
-
   return (
     <div className="signup-page">
-      <Container style={{ maxWidth: currentStep === 3 ? 800 : 500 }}>
+      <Container style={{ maxWidth: 500 }}>
         <Card className="signup-card">
           <div className="logo-container">
             <img src={logo} alt="Logo" className="logo-img" />
           </div>
 
-          {currentStep < 3 && (
-            <>
-              <h4 className="signup-title">{t('createAccountTitle')}</h4>
-              <p className="signup-subtitle">
-                {t('signupLoginPrompt')} <a href="/login">{t('signupLoginLink')}</a>
-              </p>
-              <p className="signup-subtitle">
-                {t('agentSignupPrompt')} <a href="/signup/agent">{t('agentSignupLink')}</a>
-              </p>
-            </>
-          )}
+          <h4 className="signup-title">{t('agentCreateAccountTitle')}</h4>
+          <p className="signup-subtitle">
+            {t('signupLoginPrompt')} <a href="/login">{t('signupLoginLink')}</a>
+          </p>
 
           {renderStepper()}
 
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
 
-          {currentStep < 3 && (
-            <>
-              <div className="divider-container">
-                <hr />
-                <span>{t('orSignUpWith')}</span>
-                <hr />
-              </div>
-              <Stack direction="horizontal" gap={3} className="social-buttons">
-                <Button variant="outline-secondary" className="social-button">
-                  <Google className="google-icon" size={18} />
-                  <span className="btn-text">Google</span>
-                </Button>
-                <Button variant="outline-secondary" className="social-button">
-                  <Facebook className="facebook-icon" size={18} />
-                  <span className="btn-text">Facebook</span>
-                </Button>
-              </Stack>
-            </>
-          )}
+          <div className="divider-container">
+            <hr />
+            <span>{t('orSignUpWith')}</span>
+            <hr />
+          </div>
+          <Stack direction="horizontal" gap={3} className="social-buttons">
+            <Button variant="outline-secondary" className="social-button">
+              <Google className="google-icon" size={18} />
+              <span className="btn-text">Google</span>
+            </Button>
+            <Button variant="outline-secondary" className="social-button">
+              <Facebook className="facebook-icon" size={18} />
+              <span className="btn-text">Facebook</span>
+            </Button>
+          </Stack>
         </Card>
       </Container>
     </div>
