@@ -15,8 +15,8 @@ import { useAuth } from "../../hooks/useAuth";
 
 export default function PropertiesHero({
     search,
+    category,
     typeFilter,
-    saleRent,
     availability,
     minPrice,
     maxPrice,
@@ -25,7 +25,7 @@ export default function PropertiesHero({
     totalResults,
     onSearch,
     onTypeChange,
-    onSaleRentChange,
+    onCategoryChange,
     onAvailabilityChange,
     onMinPriceChange,
     onMaxPriceChange,
@@ -70,8 +70,8 @@ export default function PropertiesHero({
 
     const filters = {
         q: search,
+        category,
         propertyType: typeFilter,
-        category: saleRent,
         availability,
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
@@ -85,7 +85,7 @@ export default function PropertiesHero({
     };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
-    const hasAnyFilter = !!(search || typeFilter || saleRent || advancedActiveCount);
+    const hasAnyFilter = !!(search || category || typeFilter || advancedActiveCount);
 
     return (
         <div className="bg-light py-4" style={{ overflow: "visible" }}>
@@ -121,7 +121,7 @@ export default function PropertiesHero({
                                         const f = s.filters || {};
                                         onSearch(f.q ?? "");
                                         onTypeChange(f.propertyType ?? "");
-                                        onSaleRentChange(f.category ?? "");
+                                        onCategoryChange(f.category ?? "");
                                         onAvailabilityChange(f.availability ?? "");
                                         onMinPriceChange(f.minPrice ?? "");
                                         onMaxPriceChange(f.maxPrice ?? "");
@@ -150,6 +150,19 @@ export default function PropertiesHero({
                         </Dropdown.Menu>
                     </Dropdown>
                     )}
+                    {/* Pill: Operación */}
+                    <PillSelect
+                        label="Operación"
+                        value={category}
+                        onChange={onCategoryChange}
+                        active={!!category}
+                    >
+                        <option value="">Todas</option>
+                        <option value="Venta">Venta</option>
+                        <option value="Alquiler">Alquiler</option>
+                    </PillSelect>
+
+                    <div className="filter-bar__divider" />
 
                     {/* Pill: Tipo */}
                     <PillSelect
