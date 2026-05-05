@@ -3,26 +3,24 @@
 @import "./variables";
 
 .filter-bar {
-    background-color: #fff;
-    border: 1px solid $border-color-soft;
-    border-radius: 999px;
-    box-shadow: $shadow-soft;
-    padding: 8px 16px;
     display: flex;
     align-items: center;
-    gap: 0;
-    flex-wrap: nowrap;
-    overflow-x: visible;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
 }
 
 .filter-bar__search {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex: 1 1 220px;
-    min-width: 0;
-    padding-right: 12px;
-    border-right: 1px solid $border-color-soft;
+    flex: 1 1 240px;
+    min-width: 200px;
+    padding: 8px 16px;
+    background-color: #fff;
+    border: 1px solid $border-color-soft;
+    border-radius: 999px;
+    box-shadow: $shadow-soft;
 
     input {
         border: none;
@@ -46,27 +44,25 @@
 }
 
 .filter-bar__divider {
-    width: 1px;
-    height: 24px;
-    background-color: $border-color-soft;
-    flex-shrink: 0;
-    margin: 0 4px;
+    display: none; // No longer needed
 }
 
 %filter-pill {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 999px;
-    border: 1.5px solid transparent;
-    background: transparent;
+    border: 1px solid $border-color-soft;
+    background: #fff;
     font-family: $font-family-sans-serif;
     font-size: 0.875rem;
     font-weight: $font-weight-medium;
     color: $text-dark;
     cursor: pointer;
     white-space: nowrap;
+    box-shadow: $shadow-soft;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 

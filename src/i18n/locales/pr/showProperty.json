@@ -38,5 +38,37 @@
     "noFeatures": "Nenhuma característica carregada.",
     "reportProperty": "Denunciar imóvel",
     "reportUser": "Denunciar usuário"
+  },
+  "highlightModal": {
+    "hero": {
+      "title": "Destaque seu imóvel",
+      "subtitle": "Alcance mais compradores e locatários em potencial"
+    },
+    "benefits": {
+      "first": {
+        "title": "Primeiro nas buscas",
+        "desc": "Seu imóvel aparece antes dos outros nos resultados."
+      },
+      "second": {
+        "title": "Selo dourado \"Destaque\"",
+        "desc": "Um selo visível que gera mais confiança nos compradores."
+      },
+      "third": {
+        "title": "3× mais visitas",
+        "desc": "Imóveis em destaque recebem em média 3 vezes mais consultas."
+      }
+    },
+    "plans": {
+      "monthly": { "label": "Mensal" },
+      "semester": { "label": "Semestral" },
+      "annual": { "label": "Anual" },
+      "popular": "⭐ Mais popular",
+      "perMonth": "{{amount}} / mês · {{days}} dias",
+      "savings": "Economize {{percent}}%"
+    },
+    "cta": {
+      "label": "Destacar – {{planLabel}} por {{price}}"
+    },
+    "dismiss": "Agora não"
   }
 }

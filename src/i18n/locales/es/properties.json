@@ -13,6 +13,17 @@
     "all": "Todos",
     "noLimit": "Sin límite"
   },
+  "savedSearches": {
+    "title": "Mis búsquedas",
+    "header": "Mis búsquedas guardadas",
+    "empty": "Sin búsquedas guardadas",
+    "delete": "Eliminar",
+    "deleteLabel": "Eliminar búsqueda {{name}}"
+  },
+  "actions": {
+    "save": "Guardar",
+    "saveTooltip": "Guardar esta búsqueda"
+  },
   "types": {
     "house": "Casa",
     "apartment": "Departamento",

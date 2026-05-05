@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
+
+  // SOLUCIÓN 1: Evitar que choquen las dos versiones de three.js
+  resolve: {
+    dedupe: ['three', 'react', 'react-dom'],
+  },
 
   server: {
     host: true,
@@ -20,6 +26,65 @@ export default defineConfig(({ mode }) => ({
     host: true,
     allowedHosts: ['openroof.duckdns.org'],
   },
+
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    cssMinify: true,
+    cssCodeSplit: true,
+    sourcemap: false,
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+
+          // Core React — always loaded
+          if (/react\/|react-dom\/|react-router/.test(id)) return 'vendor-react';
+          // Core React — always loaded
+          if (/react\/|react-dom\/|react-router/.test(id)) return 'vendor-react';
+
+          // UI Framework
+          if (/bootstrap|react-bootstrap/.test(id)) return 'vendor-bootstrap';
+
+          // Animations
+          if (id.includes('framer-motion')) return 'vendor-react';
+
+          // Maps (heavy, lazy loaded)
+          if (/leaflet|react-leaflet/.test(id)) return 'vendor-react';
+
+          // Charts (heavy, lazy loaded) — necesita React, va junto
+          if (/recharts|d3-/.test(id)) return 'vendor-react';
+
+          // 360 / 3D viewers (heavy, lazy loaded)
+          if (/photo-sphere|three|model-viewer/.test(id)) return 'vendor-3d';
+
+          // Rich text editor (lazy loaded)
+          if (/tiptap|prosemirror|@tiptap/.test(id)) return 'vendor-editor';
+
+          // Calendar (lazy loaded)
+          if (id.includes('fullcalendar')) return 'vendor-calendar';
+
+          // Icons
+          if (/react-icons|react-bootstrap-icons|bootstrap-icons/.test(id)) return 'vendor-icons';
+
+          // State & Data fetching
+          if (/tanstack|zustand|axios|zod/.test(id)) return 'vendor-data';
+
+          // i18n — va junto con react porque react-i18next necesita React en el mismo chunk
+          if (/i18next|react-i18next/.test(id)) return 'vendor-react';
+
+          // Swiper
+          if (id.includes('swiper')) return 'vendor-swiper';
+
+          // SOLUCIÓN 2: Eliminamos el "return 'vendor-misc';"
+          // Al no forzar un archivo genérico, Rollup separa las dependencias
+          // cruzadas automáticamente y se elimina el error "Circular chunk".
+        }
+      }
+    }
+  },
+
 
   css: {
     preprocessorOptions: {
