@@ -1,55 +1,5 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import LandingPage from "../pages/LandingPage";
-import PropertiesPage from "../pages/PropertiesPage";
-import PropertyComparePage from "../pages/PropertyComparePage";
-import AgentsPage from "../pages/AgentsPage";
-import PropertiesTrashCan from "../pages/PropertiesTrashCan/PropertiesTrashCan";
-import ShowProperty from "../pages/ShowProperty/ShowProperty";
-import LogIn from "../pages/Login/LogIn";
-import SignUp from "../pages/SignUp";
-import ForgotPassword from "../pages/ForgotPassword";
-import CreateProperty from "../pages/properties/CreateProperty";
-import MyProperties from "../pages/ShowProperty/MyProperties";
-import SellWizardPage from "../pages/sell/SellWizardPage";
-import VisitRequests from "../pages/VisitRequests";
-import ClientProfilePage from "../pages/ClientProfilePage";
-import NotFoundPage from "../pages/NotFoundPage";
-import MyFavoriteProperties from "../pages/ShowProperty/MyFavoriteProperties";
-import RegisterClient from "../pages/clients/RegisterClient";
-import EditClient from "../pages/clients/EditClient";
-import ClientMessagesPage from "../pages/ClientMessages/ClientMessagesPage";
-import MyReservationsPage from "../pages/MyReservations/MyReservationsPage";
-import PropertyManagementOptions from "../pages/PropertyManagementOptions/PropertyManagementOptions";
-import ClientList from "../pages/ClientList/ClientList";
-import AgentProfilePage from "../pages/Agents/AgentProfilePage";
-import AgentEditPage from "../pages/Agents/AgentEditPage";
-import AgentSearchPage from "../pages/Agents/AgentSearchPage";
-import PublicAgentProfilePage from "../pages/Agents/PublicAgentProfilePage";
-// Agent Dashboard
-import AgentLayout from "../components/layout/AgentLayout/AgentLayout";
-import DashboardPage from "../pages/Dashboard/DashboardPage";
-import ClientsPage from "../pages/clients/ClientsPage";
-import AgentPropertiesPage from "../pages/properties/AgentPropertiesPage";
-import AgendaPage from "../pages/Agenda/AgendaPage";
-import SalesPage from "../pages/Sales/SalesPage";
-import ReportsPage from "../pages/Reports/ReportsPage";
-import ConversionFunnelPage from "../pages/ConversionFunnel/ConversionFunnelPage";
-import MessagesPage from "../pages/Messages/MessagesPage";
-import ContractsPage from "../pages/Contracts/ContractsPage";
-import ContractCreatePage from "../pages/Contracts/ContractCreatePage";
-import ContractEditPage from "../pages/Contracts/ContractEditPage";
-import ContractDetailPage from "../pages/Contracts/ContractDetailPage";
-import OfferManagementPage from "../pages/Offers/OfferManagementPage";
-import AgentLeadsPage from "../pages/AgentLeads/AgentLeadsPage";
-import LeadDetailPage from "../pages/Leads/LeadDetailPage";
-
-// Owner Dashboard
-import OwnerLayout from "../components/layout/OwnerLayout/OwnerLayout";
-import OwnerDashboardPage from "../pages/OwnerDashboard/OwnerDashboardPage";
-import OwnerMessagesPage from "../pages/OwnerMessages/OwnerMessagesPage";
-import OwnerReservationsPage from "../pages/OwnerReservations/OwnerReservationsPage";
-import AgentReservationsPage from "../pages/AgentReservations/AgentReservationsPage";
 import { Spinner } from "react-bootstrap";
 
 // ─── Auth guards (lightweight, always needed) ───────────────────────────────
@@ -97,6 +47,7 @@ const AgentPropertiesPage = lazy(() => import("../pages/properties/AgentProperti
 const AgendaPage = lazy(() => import("../pages/Agenda/AgendaPage"));
 const SalesPage = lazy(() => import("../pages/Sales/SalesPage"));
 const ReportsPage = lazy(() => import("../pages/Reports/ReportsPage"));
+const ConversionFunnelPage = lazy(() => import("../pages/ConversionFunnel/ConversionFunnelPage"));
 const MessagesPage = lazy(() => import("../pages/Messages/MessagesPage"));
 const ContractsPage = lazy(() => import("../pages/Contracts/ContractsPage"));
 const ContractCreatePage = lazy(() => import("../pages/Contracts/ContractCreatePage"));
@@ -201,7 +152,7 @@ export default function AppRouter() {
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                     <Route path="leads" element={<AgentLeadsPage />} />
-          <Route path="leads/:id" element={<LeadDetailPage />} />
+                    <Route path="leads/:id" element={<LeadDetailPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
                     <Route path="prospectos/:id" element={<LeadDetailPage />} />
                     <Route path="settings" element={<AgentSettingsPage />} />
