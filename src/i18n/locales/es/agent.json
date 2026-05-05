@@ -66,5 +66,35 @@
     "saveError": "No se pudo guardar los cambios. Intenta de nuevo.",
     "notFound": "Agente no encontrado.",
     "success": "Perfil actualizado correctamente. Redirigiendo…"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Personaliza el comportamiento de tu cuenta de agente.",
+    "loadError": "No se pudo cargar la configuración.",
+    "saveError": "No se pudo guardar. Intenta nuevamente.",
+    "errorWorkRadius": "El radio de trabajo debe ser entre 1 y 500 km.",
+    "success": "Configuración guardada correctamente.",
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "leads": {
+      "title": "Prospectos",
+      "desc": "Configura cómo se asignan los nuevos prospectos a tu cuenta.",
+      "autoAssign": "Asignación automática de prospectos",
+      "autoAssignHelp": "Cuando un nuevo prospecto coincide con tu zona, se te asigna automáticamente."
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "desc": "Elige qué eventos generan alertas en tu cuenta.",
+      "newLead": "Notificar nuevo prospecto",
+      "visitRequest": "Notificar solicitud de visita",
+      "newOffer": "Notificar nueva oferta"
+    },
+    "zone": {
+      "title": "Zona de trabajo",
+      "desc": "Define el radio geográfico dentro del cual atiendes clientes.",
+      "label": "Radio de trabajo (km)",
+      "placeholder": "Sin límite",
+      "help": "Deja vacío para no establecer límite de zona."
+    }
   }
 }

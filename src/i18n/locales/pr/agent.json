@@ -66,5 +66,35 @@
     "saveError": "Não foi possível salvar as alterações. Tente novamente.",
     "notFound": "Agente não encontrado.",
     "success": "Perfil atualizado com sucesso. Redirecionando…"
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Personalize o comportamento da sua conta de corretor.",
+    "loadError": "Não foi possível carregar a configuração.",
+    "saveError": "Não foi possível salvar. Tente novamente.",
+    "errorWorkRadius": "O raio de trabalho deve ser entre 1 e 500 km.",
+    "success": "Configurações salvas com sucesso.",
+    "save": "Salvar alterações",
+    "saving": "Salvando...",
+    "leads": {
+      "title": "Prospectos",
+      "desc": "Configure como os novos prospectos são atribuídos à sua conta.",
+      "autoAssign": "Atribuição automática de prospectos",
+      "autoAssignHelp": "Quando um novo prospecto coincide com sua zona, ele é atribuído automaticamente."
+    },
+    "notifications": {
+      "title": "Notificações",
+      "desc": "Escolha quais eventos geram alertas na sua conta.",
+      "newLead": "Notificar novo prospecto",
+      "visitRequest": "Notificar solicitação de visita",
+      "newOffer": "Notificar nova oferta"
+    },
+    "zone": {
+      "title": "Zona de trabalho",
+      "desc": "Defina o raio geográfico dentro do qual você atende clientes.",
+      "label": "Raio de trabalho (km)",
+      "placeholder": "Sem limite",
+      "help": "Deixe vazio para não definir limite de zona."
+    }
   }
 }

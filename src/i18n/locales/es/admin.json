@@ -225,5 +225,50 @@
       "description": "Descripción",
       "status": "Estado"
     }
+  },
+  "settings": {
+    "title": "Configuración del sistema",
+    "subtitle": "Ajusta los parámetros globales de la plataforma.",
+    "loadError": "No se pudo cargar la configuración.",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "saveError": "No se pudo guardar. Intenta nuevamente.",
+    "commissions": {
+      "title": "Comisiones",
+      "desc": "Porcentajes de comisión y depósito para ventas y alquileres.",
+      "salePercent": "Comisión de venta (%)",
+      "rentPercent": "Comisión de alquiler (%)",
+      "depositMonths": "Meses de depósito",
+      "depositMonthsHelp": "Entre 1 y 12 meses.",
+      "errorSalePercent": "El porcentaje de comisión de venta debe ser entre 0 y 100.",
+      "errorRentPercent": "El porcentaje de comisión de alquiler debe ser entre 0 y 100.",
+      "errorDepositMonths": "Los meses de depósito deben ser entre 1 y 12.",
+      "success": "Comisiones actualizadas correctamente."
+    },
+    "reservations": {
+      "title": "Reservas",
+      "desc": "Tiempo de vigencia y depósito requerido para reservar una propiedad.",
+      "ttlHours": "Vigencia de reserva (horas)",
+      "ttlHoursHelp": "Tiempo antes de que la reserva expire. Máximo 720 h (30 días).",
+      "depositPercent": "Depósito de reserva (%)",
+      "depositPercentHelp": "Porcentaje del precio de la propiedad que se cobra como depósito.",
+      "errorTtlHours": "Las horas de vigencia deben ser entre 1 y 720.",
+      "errorDepositPercent": "El porcentaje de depósito debe ser entre 0.01 y 100.",
+      "success": "Configuración de reservas actualizada."
+    },
+    "properties": {
+      "title": "Propiedades",
+      "desc": "Límites y restricciones para la carga de propiedades.",
+      "maxImages": "Máximo de imágenes por propiedad",
+      "maxImagesHelp": "Entre 1 y 50 imágenes.",
+      "errorMaxImages": "El máximo de imágenes debe ser entre 1 y 50.",
+      "success": "Configuración de propiedades actualizada."
+    },
+    "system": {
+      "title": "Sistema",
+      "desc": "Configuración general de la plataforma.",
+      "currency": "Moneda predeterminada",
+      "success": "Configuración del sistema actualizada."
+    }
   }
 }

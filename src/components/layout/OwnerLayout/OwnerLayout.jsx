@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
-  FiGrid, FiHome, FiEye, FiMessageSquare, FiDollarSign, FiFileText
+  FiGrid, FiHome, FiEye, FiMessageSquare, FiDollarSign, FiFileText, FiSettings
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -39,6 +39,7 @@ export default function OwnerLayout() {
     { to: OWNER_ROUTES.CONTRACTS, icon: <FiFileText />, label: t('layouts.owner.contracts') },
     { section: t('sidebar.sectionCommunication') },
     { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: t('layouts.owner.messages'), showBadge: true },
+    { to: OWNER_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.owner.settings') },
   ];
 
   return (

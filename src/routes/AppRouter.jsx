@@ -75,6 +75,10 @@ const RentConfigPage = lazy(() => import("../pages/Admin/RentConfig/RentConfigPa
 const AdminContractTemplatesPage = lazy(() => import("../pages/Admin/AdminContractTemplatesPage"));
 const AdminPaymentsPage = lazy(() => import("../pages/Admin/AdminPaymentsPage"));
 
+const AdminSettingsPage = lazy(() => import("../pages/Admin/Settings/AdminSettingsPage"));
+const AgentSettingsPage = lazy(() => import("../pages/AgentSettings/AgentSettingsPage"));
+const UserSettingsPage = lazy(() => import("../pages/UserSettings/UserSettingsPage"));
+
 // ─── Suspense fallback ──────────────────────────────────────────────────────
 function PageLoader() {
     return (
@@ -83,7 +87,6 @@ function PageLoader() {
         </div>
     );
 }
-
 
 export default function AppRouter() {
     return (
@@ -150,6 +153,7 @@ export default function AppRouter() {
           <Route path="leads/:id" element={<LeadDetailPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
                     <Route path="prospectos/:id" element={<LeadDetailPage />} />
+                    <Route path="settings" element={<AgentSettingsPage />} />
                 </Route>
             </Route>
 
@@ -165,6 +169,7 @@ export default function AppRouter() {
                     <Route path="contratos" element={<ContractsPage />} />
                     <Route path="contratos/nuevo" element={<ContractCreatePage />} />
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="settings" element={<UserSettingsPage />} />
                 </Route>
             </Route>
 
@@ -185,6 +190,7 @@ export default function AppRouter() {
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
                     <Route path="rent-config" element={<RentConfigPage />} />
+                    <Route path="settings" element={<AdminSettingsPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                     <Route path="payments" element={<AdminPaymentsPage />} />
                 </Route>

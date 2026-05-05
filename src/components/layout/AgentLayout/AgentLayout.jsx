@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
   FiGrid, FiUsers, FiHome, FiCalendar,
-  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser, FiTarget
+  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser, FiTarget, FiSettings
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -64,6 +64,7 @@ export default function AgentLayout() {
     { to: AGENT_ROUTES.REPORTS, icon: <FiBarChart2 />, label: t('layouts.agent.reports') },
     { section: t('sidebar.sectionCommunication') },
     { to: AGENT_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: t('layouts.agent.messages'), showBadge: true },
+    { to: AGENT_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.agent.settings') },
   ];
 
   return (
