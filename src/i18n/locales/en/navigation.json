@@ -69,6 +69,8 @@
       "sales": "Sales",
       "contracts": "Contracts",
       "reports": "Reports",
+      "funnel": "Conversion funnel",
+      "funnelNew": "New",
       "messages": "Messages"
     }
   },

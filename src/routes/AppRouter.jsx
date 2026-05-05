@@ -33,6 +33,7 @@ import AgentPropertiesPage from "../pages/properties/AgentPropertiesPage";
 import AgendaPage from "../pages/Agenda/AgendaPage";
 import SalesPage from "../pages/Sales/SalesPage";
 import ReportsPage from "../pages/Reports/ReportsPage";
+import ConversionFunnelPage from "../pages/ConversionFunnel/ConversionFunnelPage";
 import MessagesPage from "../pages/Messages/MessagesPage";
 import ContractsPage from "../pages/Contracts/ContractsPage";
 import ContractCreatePage from "../pages/Contracts/ContractCreatePage";
@@ -124,6 +125,7 @@ export default function AppRouter() {
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
                     <Route path="contratos/:id/editar" element={<ContractEditPage />} />
                     <Route path="reportes" element={<ReportsPage />} />
+                    <Route path="reportes/embudo" element={<ConversionFunnelPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                     <Route path="leads" element={<AgentLeadsPage />} />

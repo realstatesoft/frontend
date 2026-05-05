@@ -98,6 +98,10 @@ import esLocations from './locales/es/locations.json';
 import enLocations from './locales/en/locations.json';
 import prLocations from './locales/pr/locations.json';
 
+import esFunnel from './locales/es/funnel.json';
+import enFunnel from './locales/en/funnel.json';
+import prFunnel from './locales/pr/funnel.json';
+
 export const resources = {
   es: {
     common: esCommon,
@@ -125,6 +129,7 @@ export const resources = {
     tour: esTour,
     propertyViews: esPropertyViews,
     locations: esLocations,
+    funnel: esFunnel,
   },
   en: {
     common: enCommon,
@@ -152,6 +157,7 @@ export const resources = {
     tour: enTour,
     propertyViews: enPropertyViews,
     locations: enLocations,
+    funnel: enFunnel,
   },
   pr: {
     common: prCommon,
@@ -179,5 +185,6 @@ export const resources = {
     tour: prTour,
     propertyViews: prPropertyViews,
     locations: prLocations,
+    funnel: prFunnel,
   },
 };
