@@ -128,7 +128,7 @@ function CustomNavbar() {
     const role = user?.role?.toUpperCase();
     if (role === 'ADMIN') return '/admin/settings';
     if (role === 'AGENT') return '/agent/settings';
-    return '/settings';
+    return '/owner/settings';
   };
 
 

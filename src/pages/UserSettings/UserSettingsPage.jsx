@@ -71,6 +71,7 @@ export default function UserSettingsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loadError) return;
     setSaveMsg({ error: null, success: null });
     setSaving(true);
     try {
@@ -133,6 +134,7 @@ export default function UserSettingsPage() {
             label="Notificar bajada de precio en propiedades guardadas"
             checked={settings.notifyPriceDrop}
             onChange={() => handleToggle('notifyPriceDrop')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
           <Form.Check
@@ -141,6 +143,7 @@ export default function UserSettingsPage() {
             label="Notificar nuevas propiedades que coincidan con mis preferencias"
             checked={settings.notifyNewMatch}
             onChange={() => handleToggle('notifyNewMatch')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
           <Form.Check
@@ -149,12 +152,14 @@ export default function UserSettingsPage() {
             label="Notificar nuevos mensajes"
             checked={settings.notifyMessages}
             onChange={() => handleToggle('notifyMessages')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
           <Form.Group className="mt-3" controlId="notifyChannel">
             <Form.Label className={styles.label}>Canal de notificaciones</Form.Label>
             <Form.Select
               value={settings.notifyChannel}
+              disabled={Boolean(loadError)}
               onChange={(e) => {
                 setSettings((p) => ({ ...p, notifyChannel: e.target.value }));
                 setSaveMsg({ error: null, success: null });
@@ -178,6 +183,7 @@ export default function UserSettingsPage() {
             label="Perfil visible para agentes"
             checked={settings.profileVisibleToAgents}
             onChange={() => handleToggle('profileVisibleToAgents')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
           <p className={styles.toggleHelp}>
@@ -189,12 +195,13 @@ export default function UserSettingsPage() {
             label="Permitir que los agentes me contacten directamente"
             checked={settings.allowDirectContact}
             onChange={() => handleToggle('allowDirectContact')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
         </SettingsSection>
 
         <div className={styles.footer}>
-          <Button type="submit" variant="primary" disabled={saving} className={styles.button}>
+          <Button type="submit" variant="primary" disabled={saving || Boolean(loadError)} className={styles.button}>
             {saving ? (
               <><Spinner animation="border" size="sm" className="me-2" />Guardando...</>
             ) : 'Guardar cambios'}

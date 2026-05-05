@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner, Alert, Row, Col } from 'react-bootstrap';
 import { FiPercent, FiCalendar, FiImage, FiGlobe } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import settingsService from '../../../services/settingsService';
 import styles from './AdminSettingsPage.module.scss';
 
@@ -14,19 +15,20 @@ function SectionAlert({ error, success }) {
   );
 }
 
-function SaveButton({ saving }) {
+function SaveButton({ saving, t }) {
   return (
     <div className={styles.buttonGroup}>
       <Button type="submit" variant="primary" disabled={saving} className={styles.button}>
         {saving ? (
-          <><Spinner animation="border" size="sm" className="me-2" />Guardando...</>
-        ) : 'Guardar'}
+          <><Spinner animation="border" size="sm" className="me-2" />{t('settings.saving')}</>
+        ) : t('settings.save')}
       </Button>
     </div>
   );
 }
 
 export default function AdminSettingsPage() {
+  const { t } = useTranslation('admin');
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
 
@@ -64,11 +66,11 @@ export default function AdminSettingsPage() {
       .catch((err) => {
         if (!active) return;
         console.error('Error loading admin settings:', err);
-        setLoadError('No se pudo cargar la configuración.');
+        setLoadError(t('settings.loadError'));
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [t]);
 
   const handleSaveCommissions = async (e) => {
     e.preventDefault();
@@ -77,15 +79,15 @@ export default function AdminSettingsPage() {
     const rp = Number(commissions.rentCommissionPercent);
     const dm = Number(commissions.rentDepositMonths);
     if (!Number.isFinite(sp) || sp < 0 || sp > 100) {
-      setCommissionsMsg({ error: 'El porcentaje de comisión de venta debe ser entre 0 y 100.', success: null });
+      setCommissionsMsg({ error: t('settings.commissions.errorSalePercent'), success: null });
       return;
     }
     if (!Number.isFinite(rp) || rp < 0 || rp > 100) {
-      setCommissionsMsg({ error: 'El porcentaje de comisión de alquiler debe ser entre 0 y 100.', success: null });
+      setCommissionsMsg({ error: t('settings.commissions.errorRentPercent'), success: null });
       return;
     }
     if (!Number.isFinite(dm) || dm < 1 || dm > 12) {
-      setCommissionsMsg({ error: 'Los meses de depósito deben ser entre 1 y 12.', success: null });
+      setCommissionsMsg({ error: t('settings.commissions.errorDepositMonths'), success: null });
       return;
     }
     setSavingCommissions(true);
@@ -96,10 +98,10 @@ export default function AdminSettingsPage() {
         rentDepositMonths: dm,
       });
       if (res?.data?.commissions) setCommissions(res.data.commissions);
-      setCommissionsMsg({ error: null, success: 'Comisiones actualizadas correctamente.' });
+      setCommissionsMsg({ error: null, success: t('settings.commissions.success') });
     } catch (err) {
       console.error('Error saving commissions:', err);
-      setCommissionsMsg({ error: 'No se pudo guardar. Intenta nuevamente.', success: null });
+      setCommissionsMsg({ error: t('settings.saveError'), success: null });
     } finally {
       setSavingCommissions(false);
     }
@@ -111,21 +113,21 @@ export default function AdminSettingsPage() {
     const h = Number(reservations.ttlHours);
     const dp = Number(reservations.depositPercent);
     if (!Number.isFinite(h) || h < 1 || h > 720) {
-      setReservationsMsg({ error: 'Las horas de vigencia deben ser entre 1 y 720.', success: null });
+      setReservationsMsg({ error: t('settings.reservations.errorTtlHours'), success: null });
       return;
     }
     if (!Number.isFinite(dp) || dp < 0.01 || dp > 100) {
-      setReservationsMsg({ error: 'El porcentaje de depósito debe ser entre 0.01 y 100.', success: null });
+      setReservationsMsg({ error: t('settings.reservations.errorDepositPercent'), success: null });
       return;
     }
     setSavingReservations(true);
     try {
       const res = await settingsService.updateAdminReservations({ ttlHours: h, depositPercent: dp });
       if (res?.data?.reservations) setReservations(res.data.reservations);
-      setReservationsMsg({ error: null, success: 'Configuración de reservas actualizada.' });
+      setReservationsMsg({ error: null, success: t('settings.reservations.success') });
     } catch (err) {
       console.error('Error saving reservations:', err);
-      setReservationsMsg({ error: 'No se pudo guardar. Intenta nuevamente.', success: null });
+      setReservationsMsg({ error: t('settings.saveError'), success: null });
     } finally {
       setSavingReservations(false);
     }
@@ -136,17 +138,17 @@ export default function AdminSettingsPage() {
     setPropertiesMsg({ error: null, success: null });
     const mi = Number(properties.maxImages);
     if (!Number.isFinite(mi) || mi < 1 || mi > 50) {
-      setPropertiesMsg({ error: 'El máximo de imágenes debe ser entre 1 y 50.', success: null });
+      setPropertiesMsg({ error: t('settings.properties.errorMaxImages'), success: null });
       return;
     }
     setSavingProperties(true);
     try {
       const res = await settingsService.updateAdminProperties({ maxImages: mi });
       if (res?.data?.properties) setProperties(res.data.properties);
-      setPropertiesMsg({ error: null, success: 'Configuración de propiedades actualizada.' });
+      setPropertiesMsg({ error: null, success: t('settings.properties.success') });
     } catch (err) {
       console.error('Error saving properties config:', err);
-      setPropertiesMsg({ error: 'No se pudo guardar. Intenta nuevamente.', success: null });
+      setPropertiesMsg({ error: t('settings.saveError'), success: null });
     } finally {
       setSavingProperties(false);
     }
@@ -155,19 +157,14 @@ export default function AdminSettingsPage() {
   const handleSaveSystem = async (e) => {
     e.preventDefault();
     setSystemMsg({ error: null, success: null });
-    const curr = String(system.defaultCurrency ?? '').trim().toUpperCase();
-    if (curr.length !== 3) {
-      setSystemMsg({ error: 'La moneda debe ser un código ISO 4217 de exactamente 3 caracteres (ej: PYG, USD, EUR).', success: null });
-      return;
-    }
     setSavingSystem(true);
     try {
-      const res = await settingsService.updateAdminSystem({ defaultCurrency: curr });
+      const res = await settingsService.updateAdminSystem({ defaultCurrency: system.defaultCurrency });
       if (res?.data?.system) setSystem(res.data.system);
-      setSystemMsg({ error: null, success: 'Configuración del sistema actualizada.' });
+      setSystemMsg({ error: null, success: t('settings.system.success') });
     } catch (err) {
       console.error('Error saving system config:', err);
-      setSystemMsg({ error: 'No se pudo guardar. Intenta nuevamente.', success: null });
+      setSystemMsg({ error: t('settings.saveError'), success: null });
     } finally {
       setSavingSystem(false);
     }
@@ -183,8 +180,8 @@ export default function AdminSettingsPage() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Configuración del sistema</h2>
-      <p className={styles.subtitle}>Ajusta los parámetros globales de la plataforma.</p>
+      <h2 className={styles.title}>{t('settings.title')}</h2>
+      <p className={styles.subtitle}>{t('settings.subtitle')}</p>
 
       {loadError && <Alert variant="danger" className="mb-4">{loadError}</Alert>}
 
@@ -194,10 +191,8 @@ export default function AdminSettingsPage() {
           <Card.Header className={styles.cardHeader}>
             <FiPercent className={styles.cardHeader__icon} />
             <div>
-              <h3 className={styles.cardHeader__title}>Comisiones</h3>
-              <p className={styles.cardHeader__desc}>
-                Porcentajes de comisión y depósito para ventas y alquileres.
-              </p>
+              <h3 className={styles.cardHeader__title}>{t('settings.commissions.title')}</h3>
+              <p className={styles.cardHeader__desc}>{t('settings.commissions.desc')}</p>
             </div>
           </Card.Header>
           <Card.Body>
@@ -206,7 +201,7 @@ export default function AdminSettingsPage() {
               <Row>
                 <Col md={4}>
                   <Form.Group className="mb-3" controlId="saleCommissionPercent">
-                    <Form.Label className={styles.label}>Comisión de venta (%)</Form.Label>
+                    <Form.Label className={styles.label}>{t('settings.commissions.salePercent')}</Form.Label>
                     <Form.Control
                       type="number"
                       min="0"
@@ -222,7 +217,7 @@ export default function AdminSettingsPage() {
                 </Col>
                 <Col md={4}>
                   <Form.Group className="mb-3" controlId="rentCommissionPercent">
-                    <Form.Label className={styles.label}>Comisión de alquiler (%)</Form.Label>
+                    <Form.Label className={styles.label}>{t('settings.commissions.rentPercent')}</Form.Label>
                     <Form.Control
                       type="number"
                       min="0"
@@ -238,7 +233,7 @@ export default function AdminSettingsPage() {
                 </Col>
                 <Col md={4}>
                   <Form.Group className="mb-3" controlId="rentDepositMonths">
-                    <Form.Label className={styles.label}>Meses de depósito</Form.Label>
+                    <Form.Label className={styles.label}>{t('settings.commissions.depositMonths')}</Form.Label>
                     <Form.Control
                       type="number"
                       min="1"
@@ -249,11 +244,11 @@ export default function AdminSettingsPage() {
                       }
                       className={styles.input}
                     />
-                    <Form.Text className="text-muted">Entre 1 y 12 meses.</Form.Text>
+                    <Form.Text className="text-muted">{t('settings.commissions.depositMonthsHelp')}</Form.Text>
                   </Form.Group>
                 </Col>
               </Row>
-              <SaveButton saving={savingCommissions} />
+              <SaveButton saving={savingCommissions} t={t} />
             </Form>
           </Card.Body>
         </Card>
@@ -263,10 +258,8 @@ export default function AdminSettingsPage() {
           <Card.Header className={styles.cardHeader}>
             <FiCalendar className={styles.cardHeader__icon} />
             <div>
-              <h3 className={styles.cardHeader__title}>Reservas</h3>
-              <p className={styles.cardHeader__desc}>
-                Tiempo de vigencia y depósito requerido para reservar una propiedad.
-              </p>
+              <h3 className={styles.cardHeader__title}>{t('settings.reservations.title')}</h3>
+              <p className={styles.cardHeader__desc}>{t('settings.reservations.desc')}</p>
             </div>
           </Card.Header>
           <Card.Body>
@@ -275,7 +268,7 @@ export default function AdminSettingsPage() {
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3" controlId="ttlHours">
-                    <Form.Label className={styles.label}>Vigencia de reserva (horas)</Form.Label>
+                    <Form.Label className={styles.label}>{t('settings.reservations.ttlHours')}</Form.Label>
                     <Form.Control
                       type="number"
                       min="1"
@@ -286,14 +279,12 @@ export default function AdminSettingsPage() {
                       }
                       className={styles.input}
                     />
-                    <Form.Text className="text-muted">
-                      Tiempo antes de que la reserva expire. Máximo 720 h (30 días).
-                    </Form.Text>
+                    <Form.Text className="text-muted">{t('settings.reservations.ttlHoursHelp')}</Form.Text>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3" controlId="depositPercent">
-                    <Form.Label className={styles.label}>Depósito de reserva (%)</Form.Label>
+                    <Form.Label className={styles.label}>{t('settings.reservations.depositPercent')}</Form.Label>
                     <Form.Control
                       type="number"
                       min="0.01"
@@ -305,13 +296,11 @@ export default function AdminSettingsPage() {
                       }
                       className={styles.input}
                     />
-                    <Form.Text className="text-muted">
-                      Porcentaje del precio de la propiedad que se cobra como depósito.
-                    </Form.Text>
+                    <Form.Text className="text-muted">{t('settings.reservations.depositPercentHelp')}</Form.Text>
                   </Form.Group>
                 </Col>
               </Row>
-              <SaveButton saving={savingReservations} />
+              <SaveButton saving={savingReservations} t={t} />
             </Form>
           </Card.Body>
         </Card>
@@ -321,17 +310,15 @@ export default function AdminSettingsPage() {
           <Card.Header className={styles.cardHeader}>
             <FiImage className={styles.cardHeader__icon} />
             <div>
-              <h3 className={styles.cardHeader__title}>Propiedades</h3>
-              <p className={styles.cardHeader__desc}>
-                Límites y restricciones para la carga de propiedades.
-              </p>
+              <h3 className={styles.cardHeader__title}>{t('settings.properties.title')}</h3>
+              <p className={styles.cardHeader__desc}>{t('settings.properties.desc')}</p>
             </div>
           </Card.Header>
           <Card.Body>
             <SectionAlert {...propertiesMsg} />
             <Form onSubmit={handleSaveProperties}>
               <Form.Group className="mb-3" controlId="maxImages" style={{ maxWidth: 280 }}>
-                <Form.Label className={styles.label}>Máximo de imágenes por propiedad</Form.Label>
+                <Form.Label className={styles.label}>{t('settings.properties.maxImages')}</Form.Label>
                 <Form.Control
                   type="number"
                   min="1"
@@ -342,9 +329,9 @@ export default function AdminSettingsPage() {
                   }
                   className={styles.input}
                 />
-                <Form.Text className="text-muted">Entre 1 y 50 imágenes.</Form.Text>
+                <Form.Text className="text-muted">{t('settings.properties.maxImagesHelp')}</Form.Text>
               </Form.Group>
-              <SaveButton saving={savingProperties} />
+              <SaveButton saving={savingProperties} t={t} />
             </Form>
           </Card.Body>
         </Card>
@@ -354,32 +341,25 @@ export default function AdminSettingsPage() {
           <Card.Header className={styles.cardHeader}>
             <FiGlobe className={styles.cardHeader__icon} />
             <div>
-              <h3 className={styles.cardHeader__title}>Sistema</h3>
-              <p className={styles.cardHeader__desc}>
-                Configuración general de la plataforma.
-              </p>
+              <h3 className={styles.cardHeader__title}>{t('settings.system.title')}</h3>
+              <p className={styles.cardHeader__desc}>{t('settings.system.desc')}</p>
             </div>
           </Card.Header>
           <Card.Body>
             <SectionAlert {...systemMsg} />
             <Form onSubmit={handleSaveSystem}>
               <Form.Group className="mb-3" controlId="defaultCurrency" style={{ maxWidth: 280 }}>
-                <Form.Label className={styles.label}>Moneda predeterminada</Form.Label>
-                <Form.Control
-                  type="text"
-                  maxLength={3}
-                  placeholder="PYG"
+                <Form.Label className={styles.label}>{t('settings.system.currency')}</Form.Label>
+                <Form.Select
                   value={system.defaultCurrency}
-                  onChange={(e) =>
-                    setSystem((p) => ({ ...p, defaultCurrency: e.target.value.toUpperCase() }))
-                  }
+                  onChange={(e) => setSystem((p) => ({ ...p, defaultCurrency: e.target.value }))}
                   className={styles.input}
-                />
-                <Form.Text className="text-muted">
-                  Código ISO 4217 de 3 caracteres (ej: PYG, USD, EUR).
-                </Form.Text>
+                >
+                  <option value="PYG">PYG — Guaraní paraguayo</option>
+                  <option value="USD">USD — Dólar estadounidense</option>
+                </Form.Select>
               </Form.Group>
-              <SaveButton saving={savingSystem} />
+              <SaveButton saving={savingSystem} t={t} />
             </Form>
           </Card.Body>
         </Card>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Form, Button, Spinner, Alert } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import settingsService from '../../services/settingsService';
 import styles from './AgentSettingsPage.module.scss';
 
@@ -18,6 +19,7 @@ function SettingsSection({ title, description, children }) {
 }
 
 export default function AgentSettingsPage() {
+  const { t } = useTranslation('agent');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [loadError, setLoadError] = useState(null);
@@ -50,11 +52,11 @@ export default function AgentSettingsPage() {
       .catch((err) => {
         if (!active) return;
         console.error('Error loading agent settings:', err);
-        setLoadError('No se pudo cargar la configuración.');
+        setLoadError(t('settings.loadError'));
       })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [t]);
 
   const handleToggle = (key) => {
     setSettings((p) => ({ ...p, [key]: !p[key] }));
@@ -63,12 +65,13 @@ export default function AgentSettingsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loadError) return;
     setSaveMsg({ error: null, success: null });
 
     const rawRadius = settings.workRadiusKm;
     const workRadiusKm = rawRadius === '' || rawRadius === null ? null : Number(rawRadius);
     if (workRadiusKm !== null && (!Number.isFinite(workRadiusKm) || workRadiusKm < 1 || workRadiusKm > 500)) {
-      setSaveMsg({ error: 'El radio de trabajo debe ser entre 1 y 500 km.', success: null });
+      setSaveMsg({ error: t('settings.errorWorkRadius'), success: null });
       return;
     }
 
@@ -91,10 +94,10 @@ export default function AgentSettingsPage() {
           workRadiusKm: d.workRadiusKm ?? '',
         });
       }
-      setSaveMsg({ error: null, success: 'Configuración guardada correctamente.' });
+      setSaveMsg({ error: null, success: t('settings.success') });
     } catch (err) {
       console.error('Error saving agent settings:', err);
-      setSaveMsg({ error: 'No se pudo guardar. Intenta nuevamente.', success: null });
+      setSaveMsg({ error: t('settings.saveError'), success: null });
     } finally {
       setSaving(false);
     }
@@ -111,8 +114,8 @@ export default function AgentSettingsPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Configuración</h2>
-        <p className={styles.subtitle}>Personaliza el comportamiento de tu cuenta de agente.</p>
+        <h2 className={styles.title}>{t('settings.title')}</h2>
+        <p className={styles.subtitle}>{t('settings.subtitle')}</p>
       </div>
 
       {loadError && <Alert variant="danger" className="mb-4">{loadError}</Alert>}
@@ -122,81 +125,82 @@ export default function AgentSettingsPage() {
         {saveMsg.success && <Alert variant="success">{saveMsg.success}</Alert>}
 
         <SettingsSection
-          title="Prospectos"
-          description="Configura cómo se asignan los nuevos prospectos a tu cuenta."
+          title={t('settings.leads.title')}
+          description={t('settings.leads.desc')}
         >
           <Form.Check
             type="switch"
             id="autoAssignLeads"
-            label="Asignación automática de prospectos"
+            label={t('settings.leads.autoAssign')}
             checked={settings.autoAssignLeads}
             onChange={() => handleToggle('autoAssignLeads')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
-          <p className={styles.toggleHelp}>
-            Cuando un nuevo prospecto coincide con tu zona, se te asigna automáticamente.
-          </p>
+          <p className={styles.toggleHelp}>{t('settings.leads.autoAssignHelp')}</p>
         </SettingsSection>
 
         <SettingsSection
-          title="Notificaciones"
-          description="Elige qué eventos generan alertas en tu cuenta."
+          title={t('settings.notifications.title')}
+          description={t('settings.notifications.desc')}
         >
           <Form.Check
             type="switch"
             id="notifyNewLead"
-            label="Notificar nuevo prospecto"
+            label={t('settings.notifications.newLead')}
             checked={settings.notifyNewLead}
             onChange={() => handleToggle('notifyNewLead')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
           <Form.Check
             type="switch"
             id="notifyVisitRequest"
-            label="Notificar solicitud de visita"
+            label={t('settings.notifications.visitRequest')}
             checked={settings.notifyVisitRequest}
             onChange={() => handleToggle('notifyVisitRequest')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
           <Form.Check
             type="switch"
             id="notifyNewOffer"
-            label="Notificar nueva oferta"
+            label={t('settings.notifications.newOffer')}
             checked={settings.notifyNewOffer}
             onChange={() => handleToggle('notifyNewOffer')}
+            disabled={Boolean(loadError)}
             className={styles.toggle}
           />
         </SettingsSection>
 
         <SettingsSection
-          title="Zona de trabajo"
-          description="Define el radio geográfico dentro del cual atiendes clientes."
+          title={t('settings.zone.title')}
+          description={t('settings.zone.desc')}
         >
           <Form.Group controlId="workRadiusKm">
-            <Form.Label className={styles.label}>Radio de trabajo (km)</Form.Label>
+            <Form.Label className={styles.label}>{t('settings.zone.label')}</Form.Label>
             <Form.Control
               type="number"
               min="1"
               max="500"
-              placeholder="Sin límite"
+              placeholder={t('settings.zone.placeholder')}
               value={settings.workRadiusKm}
+              disabled={Boolean(loadError)}
               onChange={(e) => {
                 setSettings((p) => ({ ...p, workRadiusKm: e.target.value }));
                 setSaveMsg({ error: null, success: null });
               }}
               className={styles.input}
             />
-            <Form.Text className="text-muted">
-              Deja vacío para no establecer límite de zona.
-            </Form.Text>
+            <Form.Text className="text-muted">{t('settings.zone.help')}</Form.Text>
           </Form.Group>
         </SettingsSection>
 
         <div className={styles.footer}>
-          <Button type="submit" variant="primary" disabled={saving} className={styles.button}>
+          <Button type="submit" variant="primary" disabled={saving || Boolean(loadError)} className={styles.button}>
             {saving ? (
-              <><Spinner animation="border" size="sm" className="me-2" />Guardando...</>
-            ) : 'Guardar cambios'}
+              <><Spinner animation="border" size="sm" className="me-2" />{t('settings.saving')}</>
+            ) : t('settings.save')}
           </Button>
         </div>
       </Form>
