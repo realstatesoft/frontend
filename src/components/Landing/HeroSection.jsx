@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import fotoHero from "../../assets/FotoHero.png";
+import fotoHero from "../../assets/FotoHero.webp";
 
 const HeroSection = () => {
     const { t } = useTranslation("landing");

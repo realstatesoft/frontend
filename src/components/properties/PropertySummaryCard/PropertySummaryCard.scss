@@ -12,8 +12,10 @@
   }
 
   &__image {
-    height: 130px;       
     object-fit: cover;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    height: auto;
   }
 
   &__badge {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Container, Carousel, Card, Row, Col, Badge, Spinner } from "react-bootstrap";
+import { StarFill } from "react-bootstrap-icons";
 import { useTranslation } from "react-i18next";
 import propertyService from "../../services/propertyService";
 
@@ -63,6 +64,7 @@ const Properties = () => {
       <div className="text-center py-4" style={{ backgroundColor: "#fff" }}></div>
 
       <div
+        id="projects"
         style={{
           backgroundColor: "#f3f4f6",
           width: "100vw",
@@ -144,13 +146,31 @@ const Properties = () => {
                                   {getStatusLabel(property.status)}
                                 </Badge>
 
+                                {property.highlighted && (
+                                  <Badge
+                                    className="position-absolute top-0 end-0 m-3 d-flex align-items-center gap-1"
+                                    style={{
+                                      background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                                      borderRadius: "20px",
+                                      fontSize: "0.75rem",
+                                      padding: "6px 12px",
+                                      zIndex: 2,
+                                    }}
+                                  >
+                                    <StarFill size={10} aria-hidden="true" /> Destacada
+                                  </Badge>
+                                )}
+
                                 <Card.Img
                                   variant="top"
                                   src={
                                     property.primaryImageUrl ||
                                     "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
                                   }
-                                  style={{ height: "200px", objectFit: "cover" }}
+                                  width={400}
+                                  height={200}
+                                  style={{ aspectRatio: "2 / 1", objectFit: "cover", height: "auto" }}
+                                  loading="lazy"
                                 />
                               </div>
 

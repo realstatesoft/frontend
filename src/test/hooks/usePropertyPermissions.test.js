@@ -54,9 +54,9 @@ describe('usePropertyPermissions', () => {
       expect(result.current.canDelete).toBe(true);
     });
 
-    it('NO puede cambiar el estado de revisión (solo ADMIN)', () => {
+    it('puede cambiar el estado de la propiedad (ej: enviarla a papelera o pausarla)', () => {
       const { result } = renderHook(() => usePropertyPermissions(mockProperty));
-      expect(result.current.canChangeStatus).toBe(false);
+      expect(result.current.canChangeStatus).toBe(true);
     });
 
     it('puede cambiar visibilidad', () => {
@@ -135,6 +135,15 @@ describe('usePropertyPermissions', () => {
       };
       const { result } = renderHook(() => usePropertyPermissions(propertyWithAssignment));
       expect(result.current.canDelete).toBe(false);
+    });
+
+    it('puede cambiar el estado si está en propertyAssignments', () => {
+      const propertyWithAssignment = {
+        ...mockProperty,
+        propertyAssignments: [{ userId: 77, propertyId: 10 }],
+      };
+      const { result } = renderHook(() => usePropertyPermissions(propertyWithAssignment));
+      expect(result.current.canChangeStatus).toBe(true);
     });
   });
 });

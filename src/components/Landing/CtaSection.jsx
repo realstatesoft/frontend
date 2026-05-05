@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import agente from "../../assets/ImagenCta.png";
+import agente from "../../assets/ImagenCta.webp";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 const CtaSection = () => {
