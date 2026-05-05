@@ -196,3 +196,15 @@
   border-radius: 10px;
   margin-left: auto;
 }
+
+.sidebar__pill {
+  margin-left: auto;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}

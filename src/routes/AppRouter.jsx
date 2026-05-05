@@ -47,6 +47,7 @@ const AgentPropertiesPage = lazy(() => import("../pages/properties/AgentProperti
 const AgendaPage = lazy(() => import("../pages/Agenda/AgendaPage"));
 const SalesPage = lazy(() => import("../pages/Sales/SalesPage"));
 const ReportsPage = lazy(() => import("../pages/Reports/ReportsPage"));
+const ConversionFunnelPage = lazy(() => import("../pages/ConversionFunnel/ConversionFunnelPage"));
 const MessagesPage = lazy(() => import("../pages/Messages/MessagesPage"));
 const ContractsPage = lazy(() => import("../pages/Contracts/ContractsPage"));
 const ContractCreatePage = lazy(() => import("../pages/Contracts/ContractCreatePage"));
@@ -147,10 +148,11 @@ export default function AppRouter() {
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
                     <Route path="contratos/:id/editar" element={<ContractEditPage />} />
                     <Route path="reportes" element={<ReportsPage />} />
+                    <Route path="reportes/embudo" element={<ConversionFunnelPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                     <Route path="leads" element={<AgentLeadsPage />} />
-          <Route path="leads/:id" element={<LeadDetailPage />} />
+                    <Route path="leads/:id" element={<LeadDetailPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
                     <Route path="prospectos/:id" element={<LeadDetailPage />} />
                     <Route path="settings" element={<AgentSettingsPage />} />

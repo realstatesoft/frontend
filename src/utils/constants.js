@@ -8,6 +8,7 @@ export const AGENT_ROUTES = {
   SALES: '/agent/ventas',
   CONTRACTS: '/agent/contratos',
   REPORTS: '/agent/reportes',
+  FUNNEL: '/agent/reportes/embudo',
   MESSAGES: '/agent/mensajes',
   OFFERS: '/agent/ofertas',
   SETTINGS: '/agent/settings',
