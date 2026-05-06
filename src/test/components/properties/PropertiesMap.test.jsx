@@ -29,6 +29,18 @@ vi.mock('react-leaflet', () => ({
   }),
 }));
 
+vi.mock('../../../hooks/usePropertyPriceDisplay', () => ({
+  default: vi.fn(() => ({
+    formatPrice: (value) => ({
+      label: `₲ ${String(value)}`,
+      displayValue: `₲ ${String(value)}`,
+      approximate: false,
+      fallbackToPyg: false,
+      currencyCode: 'PYG',
+    }),
+  })),
+}));
+
 function renderMap(properties) {
   return render(
     <I18nextProvider i18n={i18n}>

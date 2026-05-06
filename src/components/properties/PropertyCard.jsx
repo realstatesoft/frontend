@@ -6,6 +6,7 @@ import { PROPERTY_TYPE_LABELS } from "../../constants/propertyEnums";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import FavoriteToggleButton from "./FavoriteToggleButton";
 import { useTranslation } from "react-i18next";
+import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 const STATUS_COLORS = {
     PENDING: "#757575",
@@ -33,13 +34,9 @@ export default function PropertyCard({
     compareDisabled = false,
 }) {
     const { t } = useTranslation("properties");
+    const price = usePropertyPriceDisplay(property.price);
     // Normalizar campos del API a los que usa el componente
     const tag = t(`card.status.${property.status}`, { defaultValue: property.tag ?? "—" });
-    const price = property.price;
-    const numericPrice = Number(price);
-    const formattedPrice = Number.isFinite(numericPrice)
-        ? `Gs ${numericPrice.toLocaleString()}`
-        : "—";
     const type = property.propertyType
         ? t(`types.${property.propertyType.toLowerCase()}`, { defaultValue: property.type ?? "" })
         : (property.type ?? "");
@@ -115,9 +112,9 @@ export default function PropertyCard({
             </div>
 
             {/* Información principal */}
-            <Card.Body className="px-3 py-3">
+                <Card.Body className="px-3 py-3">
                 <h5 className="fw-bold mb-1" style={{ color: "var(--dark, #1e293b)", fontSize: "1.05rem" }}>
-                    {formattedPrice}
+                    {price.label || "—"}
                 </h5>
                 <Badge
                     bg="light"

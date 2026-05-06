@@ -44,9 +44,13 @@ export default function Sidebar({ navItems = [] }) {
                 icon={item.icon}
                 label={item.label}
                 collapsed={sidebarCollapsed}
-                badge={item.showBadge && unreadCount > 0 ? (
-                  <span className={styles.sidebar__badge}>{unreadCount}</span>
-                ) : null}
+                badge={
+                  item.showBadge && unreadCount > 0 ? (
+                    <span className={styles.sidebar__badge}>{unreadCount}</span>
+                  ) : item.badgeLabel ? (
+                    <span className={styles.sidebar__pill}>{item.badgeLabel}</span>
+                  ) : null
+                }
               />
             )
           )}

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Container, Carousel, Card, Row, Col, Badge, Spinner } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
 import { useTranslation } from "react-i18next";
+import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 import propertyService from "../../services/propertyService";
 
 const getStatusColor = (status) => {
@@ -20,6 +21,7 @@ const getStatusColor = (status) => {
 
 const Properties = () => {
   const { t } = useTranslation("landing");
+  const { formatPrice } = usePropertyPriceDisplay(0);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -145,7 +147,6 @@ const Properties = () => {
                                 >
                                   {getStatusLabel(property.status)}
                                 </Badge>
-
                                 {property.highlighted && (
                                   <Badge
                                     className="position-absolute top-0 end-0 m-3 d-flex align-items-center gap-1"
@@ -160,7 +161,6 @@ const Properties = () => {
                                     <StarFill size={10} aria-hidden="true" /> Destacada
                                   </Badge>
                                 )}
-
                                 <Card.Img
                                   variant="top"
                                   src={
@@ -176,7 +176,7 @@ const Properties = () => {
 
                               <Card.Body className="bg-white px-3 py-3">
                                 <h5 className="fw-bold text-success mb-1">
-                                  Gs {Number(property.price || 0).toLocaleString()}
+                                  {formatPrice(property.price).label || "—"}
                                 </h5>
 
                                 <p

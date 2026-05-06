@@ -10,6 +10,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useUnreadMessagesCount } from '../../../hooks/useMessagesData';
 import useUIStore from '../../../store/useUIStore';
 import LanguageSelector from '../../common/LanguageSelector';
+import CurrencySelector from '../../common/CurrencySelector';
 import styles from './Topbar.module.scss';
 
 export default function Topbar({ extraActions }) {
@@ -91,6 +92,7 @@ export default function Topbar({ extraActions }) {
       <div className={styles.topbar__right}>
         {extraActions}
         <LanguageSelector variant="dark" />
+        <CurrencySelector variant="dark" />
         <button
           type="button"
           className={styles.topbar__iconBtn}

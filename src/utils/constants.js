@@ -8,8 +8,10 @@ export const AGENT_ROUTES = {
   SALES: '/agent/ventas',
   CONTRACTS: '/agent/contratos',
   REPORTS: '/agent/reportes',
+  FUNNEL: '/agent/reportes/embudo',
   MESSAGES: '/agent/mensajes',
   OFFERS: '/agent/ofertas',
+  SETTINGS: '/agent/settings',
   CREATE_PROPERTY: '/create-property',
   REGISTER_CLIENT: '/clientes/registrar',
 };
@@ -21,6 +23,7 @@ export const OWNER_ROUTES = {
   MESSAGES: '/owner/mensajes',
   OFFERS: '/owner/ofertas',
   CONTRACTS: '/owner/contratos',
+  SETTINGS: '/owner/settings',
 };
 
 export const ADMIN_ROUTES = {
@@ -30,6 +33,7 @@ export const ADMIN_ROUTES = {
   FLAGS: '/admin/flags',
   DOCUMENTS: '/admin/documents',
   RENT_CONFIG: '/admin/rent-config',
+  SETTINGS: '/admin/settings',
   CONTRACT_TEMPLATES: '/admin/contract-templates',
   PAYMENTS: '/admin/payments',
 };

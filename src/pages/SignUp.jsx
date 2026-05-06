@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Container, Card, Row, Col, Form, Button, Stack, Alert } from 'react-bootstrap';
+import { Container, Card, Row, Col, Form, Button, Stack, Alert, InputGroup } from 'react-bootstrap';
+import { Envelope, Eye, EyeSlash, Facebook, Google, Lock, Person, Telephone } from 'react-bootstrap-icons';
 import logo from '../assets/Logotipo.png';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { IoCheckmark, IoArrowForwardOutline } from 'react-icons/io5';
 import PreferencesForm from '../components/preferences/PreferencesForm';
 import { useUserPreferences } from '../hooks/useUserPreferences';
 import { useTranslation } from 'react-i18next';
+import './SignUp.scss';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -16,6 +18,8 @@ export default function SignUp() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   // Guardamos el userId tras el paso 2 para el paso 3
   const [registeredUserId, setRegisteredUserId] = useState(null);
@@ -161,32 +165,38 @@ export default function SignUp() {
       <Row className="g-3 mb-3">
         <Col xs={6}>
           <Form.Group>
-            <Form.Label className="fw-semibold small">{t('firstName')}</Form.Label>
-            <Form.Control
-              type="text" name="nombre" value={formData.nombre} onChange={handleChange}
-              placeholder={t('firstNamePlaceholder')} required
-              className="signup-input"
-            />
+            <Form.Label className="form-label">{t('firstName')}</Form.Label>
+            <InputGroup className="input-group-custom">
+              <InputGroup.Text><Person size={18} /></InputGroup.Text>
+              <Form.Control
+                type="text" name="nombre" value={formData.nombre} onChange={handleChange}
+                placeholder={t('firstNamePlaceholder')} required
+              />
+            </InputGroup>
           </Form.Group>
         </Col>
         <Col xs={6}>
           <Form.Group>
-            <Form.Label className="fw-semibold small">{t('lastName')}</Form.Label>
-            <Form.Control
-              type="text" name="apellido" value={formData.apellido} onChange={handleChange}
-              placeholder={t('lastNamePlaceholder')} required
-              className="signup-input"
-            />
+            <Form.Label className="form-label">{t('lastName')}</Form.Label>
+            <InputGroup className="input-group-custom">
+              <InputGroup.Text><Person size={18} /></InputGroup.Text>
+              <Form.Control
+                type="text" name="apellido" value={formData.apellido} onChange={handleChange}
+                placeholder={t('lastNamePlaceholder')} required
+              />
+            </InputGroup>
           </Form.Group>
         </Col>
       </Row>
       <Form.Group className="mb-4">
-        <Form.Label className="fw-semibold small">{t('phone')}</Form.Label>
-        <Form.Control
-          type="tel" name="phone" value={formData.phone} onChange={handleChange}
-          placeholder={t('phonePlaceholder')}
-          className="signup-input"
-        />
+        <Form.Label className="form-label">{t('phone')}</Form.Label>
+        <InputGroup className="input-group-custom">
+          <InputGroup.Text><Telephone size={18} /></InputGroup.Text>
+          <Form.Control
+            type="tel" name="phone" value={formData.phone} onChange={handleChange}
+            placeholder={t('phonePlaceholder')}
+          />
+        </InputGroup>
       </Form.Group>
       <div className="d-grid">
         <Button variant="primary" type="submit" className="signup-btn">
@@ -199,28 +209,50 @@ export default function SignUp() {
   const renderStep2 = () => (
     <Form onSubmit={handleStep2Submit}>
       <Form.Group className="mb-3">
-        <Form.Label className="fw-semibold small">{t('email')}</Form.Label>
-        <Form.Control
-          type="email" name="email" value={formData.email} onChange={handleChange}
-          placeholder={t('emailPlaceholder')} required
-          className="signup-input"
-        />
+        <Form.Label className="form-label">{t('email')}</Form.Label>
+        <InputGroup className="input-group-custom">
+          <InputGroup.Text><Envelope size={18} /></InputGroup.Text>
+          <Form.Control
+            type="email" name="email" value={formData.email} onChange={handleChange}
+            placeholder={t('emailPlaceholder')} required
+          />
+        </InputGroup>
       </Form.Group>
       <Form.Group className="mb-3">
-        <Form.Label className="fw-semibold small">{t('password')}</Form.Label>
-        <Form.Control
-          type="password" name="password" value={formData.password} onChange={handleChange}
-          placeholder={t('passwordPlaceholder')} required
-          className="signup-input"
-        />
+        <Form.Label className="form-label">{t('password')}</Form.Label>
+        <InputGroup className="input-group-custom">
+          <InputGroup.Text><Lock size={18} /></InputGroup.Text>
+          <Form.Control
+            type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange}
+            placeholder={t('passwordPlaceholder')} required
+          />
+          <InputGroup.Text
+            onClick={() => setShowPassword(!showPassword)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowPassword(!showPassword); }}
+            role="button" tabIndex={0}
+            aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+          >
+            {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+          </InputGroup.Text>
+        </InputGroup>
       </Form.Group>
       <Form.Group className="mb-3">
-        <Form.Label className="fw-semibold small">{t('confirmPassword')}</Form.Label>
-        <Form.Control
-          type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-          placeholder={t('confirmPasswordPlaceholder')} required
-          className="signup-input"
-        />
+        <Form.Label className="form-label">{t('confirmPassword')}</Form.Label>
+        <InputGroup className="input-group-custom">
+          <InputGroup.Text><Lock size={18} /></InputGroup.Text>
+          <Form.Control
+            type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
+            placeholder={t('confirmPasswordPlaceholder')} required
+          />
+          <InputGroup.Text
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowConfirmPassword(!showConfirmPassword); }}
+            role="button" tabIndex={0}
+            aria-label={showConfirmPassword ? t('hidePassword') : t('showPassword')}
+          >
+            {showConfirmPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+          </InputGroup.Text>
+        </InputGroup>
       </Form.Group>
       <Form.Group className="mb-4 d-flex align-items-center">
         <Form.Check
@@ -232,7 +264,9 @@ export default function SignUp() {
         </Form.Label>
       </Form.Group>
 
-      {errorMessage && <Alert variant="danger" className="py-2 small mb-3">{errorMessage}</Alert>}
+{errorMessage && (
+            <div className="error-message" role="alert" aria-live="assertive">{errorMessage}</div>
+          )}
 
       <div className="d-flex gap-2">
         <Button variant="outline-secondary" onClick={prevStep} className="signup-btn-prev">
@@ -276,46 +310,50 @@ export default function SignUp() {
   );
 
   return (
-    <div className="signup-page bg-light min-vh-100 d-flex align-items-center justify-content-center py-5">
+    <div className="signup-page">
       <Container style={{ maxWidth: currentStep === 3 ? 800 : 500 }}>
-        <Card className="signup-card border-0 shadow-sm overflow-hidden">
-          <div className="p-4 p-md-5">
-            <div className="text-center mb-4">
-              <img src={logo} alt="Logo" className="signup-logo mb-3" />
-              {currentStep < 3 && (
-                <>
-                  <h3 className="fw-bold mb-1">{t('createAccountTitle')}</h3>
-                  <p className="text-muted small">
-                    {t('signupLoginPrompt')} <a href="/login" className="text-decoration-none">{t('loginLink')}</a>
-                  </p>
-                </>
-              )}
-            </div>
-
-            {renderStepper()}
-
-            {currentStep === 1 && renderStep1()}
-            {currentStep === 2 && renderStep2()}
-            {currentStep === 3 && renderStep3()}
-
-            {currentStep < 3 && (
-              <>
-                <div className="d-flex align-items-center my-4">
-                  <hr className="flex-grow-1" />
-                  <span className="mx-3 text-muted small">{t('orSignUpWith')}</span>
-                  <hr className="flex-grow-1" />
-                </div>
-                <Stack direction="horizontal" gap={3} className="justify-content-center">
-                  <Button variant="outline-secondary" className="signup-social-btn">
-                    <i className="bi bi-google me-2"></i> Google
-                  </Button>
-                  <Button variant="outline-secondary" className="signup-social-btn">
-                    <i className="bi bi-facebook me-2"></i> Facebook
-                  </Button>
-                </Stack>
-              </>
-            )}
+        <Card className="signup-card">
+          <div className="logo-container">
+            <img src={logo} alt="Logo" className="logo-img" />
           </div>
+
+          {currentStep < 3 && (
+            <>
+              <h4 className="signup-title">{t('createAccountTitle')}</h4>
+              <p className="signup-subtitle">
+                {t('signupLoginPrompt')} <a href="/login">{t('signupLoginLink')}</a>
+              </p>
+              <p className="signup-subtitle">
+                {t('agentSignupPrompt')} <a href="/signup/agent">{t('agentSignupLink')}</a>
+              </p>
+            </>
+          )}
+
+          {renderStepper()}
+
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
+
+          {currentStep < 3 && (
+            <>
+              <div className="divider-container">
+                <hr />
+                <span>{t('orSignUpWith')}</span>
+                <hr />
+              </div>
+              <Stack direction="horizontal" gap={3} className="social-buttons">
+                <Button variant="outline-secondary" className="social-button">
+                  <Google className="google-icon" size={18} />
+                  <span className="btn-text">Google</span>
+                </Button>
+                <Button variant="outline-secondary" className="social-button">
+                  <Facebook className="facebook-icon" size={18} />
+                  <span className="btn-text">Facebook</span>
+                </Button>
+              </Stack>
+            </>
+          )}
         </Card>
       </Container>
     </div>

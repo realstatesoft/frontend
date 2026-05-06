@@ -66,5 +66,35 @@
     "saveError": "Could not save changes. Try again.",
     "notFound": "Agent not found.",
     "success": "Profile updated successfully. Redirecting…"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your agent account behavior.",
+    "loadError": "Failed to load configuration.",
+    "saveError": "Could not save. Please try again.",
+    "errorWorkRadius": "Work radius must be between 1 and 500 km.",
+    "success": "Settings saved successfully.",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "leads": {
+      "title": "Leads",
+      "desc": "Configure how new leads are assigned to your account.",
+      "autoAssign": "Automatic lead assignment",
+      "autoAssignHelp": "When a new lead matches your zone, it is automatically assigned to you."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "desc": "Choose which events trigger alerts on your account.",
+      "newLead": "Notify new lead",
+      "visitRequest": "Notify visit request",
+      "newOffer": "Notify new offer"
+    },
+    "zone": {
+      "title": "Work zone",
+      "desc": "Set the geographic radius within which you serve clients.",
+      "label": "Work radius (km)",
+      "placeholder": "No limit",
+      "help": "Leave empty to set no zone limit."
+    }
   }
 }

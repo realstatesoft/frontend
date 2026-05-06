@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ArrowUp } from "react-bootstrap-icons";
 import CustomNavbar from "../components/Landing/Navbar";
@@ -13,6 +14,9 @@ import useFavoriteProperties from "../hooks/useFavoriteProperties";
 import useDebounce from "../hooks/useDebounce";
 import { useAuth } from "../hooks/useAuth";
 import { PROPERTY_TYPE, AVAILABILITY, CATEGORY } from "../constants/propertyEnums";
+import useCurrencyStore from "../store/useCurrencyStore";
+import useExchangeRates from "../hooks/useExchangeRates";
+import { convertPriceFilterToPyg } from "../utils/propertyPriceFormatter";
 import usePropertyCompareStore, { MAX_COMPARE_PROPERTIES } from "../store/usePropertyCompareStore";
 
 const PAGE_SIZE = 12;
@@ -38,6 +42,8 @@ export default function PropertiesPage() {
     const [minBathrooms, setMinBathrooms] = useState(locationState.minBathrooms ?? "");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);
+    const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+    const { data: exchangeRates } = useExchangeRates({ enabled: true, staleTime: 10 * 60 * 1000, retry: 1 });
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     useEffect(() => {
@@ -72,6 +78,28 @@ export default function PropertiesPage() {
     const backendCategory = saleRent ? CATEGORY[saleRent] : undefined;
     const backendAvailability = availability ? AVAILABILITY[availability] : undefined;
 
+    const convertedPriceFilters = useMemo(() => {
+        const minPriceConversion =
+            minPrice !== "" ? convertPriceFilterToPyg(minPrice, selectedCurrency, exchangeRates) : null;
+        const maxPriceConversion =
+            maxPrice !== "" ? convertPriceFilterToPyg(maxPrice, selectedCurrency, exchangeRates) : null;
+        const shouldOmitMinPrice =
+            minPriceConversion?.fallbackToPyg && selectedCurrency !== "PYG";
+        const shouldOmitMaxPrice =
+            maxPriceConversion?.fallbackToPyg && selectedCurrency !== "PYG";
+
+        return {
+            minPrice: shouldOmitMinPrice ? null : minPriceConversion?.convertedAmount,
+            maxPrice: shouldOmitMaxPrice ? null : maxPriceConversion?.convertedAmount,
+        };
+    }, [minPrice, maxPrice, selectedCurrency, exchangeRates]);
+
+    const priceConversionAvailable = useMemo(() => {
+        if (selectedCurrency === "PYG") return true;
+        const probe = convertPriceFilterToPyg(1, selectedCurrency, exchangeRates);
+        return probe?.convertedAmount != null;
+    }, [selectedCurrency, exchangeRates]);
+
     const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
         page: currentPage,
         size: PAGE_SIZE,
@@ -79,8 +107,8 @@ export default function PropertiesPage() {
         propertyType: backendType,
         category: backendCategory,
         availability: backendAvailability,
-        minPrice: minPrice ? Number(minPrice) : undefined,
-        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        minPrice: convertedPriceFilters.minPrice,
+        maxPrice: convertedPriceFilters.maxPrice,
         minBedrooms: minBedrooms ? Number(minBedrooms) : undefined,
         minBathrooms: minBathrooms ? Number(minBathrooms) : undefined,
     });
@@ -121,17 +149,19 @@ export default function PropertiesPage() {
 
             <PropertiesHero
                 search={search}
+                category={saleRent}
                 typeFilter={typeFilter}
-                saleRent={saleRent}
                 availability={availability}
                 minPrice={minPrice}
                 maxPrice={maxPrice}
+                priceCurrency={selectedCurrency}
+                priceConversionAvailable={priceConversionAvailable}
                 minBedrooms={minBedrooms}
                 minBathrooms={minBathrooms}
                 totalResults={totalElements}
                 onSearch={handleSearch}
+                onCategoryChange={handleSaleRent}
                 onTypeChange={handleType}
-                onSaleRentChange={handleSaleRent}
                 onAvailabilityChange={handleAvailability}
                 onMinPriceChange={handleMinPrice}
                 onMaxPriceChange={handleMaxPrice}

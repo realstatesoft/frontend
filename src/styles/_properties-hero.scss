@@ -258,6 +258,12 @@
     }
 }
 
+.filter-bar__price-note {
+    font-family: $font-family-sans-serif;
+    font-size: 0.78rem;
+    color: $text-muted;
+}
+
 .filter-bar__results {
     font-family: $font-family-sans-serif;
     font-size: 0.875rem;

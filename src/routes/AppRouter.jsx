@@ -12,6 +12,7 @@ const PropertiesPage = lazy(() => import("../pages/PropertiesPage"));
 const ShowProperty = lazy(() => import("../pages/ShowProperty/ShowProperty"));
 const LogIn = lazy(() => import("../pages/Login/LogIn"));
 const SignUp = lazy(() => import("../pages/SignUp"));
+const AgentSignUp = lazy(() => import("../pages/AgentSignUp"));
 const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 const AgentsPage = lazy(() => import("../pages/AgentsPage"));
 const PublicAgentProfilePage = lazy(() => import("../pages/Agents/PublicAgentProfilePage"));
@@ -47,6 +48,7 @@ const AgentPropertiesPage = lazy(() => import("../pages/properties/AgentProperti
 const AgendaPage = lazy(() => import("../pages/Agenda/AgendaPage"));
 const SalesPage = lazy(() => import("../pages/Sales/SalesPage"));
 const ReportsPage = lazy(() => import("../pages/Reports/ReportsPage"));
+const ConversionFunnelPage = lazy(() => import("../pages/ConversionFunnel/ConversionFunnelPage"));
 const MessagesPage = lazy(() => import("../pages/Messages/MessagesPage"));
 const ContractsPage = lazy(() => import("../pages/Contracts/ContractsPage"));
 const ContractCreatePage = lazy(() => import("../pages/Contracts/ContractCreatePage"));
@@ -75,6 +77,10 @@ const RentConfigPage = lazy(() => import("../pages/Admin/RentConfig/RentConfigPa
 const AdminContractTemplatesPage = lazy(() => import("../pages/Admin/AdminContractTemplatesPage"));
 const AdminPaymentsPage = lazy(() => import("../pages/Admin/AdminPaymentsPage"));
 
+const AdminSettingsPage = lazy(() => import("../pages/Admin/Settings/AdminSettingsPage"));
+const AgentSettingsPage = lazy(() => import("../pages/AgentSettings/AgentSettingsPage"));
+const UserSettingsPage = lazy(() => import("../pages/UserSettings/UserSettingsPage"));
+
 // ─── Suspense fallback ──────────────────────────────────────────────────────
 function PageLoader() {
     return (
@@ -83,7 +89,6 @@ function PageLoader() {
         </div>
     );
 }
-
 
 export default function AppRouter() {
     return (
@@ -94,6 +99,7 @@ export default function AppRouter() {
             <Route path="/sell" element={<SellWizardPage />} />
             <Route path="/login" element={<LogIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/signup/agent" element={<AgentSignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/properties/compare" element={<PropertyComparePage />} />
@@ -144,12 +150,14 @@ export default function AppRouter() {
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
                     <Route path="contratos/:id/editar" element={<ContractEditPage />} />
                     <Route path="reportes" element={<ReportsPage />} />
+                    <Route path="reportes/embudo" element={<ConversionFunnelPage />} />
                     <Route path="mensajes" element={<MessagesPage />} />
                     <Route path="ofertas" element={<OfferManagementPage />} />
                     <Route path="leads" element={<AgentLeadsPage />} />
-          <Route path="leads/:id" element={<LeadDetailPage />} />
+                    <Route path="leads/:id" element={<LeadDetailPage />} />
                     <Route path="reservas" element={<AgentReservationsPage />} />
                     <Route path="prospectos/:id" element={<LeadDetailPage />} />
+                    <Route path="settings" element={<AgentSettingsPage />} />
                 </Route>
             </Route>
 
@@ -165,6 +173,7 @@ export default function AppRouter() {
                     <Route path="contratos" element={<ContractsPage />} />
                     <Route path="contratos/nuevo" element={<ContractCreatePage />} />
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="settings" element={<UserSettingsPage />} />
                 </Route>
             </Route>
 
@@ -185,6 +194,7 @@ export default function AppRouter() {
                     <Route path="flags" element={<FlagsPage />} />
                     <Route path="documents" element={<AdminDocumentsPage />} />
                     <Route path="rent-config" element={<RentConfigPage />} />
+                    <Route path="settings" element={<AdminSettingsPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                     <Route path="payments" element={<AdminPaymentsPage />} />
                 </Route>

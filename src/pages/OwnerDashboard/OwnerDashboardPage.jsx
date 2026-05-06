@@ -14,12 +14,14 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import { useNavigate } from 'react-router-dom';
 import ContractSignModal from '../Contracts/ContractSignModal';
 import Swal from 'sweetalert2';
+import usePropertyPriceDisplay from '../../hooks/usePropertyPriceDisplay';
 
 export default function OwnerDashboardPage() {
   const { t } = useTranslation('owner');
   const { data: response, isLoading, refetch } = useOwnerOverview();
   const navigate = useNavigate();
   const [signContract, setSignContract] = useState(null);
+  const { formatPrice } = usePropertyPriceDisplay(0);
 
   const { stats = {}, recentProperties = [], urgentContracts = [], pendingVisits = [] } = response || {};
 
@@ -138,7 +140,7 @@ export default function OwnerDashboardPage() {
                   <div className={styles.list_item_info}>
                     <span className={styles.list_item_title}>{prop.title}</span>
                     <div className={styles.list_item_meta}>
-                      {prop.propertyType} • {formatCurrency(prop.price)}
+                      {prop.propertyType} • {formatPrice(prop.price).label || '—'}
                     </div>
                   </div>
                   <button 

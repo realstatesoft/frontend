@@ -25,7 +25,6 @@ import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { useAuth } from "../../hooks/useAuth";
-import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
 import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
@@ -36,6 +35,7 @@ import PropertyModel3DViewer from "../../components/properties/PropertyModel3DVi
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
+import PropertyPriceNotice from "../../components/common/PropertyPriceNotice";
 import { useTranslation } from "react-i18next";
 import "./show-property.scss";
 
@@ -58,6 +58,9 @@ export default function ShowProperty() {
     images,
     features,
     priceFormatted,
+    priceDisplay,
+    priceReferenceText,
+    showPriceReferenceNote,
     propertyTypeLabel,
     mapUrl,
     formatTimeAgo,
@@ -418,7 +421,14 @@ export default function ShowProperty() {
                 gap={4}
                 className="align-items-end flex-wrap mb-2"
               >
-                <span className="property__price">{priceFormatted}</span>
+                <div className="d-flex flex-column gap-1">
+                  <span className="property__price">{priceFormatted || "—"}</span>
+                  {showPriceReferenceNote && (
+                    <PropertyPriceNotice className="property__price-note">
+                      {priceReferenceText}
+                    </PropertyPriceNotice>
+                  )}
+                </div>
                 <Stack direction="horizontal" gap={4}>
                   {[
                     {
@@ -453,9 +463,7 @@ export default function ShowProperty() {
                     `Construido en ${property.constructionYear}`,
                   property.surfaceArea &&
                     property.price &&
-                    `~ ${formatPrice(
-                      String(Math.round(property.price / property.surfaceArea)),
-                    )}/m²`,
+                    `${priceDisplay.formatPrice(Math.round(property.price / property.surfaceArea)).label || "—"}/m²`,
                 ]
                   .filter(Boolean)
                   .map((label) => (
