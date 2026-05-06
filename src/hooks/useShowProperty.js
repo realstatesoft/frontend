@@ -3,7 +3,6 @@ import { useAuth } from "./useAuth";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import propertyApi from "../services/properties/propertyApi";
-import { formatPrice } from "../utils/priceFormat";
 import { formatTimeAgo } from "../utils/dateFormat";
 import { buildFeaturesFromProperty } from "../utils/propertyHelpers";
 import {
@@ -13,6 +12,7 @@ import {
 } from "../constants/propertyEnums";
 import { PLACEHOLDER_IMAGES } from "../constants/showPropertyConstants";
 import propertyFlagsApi from "../services/propertyFlagsApi";
+import usePropertyPriceDisplay from "./usePropertyPriceDisplay";
 
 const getErrorMessage = (err) =>
   err.response?.data?.message ??
@@ -490,7 +490,8 @@ export function useShowProperty() {
   }, [property?.media]);
 
   const features = buildFeaturesFromProperty(property);
-  const priceFormatted = property?.price != null ? `₲ ${formatPrice(String(property.price))}` : "";
+  const priceDisplay = usePropertyPriceDisplay(property?.price);
+  const priceFormatted = priceDisplay.label || "";
   const propertyTypeLabel = property?.propertyType ? PROPERTY_TYPE_LABELS[property.propertyType] ?? property.propertyType : "";
   const mapUrl =
     property?.lat != null && property?.lng != null
@@ -512,6 +513,9 @@ export function useShowProperty() {
     images,
     features,
     priceFormatted,
+    priceDisplay,
+    priceReferenceText: priceDisplay.referenceText,
+    showPriceReferenceNote: priceDisplay.showReferenceNote,
     propertyTypeLabel,
     mapUrl,
     formatTimeAgo,

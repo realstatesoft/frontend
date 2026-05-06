@@ -11,6 +11,20 @@ vi.mock('../../../hooks/usePropertyPermissions', () => ({
   usePropertyPermissions: vi.fn(),
 }));
 
+vi.mock('../../../hooks/useAuth', () => ({
+  useAuth: vi.fn(),
+}));
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key, options = {}) => {
+      if (key === 'views.one') return '1 ha visto esta propiedad';
+      if (key === 'views.other') return `${options.count} han visto esta propiedad`;
+      return key;
+    },
+  }),
+}));
+
 vi.mock('../../../components/Landing/Navbar', () => ({
   default: () => <nav data-testid="navbar" />,
 }));
@@ -46,6 +60,7 @@ vi.mock('../../../components/properties/PropertyStatusBadge', () => ({
 import ShowProperty from '../../../pages/ShowProperty/ShowProperty';
 import { useShowProperty } from '../../../hooks/useShowProperty';
 import { usePropertyPermissions } from '../../../hooks/usePropertyPermissions';
+import { useAuth } from '../../../hooks/useAuth';
 
 const createShowPropertyHookValue = (overrides = {}) => ({
   property: {
@@ -70,6 +85,17 @@ const createShowPropertyHookValue = (overrides = {}) => ({
   images: ['https://example.com/property.jpg'],
   features: [],
   priceFormatted: '₲ 100.000',
+  priceDisplay: {
+    formatPrice: (value) => ({
+      label: `₲ ${String(value)}`,
+      displayValue: `₲ ${String(value)}`,
+      approximate: false,
+      fallbackToPyg: false,
+      currencyCode: 'PYG',
+    }),
+  },
+  priceReferenceText: 'Los precios en moneda extranjera son referenciales y se calculan según la cotización de Cambios Chaco.',
+  showPriceReferenceNote: false,
   propertyTypeLabel: 'Casa',
   mapUrl: 'about:blank',
   formatTimeAgo: () => 'hace poco',
@@ -100,6 +126,11 @@ describe('ShowProperty', () => {
       canFeature: false,
       isOwner: false,
       isAdmin: false,
+    });
+
+    useAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
     });
 
     useShowProperty.mockReturnValue(createShowPropertyHookValue());

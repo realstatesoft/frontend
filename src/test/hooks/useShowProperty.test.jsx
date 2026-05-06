@@ -26,6 +26,26 @@ vi.mock('../../services/propertyFlagsApi', () => ({
   },
 }));
 
+vi.mock('../../hooks/usePropertyPriceDisplay', () => ({
+  default: vi.fn(() => ({
+    label: '₲ 100.000',
+    displayValue: '₲ 100.000',
+    approximate: false,
+    fallbackToPyg: false,
+    currencyCode: 'PYG',
+    isForeignCurrency: false,
+    showReferenceNote: false,
+    referenceText: 'Los precios en moneda extranjera son referenciales y se calculan según la cotización de Cambios Chaco.',
+    formatPrice: (value) => ({
+      label: `₲ ${String(value)}`,
+      displayValue: `₲ ${String(value)}`,
+      approximate: false,
+      fallbackToPyg: false,
+      currencyCode: 'PYG',
+    }),
+  })),
+}));
+
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {

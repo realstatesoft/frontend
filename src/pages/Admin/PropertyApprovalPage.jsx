@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import propertyApi from '../../services/properties/propertyApi';
 import PLACEHOLDER_IMAGE from '../../assets/placeholder_img.png';
 import Pagination from '../../components/properties/Pagination';
+import usePropertyPriceDisplay from '../../hooks/usePropertyPriceDisplay';
 import '../../styles/PropertyApproval.scss';
 
 const FILTER_OPTIONS = [
@@ -16,6 +17,7 @@ const FILTER_OPTIONS = [
 
 export default function PropertyApprovalPage() {
   const { t } = useTranslation('admin');
+  const { formatPrice } = usePropertyPriceDisplay(0);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -191,6 +193,7 @@ export default function PropertyApprovalPage() {
             </div>
           ) : properties.length > 0 ? (
             properties.map(property => {
+              const formattedPrice = formatPrice(property.price);
               const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
               const type = property.propertyType || property.type || t('propertyApproval.property');
               const dateStr = property.createdAt 
@@ -230,7 +233,9 @@ export default function PropertyApprovalPage() {
                       </div>
 
                       <div className="price">
-                        {property.price ? `$ ${Number(property.price).toLocaleString()}` : t('propertyApproval.noPrice')}
+                        {formattedPrice.label
+                          ? formattedPrice.label
+                          : t('propertyApproval.noPrice')}
                       </div>
 
                       <div className="meta-info">

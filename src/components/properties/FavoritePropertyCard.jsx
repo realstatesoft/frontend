@@ -4,6 +4,7 @@ import { Share } from "react-bootstrap-icons";
 import { FAVORITE_STATUS_LABELS, FAVORITE_BADGE_STYLES } from "../../data/propertiesData";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import FavoriteToggleButton from "./FavoriteToggleButton";
+import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 /**
  * FavoritePropertyCard
@@ -16,10 +17,7 @@ export default function FavoritePropertyCard({
   removing = false,
 }) {
   const tag = FAVORITE_STATUS_LABELS[property.status] ?? property.tag ?? "—";
-  const numericPrice = Number(property.price);
-  const formattedPrice = Number.isFinite(numericPrice)
-    ? `Gs. ${numericPrice.toLocaleString()}`
-    : "—";
+  const price = usePropertyPriceDisplay(property.price);
   const address = property.address || property.locationName || property.location || "";
   const bedrooms = property.bedrooms ?? "—";
   const bathrooms = property.bathrooms ?? "—";
@@ -85,7 +83,7 @@ export default function FavoritePropertyCard({
             className="fw-bold flex-shrink-0"
             style={{ color: "var(--primary, #2563eb)", fontSize: "1rem" }}
           >
-            {formattedPrice}
+            {price.label || "—"}
           </span>
         </div>
         <p className="text-muted mb-2" style={{ fontSize: "0.82rem" }}>

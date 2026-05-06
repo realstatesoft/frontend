@@ -1,6 +1,22 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import propertyApi from "../services/properties/propertyApi";
 
+/**
+ * Hook que obtiene propiedades paginadas desde la API.
+ *
+ * @param {object} opts
+ * @param {number} opts.page           - Página actual (1-indexed, se convierte a 0-indexed para Spring)
+ * @param {number} opts.size           - Cantidad por página
+ * @param {string} opts.search         - Texto de búsqueda libre
+ * @param {string} opts.propertyType   - Tipo de propiedad (enum del backend, ej: HOUSE, APARTMENT)
+ * @param {string} opts.status         - Estado de la propiedad (enum del backend, ej: PUBLISHED)
+ * @param {string} opts.availability   - Disponibilidad (IMMEDIATE, IN_30_DAYS, IN_60_DAYS, TO_NEGOTIATE)
+ * @param {number} opts.minPrice       - Precio mínimo en PYG
+ * @param {number} opts.maxPrice       - Precio máximo en PYG
+ * @param {number} opts.minBedrooms    - Cantidad mínima de dormitorios
+ * @param {number} opts.minBathrooms   - Cantidad mínima de baños
+ * @returns {{ properties, loading, error, totalPages, totalElements, refetch }}
+ */
 export default function useProperties({
     page = 1,
     size = 12,

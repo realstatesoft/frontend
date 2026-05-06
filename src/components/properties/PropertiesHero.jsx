@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Container, Collapse, Row, Col, Form, Dropdown } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
+import useCurrencyStore from "../../store/useCurrencyStore";
 import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/propertyEnums";
 import SaveSearchModal from "./SaveSearchModal";
 import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
-import { useTranslation } from "react-i18next";
+import { useAuth } from "../../hooks/useAuth";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -11,8 +13,6 @@ import { useTranslation } from "react-i18next";
  * Filtros básicos en la barra: Tipo · Precio · Dormitorios · Más (avanzados)
  * Panel avanzado: disponibilidad, precio min/max, dormitorios mín., baños mín.
  */
-import { useAuth } from "../../hooks/useAuth";
-
 export default function PropertiesHero({
     search,
     category,
@@ -22,6 +22,8 @@ export default function PropertiesHero({
     maxPrice,
     minBedrooms,
     minBathrooms,
+    priceCurrency,
+    priceConversionAvailable = true,
     totalResults,
     onSearch,
     onTypeChange,
@@ -39,6 +41,10 @@ export default function PropertiesHero({
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [savedSearches, setSavedSearches] = useState([]);
+
+    const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+    const setCurrency = useCurrencyStore((state) => state.setCurrency);
+    const activePriceCurrency = priceCurrency || selectedCurrency || "PYG";
 
     const fetchSavedSearches = useCallback(async () => {
         try {
@@ -75,24 +81,28 @@ export default function PropertiesHero({
         availability,
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
+        priceCurrency: activePriceCurrency,
         minBedrooms: minBedrooms || null,
         minBathrooms: minBathrooms || null,
     };
 
     const handleSaveSuccess = () => {
-        console.log("Búsqueda guardada");
         fetchSavedSearches();
     };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
     const hasAnyFilter = !!(search || category || typeFilter || advancedActiveCount);
+    const priceRangeNote =
+        activePriceCurrency === "PYG"
+            ? "Los filtros de precio se envían en PYG."
+            : priceConversionAvailable
+                ? "Los filtros de precio se convierten a PYG según la cotización disponible de Cambios Chaco."
+                : "Los filtros de precio no se aplican porque no hay cotización disponible de Cambios Chaco.";
 
     return (
         <div className="bg-light py-4" style={{ overflow: "visible" }}>
             <Container>
                 <div className="filter-bar">
-
-                    {/* Búsqueda */}
                     <div className="filter-bar__search">
                         <span className="filter-bar__search-icon"></span>
                         <input
@@ -103,54 +113,61 @@ export default function PropertiesHero({
                         />
                     </div>
 
-                    {/* Mis búsquedas */}
                     {isAuthenticated && (
-                        <Dropdown>
-                        <Dropdown.Toggle className="filter-pill">
-                            {t("savedSearches.title")}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Header>{t("savedSearches.header")}</Dropdown.Header>
+                        <Dropdown className="filter-bar__saved-dropdown">
+                            <Dropdown.Toggle className="filter-pill">
+                                {t("savedSearches.title")}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Header>{t("savedSearches.header")}</Dropdown.Header>
 
-                            {savedSearches.map((s) => (
-                                <Dropdown.Item
-                                    key={s.id}
-                                    as="div"
-                                    className="d-flex justify-content-between"
-                                    onClick={() => {
-                                        const f = s.filters || {};
-                                        onSearch(f.q ?? "");
-                                        onTypeChange(f.propertyType ?? "");
-                                        onCategoryChange(f.category ?? "");
-                                        onAvailabilityChange(f.availability ?? "");
-                                        onMinPriceChange(f.minPrice ?? "");
-                                        onMaxPriceChange(f.maxPrice ?? "");
-                                        onMinBedroomsChange(f.minBedrooms ?? "");
-                                        onMinBathroomsChange(f.minBathrooms ?? "");
-                                    }}
-                                >
-                                    <span>{s.name}</span>
-                                    <button
-                                        className="filter-bar__delete-search"
-                                        title={t("savedSearches.delete")}
-                                        aria-label={t("savedSearches.deleteLabel", { name: s.name })}
-                                        onClick={(evt) => handleDeleteSearch(s.id, evt)}
-                                        type="button"
+                                {savedSearches.map((savedSearch) => (
+                                    <Dropdown.Item
+                                        key={savedSearch.id}
+                                        as="div"
+                                        className="d-flex justify-content-between"
+                                        onClick={() => {
+                                            const savedFilters = savedSearch.filters || {};
+                                            if (savedFilters.priceCurrency) {
+                                                setCurrency(savedFilters.priceCurrency);
+                                            } else if (
+                                                savedFilters.minPrice != null ||
+                                                savedFilters.maxPrice != null
+                                            ) {
+                                                setCurrency("PYG");
+                                            }
+                                            onSearch(savedFilters.q ?? "");
+                                            onTypeChange(savedFilters.propertyType ?? "");
+                                            onCategoryChange(savedFilters.category ?? "");
+                                            onAvailabilityChange(savedFilters.availability ?? "");
+                                            onMinPriceChange(savedFilters.minPrice ?? "");
+                                            onMaxPriceChange(savedFilters.maxPrice ?? "");
+                                            onMinBedroomsChange(savedFilters.minBedrooms ?? "");
+                                            onMinBathroomsChange(savedFilters.minBathrooms ?? "");
+                                        }}
                                     >
-                                        ×
-                                    </button>
-                                </Dropdown.Item>
-                            ))}
+                                        <span>{savedSearch.name}</span>
+                                        <button
+                                            className="filter-bar__delete-search"
+                                            title={t("savedSearches.delete")}
+                                            aria-label={t("savedSearches.deleteLabel", { name: savedSearch.name })}
+                                            onClick={(evt) => handleDeleteSearch(savedSearch.id, evt)}
+                                            type="button"
+                                        >
+                                            ×
+                                        </button>
+                                    </Dropdown.Item>
+                                ))}
 
-                            {savedSearches.length === 0 && (
-                                <Dropdown.Item disabled>
-                                    {t("savedSearches.empty")}
-                                </Dropdown.Item>
-                            )}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                                {savedSearches.length === 0 && (
+                                    <Dropdown.Item disabled>
+                                        {t("savedSearches.empty")}
+                                    </Dropdown.Item>
+                                )}
+                            </Dropdown.Menu>
+                        </Dropdown>
                     )}
-                    {/* Pill: Operación */}
+
                     <PillSelect
                         label="Operación"
                         value={category}
@@ -164,7 +181,6 @@ export default function PropertiesHero({
 
                     <div className="filter-bar__divider" />
 
-                    {/* Pill: Tipo */}
                     <PillSelect
                         label={t("search.type")}
                         value={typeFilter}
@@ -181,7 +197,6 @@ export default function PropertiesHero({
 
                     <div className="filter-bar__divider" />
 
-                    {/* Pill: Dormitorios */}
                     <PillSelect
                         label={t("search.bedrooms")}
                         value={minBedrooms}
@@ -196,7 +211,6 @@ export default function PropertiesHero({
 
                     <div className="filter-bar__divider" />
 
-                    {/* Más filtros */}
                     <button
                         className={`filter-pill${showAdvanced || advancedActiveCount > 0 ? " filter-pill--active" : ""}`}
                         onClick={() => setShowAdvanced(!showAdvanced)}
@@ -209,7 +223,6 @@ export default function PropertiesHero({
                         }
                     </button>
 
-                    {/* Limpiar — solo aparece cuando hay algo activo */}
                     {hasAnyFilter && (
                         <>
                             <div className="filter-bar__divider" />
@@ -218,74 +231,83 @@ export default function PropertiesHero({
                             </button>
                             <div className="filter-bar__divider" />
                             {isAuthenticated && (
-                                <>
-                                    <button className="filter-bar__save" onClick={() => setShowSaveModal(true)} title={t("actions.saveTooltip")} type="button">
-                                        {t("actions.save")}
-                                    </button>
-                                </>
+                                <button className="filter-bar__save" onClick={() => setShowSaveModal(true)} title={t("actions.saveTooltip")} type="button">
+                                    {t("actions.save")}
+                                </button>
                             )}
                         </>
                     )}
                 </div>
 
-                {/* ── Panel de filtros avanzados ─────────────────────────── */}
                 <Collapse in={showAdvanced}>
                     <div>
-                        <Row className="g-3 mt-3">
-                            <Col md={3}>
-                                <span className="filter-bar__panel-label">{t("search.availability")}</span>
-                                <Form.Select
-                                    value={availability}
-                                    onChange={(e) => onAvailabilityChange(e.target.value)}
-                                    size="sm"
-                                >
-                                    <option value="">{t("search.any")}</option>
-                                    {AVAILABILITY_OPTIONS.map((opt) => (
-                                        <option key={opt} value={opt}>
-                                            {opt}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Col>
+                        <div className="filter-bar__advanced-panel">
+                            <Row className="g-3">
+                                <Col md={3}>
+                                    <span className="filter-bar__panel-label">{t("search.availability")}</span>
+                                    <Form.Select
+                                        value={availability}
+                                        onChange={(e) => onAvailabilityChange(e.target.value)}
+                                        size="sm"
+                                    >
+                                        <option value="">{t("search.any")}</option>
+                                        {AVAILABILITY_OPTIONS.map((opt) => (
+                                            <option key={opt} value={opt}>
+                                                {opt}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
 
                                 <Col md={2}>
-                                    <span className="filter-bar__panel-label">{t("search.minPrice")}</span>
+                                    <span className="filter-bar__panel-label">
+                                        {t("search.minPrice")} ({activePriceCurrency})
+                                    </span>
                                     <Form.Control
-                                        type="number" size="sm" placeholder="0" min={0}
+                                        type="number"
+                                        size="sm"
+                                        placeholder={`0 ${activePriceCurrency}`}
+                                        min={0}
                                         value={minPrice}
                                         onChange={(e) => onMinPriceChange(e.target.value)}
                                     />
                                 </Col>
 
                                 <Col md={2}>
-                                    <span className="filter-bar__panel-label">{t("search.maxPrice")}</span>
+                                    <span className="filter-bar__panel-label">
+                                        {t("search.maxPrice")} ({activePriceCurrency})
+                                    </span>
                                     <Form.Control
-                                        type="number" size="sm" placeholder={t("search.noLimit")} min={0}
+                                        type="number"
+                                        size="sm"
+                                        placeholder={`${t("search.noLimit")} (${activePriceCurrency})`}
+                                        min={0}
                                         value={maxPrice}
                                         onChange={(e) => onMaxPriceChange(e.target.value)}
                                     />
                                 </Col>
 
-                            <Col md={2}>
-                                <span className="filter-bar__panel-label">{t("search.minBathrooms")}</span>
-                                <Form.Select
-                                    value={minBathrooms}
-                                    onChange={(e) => onMinBathroomsChange(e.target.value)}
-                                    size="sm"
-                                >
-                                    <option value="">{t("search.any")}</option>
-                                    {[1, 2, 3, 4].map((n) => (
-                                        <option key={n} value={n}>{n}+</option>
-                                    ))}
-                                </Form.Select>
-                            </Col>
-                        </Row>
+                                <Col md={2}>
+                                    <span className="filter-bar__panel-label">{t("search.minBathrooms")}</span>
+                                    <Form.Select
+                                        value={minBathrooms}
+                                        onChange={(e) => onMinBathroomsChange(e.target.value)}
+                                        size="sm"
+                                    >
+                                        <option value="">{t("search.any")}</option>
+                                        {[1, 2, 3, 4].map((n) => (
+                                            <option key={n} value={n}>{n}+</option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
+                            </Row>
+                            <p className="filter-bar__price-note mb-0 mt-3">{priceRangeNote}</p>
+                        </div>
                     </div>
                 </Collapse>
 
-                {/* Contador de resultados */}
                 <p className="filter-bar__results">
-                    {t("results.count", { count: totalResults })}
+                    {t("results.showing", { count: totalResults })}
                 </p>
 
                 <SaveSearchModal
@@ -299,12 +321,11 @@ export default function PropertiesHero({
     );
 }
 
-/* ── Componente interno: pill que envuelve un <select> nativo invisible ── */
 function PillSelect({ label, value, onChange, active, children }) {
     return (
         <div style={{ position: "relative" }}>
             <div className={`filter-pill${active ? " filter-pill--active" : ""}`} style={{ pointerEvents: "none" }}>
-                {value ? value : label}
+                {value || label}
                 <span className="filter-pill__chevron" />
             </div>
             <select
