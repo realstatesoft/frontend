@@ -1,0 +1,9 @@
+{
+  "titleRequired": "O título é obrigatório",
+  "titleTooLong": "O título não pode exceder 255 caracteres",
+  "addressRequired": "O endereço é obrigatório",
+  "addressTooLong": "O endereço não pode exceder 500 caracteres",
+  "priceRequired": "O preço é obrigatório",
+  "pricePositive": "O preço deve ser maior que 0",
+  "propertyTypeRequired": "O tipo de imóvel é obrigatório"
+}

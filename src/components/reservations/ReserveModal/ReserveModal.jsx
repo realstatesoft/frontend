@@ -3,8 +3,10 @@ import { Modal, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import reservationApi from '../../../services/reservations/reservationApi';
 import { formatCurrency } from '../../../utils/formatters';
 import styles from './ReserveModal.module.scss';
+import { useTranslation } from 'react-i18next';
 
 export default function ReserveModal({ show, property, defaultPercent, onClose, onCreated }) {
+  const { t } = useTranslation('reservations');
   const initialAmount = property
     ? Number(((Number(property.price) || 0) * (Number(defaultPercent) || 0) / 100).toFixed(2))
     : 0;
@@ -26,7 +28,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
 
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      setError('El monto debe ser mayor a cero.');
+      setError(t('modal.invalidAmount'));
       return;
     }
 
@@ -40,7 +42,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
       onCreated?.(res.data?.data);
       onClose?.();
     } catch (err) {
-      setError(err?.response?.data?.message || 'No se pudo crear la reserva.');
+      setError(err?.response?.data?.message || t('modal.error'));
     } finally {
       setSubmitting(false);
     }
@@ -50,15 +52,14 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
     <Modal show={show} onHide={onClose} centered>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
-          <Modal.Title>Reservar propiedad</Modal.Title>
+          <Modal.Title>{t('modal.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className={styles.body}>
           <p className="mb-3">
-            Estás reservando <strong>{property?.title}</strong>. Una reserva queda pendiente hasta que
-            el propietario la confirme.
+            {t('modal.description', { title: property?.title })}
           </p>
           <Form.Group className="mb-3" controlId="reserveAmount">
-            <Form.Label>Monto de reserva</Form.Label>
+            <Form.Label>{t('modal.amount')}</Form.Label>
             <Form.Control
               type="number"
               min="0"
@@ -67,7 +68,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
               onChange={(e) => setAmount(e.target.value)}
             />
             <Form.Text className="text-muted d-block">
-              Sugerencia: {defaultPercent}% del precio publicado.
+              {t('modal.suggestion', { percent: defaultPercent })}
             </Form.Text>
             <div className="fw-semibold mt-2" data-testid="reserve-amount-formatted">
               {formatCurrency(Number(amount) || 0)}
@@ -75,7 +76,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="reserveNotes">
-            <Form.Label>Notas (opcional)</Form.Label>
+            <Form.Label>{t('modal.notes')}</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -88,10 +89,10 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onClose} disabled={submitting}>
-            Cancelar
+            {t('modal.cancel')}
           </Button>
           <Button variant="primary" type="submit" disabled={submitting}>
-            {submitting ? <><Spinner size="sm" animation="border" className="me-2" />Enviando...</> : 'Confirmar'}
+            {submitting ? <><Spinner size="sm" animation="border" className="me-2" />{t('modal.submitting')}</> : t('modal.submit')}
           </Button>
         </Modal.Footer>
       </Form>

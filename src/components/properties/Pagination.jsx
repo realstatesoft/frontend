@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
+import { useTranslation } from "react-i18next";
 
 /**
  * Pagination
@@ -8,6 +9,7 @@ import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
  *   onPageChange — callback(page)
  */
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
+    const { t } = useTranslation("common");
     if (totalPages <= 1) return null;
 
     const getRange = () => {
@@ -73,7 +75,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 style={currentPage === 1 ? btnDisabled : btnBase}
                 disabled={currentPage === 1}
                 onClick={() => onPageChange(currentPage - 1)}
-                title="Página anterior"
+                title={t("previous")}
             >
                 <ChevronLeft size={16} />
             </button>
@@ -117,7 +119,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 style={currentPage === totalPages ? btnDisabled : btnBase}
                 disabled={currentPage === totalPages}
                 onClick={() => onPageChange(currentPage + 1)}
-                title="Página siguiente"
+                title={t("next")}
             >
                 <ChevronRight size={16} />
             </button>

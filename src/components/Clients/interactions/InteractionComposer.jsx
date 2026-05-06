@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Alert, Button, Card, Col, Form, Row } from "react-bootstrap";
 import { PlusLg, XLg } from "react-bootstrap-icons";
+import { useTranslation } from "react-i18next";
 import {
   EMPTY_INTERACTION_FORM,
-  INTERACTION_FORM_OPTIONS,
+  INTERACTION_TYPES,
 } from "../../../constants/clientInteractionConstants";
 import { toDateTimeLocalInput } from "../../../utils/dateFormat";
 
@@ -20,6 +21,7 @@ export default function InteractionComposer({
   onSubmit,
   creating,
 }) {
+  const { t } = useTranslation('clients');
   const [form, setForm] = useState(buildInitialForm);
   const [localError, setLocalError] = useState(null);
 
@@ -45,7 +47,7 @@ export default function InteractionComposer({
     event.preventDefault();
 
     if (!form.type) {
-      setLocalError("Seleccioná un tipo de interacción.");
+      setLocalError(t('interactions.validation'));
       return;
     }
 
@@ -69,11 +71,8 @@ export default function InteractionComposer({
       <Card.Body className="p-4">
         <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
           <div>
-            <h4 className="fw-bold mb-1">Registrar interacción</h4>
-            <p className="text-muted mb-0 small">
-              Cargá notas comerciales manuales. Los eventos automáticos del sistema se
-              mostrarán en la misma línea de tiempo.
-            </p>
+            <h4 className="fw-bold mb-1">{t('interactions.title')}</h4>
+            <p className="text-muted mb-0 small">{t('interactions.description')}</p>
           </div>
           <Button
             variant={open ? "outline-secondary" : "primary"}
@@ -83,12 +82,12 @@ export default function InteractionComposer({
             {open ? (
               <>
                 <XLg className="me-2" />
-                Cerrar
+                {t('interactions.close')}
               </>
             ) : (
               <>
                 <PlusLg className="me-2" />
-                Nueva interacción
+                {t('interactions.new')}
               </>
             )}
           </Button>
@@ -97,15 +96,15 @@ export default function InteractionComposer({
         {open && (
           <Form onSubmit={handleSubmit}>
             {localError && (
-              <Alert variant="danger" className="py-2">
-                {localError}
-              </Alert>
-            )}
+                <Alert variant="danger" className="py-2">
+                  {localError}
+                </Alert>
+              )}
 
             <Row className="g-3">
               <Col lg={3} md={6}>
                 <Form.Label className="small fw-semibold text-secondary">
-                  Tipo
+                  {t('interactions.type')}
                 </Form.Label>
                 <Form.Select
                   name="type"
@@ -113,9 +112,9 @@ export default function InteractionComposer({
                   onChange={handleChange}
                   disabled={creating}
                 >
-                  {INTERACTION_FORM_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
+                  {INTERACTION_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {t(`interactions.types.${type.toLowerCase()}`)}
                     </option>
                   ))}
                 </Form.Select>
@@ -123,21 +122,21 @@ export default function InteractionComposer({
 
               <Col lg={5} md={6}>
                 <Form.Label className="small fw-semibold text-secondary">
-                  Asunto
+                  {t('interactions.subject')}
                 </Form.Label>
                 <Form.Control
                   type="text"
                   name="subject"
                   value={form.subject}
                   onChange={handleChange}
-                  placeholder="Ej. Llamada de seguimiento por presupuesto"
+                  placeholder={t('interactions.placeholders.subject')}
                   disabled={creating}
                 />
               </Col>
 
               <Col lg={4} md={6}>
                 <Form.Label className="small fw-semibold text-secondary">
-                  Fecha y hora
+                  {t('interactions.dateTime')}
                 </Form.Label>
                 <Form.Control
                   type="datetime-local"
@@ -150,7 +149,7 @@ export default function InteractionComposer({
 
               <Col xs={12}>
                 <Form.Label className="small fw-semibold text-secondary">
-                  Nota
+                  {t('interactions.note')}
                 </Form.Label>
                 <Form.Control
                   as="textarea"
@@ -158,21 +157,21 @@ export default function InteractionComposer({
                   name="note"
                   value={form.note}
                   onChange={handleChange}
-                  placeholder="Registrá contexto, acuerdos, próximos pasos o datos relevantes."
+                  placeholder={t('interactions.placeholders.note')}
                   disabled={creating}
                 />
               </Col>
 
               <Col xs={12}>
                 <Form.Label className="small fw-semibold text-secondary">
-                  Resultado
+                  {t('interactions.outcome')}
                 </Form.Label>
                 <Form.Control
                   type="text"
                   name="outcome"
                   value={form.outcome}
                   onChange={handleChange}
-                  placeholder="Ej. FOLLOW_UP_SCHEDULED o INFO_CAPTURED"
+                  placeholder={t('interactions.placeholders.outcome')}
                   disabled={creating}
                 />
               </Col>
@@ -186,7 +185,7 @@ export default function InteractionComposer({
                 onClick={() => handleToggle(false)}
                 disabled={creating}
               >
-                Cancelar
+                {t('close', { ns: 'common' })}
               </Button>
               <Button
                 type="submit"
@@ -194,7 +193,7 @@ export default function InteractionComposer({
                 className="rounded-pill px-4"
                 disabled={creating}
               >
-                {creating ? "Guardando..." : "Guardar interacción"}
+                {creating ? t('saving') : t('save')}
               </Button>
             </div>
           </Form>

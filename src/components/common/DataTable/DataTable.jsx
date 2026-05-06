@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SearchBar from '../SearchBar/SearchBar';
 import styles from './DataTable.module.scss';
 
@@ -12,6 +13,7 @@ export default function DataTable({
   emptyMessage = 'No se encontraron resultados',
   rowKey,
 }) {
+  const { t } = useTranslation('common');
   const [searchValue, setSearchValue] = useState('');
 
   const handleSearch = (val) => {
@@ -31,7 +33,7 @@ export default function DataTable({
     <div className={styles.dataTable}>
       <div className={styles.dataTable__toolbar}>
         {onSearch && (
-          <SearchBar value={searchValue} onChange={handleSearch} placeholder="Buscar..." />
+          <SearchBar value={searchValue} onChange={handleSearch} placeholder={t('search')} />
         )}
         {filters && (
           <div className={styles.dataTable__filters}>

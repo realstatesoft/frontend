@@ -1,0 +1,72 @@
+{
+  "title": "My Dashboard",
+  "subtitle": "Overview of your properties and transactions",
+  "loading": "Loading dashboard...",
+  "actionRequired": "Action required",
+  "urgentContracts": "You have {{count}} contract(s) pending your digital signature.",
+  "newVisits": "New visits",
+  "pendingVisits": "You have {{count}} visit request(s) waiting for a response.",
+  "signNow": "Sign now",
+  "manageVisits": "Manage visits",
+  "contractHint": "Data based on closed contracts",
+  "successTitle": "Success!",
+  "successText": "You signed the contract digitally.",
+  "properties": {
+    "title": "My Properties",
+    "subtitle": "Manage your published properties",
+    "new": "New Property",
+    "view": "View Client",
+    "empty": "No properties found"
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Communication with your agent",
+    "loading": "Loading messages...",
+    "inbox": "Conversations",
+    "emptyInbox": "No conversations",
+    "emptyConversation": "Select a conversation to start chatting",
+    "newConversation": "New conversation",
+    "placeholder": "Type a message..."
+  },
+  "visits": {
+    "title": "Visit Requests",
+    "subtitle": "Review and approve visit requests for your properties",
+    "loading": "Loading requests...",
+    "empty": "There are no visit requests right now.",
+    "emptyFiltered": "There are no visit requests with status \"{{status}}\".",
+    "stats": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "total": "Total"
+    },
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "counterProposed": "Counter-proposed",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "suggest": "Suggest another time",
+      "reject": "Reject"
+    }
+  },
+  "dashboard": {
+    "recentProperties": "Recent properties",
+    "pendingSignatures": "Pending signatures",
+    "pendingVisitsTitle": "Pending visits",
+    "pendingVisits": "Pending visits",
+    "viewAll": "View all",
+    "viewProperty": "View listing",
+    "sign": "Sign",
+    "manage": "Manage",
+    "emptyRecentProperties": "You do not have any published properties yet.",
+    "emptyContracts": "You have no contracts pending signature.",
+    "emptyVisits": "You have no pending visit requests.",
+    "contractPrefix": "Contract #",
+    "loading": "Loading dashboard..."
+  }
+}

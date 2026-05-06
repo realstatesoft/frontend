@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   FiHome, FiEye, FiMessageCircle, FiTrendingUp, 
   FiDollarSign, FiAlertTriangle, FiArrowRight, FiFileText, FiFeather 
@@ -13,11 +14,14 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import { useNavigate } from 'react-router-dom';
 import ContractSignModal from '../Contracts/ContractSignModal';
 import Swal from 'sweetalert2';
+import usePropertyPriceDisplay from '../../hooks/usePropertyPriceDisplay';
 
 export default function OwnerDashboardPage() {
+  const { t } = useTranslation('owner');
   const { data: response, isLoading, refetch } = useOwnerOverview();
   const navigate = useNavigate();
   const [signContract, setSignContract] = useState(null);
+  const { formatPrice } = usePropertyPriceDisplay(0);
 
   const { stats = {}, recentProperties = [], urgentContracts = [], pendingVisits = [] } = response || {};
 
@@ -27,15 +31,15 @@ export default function OwnerDashboardPage() {
   useAutoStartTour('owner', OWNER_TOUR_STEPS, 400);
 
   if (isLoading) {
-    return <div className={styles.empty}>Cargando dashboard...</div>;
+    return <div className={styles.empty}>{t('loading')}</div>;
   }
 
   return (
     <div className={styles.dashboard}>
       <div className={styles.dashboard__header}>
         <div>
-          <h1 className={styles.dashboard__title}>Mi Panel</h1>
-          <p className={styles.dashboard__subtitle}>Resumen de tus propiedades y transacciones</p>
+          <h1 className={styles.dashboard__title}>{t('title')}</h1>
+          <p className={styles.dashboard__subtitle}>{t('subtitle')}</p>
         </div>
       </div>
 
@@ -45,16 +49,16 @@ export default function OwnerDashboardPage() {
             <FiAlertTriangle />
           </div>
           <div className={styles.dashboard__alert_content}>
-            <h3 className={styles.dashboard__alert_title}>Acción requerida</h3>
+            <h3 className={styles.dashboard__alert_title}>{t('actionRequired')}</h3>
             <p className={styles.dashboard__alert_text}>
-              Tienes {urgentContracts.length} contrato(s) pendiente(s) de tu firma digital.
+              {t('urgentContracts', { count: urgentContracts.length })}
             </p>
           </div>
           <button 
             className={styles.dashboard__alert_action}
             onClick={() => setSignContract(urgentContracts[0])}
           >
-            Firmar ahora
+            {t('signNow')}
           </button>
         </div>
       )}
@@ -65,45 +69,45 @@ export default function OwnerDashboardPage() {
             <FiEye />
           </div>
           <div className={styles.dashboard__alert_content}>
-            <h3 className={styles.dashboard__alert_title}>Nuevas visitas</h3>
+            <h3 className={styles.dashboard__alert_title}>{t('newVisits')}</h3>
             <p className={styles.dashboard__alert_text}>
-              Tienes {pendingVisits.length} solicitud(es) de visita esperando respuesta.
+              {t('pendingVisits', { count: pendingVisits.length })}
             </p>
           </div>
           <button 
             className={styles.dashboard__alert_action}
             onClick={() => navigate('/owner/visitas')}
           >
-            Gestionar visitas
+            {t('manageVisits')}
           </button>
         </div>
       )}
 
       <div className={styles.dashboard__stats} data-tour="dashboard-stats">
         <StatCard
-          label="Mis Propiedades"
+          label={t('dashboard.recentProperties')}
           value={stats.myProperties?.value ?? 0}
           icon={<FiHome />}
           colorAccent="accent"
         />
         <StatCard
-          label="Visitas Totales"
+          label={t('visits.stats.total')}
           value={stats.totalVisits?.value ?? 0}
           icon={<FiEye />}
           colorAccent="success"
         />
         <StatCard
-          label="Consultas"
+          label={t('messages.title')}
           value={stats.inquiries?.value ?? 0}
           icon={<FiMessageCircle />}
           colorAccent="warning"
         />
         <StatCard
-          label="Ingresos Realizados"
+          label={t('dashboard.earnings', { defaultValue: 'Ingresos Realizados' })}
           value={formatCurrency(stats.totalEarnings?.value ?? 0)}
           icon={<FiDollarSign />}
           colorAccent="info"
-          hint="Datos basados en contratos cerrados"
+          hint={t('contractHint')}
         />
       </div>
 
@@ -116,14 +120,14 @@ export default function OwnerDashboardPage() {
         {/* Columna Izquierda: Mis Propiedades Recientes */}
         <div className={styles.section}>
           <div className={styles.section__header}>
-            <h2 className={styles.section__title}>Propiedades recientes</h2>
+            <h2 className={styles.section__title}>{t('dashboard.recentProperties')}</h2>
             <button type="button" className={styles.section__link} onClick={() => navigate('/owner/propiedades')}>
-              Ver todas <FiArrowRight />
+              {t('dashboard.viewAll')} <FiArrowRight />
             </button>
           </div>
 
           {recentProperties.length === 0 ? (
-            <div className={styles.empty}>Aún no tienes propiedades publicadas.</div>
+            <div className={styles.empty}>{t('dashboard.emptyRecentProperties')}</div>
           ) : (
             <div className={styles.list}>
               {recentProperties.map(prop => (
@@ -136,14 +140,14 @@ export default function OwnerDashboardPage() {
                   <div className={styles.list_item_info}>
                     <span className={styles.list_item_title}>{prop.title}</span>
                     <div className={styles.list_item_meta}>
-                      {prop.propertyType} • {formatCurrency(prop.price)}
+                      {prop.propertyType} • {formatPrice(prop.price).label || '—'}
                     </div>
                   </div>
                   <button 
                     className={styles.list_item_action}
                     onClick={() => navigate(`/properties/${prop.id}`)}
                   >
-                    Ver ficha
+                    {t('dashboard.viewProperty')}
                   </button>
                 </div>
               ))}
@@ -154,18 +158,18 @@ export default function OwnerDashboardPage() {
         {/* Columna Central: Contratos Pendientes */}
         <div className={styles.section}>
           <div className={styles.section__header}>
-            <h2 className={styles.section__title}>Firmas pendientes</h2>
+            <h2 className={styles.section__title}>{t('dashboard.pendingSignatures')}</h2>
             <FiFileText color="var(--color-text-muted)" />
           </div>
 
           {urgentContracts.length === 0 ? (
-            <div className={styles.empty}>No tienes contratos pendientes de firma.</div>
+            <div className={styles.empty}>{t('dashboard.emptyContracts')}</div>
           ) : (
             <div className={styles.list}>
               {urgentContracts.map(contract => (
                 <div key={contract.id} className={styles.list_item}>
                   <div className={styles.list_item_info}>
-                    <span className={styles.list_item_title}>Contrato #{contract.id}</span>
+                    <span className={styles.list_item_title}>{t('dashboard.contractPrefix')}{contract.id}</span>
                     <div className={styles.list_item_meta}>
                       {contract.propertyTitle || 'Sin título'} • {formatDate(contract.createdAt)}
                     </div>
@@ -175,13 +179,13 @@ export default function OwnerDashboardPage() {
                       className={styles.list_item_action}
                       onClick={() => navigate(`/contratos/${contract.id}`)}
                     >
-                      Ver
+                      {t('view', { ns: 'common' })}
                     </button>
                     <button 
                       className={`${styles.list_item_action} ${styles['list_item_action--primary']}`}
                       onClick={() => setSignContract(contract)}
                     >
-                      <FiFeather /> Firmar
+                      <FiFeather /> {t('dashboard.sign')}
                     </button>
                   </div>
                 </div>
@@ -193,14 +197,14 @@ export default function OwnerDashboardPage() {
         {/* Columna Derecha: Nuevas Visitas */}
         <div className={styles.section}>
           <div className={styles.section__header}>
-            <h2 className={styles.section__title}>Visitas pendientes</h2>
+            <h2 className={styles.section__title}>{t('dashboard.pendingVisitsTitle')}</h2>
             <button type="button" className={styles.section__link} onClick={() => navigate('/owner/visitas')}>
-              Ver todas <FiArrowRight />
+              {t('dashboard.viewAll')} <FiArrowRight />
             </button>
           </div>
 
           {pendingVisits.length === 0 ? (
-            <div className={styles.empty}>No tienes solicitudes de visita pendientes.</div>
+            <div className={styles.empty}>{t('dashboard.emptyVisits')}</div>
           ) : (
             <div className={styles.list}>
               {pendingVisits.map(visit => (
@@ -215,7 +219,7 @@ export default function OwnerDashboardPage() {
                     className={`${styles.list_item_action} ${styles['list_item_action--primary']}`}
                     onClick={() => navigate('/owner/visitas')}
                   >
-                    Gestionar
+                    {t('dashboard.manage')}
                   </button>
                 </div>
               ))}
@@ -233,8 +237,8 @@ export default function OwnerDashboardPage() {
             setSignContract(null);
             refetch();
             Swal.fire({
-              title: '¡Éxito!',
-              text: 'Has firmado el contrato digitalmente.',
+              title: t('successTitle'),
+              text: t('successText'),
               icon: 'success',
               confirmButtonColor: 'var(--color-accent)'
             });

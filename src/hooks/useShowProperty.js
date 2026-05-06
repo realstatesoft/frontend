@@ -3,7 +3,6 @@ import { useAuth } from "./useAuth";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import propertyApi from "../services/properties/propertyApi";
-import { formatPrice } from "../utils/priceFormat";
 import { formatTimeAgo } from "../utils/dateFormat";
 import { buildFeaturesFromProperty } from "../utils/propertyHelpers";
 import {
@@ -13,6 +12,7 @@ import {
 } from "../constants/propertyEnums";
 import { PLACEHOLDER_IMAGES } from "../constants/showPropertyConstants";
 import propertyFlagsApi from "../services/propertyFlagsApi";
+import usePropertyPriceDisplay from "./usePropertyPriceDisplay";
 
 const getErrorMessage = (err) =>
   err.response?.data?.message ??
@@ -36,9 +36,12 @@ export function useShowProperty() {
 
   const similarRequestRef = useRef(0);
   const viewCountRequestRef = useRef(0);
+  const latestRecentRequestIdRef = useRef(0);
   const registeredViewRef = useRef(registeredViewIds);
 
   const [property, setProperty] = useState(null);
+  const propertyRef = useRef(property);
+  propertyRef.current = property;
   const [similarProperties, setSimilarProperties] = useState([]);
   const [recentProperties, setRecentProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -129,10 +132,14 @@ export function useShowProperty() {
   }, [id]);
 
   const fetchRecentProperties = useCallback(() => {
+    const requestId = ++latestRecentRequestIdRef.current;
+
     if (!isAuthenticated) {
-      setRecentProperties([]);
-      setRecentError(null);
-      setLoadingRecent(false);
+      if (requestId === latestRecentRequestIdRef.current) {
+        setRecentProperties([]);
+        setRecentError(null);
+        setLoadingRecent(false);
+      }
       return;
     }
 
@@ -141,6 +148,7 @@ export function useShowProperty() {
     propertyApi
       .getRecentProperties()
       .then(({ data }) => {
+        if (requestId !== latestRecentRequestIdRef.current || !isAuthenticated) return;
         if (data?.success && Array.isArray(data?.data)) {
           setRecentProperties(data.data);
         } else {
@@ -149,10 +157,15 @@ export function useShowProperty() {
         }
       })
       .catch(() => {
+        if (requestId !== latestRecentRequestIdRef.current || !isAuthenticated) return;
         setRecentProperties([]);
         setRecentError("No se pudieron cargar las propiedades recientes");
       })
-      .finally(() => setLoadingRecent(false));
+      .finally(() => {
+        if (requestId === latestRecentRequestIdRef.current) {
+          setLoadingRecent(false);
+        }
+      });
   }, [isAuthenticated]);
 
   const fetchActiveFlagCount = useCallback(() => {
@@ -207,7 +220,7 @@ export function useShowProperty() {
   }, [id]);
 
   const registerPropertyView = useCallback(() => {
-    if (!id) return Promise.resolve(null);
+    if (!id || !isAuthenticated) return Promise.resolve(null);
     const propertyId = String(id);
     if (registeredViewRef.current.has(propertyId)) {
       return Promise.resolve(null);
@@ -217,7 +230,7 @@ export function useShowProperty() {
       registeredViewRef.current.delete(propertyId);
       return null;
     });
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   useEffect(() => {
     fetchProperty();
@@ -240,15 +253,29 @@ export function useShowProperty() {
   }, [fetchProperty, fetchSimilar, fetchActiveFlagCount, fetchViewCount, registerPropertyView]);
 
   useEffect(() => {
-    if (!isAuthenticated || !id) return;
-    propertyApi.registerRecentView(id).catch(() => {
-      // No bloquear la pantalla por fallos de registro.
-    });
-  }, [id, isAuthenticated]);
+    latestRecentRequestIdRef.current += 1;
+    let isCurrent = true;
 
-  useEffect(() => {
-    fetchRecentProperties();
-  }, [fetchRecentProperties, property?.id]);
+    const syncRecentProperties = async () => {
+      if (!id || !isAuthenticated) {
+        fetchRecentProperties();
+        return;
+      }
+
+      await propertyApi.registerRecentView(id).catch(() => {
+        // No bloquear la pantalla por fallos de registro.
+      });
+      if (!isCurrent) return;
+      fetchRecentProperties();
+    };
+
+    syncRecentProperties();
+
+    return () => {
+      isCurrent = false;
+      latestRecentRequestIdRef.current += 1;
+    };
+  }, [id, isAuthenticated, fetchRecentProperties]);
 
   const hideConfirm = useCallback(() => {
     setShowConfirm(false);
@@ -340,6 +367,34 @@ export function useShowProperty() {
     }
   }, [id, hideConfirm, navigate]);
 
+  const handleToggleHighlight = useCallback(async () => {
+    const currentProp = propertyRef.current;
+    if (!id || !currentProp) return;
+    setActionLoading(true);
+    const newHighlightState = !currentProp.highlighted;
+    try {
+      const { data } = await propertyApi.toggleHighlight(id, newHighlightState);
+      if (!data?.success || !data?.data) throw new Error(data?.message || 'Backend reported failure');
+      
+      setProperty(data.data);
+      await Swal.fire({
+        icon: "success",
+        title: "Éxito",
+        text: newHighlightState ? "Propiedad destacada correctamente" : "Se ha quitado el destacado de la propiedad",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id]);
+
   const openChangeStatusConfirm = useCallback((option) => {
     setConfirmData({
       title: `Cambiar estado a "${option.label}"`,
@@ -363,6 +418,35 @@ export function useShowProperty() {
     });
     setShowConfirm(true);
   }, [handleConfirmChangeVisibility]);
+
+  const handleRemoveHighlight = useCallback(async () => {
+    if (!id || actionLoading) return;
+    setActionLoading(true);
+    try {
+      const { data } = await propertyApi.removeHighlight(id);
+      if (!data?.success) throw new Error(data?.message || 'Backend reported failure');
+      if (data.property) {
+        setProperty(data.property);
+      } else {
+        setProperty((prev) => prev ? { ...prev, highlighted: false, highlightedUntil: null } : prev);
+      }
+      await Swal.fire({
+        icon: "success",
+        title: "Destacado removido",
+        text: "La propiedad ya no está destacada.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: getErrorMessage(err),
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  }, [id, actionLoading]);
 
   const openDeleteConfirm = useCallback(() => {
     setConfirmData({
@@ -406,7 +490,8 @@ export function useShowProperty() {
   }, [property?.media]);
 
   const features = buildFeaturesFromProperty(property);
-  const priceFormatted = property?.price != null ? `₲ ${formatPrice(String(property.price))}` : "";
+  const priceDisplay = usePropertyPriceDisplay(property?.price);
+  const priceFormatted = priceDisplay.label || "";
   const propertyTypeLabel = property?.propertyType ? PROPERTY_TYPE_LABELS[property.propertyType] ?? property.propertyType : "";
   const mapUrl =
     property?.lat != null && property?.lng != null
@@ -428,6 +513,9 @@ export function useShowProperty() {
     images,
     features,
     priceFormatted,
+    priceDisplay,
+    priceReferenceText: priceDisplay.referenceText,
+    showPriceReferenceNote: priceDisplay.showReferenceNote,
     propertyTypeLabel,
     mapUrl,
     formatTimeAgo,
@@ -446,6 +534,7 @@ export function useShowProperty() {
     copyLink,
     activeFlagCount,
     viewCount,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleRemoveHighlight
   };
 }

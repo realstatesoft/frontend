@@ -1,6 +1,7 @@
 import {
   FiChevronLeft, FiChevronRight,
 } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import Logotipo from '../../../assets/Logotipo.png';
 import SidebarItem from './SidebarItem';
 import useUIStore from '../../../store/useUIStore';
@@ -9,6 +10,7 @@ import styles from './Sidebar.module.scss';
 
 export default function Sidebar({ navItems = [] }) {
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { t } = useTranslation('navigation');
   const { data: convResponse } = useConversations();
   const conversations = Array.isArray(convResponse?.data) ? convResponse.data : Array.isArray(convResponse?.data?.content) ? convResponse.data.content : [];
   const unreadCount = conversations.reduce((sum, c) => sum + (Number(c?.unread) || 0), 0);
@@ -24,7 +26,7 @@ export default function Sidebar({ navItems = [] }) {
         <div className={styles.sidebar__logo}>
           <img
             src={Logotipo}
-            alt="OpenRoof"
+            alt={t('sidebar.logoAlt')}
             className={styles['sidebar__logo-img']}
           />
         </div>
@@ -42,16 +44,25 @@ export default function Sidebar({ navItems = [] }) {
                 icon={item.icon}
                 label={item.label}
                 collapsed={sidebarCollapsed}
-                badge={item.showBadge && unreadCount > 0 ? (
-                  <span className={styles.sidebar__badge}>{unreadCount}</span>
-                ) : null}
+                badge={
+                  item.showBadge && unreadCount > 0 ? (
+                    <span className={styles.sidebar__badge}>{unreadCount}</span>
+                  ) : item.badgeLabel ? (
+                    <span className={styles.sidebar__pill}>{item.badgeLabel}</span>
+                  ) : null
+                }
               />
             )
           )}
         </nav>
 
         <div className={styles.sidebar__footer}>
-          <button className={styles.sidebar__collapseBtn} onClick={toggleSidebar}>
+          <button
+            className={styles.sidebar__collapseBtn}
+            onClick={toggleSidebar}
+            aria-label={sidebarCollapsed ? t('sidebar.toggleOpen') : t('sidebar.toggleClose')}
+            title={sidebarCollapsed ? t('sidebar.toggleOpen') : t('sidebar.toggleClose')}
+          >
             {sidebarCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
           </button>
         </div>

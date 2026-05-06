@@ -1,0 +1,74 @@
+{
+  "reportsWarning": "Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.",
+  "views": {
+    "one": "1 ha visto esta propiedad",
+    "other": "{{count}} han visto esta propiedad"
+  },
+  "reservationPanel": {
+    "title": "Reserva online",
+    "reserve": "Reservar propiedad",
+    "active": "Esta propiedad tiene una reserva activa.",
+    "amount": "Monto: {{amount}}",
+    "confirm": "Confirmar",
+    "reject": "Rechazar",
+    "loadError": "No se pudieron cargar las reservas.",
+    "confirmError": "No se pudo confirmar la reserva.",
+    "rejectError": "No se pudo rechazar la reserva."
+  },
+  "reportProperty": {
+    "title": "Reportar propiedad",
+    "submit": "Enviar reporte",
+    "intro": "Si considerás que esta propiedad es fraudulenta, ilegal o sospechosa, completá el formulario. Tu reporte será revisado por nuestro equipo.",
+    "placeholder": "Contanos qué pasó...",
+    "successTitle": "¡Reporte enviado!",
+    "successText": "Gracias por ayudarnos a mantener la comunidad segura.",
+    "error": "Ocurrió un error al enviar el reporte. Por favor, intentá nuevamente."
+  },
+  "actions": {
+    "back": "Volver",
+    "select": "Seleccionar",
+    "generalInfo": "Información General",
+    "professionalInfo": "Información Profesional",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "published": "Publicado",
+    "loadingTour": "Cargando configuración del recorrido...",
+    "noTours": "No hay recorridos disponibles",
+    "noToursHint": "Esta propiedad aun no cuenta con contenido 360 o modelos 3D.",
+    "noFeatures": "No hay caracteristicas cargadas.",
+    "reportProperty": "Reportar propiedad",
+    "reportUser": "Reportar usuario"
+  },
+  "highlightModal": {
+    "hero": {
+      "title": "Destacá tu propiedad",
+      "subtitle": "Llegá a más compradores y alquilantes potenciales"
+    },
+    "benefits": {
+      "first": {
+        "title": "Primero en búsquedas",
+        "desc": "Tu propiedad aparece antes que las demás en los resultados."
+      },
+      "second": {
+        "title": "Badge dorado \"Destacada\"",
+        "desc": "Un sello visible que genera más confianza en los compradores."
+      },
+      "third": {
+        "title": "3× más visitas",
+        "desc": "Las propiedades destacadas reciben en promedio 3 veces más consultas."
+      }
+    },
+    "plans": {
+      "monthly": { "label": "Mensual" },
+      "semester": { "label": "Semestral" },
+      "annual": { "label": "Anual" },
+      "popular": "⭐ Más popular",
+      "perMonth": "{{amount}} / mes · {{days}} días",
+      "savings": "Ahorrás {{percent}}%"
+    },
+    "cta": {
+      "label": "Destacar – {{planLabel}} por {{price}}"
+    },
+    "dismiss": "Ahora no"
+  }
+}

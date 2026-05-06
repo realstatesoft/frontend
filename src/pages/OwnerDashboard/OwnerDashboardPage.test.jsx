@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../i18n';
 import OwnerDashboardPage from './OwnerDashboardPage';
 import useOwnerOverview from '../../hooks/useOwnerOverview';
 
@@ -8,12 +10,18 @@ import useOwnerOverview from '../../hooks/useOwnerOverview';
 vi.mock('../../hooks/useOwnerOverview');
 
 describe('OwnerDashboardPage', () => {
+  beforeEach(async () => {
+    await initializeI18n();
+  });
+
   it('debe mostrar el estado de carga', () => {
     useOwnerOverview.mockReturnValue({ isLoading: true });
     render(
-      <MemoryRouter>
-        <OwnerDashboardPage />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <OwnerDashboardPage />
+        </MemoryRouter>
+      </I18nextProvider>
     );
     expect(screen.getByText(/Cargando dashboard.../i)).toBeInTheDocument();
   });
@@ -43,9 +51,11 @@ describe('OwnerDashboardPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <OwnerDashboardPage />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <OwnerDashboardPage />
+        </MemoryRouter>
+      </I18nextProvider>
     );
 
     // Header y Stats
@@ -76,9 +86,11 @@ describe('OwnerDashboardPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <OwnerDashboardPage />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <OwnerDashboardPage />
+        </MemoryRouter>
+      </I18nextProvider>
     );
 
     expect(screen.getByText(/Tienes 1 solicitud\(es\) de visita esperando respuesta/i)).toBeInTheDocument();
@@ -100,9 +112,11 @@ describe('OwnerDashboardPage', () => {
     });
 
     render(
-      <MemoryRouter>
-        <OwnerDashboardPage />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <OwnerDashboardPage />
+        </MemoryRouter>
+      </I18nextProvider>
     );
 
     // Alerta de contrato (Acción requerida)

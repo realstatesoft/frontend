@@ -1,9 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Container, Card, Spinner, Alert, Badge, Table, Form, Pagination } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container, Card, Spinner, Alert, Badge, Table, Form, Pagination, Button } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import reservationApi from '../../services/reservations/reservationApi';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { statusVariant, statusLabel } from '../../utils/reservationStatus';
+import { ArrowLeft } from 'react-bootstrap-icons';
+import CustomNavbar from '../../components/Landing/Navbar';
+import Footer from '../../components/Landing/Footer';
 import styles from './OwnerReservationsPage.module.scss';
 
 const STATUS_OPTIONS = [
@@ -18,6 +21,7 @@ const STATUS_OPTIONS = [
 const PAGE_SIZE = 10;
 
 export default function OwnerReservationsPage() {
+  const navigate = useNavigate();
   const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
@@ -48,9 +52,15 @@ export default function OwnerReservationsPage() {
   };
 
   return (
-    <Container className={styles.container}>
-      <h2>Reservas recibidas</h2>
-      <p className="text-muted">Reservas enviadas por usuarios sobre tus propiedades publicadas.</p>
+    <>
+      <CustomNavbar />
+      <Container className={`${styles.container} py-5`}>
+        <Button variant="link" className="text-decoration-none text-muted p-0 mb-3 d-flex align-items-center" onClick={() => navigate(-1)}>
+          <ArrowLeft className="me-2" /> Volver atrás
+        </Button>
+      
+        <h2>Reservas recibidas</h2>
+        <p className="text-muted">Reservas enviadas por usuarios sobre tus propiedades publicadas.</p>
 
       <div className="mb-3" style={{ maxWidth: 260 }}>
         <Form.Select
@@ -111,5 +121,7 @@ export default function OwnerReservationsPage() {
         </>
       )}
     </Container>
+    <Footer />
+    </>
   );
 }

@@ -3,9 +3,9 @@ import DataTable from '../../components/common/DataTable/DataTable';
 import Badge from '../../components/common/Badge/Badge';
 import Button from '../../components/common/Button/Button';
 import useAgentProperties from '../../hooks/useAgentProperties';
-import { formatCurrency } from '../../utils/formatters';
 import { Link } from 'react-router-dom';
 import { FiHome } from 'react-icons/fi';
+import usePropertyPriceDisplay from '../../hooks/usePropertyPriceDisplay';
 import styles from './AgentPropertiesPage.module.scss';
 
 const PROPERTY_TYPE_LABELS = {
@@ -37,23 +37,6 @@ const PROPERTY_STATUS_COLORS = {
   ARCHIVED: 'neutral',
 };
 
-const COLUMNS = [
-  { key: 'id', label: 'ID' },
-  { key: 'title', label: 'Propiedad' },
-  { key: 'propertyType', label: 'Tipo', render: (v) => PROPERTY_TYPE_LABELS[v] || v },
-  { key: 'price', label: 'Precio', render: (v) => formatCurrency(v) },
-  { key: 'locationName', label: 'Ubicación' },
-  {
-    key: 'status',
-    label: 'Estado',
-    render: (value) => (
-      <Badge variant={PROPERTY_STATUS_COLORS[value] || 'neutral'}>
-        {PROPERTY_STATUS_LABELS[value] || value}
-      </Badge>
-    ),
-  },
-];
-
 const TYPE_OPTIONS = [
   { value: 'HOUSE', label: 'Casa' },
   { value: 'APARTMENT', label: 'Departamento' },
@@ -74,10 +57,28 @@ const STATUS_OPTIONS = [
 
 export default function AgentPropertiesPage() {
   const { data: response, isLoading } = useAgentProperties();
+  const { formatPrice } = usePropertyPriceDisplay(0);
   const properties = response?.data || [];
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+
+  const columns = useMemo(() => [
+    { key: 'id', label: 'ID' },
+    { key: 'title', label: 'Propiedad' },
+    { key: 'propertyType', label: 'Tipo', render: (v) => PROPERTY_TYPE_LABELS[v] || v },
+    { key: 'price', label: 'Precio', render: (v) => formatPrice(v).label || '—' },
+    { key: 'locationName', label: 'Ubicación' },
+    {
+      key: 'status',
+      label: 'Estado',
+      render: (value) => (
+        <Badge variant={PROPERTY_STATUS_COLORS[value] || 'neutral'}>
+          {PROPERTY_STATUS_LABELS[value] || value}
+        </Badge>
+      ),
+    },
+  ], [formatPrice]);
 
   const filteredData = useMemo(() => {
     let result = properties;
@@ -120,7 +121,7 @@ export default function AgentPropertiesPage() {
 
       <div className={styles.page__card}>
         <DataTable
-          columns={COLUMNS}
+          columns={columns}
           data={filteredData}
           loading={isLoading}
           onSearch={setSearch}

@@ -1,0 +1,13 @@
+{
+  "title": "My preferences",
+  "subtitle": "Choose the features that matter most so we can show you the most relevant properties.",
+  "back": "Back",
+  "loading": "Loading...",
+  "loadingDetails": "Loading your preferences...",
+  "save": "Save preferences",
+  "toastSuccess": "Preferences saved! We'll now show you more relevant properties.",
+  "toastError": "Error saving. Please try again.",
+  "validationRequired": "Select at least one preference option",
+  "retry": "Retry",
+  "singleSelect": "Single selection"
+}

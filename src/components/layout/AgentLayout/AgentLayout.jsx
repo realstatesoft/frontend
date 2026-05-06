@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
   FiGrid, FiUsers, FiHome, FiCalendar,
-  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser
+  FiDollarSign, FiBarChart2, FiMessageSquare, FiClipboard, FiFileText, FiUser, FiTarget, FiGitBranch, FiSettings
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -9,30 +9,15 @@ import useUIStore from '../../../store/useUIStore';
 import { AGENT_ROUTES } from '../../../utils/constants';
 import styles from './AgentLayout.module.scss';
 import { useAuth } from '../../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import RoleRedirect from '../../commons/RoleRedirect';
 import TourOverlay from '../../common/Tour/TourOverlay';
 import TourLauncher from '../../common/Tour/TourLauncher';
 import { AGENT_TOUR_STEPS } from '../../../data/tourSteps';
 
-const AGENT_NAV_ITEMS = [
-  { section: 'Principal' },
-  { to: '/agent/perfil', icon: <FiUser />, label: 'Mi Perfil' },
-  { to: AGENT_ROUTES.DASHBOARD, icon: <FiGrid />, label: 'Dashboard' },
-  { to: AGENT_ROUTES.CLIENTS, icon: <FiUsers />, label: 'Clientes' },
-  { to: AGENT_ROUTES.PROPERTIES, icon: <FiHome />, label: 'Propiedades' },
-  { to: AGENT_ROUTES.VISIT_REQUESTS, icon: <FiClipboard />, label: 'Solicitudes de Visita' },
-  { to: AGENT_ROUTES.OFFERS, icon: <FiDollarSign />, label: 'Ofertas Recibidas' },
-  { section: 'Gestión' },
-  { to: AGENT_ROUTES.AGENDA, icon: <FiCalendar />, label: 'Agenda' },
-  { to: AGENT_ROUTES.SALES, icon: <FiDollarSign />, label: 'Ventas' },
-  { to: AGENT_ROUTES.CONTRACTS, icon: <FiFileText />, label: 'Contratos' },
-  { to: AGENT_ROUTES.REPORTS, icon: <FiBarChart2 />, label: 'Reportes' },
-  { section: 'Comunicación' },
-  { to: AGENT_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: 'Mensajes', showBadge: true },
-];
-
 export default function AgentLayout() {
   const { user } = useAuth();
+  const { t } = useTranslation('navigation');
   const { sidebarCollapsed } = useUIStore();
   const location = useLocation();
 
@@ -44,6 +29,26 @@ export default function AgentLayout() {
     styles.agentLayout__content,
     sidebarCollapsed && styles['agentLayout__content--collapsed'],
   ].filter(Boolean).join(' ');
+
+  const AGENT_NAV_ITEMS = [
+    { section: t('sidebar.sectionMain') },
+    { to: '/agent/perfil', icon: <FiUser />, label: t('layouts.agent.profile') },
+    { to: AGENT_ROUTES.DASHBOARD, icon: <FiGrid />, label: t('layouts.agent.dashboard') },
+    { to: AGENT_ROUTES.CLIENTS, icon: <FiUsers />, label: t('layouts.agent.clients') },
+    { to: AGENT_ROUTES.PROPERTIES, icon: <FiHome />, label: t('layouts.agent.properties') },
+    { to: AGENT_ROUTES.VISIT_REQUESTS, icon: <FiClipboard />, label: t('layouts.agent.visitRequests') },
+    { to: AGENT_ROUTES.LEADS, icon: <FiTarget />, label: t('layouts.agent.leads') },
+    { to: AGENT_ROUTES.OFFERS, icon: <FiDollarSign />, label: t('layouts.agent.offers') },
+    { section: t('sidebar.sectionManagement') },
+    { to: AGENT_ROUTES.AGENDA, icon: <FiCalendar />, label: t('layouts.agent.agenda') },
+    { to: AGENT_ROUTES.SALES, icon: <FiDollarSign />, label: t('layouts.agent.sales') },
+    { to: AGENT_ROUTES.CONTRACTS, icon: <FiFileText />, label: t('layouts.agent.contracts') },
+    { to: AGENT_ROUTES.REPORTS, icon: <FiBarChart2 />, label: t('layouts.agent.reports') },
+    { to: AGENT_ROUTES.FUNNEL, icon: <FiGitBranch />, label: t('layouts.agent.funnel') },
+    { section: t('sidebar.sectionCommunication') },
+    { to: AGENT_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: t('layouts.agent.messages'), showBadge: true },
+    { to: AGENT_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.agent.settings') },
+  ];
 
   return (
     <div className={styles.agentLayout}>

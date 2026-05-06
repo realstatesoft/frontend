@@ -1,0 +1,273 @@
+{
+  "dashboard": {
+    "title": "Painel administrativo",
+    "subtitle": "Visão geral do sistema e métricas principais",
+    "loading": "Carregando resumo...",
+    "noPermission": "Você não tem permissão para ver este painel.",
+    "loadError": "Não foi possível carregar o painel. Tente novamente mais tarde.",
+    "indicators": "Indicadores",
+    "quickActions": "Ações rápidas",
+    "activity": "Atividade recente",
+    "attention": "Requer atenção",
+    "comingSoon": "Em breve",
+    "viewAllHistory": "Ver histórico completo",
+    "viewAllTasks": "Ver todas as tarefas",
+    "emptyAttention": "Não há imóveis que exijam atenção nesses estados."
+  },
+  "notifications": {
+    "title": "Notificações",
+    "subtitle": "Exibindo {{count}} notificação{{suffix}} no total ({{unread}} não lidas)",
+    "empty": "Não há notificações nesta visualização",
+    "loading": "Carregando notificações...",
+    "filters": {
+      "all": "Todas",
+      "unread": "Não lidas",
+      "read": "Lidas",
+      "property": "Imóveis"
+    },
+    "types": {
+      "property": "Imóveis",
+      "system": "Sistema",
+      "alert": "Alertas",
+      "message": "Mensagens",
+      "visit": "Visitas",
+      "offer": "Ofertas",
+      "contract": "Contratos",
+      "review": "Avaliações"
+    }
+  },
+  "auditLogs": {
+    "title": "Registros de auditoria",
+    "filters": "Filtros",
+    "allEntities": "Todas as entidades",
+    "allActions": "Todas as ações",
+    "user": "Usuário",
+    "property": "Imóvel",
+    "contract": "Contrato",
+    "register": "Cadastro",
+    "login": "Login",
+    "create": "Criação",
+    "update": "Atualização",
+    "delete": "Exclusão",
+    "trash": "Lixeira",
+    "restore": "Restaurar",
+    "statusChange": "Mudança de status",
+    "clearTrash": "Esvaziar lixeira",
+    "loading": "Carregando registros...",
+    "noPermission": "Você não tem permissão para ver os registros de auditoria.",
+    "loadError": "Não foi possível carregar os registros. Tente novamente mais tarde.",
+    "table": {
+      "user": "Usuário",
+      "entityType": "Tipo",
+      "entity": "Entidade",
+      "action": "Ação",
+      "date": "Data",
+      "details": "Detalhes"
+    }
+  },
+  "contractTemplates": {
+    "title": "Modelos de contrato",
+    "subtitle": "Defina textos base reutilizáveis. Apenas modelos ativos e do tipo correto podem ser usados ao criar contratos.",
+    "new": "Novo modelo",
+    "filterType": "Filtrar por tipo",
+    "filterStatus": "Filtrar por status",
+    "allTypes": "Todos os tipos",
+    "allStatus": "Ativos e inativos",
+    "onlyActive": "Somente ativos",
+    "onlyInactive": "Somente inativos",
+    "loading": "Carregando...",
+    "empty": "Nenhum modelo corresponde a estes filtros.",
+    "table": {
+      "name": "Nome",
+      "type": "Tipo",
+      "version": "Versão",
+      "status": "Status",
+      "updated": "Atualizado",
+      "actions": "Ações"
+    },
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "edit": "Editar",
+    "activate": "Ativar",
+    "deactivate": "Desativar",
+    "delete": "Excluir",
+    "confirmDeleteTitle": "Excluir modelo?",
+    "confirmDeleteText": "\"{{name}}\" será arquivado. Os contratos existentes não são apagados.",
+    "confirmDelete": "Sim, excluir",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "createSuccess": "Modelo criado",
+    "updateSuccess": "Modelo atualizado",
+    "deleteSuccess": "Excluído",
+    "errorLoading": "Não foi possível carregar",
+    "errorSaving": "Erro ao salvar",
+    "error": "Erro",
+    "nameRequired": "Nome obrigatório",
+    "contentRequired": "Conteúdo obrigatório",
+    "soon": "Em breve"
+  },
+  "rentConfig": {
+    "title": "Configuração de aluguel",
+    "subtitle": "Configure os parâmetros usados para calcular o custo inicial do aluguel.",
+    "loading": "Carregando configuração...",
+    "monthsDeposit": "Meses de depósito",
+    "commissionPercent": "Percentual de comissão (%)",
+    "depositHelp": "Quantidade de meses de aluguel exigida como garantia.",
+    "commissionHelp": "Percentual do aluguel mensal cobrado como comissão de gestão.",
+    "save": "Salvar alterações",
+    "saveSuccess": "Configuração salva com sucesso.",
+    "loadError": "Não foi possível carregar a configuração.",
+    "saveError": "Não foi possível salvar a configuração. Verifique os valores e tente novamente.",
+    "invalidDeposit": "Os meses de depósito devem ser um número entre 1 e 12.",
+    "invalidCommission": "O percentual de comissão deve ser um número entre 0 e 100."
+  },
+  "reports": {
+    "title": "Relatórios",
+    "subtitle": "Análise e métricas do mercado",
+    "loading": "Carregando relatórios...",
+    "priceAverage": "Preço médio",
+    "listedProperties": "Imóveis listados",
+    "avgDays": "Dias médios no mercado",
+    "closingRate": "Taxa de fechamento",
+    "propertiesByType": "Imóveis por tipo",
+    "monthlyTrend": "Tendência mensal",
+    "sales": "Vendas",
+    "visits": "Visitas"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "subtitle": "Mostrando {{count}} notificação{{suffix}} no total ({{unread}} não lidas)",
+    "empty": "Não há notificações nesta visualização",
+    "loading": "Carregando notificações...",
+    "markAllRead": "Marcar como lidas",
+    "deleteAll": "Excluir todas",
+    "markReadError": "Erro ao marcar como lida",
+    "markAllReadSuccess": "Todas as notificações foram marcadas como lidas",
+    "markAllReadError": "Erro ao marcar todas como lidas",
+    "deletedFiltered": "Notificações de '{{label}}' excluídas",
+    "deletedAll": "Todas as notificações foram excluídas",
+    "deleteError": "Erro ao excluir notificações",
+    "deletedOne": "Notificação excluída",
+    "deleteOneError": "Erro ao excluir notificação",
+    "emptyTitle": "Não há notificações",
+    "emptyProperty": "Não há notificações de propriedades.",
+    "filters": {
+      "all": "Todas"
+    }
+  },
+  "propertyApproval": {
+    "title": "Aprovação de propriedades",
+    "subtitle": "Revise e aprove as propriedades enviadas por agentes e proprietários",
+    "loading": "Carregando propriedades...",
+    "loadError": "Não foi possível carregar as propriedades. Tente novamente mais tarde.",
+    "approved": "Propriedade aprovada",
+    "rejected": "Propriedade rejeitada",
+    "approveError": "Erro ao aprovar a propriedade",
+    "rejectError": "Erro ao rejeitar a propriedade",
+    "property": "Imóvel",
+    "untitled": "Propriedade sem título",
+    "noLocation": "Localização não especificada",
+    "noPrice": "Preço indisponível",
+    "agent": "Corretor",
+    "sent": "Enviado",
+    "viewDetails": "Ver detalhes",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "empty": "Não há propriedades com status \"{{status}}\".",
+    "stats": {
+      "pending": "Pendentes",
+      "approved": "Aprovadas",
+      "rejected": "Rejeitadas",
+      "total": "Total"
+    },
+    "filters": {
+      "all": "Todas"
+    }
+  },
+  "flags": {
+    "loading": "Carregando relatórios...",
+    "empty": "Não há relatórios pendentes.",
+    "emptyUsers": "Não há relatórios de usuários.",
+    "propertyLoadError": "Não foi possível carregar os relatórios pendentes.",
+    "userLoadError": "Não foi possível carregar os relatórios de usuários.",
+    "updateSuccess": "Status do relatório atualizado.",
+    "updateError": "Não foi possível atualizar o status do relatório.",
+    "filterByStatus": "Filtrar por status:",
+    "viewProperty": "Ver propriedade",
+    "types": {
+      "fraud": "Fraude",
+      "illegal": "Ilegal",
+      "spam": "Spam"
+    },
+    "reasons": {
+      "spam": "Spam ou publicidade enganosa",
+      "inappropriate": "Comportamento inadequado",
+      "falseInfo": "Informação falsa ou enganosa",
+      "harassment": "Assédio ou intimidação",
+      "fraud": "Fraude ou golpe",
+      "other": "Outro"
+    },
+    "status": {
+      "pending": "Pendente",
+      "resolved": "Resolvido",
+      "dismissed": "Descartado"
+    },
+    "table": {
+      "property": "Propriedade",
+      "type": "Tipo",
+      "reason": "Motivo",
+      "reportedBy": "Reportado por",
+      "date": "Data",
+      "actions": "Ações",
+      "reportedUser": "Usuário denunciado",
+      "reporter": "Denunciante",
+      "description": "Descrição",
+      "status": "Status"
+    }
+  },
+  "settings": {
+    "title": "Configurações do sistema",
+    "subtitle": "Ajuste os parâmetros globais da plataforma.",
+    "loadError": "Não foi possível carregar a configuração.",
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "saveError": "Não foi possível salvar. Tente novamente.",
+    "commissions": {
+      "title": "Comissões",
+      "desc": "Percentuais de comissão e depósito para vendas e aluguéis.",
+      "salePercent": "Comissão de venda (%)",
+      "rentPercent": "Comissão de aluguel (%)",
+      "depositMonths": "Meses de depósito",
+      "depositMonthsHelp": "Entre 1 e 12 meses.",
+      "errorSalePercent": "A comissão de venda deve ser entre 0 e 100.",
+      "errorRentPercent": "A comissão de aluguel deve ser entre 0 e 100.",
+      "errorDepositMonths": "Os meses de depósito devem ser entre 1 e 12.",
+      "success": "Comissões atualizadas com sucesso."
+    },
+    "reservations": {
+      "title": "Reservas",
+      "desc": "Tempo de validade e depósito exigido para reservar um imóvel.",
+      "ttlHours": "Validade da reserva (horas)",
+      "ttlHoursHelp": "Tempo antes de a reserva expirar. Máximo 720 h (30 dias).",
+      "depositPercent": "Depósito da reserva (%)",
+      "depositPercentHelp": "Porcentagem do preço do imóvel cobrada como depósito.",
+      "errorTtlHours": "As horas de validade devem ser entre 1 e 720.",
+      "errorDepositPercent": "O percentual de depósito deve ser entre 0,01 e 100.",
+      "success": "Configuração de reservas atualizada."
+    },
+    "properties": {
+      "title": "Imóveis",
+      "desc": "Limites e restrições para o carregamento de imóveis.",
+      "maxImages": "Máximo de imagens por imóvel",
+      "maxImagesHelp": "Entre 1 e 50 imagens.",
+      "errorMaxImages": "O máximo de imagens deve ser entre 1 e 50.",
+      "success": "Configuração de imóveis atualizada."
+    },
+    "system": {
+      "title": "Sistema",
+      "desc": "Configuração geral da plataforma.",
+      "currency": "Moeda padrão",
+      "success": "Configuração do sistema atualizada."
+    }
+  }
+}

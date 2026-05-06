@@ -13,6 +13,8 @@ const propertyApi = {
 
   getAll: (params) => api.get(BASE, { params }),
 
+  compare: (ids) => api.get(`${BASE}/compare`, { params: { ids: ids.join(",") } }),
+
   getByOwner: (ownerId, params) => api.get(`${BASE}/owner/${ownerId}`, { params }),
 
   getMe: (params) => api.get(`${BASE}/me`, { params }),
@@ -24,6 +26,8 @@ const propertyApi = {
   delete: (id) => api.delete(`${BASE}/${id}`),
 
   changeStatus: (id, newStatus) => api.patch(`${BASE}/${id}/status`, { newStatus }),
+
+  toggleHighlight: (id, highlighted) => api.patch(`${BASE}/${id}/highlight`, null, { params: { highlighted } }),
 
   trash: (id) => api.patch(`${BASE}/${id}/trash`),
 
@@ -44,6 +48,12 @@ const propertyApi = {
 
   /** Propiedades del agente (Scope completo: asignadas + clientes) */
   getAgentScope: (params) => api.get(`${BASE}/agent/me`, { params }),
+
+  /** Marca la propiedad como destacada (requiere pago previo aprobado) */
+  highlight: (id) => api.post(`${BASE}/${id}/highlight`),
+
+  /** Quita el destacado de una propiedad */
+  removeHighlight: (id) => api.delete(`${BASE}/${id}/highlight`),
 };
 
 export default propertyApi;

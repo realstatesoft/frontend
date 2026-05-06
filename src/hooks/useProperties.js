@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import propertyApi from "../services/properties/propertyApi";
 
 /**
@@ -11,8 +11,8 @@ import propertyApi from "../services/properties/propertyApi";
  * @param {string} opts.propertyType   - Tipo de propiedad (enum del backend, ej: HOUSE, APARTMENT)
  * @param {string} opts.status         - Estado de la propiedad (enum del backend, ej: PUBLISHED)
  * @param {string} opts.availability   - Disponibilidad (IMMEDIATE, IN_30_DAYS, IN_60_DAYS, TO_NEGOTIATE)
- * @param {number} opts.minPrice       - Precio mínimo
- * @param {number} opts.maxPrice       - Precio máximo
+ * @param {number} opts.minPrice       - Precio mínimo en PYG
+ * @param {number} opts.maxPrice       - Precio máximo en PYG
  * @param {number} opts.minBedrooms    - Cantidad mínima de dormitorios
  * @param {number} opts.minBathrooms   - Cantidad mínima de baños
  * @returns {{ properties, loading, error, totalPages, totalElements, refetch }}
@@ -22,6 +22,7 @@ export default function useProperties({
     size = 12,
     search = "",
     propertyType,
+    category,
     status,
     availability,
     minPrice,
@@ -29,32 +30,23 @@ export default function useProperties({
     minBedrooms,
     minBathrooms,
 } = {}) {
-    const [properties, setProperties] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalElements, setTotalElements] = useState(0);
-
-    // Ref para descartar respuestas obsoletas (stale)
-    const latestRequestIdRef = useRef(0);
-
-    const fetchProperties = useCallback(async () => {
-        const requestId = ++latestRequestIdRef.current;
-
-        setLoading(true);
-        setError(null);
-        try {
-            const springPage = Math.max(page - 1, 0); // Spring usa 0-indexed
+    const { data, isLoading: loading, isFetching, error: queryError, refetch } = useQuery({
+        queryKey: [
+            "properties",
+            { page, size, search, propertyType, category, status, availability, minPrice, maxPrice, minBedrooms, minBathrooms }
+        ],
+        queryFn: async () => {
+            const springPage = Math.max(page - 1, 0);
             const params = { page: springPage, size };
 
-            // Agregar filtros opcionales
             if (propertyType) params.propertyType = propertyType;
+            if (category) params.category = category;
             if (status) params.status = status;
             if (availability) params.availability = availability;
-            if (minPrice) params.minPrice = minPrice;
-            if (maxPrice) params.maxPrice = maxPrice;
-            if (minBedrooms) params.minBedrooms = minBedrooms;
-            if (minBathrooms) params.minBathrooms = minBathrooms;
+            if (minPrice !== undefined && minPrice !== null) params.minPrice = minPrice;
+            if (maxPrice !== undefined && maxPrice !== null) params.maxPrice = maxPrice;
+            if (minBedrooms !== undefined && minBedrooms !== null) params.minBedrooms = minBedrooms;
+            if (minBathrooms !== undefined && minBathrooms !== null) params.minBathrooms = minBathrooms;
 
             let res;
             if (search.trim()) {
@@ -63,36 +55,29 @@ export default function useProperties({
                 res = await propertyApi.getAll(params);
             }
 
-            // Descartar si ya se lanzó una request más nueva
-            if (requestId !== latestRequestIdRef.current) return;
-
-            // ApiResponse → { success, data: Page<PropertySummaryResponse> }
             const pageData = res?.data
                 ? (res.data.data ?? res.data)
-                : { content: [], totalPages: 0, totalElements: 0 };
+                : { content: [], page: { totalPages: 0, totalElements: 0 } };
 
-            setProperties(pageData.content ?? []);
-            setTotalPages(Number(pageData.totalPages ?? 0));
-            setTotalElements(Number(pageData.totalElements ?? 0));
-        } catch (err) {
-            // Descartar errores de requests obsoletas
-            if (requestId !== latestRequestIdRef.current) return;
+            return {
+                properties: pageData.content ?? [],
+                totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? (pageData.content ? Math.ceil(pageData.content.length / size) : 0)),
+                totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? (pageData.content ? pageData.content.length : 0)),
+            };
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutos de caché para navegación súper rápida
+        placeholderData: keepPreviousData, // Evita mostrar spinner al cambiar de página (v5)
+    });
 
-            console.error("Error al cargar propiedades:", err);
-            setError(err?.response?.data?.message ?? "Error al cargar propiedades");
-            setProperties([]);
-            setTotalPages(0);
-            setTotalElements(0);
-        } finally {
-            if (requestId === latestRequestIdRef.current) {
-                setLoading(false);
-            }
-        }
-    }, [page, size, search, propertyType, status, availability, minPrice, maxPrice, minBedrooms, minBathrooms]);
+    const error = queryError?.response?.data?.message ?? queryError?.message ?? null;
 
-    useEffect(() => {
-        fetchProperties();
-    }, [fetchProperties]);
-
-    return { properties, loading, error, totalPages, totalElements, refetch: fetchProperties };
+    return {
+        properties: data?.properties ?? [],
+        loading,
+        fetching: isFetching,
+        error,
+        totalPages: data?.totalPages ?? 0,
+        totalElements: data?.totalElements ?? 0,
+        refetch,
+    };
 }

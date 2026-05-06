@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { IoWarning } from "react-icons/io5";
 import SelectableChip from "./SelectableChip";
 import RangeInputRow from "./RangeInputRow";
@@ -68,6 +69,7 @@ export default function PreferencesForm({
   onSkip,
   skipLabel = "Saltar por ahora, lo haré después",
 }) {
+  const { t } = useTranslation("preferences");
   const [selectedIds, setSelectedIds] = useState(
     () => initSelected(initialPreferences?.selectedOptions)
   );
@@ -112,7 +114,7 @@ export default function PreferencesForm({
 
   const handleSubmit = async () => {
     if (selectedIds.size === 0) {
-      setValidationError("Debe seleccionar al menos una opción de preferencia");
+      setValidationError(t("validationRequired"));
       return;
     }
 
@@ -159,7 +161,7 @@ export default function PreferencesForm({
         <span className="pref-error__icon"><IoWarning /></span>
         <p className="pref-error__msg">{error}</p>
         <button type="button" className="pref-error__retry" onClick={onRetry}>
-          Reintentar
+          {t("retry")}
         </button>
       </div>
     );
@@ -199,7 +201,7 @@ export default function PreferencesForm({
               <h3 className="pref-form__category-title">
                 {category.name}
                 {isSingle && (
-                  <span className="pref-form__category-hint">· Selección única</span>
+                  <span className="pref-form__category-hint">· {t("singleSelect")}</span>
                 )}
               </h3>
               <div className="pref-form__chips">
@@ -235,7 +237,7 @@ export default function PreferencesForm({
           {isSaving ? (
             <>
               <Spinner animation="border" size="sm" className="me-2" />
-              Guardando...
+              {t("saving")}
             </>
           ) : (
             submitLabel

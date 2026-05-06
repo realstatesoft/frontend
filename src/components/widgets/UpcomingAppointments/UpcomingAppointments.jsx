@@ -1,26 +1,28 @@
+import { useTranslation } from 'react-i18next';
 import useAppointments from '../../../hooks/useAppointments';
 import { APPOINTMENT_COLORS } from '../../../utils/constants';
 import { formatDateTime } from '../../../utils/formatters';
 import styles from './UpcomingAppointments.module.scss';
 
 export default function UpcomingAppointments() {
+  const { t } = useTranslation('dashboard');
   const { data: response, isLoading } = useAppointments();
   const appointments = response?.data || [];
 
   if (isLoading) {
     return (
       <div className={styles.appointments}>
-        <h3 className={styles.appointments__title}>Próximas Citas</h3>
-        <p className={styles.appointments__empty}>Cargando...</p>
+        <h3 className={styles.appointments__title}>{t('agent.upcomingAppointments.title')}</h3>
+        <p className={styles.appointments__empty}>{t('agent.upcomingAppointments.loading')}</p>
       </div>
     );
   }
 
   return (
     <div className={styles.appointments}>
-      <h3 className={styles.appointments__title}>Próximas Citas</h3>
+      <h3 className={styles.appointments__title}>{t('agent.upcomingAppointments.title')}</h3>
       {appointments.length === 0 ? (
-        <p className={styles.appointments__empty}>No hay citas programadas</p>
+        <p className={styles.appointments__empty}>{t('agent.upcomingAppointments.empty')}</p>
       ) : (
         <div className={styles.appointments__list}>
           {appointments.slice(0, 5).map((apt) => (

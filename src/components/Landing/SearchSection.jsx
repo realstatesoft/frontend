@@ -1,12 +1,54 @@
-import React, { useState } from "react";
-import fotoSearch from "../../assets/fotoSearch.png";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import fotoSearch from "../../assets/fotoSearch.webp";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 const SearchSection = () => {
+  const { t } = useTranslation("landing");
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("comprar");
   const [hover, setHover] = useState(false);
+  
+  const [locationStr, setLocationStr] = useState("");
+  const [type, setType] = useState("");
+  const [bedrooms, setBedrooms] = useState("");
+  const [priceRange, setPriceRange] = useState("");
+
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal({ threshold: 0.3 });
   const { ref: cardRef, isVisible: cardVisible } = useScrollReveal({ threshold: 0.2 });
+
+  const handleSearch = () => {
+    let minPrice = "";
+    let maxPrice = "";
+    if (priceRange) {
+      const parts = priceRange.split("-");
+      minPrice = parts[0];
+      if (parts[1]) maxPrice = parts[1];
+    }
+
+    let availability = "";
+    if (activeTab === "comprar") availability = "Venta";
+    else if (activeTab === "alquilar") availability = "Alquiler";
+
+    let minBedrooms = bedrooms === "4+" ? "4" : bedrooms;
+
+    let typeFilter = "";
+    if (type === "Casa") typeFilter = "HOUSE";
+    else if (type === "Departamento") typeFilter = "APARTMENT";
+    else if (type === "Terreno") typeFilter = "LAND";
+
+    navigate("/properties", {
+      state: {
+        search: locationStr,
+        typeFilter,
+        minBedrooms,
+        minPrice,
+        maxPrice,
+        availability
+      }
+    });
+  };
 
   return (
     <>
@@ -19,9 +61,9 @@ const SearchSection = () => {
           opacity: headerVisible ? 1 : 0,
           transform: headerVisible ? "translateY(0)" : "translateY(-20px)",
         }}
-      >
-        <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
-          Empieza a buscar tu propiedad ideal
+        >
+          <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
+          {t("search.title")}
         </h3>
       </div>
 
@@ -63,7 +105,7 @@ const SearchSection = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                Comprar
+                {t("search.buy")}
               </button>
               <button
                 onClick={() => setActiveTab("alquilar")}
@@ -77,7 +119,7 @@ const SearchSection = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                Alquilar
+                {t("search.rent")}
               </button>
             </div>
           </div>
@@ -95,46 +137,64 @@ const SearchSection = () => {
             <div className="row g-3 align-items-end">
               <div className="col-md-4">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  UBICACIÓN
+                  {t("search.location")}
                 </label>
                 <input
                   className="form-control border-0 bg-light rounded-3 py-2"
-                  placeholder="Ciudad, Barrio / MLS ID"
+                  placeholder={t("search.locationPlaceholder")}
                   style={{ fontSize: "0.9rem" }}
+                  value={locationStr}
+                  onChange={(e) => setLocationStr(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  TIPO
+                  {t("search.propertyType")}
                 </label>
-                <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>Tipo de Propiedad</option>
-                  <option>Casa</option>
-                  <option>Departamento</option>
-                  <option>Terreno</option>
+                <select 
+                  className="form-select border-0 bg-light rounded-3 py-2" 
+                  style={{ fontSize: "0.9rem" }}
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                >
+                  <option value="">Tipo de Propiedad</option>
+                  <option value="Casa">Casa</option>
+                  <option value="Departamento">Departamento</option>
+                  <option value="Terreno">Terreno</option>
                 </select>
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  DORMITORIOS
+                  {t("search.bedrooms")}
                 </label>
-                <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>Todos</option>
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4+</option>
+                <select 
+                  className="form-select border-0 bg-light rounded-3 py-2" 
+                  style={{ fontSize: "0.9rem" }}
+                  value={bedrooms}
+                  onChange={(e) => setBedrooms(e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4+">4+</option>
                 </select>
               </div>
               <div className="col-md-2">
                 <label className="form-label text-muted" style={{ fontSize: "0.8rem" }}>
-                  PRECIO
+                  {t("search.price")}
                 </label>
-                <select className="form-select border-0 bg-light rounded-3 py-2" style={{ fontSize: "0.9rem" }}>
-                  <option>Rango de Precios</option>
-                  <option>$50k - $100k</option>
-                  <option>$100k - $200k</option>
-                  <option>$200k+</option>
+                <select 
+                  className="form-select border-0 bg-light rounded-3 py-2" 
+                  style={{ fontSize: "0.9rem" }}
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                >
+                  <option value="">Rango de Precios</option>
+                  <option value="50000-100000">$50k - $100k</option>
+                  <option value="100000-200000">$100k - $200k</option>
+                  <option value="200000-">$200k+</option>
                 </select>
               </div>
               <div className="col-md-2">
@@ -142,6 +202,7 @@ const SearchSection = () => {
                   className="btn w-100 text-white rounded-3 py-2 fw-semibold"
                   onMouseEnter={() => setHover(true)}
                   onMouseLeave={() => setHover(false)}
+                  onClick={handleSearch}
                   style={{
                     backgroundColor: hover ? "#484747ff" : "var(--primary, #696868ff)",
                     border: "none",
@@ -150,7 +211,7 @@ const SearchSection = () => {
                     cursor: "pointer",
                   }}
                 >
-                  Buscar
+                  {t("search.button")}
                 </button>
               </div>
             </div>

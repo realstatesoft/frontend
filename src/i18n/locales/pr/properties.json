@@ -1,0 +1,89 @@
+{
+  "search": {
+    "placeholder": "Pesquisar por localização...",
+    "type": "Tipo",
+    "bedrooms": "Quartos",
+    "moreFilters": "Mais filtros",
+    "clearFilters": "Limpar filtros",
+    "availability": "Disponibilidade",
+    "minPrice": "Preço mín. ($)",
+    "maxPrice": "Preço máx. ($)",
+    "minBathrooms": "Banheiros mín.",
+    "any": "Qualquer",
+    "all": "Todos",
+    "noLimit": "Sem limite"
+  },
+  "savedSearches": {
+    "title": "Minhas pesquisas",
+    "header": "Minhas pesquisas salvas",
+    "empty": "Nenhuma pesquisa salva",
+    "delete": "Excluir",
+    "deleteLabel": "Excluir pesquisa {{name}}"
+  },
+  "actions": {
+    "save": "Salvar",
+    "saveTooltip": "Salvar esta pesquisa"
+  },
+  "types": {
+    "house": "Casa",
+    "apartment": "Apartamento",
+    "land": "Terreno",
+    "office": "Loja",
+    "warehouse": "Depósito",
+    "farm": "Fazenda"
+  },
+  "availabilityOptions": {
+    "immediate": "Imediata",
+    "in30Days": "Em 30 dias",
+    "in60Days": "Em 60 dias",
+    "toNegotiate": "A negociar"
+  },
+  "results": {
+    "count": "{{count}} imóvel encontrado",
+    "count_plural": "{{count}} imóveis encontrados",
+    "loading": "Carregando imóveis...",
+    "empty": "Nenhum imóvel foi encontrado com esses filtros.",
+    "retry": "Tentar novamente",
+    "showing": "Mostrando {{count}} imóveis"
+  },
+  "card": {
+    "details": "Ver detalhes",
+    "favoriteAdd": "Adicionar aos favoritos",
+    "favoriteRemove": "Remover dos favoritos",
+    "bedrooms": "{{count}} quartos",
+    "bathrooms": "{{count}} banheiros",
+    "status": {
+      "PENDING": "Pendente",
+      "APPROVED": "Aprovado",
+      "REJECTED": "Rejeitado",
+      "PUBLISHED": "Publicado",
+      "SOLD": "Vendido",
+      "RENTED": "Alugado",
+      "ARCHIVED": "Arquivado"
+    }
+  },
+  "map": {
+    "eyebrow": "Mapa dos resultados",
+    "title": "Localização dos imóveis",
+    "subtitle": "Explore no mapa os imóveis visíveis com os filtros atuais.",
+    "points_one": "{{count}} ponto",
+    "points_other": "{{count}} pontos",
+    "empty": "Não há imóveis com coordenadas disponíveis para mostrar no mapa com os filtros atuais.",
+    "details": "Ver detalhes",
+    "priceUnavailable": "Preço não disponível",
+    "propertyFallback": "Imóvel",
+    "locationUnavailable": "Localização não disponível",
+    "stats": {
+      "bedrooms_one": "{{count}} quarto",
+      "bedrooms_other": "{{count}} quartos",
+      "bathrooms_one": "{{count}} banheiro",
+      "bathrooms_other": "{{count}} banheiros",
+      "area_one": "{{count}} m²",
+      "area_other": "{{count}} m²"
+    }
+  },
+  "pagination": {
+    "previous": "Página anterior",
+    "next": "Próxima página"
+  }
+}

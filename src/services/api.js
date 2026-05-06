@@ -39,10 +39,16 @@ function redirectToLogin(error = null) {
   const currentPath = window.location.pathname;
 
   // No agregar redirect si ya estamos en /login o en rutas públicas
-  const publicPaths = ["/login", "/register", "/forgot-password"];
-  const isPublic = publicPaths.some((p) => currentPath.startsWith(p));
+  const publicPaths = ["/login", "/register", "/forgot-password", "/properties", "/agents", "/"];
+  let isPublic = publicPaths.some((p) => p === currentPath || currentPath.startsWith(p + "/"));
+  if (currentPath === "/") isPublic = true;
 
-  window.location.href = isPublic ? "/login" : `/login?redirect=${encodeURIComponent(currentPath)}`;
+  if (isPublic) {
+    console.warn("401 en ruta pública detectado, ignorando redirección forzada.");
+    return; // NO redirigir si ya estamos en una zona pública
+  }
+
+  window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
 }
 
 // ─── Response interceptor: refresca el token en caso de 401 ──────────────────
@@ -118,10 +124,10 @@ export default api;
 
 // ─── Agentes ───────────────────────────────────────────────────────────────────
 export const getAgents = (page = 0, size = 20) =>
-  api.get('/agents', { params: { page, size } }).then((res) => res.data);
+  api.get('/agents', { params: { page, size } }).then((res) => res.data?.data ?? res.data);
 
 export const searchAgents = (query) =>
-  api.get('/agents/search', { params: { q: query } }).then((res) => res.data);
+  api.get('/agents/search', { params: { q: query } }).then((res) => res.data?.data ?? res.data);
 
 // ─── Clientes (solo para agentes) ─────────────────────────────────────────────
 export const getClients = (page = 0, size = 50) =>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import {
   Container,
   Row,
@@ -25,20 +25,24 @@ import PropertyContactCard from "../../components/Agents/PropertyContactCard";
 import { useShowProperty } from "../../hooks/useShowProperty";
 import { usePropertyPermissions } from "../../hooks/usePropertyPermissions";
 import { useAuth } from "../../hooks/useAuth";
-import { formatPrice } from "../../utils/priceFormat";
 import PropertySummaryCard from "../../components/properties/PropertySummaryCard/PropertySummaryCard";
 import PropertyReservationPanel from "../../components/reservations/PropertyReservationPanel/PropertyReservationPanel";
 import ReportPropertyModal from "../../components/properties/ReportPropertyModal";
 import ReportUserModal from "../../components/users/ReportUserModal";
+import HighlightPropertyModal from "../../components/properties/HighlightPropertyModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
-import Property360Tour from "../../components/properties/Property360Tour/Property360Tour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
 import PropertyFloorPlansViewer from "../../components/properties/PropertyFloorPlansViewer/PropertyFloorPlansViewer";
+import PropertyPriceNotice from "../../components/common/PropertyPriceNotice";
+import { useTranslation } from "react-i18next";
 import "./show-property.scss";
 
+const Property360Tour = lazy(() => import("../../components/properties/Property360Tour/Property360Tour"));
+
 export default function ShowProperty() {
+  const { t } = useTranslation("showProperty");
   const BASE_URL = import.meta.env.VITE_DEPLOY_URL
 
   const {
@@ -54,6 +58,9 @@ export default function ShowProperty() {
     images,
     features,
     priceFormatted,
+    priceDisplay,
+    priceReferenceText,
+    showPriceReferenceNote,
     propertyTypeLabel,
     mapUrl,
     formatTimeAgo,
@@ -71,13 +78,15 @@ export default function ShowProperty() {
     activeFlagCount,
     viewCount,
     isAuthenticated,
-    fetchActiveFlagCount
+    fetchActiveFlagCount,
+    handleRemoveHighlight
   } = useShowProperty();
 
   const { user: authUser } = useAuth();
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportUserModal, setShowReportUserModal] = useState(false);
+  const [showHighlightModal, setShowHighlightModal] = useState(false);
 
   const {
     canChangeStatus,
@@ -94,9 +103,9 @@ export default function ShowProperty() {
   const [loadingConfig, setLoadingConfig] = useState(false);
   const viewBadgeText =
     viewCount === 1
-      ? "1 ha visto esta propiedad"
+      ? t("views.one")
       : viewCount > 1
-      ? `${viewCount} han visto esta propiedad`
+      ? t("views.other", { count: viewCount })
       : null;
 
   // Resetear estados cuando cambia la propiedad (navegacion entre propiedades similares)
@@ -196,7 +205,7 @@ export default function ShowProperty() {
           {activeFlagCount > 0 && (
             <Alert variant="warning" className="d-flex align-items-center mb-4">
               <Flag size={20} className="me-2" />
-              <span>Esta propiedad tiene reportes activos de otros usuarios. Procede con precaución.</span>
+              <span>{t("reportsWarning")}</span>
             </Alert>
           )}
 
@@ -211,7 +220,33 @@ export default function ShowProperty() {
 
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h1>{property.title}</h1>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              <h1 className="mb-0">{property.title}</h1>
+              {property.highlighted && (
+                <Badge
+                  className="d-flex align-items-center gap-2"
+                  style={{
+                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                    fontSize: "1rem",
+                    padding: "8px 16px",
+                    borderRadius: "20px",
+                    fontWeight: 600,
+                  }}
+                >
+                  <Star size={15} /> Destacada
+                </Badge>
+              )}
+              {property.highlighted && visibility.value !== "PUBLIC" && canChangeVisibility && (
+                <OverlayTrigger
+                  placement="right"
+                  overlay={<Tooltip>Esta propiedad no aparecerá en el inicio porque su visibilidad es "{visibility.label}". Cámbiala a "Público".</Tooltip>}
+                >
+                  <Badge bg="danger" className="d-flex align-items-center ms-2" style={{ borderRadius: "20px" }}>
+                    ⚠️ Visibilidad Restringida
+                  </Badge>
+                </OverlayTrigger>
+              )}
+            </div>
             <div className="d-flex gap-2 align-items-center mt-2">
               {/* Estado general — ADMIN: selector funcional | Owner/Agent: badge de solo lectura */}
               {(canChangeStatus || canEdit) && (
@@ -264,18 +299,21 @@ export default function ShowProperty() {
                   as={Link}
                   to={`/properties/${property.id}/edit`}
                 >
-                  <Pencil size={16} className="property__icon-button" /> Editar
+                  <Pencil size={16} className="property__icon-button" /> {t("actions.edit")}
                 </Button>
               )}
 
-              {/* Destacar — cualquier usuario autenticado */}
+              {/* Destacar — owner, asignado o admin */}
               {canFeature && (
                 <Button
                   size="sm"
-                  variant="warning"
+                  variant={property.highlighted ? "warning" : "outline-warning"}
                   className="d-flex align-items-center"
+                  disabled={actionLoading}
+                  onClick={() => property.highlighted ? handleRemoveHighlight() : setShowHighlightModal(true)}
                 >
-                  <Star size={16} className="property__icon-button" /> Destacar
+                  <Star size={16} className="property__icon-button" />
+                  {property.highlighted ? "Destacada" : "Destacar"}
                 </Button>
               )}
 
@@ -287,7 +325,7 @@ export default function ShowProperty() {
                   className="d-flex align-items-center"
                   onClick={openDeleteConfirm}
                 >
-                  <Trash size={16} className="property__icon-button" /> Eliminar
+                  <Trash size={16} className="property__icon-button" /> {t("actions.delete")}
                 </Button>
               )}
               <Dropdown as={ButtonGroup}>
@@ -335,6 +373,10 @@ export default function ShowProperty() {
                   src={images[0]}
                   alt="Fachada"
                   className="property__main-image"
+                  width={800}
+                  height={420}
+                  fetchPriority="high"
+                  style={{ aspectRatio: '800 / 420' }}
                 />
                 {viewBadgeText && (
                   <div className="property__views-badge">
@@ -358,6 +400,10 @@ export default function ShowProperty() {
                           ? "radius-bottom-right-lg"
                           : ""
                       }`}
+                      width={400}
+                      height={207}
+                      loading="lazy"
+                      style={{ aspectRatio: '400 / 207' }}
                     />
                   </Col>
                 ))}
@@ -375,7 +421,14 @@ export default function ShowProperty() {
                 gap={4}
                 className="align-items-end flex-wrap mb-2"
               >
-                <span className="property__price">{priceFormatted}</span>
+                <div className="d-flex flex-column gap-1">
+                  <span className="property__price">{priceFormatted || "—"}</span>
+                  {showPriceReferenceNote && (
+                    <PropertyPriceNotice className="property__price-note">
+                      {priceReferenceText}
+                    </PropertyPriceNotice>
+                  )}
+                </div>
                 <Stack direction="horizontal" gap={4}>
                   {[
                     {
@@ -410,9 +463,7 @@ export default function ShowProperty() {
                     `Construido en ${property.constructionYear}`,
                   property.surfaceArea &&
                     property.price &&
-                    `~ ${formatPrice(
-                      String(Math.round(property.price / property.surfaceArea)),
-                    )}/m²`,
+                    `${priceDisplay.formatPrice(Math.round(property.price / property.surfaceArea)).label || "—"}/m²`,
                 ]
                   .filter(Boolean)
                   .map((label) => (
@@ -473,6 +524,7 @@ export default function ShowProperty() {
                         style={{ border: 0 }}
                         src={mapUrl}
                         allowFullScreen
+                        loading="lazy"
                       />
                     </div>
 
@@ -482,7 +534,7 @@ export default function ShowProperty() {
                         <>
                           {property.createdAt && (
                             <>
-                            Publicado{" "}
+                            {t("actions.published")}{" "}
                               <strong>
                                 {formatTimeAgo(property.createdAt)}
                               </strong>
@@ -553,9 +605,11 @@ export default function ShowProperty() {
                             <span className="text-muted">Iniciando recorrido...</span>
                           </div>
                         ) : finalTourConfig ? (
-                          <Property360Tour config={finalTourConfig} />
+                          <Suspense fallback={<div className="d-flex justify-content-center py-5"><Spinner animation="border" variant="primary" /></div>}>
+                            <Property360Tour config={finalTourConfig} />
+                          </Suspense>
                         ) : (
-                          <Alert variant="info">Cargando configuración del recorrido...</Alert>
+                          <Alert variant="info">{t("actions.loadingTour")}</Alert>
                         )
                       )}
 
@@ -575,8 +629,8 @@ export default function ShowProperty() {
                         <div className="property__empty-3d">
                           <div className="property__empty-3d-box">
                             <CameraVideo size={48} className="mb-3 text-muted" />
-                            <p className="mb-1 fw-bold">No hay recorridos disponibles</p>
-                            <p className="text-muted small">Esta propiedad aun no cuenta con contenido 360 o modelos 3D.</p>
+                            <p className="mb-1 fw-bold">{t("actions.noTours")}</p>
+                            <p className="text-muted small">{t("actions.noToursHint")}</p>
                           </div>
                         </div>
                       )}
@@ -613,7 +667,7 @@ export default function ShowProperty() {
                       ) : (
                         <Col>
                           <p className="text-muted">
-                            No hay caracteristicas cargadas.
+                            {t("actions.noFeatures")}
                           </p>
                         </Col>
                       )}
@@ -651,7 +705,7 @@ export default function ShowProperty() {
                     onClick={() => setShowReportModal(true)}
                     style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                   >
-                    <Flag className="me-2" /> Reportar propiedad
+                    <Flag className="me-2" /> {t("actions.reportProperty")}
                   </Button>
                   {!isPropertyOwner && (property.ownerId || property.userId) && (
                     <Button 
@@ -660,7 +714,7 @@ export default function ShowProperty() {
                       onClick={() => setShowReportUserModal(true)}
                       style={{ textDecoration: 'none', fontSize: '0.9rem', padding: 0 }}
                     >
-                      <Flag className="me-2" /> Reportar usuario
+                      <Flag className="me-2" /> {t("actions.reportUser")}
                     </Button>
                   )}
                 </div>
@@ -722,9 +776,15 @@ export default function ShowProperty() {
         </Container>
       </div>
 
-      <ReportPropertyModal 
-        propertyId={property.id} 
-        isOpen={showReportModal} 
+      <HighlightPropertyModal
+        property={property}
+        show={showHighlightModal}
+        onHide={() => setShowHighlightModal(false)}
+      />
+
+      <ReportPropertyModal
+        propertyId={property.id}
+        isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
         onSuccess={() => fetchActiveFlagCount && fetchActiveFlagCount()}
       />

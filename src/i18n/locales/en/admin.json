@@ -1,0 +1,273 @@
+{
+  "dashboard": {
+    "title": "Admin Panel",
+    "subtitle": "System overview and main metrics",
+    "loading": "Loading summary...",
+    "noPermission": "You do not have permission to view this panel.",
+    "loadError": "The panel could not be loaded. Please try again later.",
+    "indicators": "Indicators",
+    "quickActions": "Quick actions",
+    "activity": "Recent activity",
+    "attention": "Requires attention",
+    "comingSoon": "Coming soon",
+    "viewAllHistory": "View full history",
+    "viewAllTasks": "View all tasks",
+    "emptyAttention": "There are no properties requiring attention in these states."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Showing {{count}} notification{{suffix}} total ({{unread}} unread)",
+    "empty": "There are no notifications in this view",
+    "loading": "Loading notifications...",
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read",
+      "property": "Properties"
+    },
+    "types": {
+      "property": "Properties",
+      "system": "System",
+      "alert": "Alerts",
+      "message": "Messages",
+      "visit": "Visits",
+      "offer": "Offers",
+      "contract": "Contracts",
+      "review": "Reviews"
+    }
+  },
+  "auditLogs": {
+    "title": "Audit logs",
+    "filters": "Filters",
+    "allEntities": "All entities",
+    "allActions": "All actions",
+    "user": "User",
+    "property": "Property",
+    "contract": "Contract",
+    "register": "Register",
+    "login": "Login",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "trash": "Trash",
+    "restore": "Restore",
+    "statusChange": "Status change",
+    "clearTrash": "Empty trash",
+    "loading": "Loading logs...",
+    "noPermission": "You do not have permission to view audit logs.",
+    "loadError": "Logs could not be loaded. Please try again later.",
+    "table": {
+      "user": "User",
+      "entityType": "Type",
+      "entity": "Entity",
+      "action": "Action",
+      "date": "Date",
+      "details": "Details"
+    }
+  },
+  "contractTemplates": {
+    "title": "Contract templates",
+    "subtitle": "Define reusable base text. Only active templates of the correct type can be used when creating contracts.",
+    "new": "New template",
+    "filterType": "Filter by type",
+    "filterStatus": "Filter by status",
+    "allTypes": "All types",
+    "allStatus": "Active and inactive",
+    "onlyActive": "Only active",
+    "onlyInactive": "Only inactive",
+    "loading": "Loading...",
+    "empty": "No templates match these filters.",
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "version": "Version",
+      "status": "Status",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "delete": "Delete",
+    "confirmDeleteTitle": "Delete template?",
+    "confirmDeleteText": "\"{{name}}\" will be archived. Existing contracts are not deleted.",
+    "confirmDelete": "Yes, delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "createSuccess": "Template created",
+    "updateSuccess": "Template updated",
+    "deleteSuccess": "Deleted",
+    "errorLoading": "Could not load",
+    "errorSaving": "Error saving",
+    "error": "Error",
+    "nameRequired": "Name is required",
+    "contentRequired": "Content is required",
+    "soon": "Coming soon"
+  },
+  "rentConfig": {
+    "title": "Rent configuration",
+    "subtitle": "Configure the parameters used to calculate the initial rent cost.",
+    "loading": "Loading configuration...",
+    "monthsDeposit": "Deposit months",
+    "commissionPercent": "Commission percentage (%)",
+    "depositHelp": "Number of rental months required as security deposit.",
+    "commissionHelp": "Percentage of the monthly rent charged as management commission.",
+    "save": "Save changes",
+    "saveSuccess": "Configuration saved successfully.",
+    "loadError": "Could not load configuration.",
+    "saveError": "Could not save configuration. Check the values and try again.",
+    "invalidDeposit": "Deposit months must be a number between 1 and 12.",
+    "invalidCommission": "Commission percentage must be a number between 0 and 100."
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Market analysis and metrics",
+    "loading": "Loading reports...",
+    "priceAverage": "Average Price",
+    "listedProperties": "Listed Properties",
+    "avgDays": "Average Days on Market",
+    "closingRate": "Closing Rate",
+    "propertiesByType": "Properties by Type",
+    "monthlyTrend": "Monthly Trend",
+    "sales": "Sales",
+    "visits": "Visits"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Showing {{count}} notification{{suffix}} in total ({{unread}} unread)",
+    "empty": "No notifications in this view",
+    "loading": "Loading notifications...",
+    "markAllRead": "Mark as read",
+    "deleteAll": "Delete all",
+    "markReadError": "Error marking as read",
+    "markAllReadSuccess": "All notifications marked as read",
+    "markAllReadError": "Error marking all as read",
+    "deletedFiltered": "Notifications for '{{label}}' deleted",
+    "deletedAll": "All notifications have been deleted",
+    "deleteError": "Error deleting notifications",
+    "deletedOne": "Notification deleted",
+    "deleteOneError": "Error deleting notification",
+    "emptyTitle": "No notifications",
+    "emptyProperty": "No property notifications.",
+    "filters": {
+      "all": "All"
+    }
+  },
+  "propertyApproval": {
+    "title": "Property Approval",
+    "subtitle": "Review and approve properties submitted by agents and owners",
+    "loading": "Loading properties...",
+    "loadError": "Could not load properties. Please try again later.",
+    "approved": "Property Approved",
+    "rejected": "Property Rejected",
+    "approveError": "Error approving property",
+    "rejectError": "Error rejecting property",
+    "property": "Property",
+    "untitled": "Untitled property",
+    "noLocation": "Location not specified",
+    "noPrice": "Price not available",
+    "agent": "Agent",
+    "sent": "Sent",
+    "viewDetails": "View details",
+    "approve": "Approve",
+    "reject": "Reject",
+    "empty": "There are no properties with status \"{{status}}\".",
+    "stats": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "total": "Total"
+    },
+    "filters": {
+      "all": "All"
+    }
+  },
+  "flags": {
+    "loading": "Loading reports...",
+    "empty": "No pending reports.",
+    "emptyUsers": "No user reports.",
+    "propertyLoadError": "Could not load pending reports.",
+    "userLoadError": "Could not load user reports.",
+    "updateSuccess": "Report status updated.",
+    "updateError": "Could not update report status.",
+    "filterByStatus": "Filter by status:",
+    "viewProperty": "View property",
+    "types": {
+      "fraud": "Fraud",
+      "illegal": "Illegal",
+      "spam": "Spam"
+    },
+    "reasons": {
+      "spam": "Spam or misleading advertising",
+      "inappropriate": "Inappropriate behavior",
+      "falseInfo": "False or misleading information",
+      "harassment": "Harassment or intimidation",
+      "fraud": "Fraud or scam",
+      "other": "Other"
+    },
+    "status": {
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed"
+    },
+    "table": {
+      "property": "Property",
+      "type": "Type",
+      "reason": "Reason",
+      "reportedBy": "Reported by",
+      "date": "Date",
+      "actions": "Actions",
+      "reportedUser": "Reported user",
+      "reporter": "Reporter",
+      "description": "Description",
+      "status": "Status"
+    }
+  },
+  "settings": {
+    "title": "System settings",
+    "subtitle": "Adjust global platform parameters.",
+    "loadError": "Failed to load configuration.",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveError": "Could not save. Please try again.",
+    "commissions": {
+      "title": "Commissions",
+      "desc": "Commission and deposit percentages for sales and rentals.",
+      "salePercent": "Sale commission (%)",
+      "rentPercent": "Rental commission (%)",
+      "depositMonths": "Deposit months",
+      "depositMonthsHelp": "Between 1 and 12 months.",
+      "errorSalePercent": "Sale commission must be between 0 and 100.",
+      "errorRentPercent": "Rental commission must be between 0 and 100.",
+      "errorDepositMonths": "Deposit months must be between 1 and 12.",
+      "success": "Commissions updated successfully."
+    },
+    "reservations": {
+      "title": "Reservations",
+      "desc": "Expiry time and deposit required to reserve a property.",
+      "ttlHours": "Reservation validity (hours)",
+      "ttlHoursHelp": "Time before the reservation expires. Maximum 720 h (30 days).",
+      "depositPercent": "Reservation deposit (%)",
+      "depositPercentHelp": "Percentage of the property price charged as deposit.",
+      "errorTtlHours": "Validity hours must be between 1 and 720.",
+      "errorDepositPercent": "Deposit percentage must be between 0.01 and 100.",
+      "success": "Reservation settings updated."
+    },
+    "properties": {
+      "title": "Properties",
+      "desc": "Limits and restrictions for property listings.",
+      "maxImages": "Maximum images per property",
+      "maxImagesHelp": "Between 1 and 50 images.",
+      "errorMaxImages": "Maximum images must be between 1 and 50.",
+      "success": "Property settings updated."
+    },
+    "system": {
+      "title": "System",
+      "desc": "General platform configuration.",
+      "currency": "Default currency",
+      "success": "System settings updated."
+    }
+  }
+}
