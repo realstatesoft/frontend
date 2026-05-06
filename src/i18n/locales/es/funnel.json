@@ -1,0 +1,82 @@
+{
+  "title": "Embudo de conversión",
+  "breadcrumb": "Panel / Embudo de conversión",
+  "subtitle": "Progresión de vistas, solicitudes de visita, ofertas y ventas cerradas en tus propiedades.",
+  "loading": "Cargando métricas…",
+  "error": "No se pudieron cargar los datos del embudo.",
+  "filters": {
+    "from": "Desde",
+    "to": "Hasta",
+    "granularity": "Agrupación",
+    "granularity_DAY": "Día",
+    "granularity_WEEK": "Semana",
+    "granularity_MONTH": "Mes",
+    "location": "Ubicación (opcional)",
+    "locationPlaceholder": "Todas",
+    "propertyType": "Tipo de propiedad",
+    "propertyType_any": "Todos",
+    "minPrice": "Precio mín.",
+    "maxPrice": "Precio máx.",
+    "comparePrevious": "Comparar con período anterior",
+    "apply": "Actualizar",
+    "propertyTypes": {
+      "HOUSE": "Casa",
+      "APARTMENT": "Departamento",
+      "LAND": "Terreno",
+      "OFFICE": "Oficina",
+      "WAREHOUSE": "Depósito",
+      "FARM": "Campo"
+    }
+  },
+  "stages": {
+    "views": "Vistas",
+    "visits": "Visitas (solicitudes)",
+    "offers": "Ofertas",
+    "sales": "Ventas (contratos firmados)"
+  },
+  "conversionFromPrev": "conversión respecto etapa anterior",
+  "dropFromPrev": "caída respecto etapa anterior",
+  "dropLine": "↓ {{pct}}% caída",
+  "stagesFunnel": {
+    "views": "Vistas",
+    "visits": "Visitas",
+    "offers": "Ofertas",
+    "sales": "Ventas"
+  },
+  "funnelChartTitle": "Embudo",
+  "trendTitle": "Evolución en el período",
+  "kpis": {
+    "globalConversion": "Conversión global (ventas / vistas)",
+    "medianDays": "Días vista → firma (mediana)",
+    "closedVolume": "Volumen cerrado",
+    "labelGlobalShort": "Conversión global",
+    "labelMedianShort": "Tiempo medio · vista → venta",
+    "labelVolumeShort": "Volumen cerrado",
+    "vsPrevAbbr": "vs período ant.",
+    "vsPrev_pp": "{{value}} pp vs período anterior",
+    "vsPrev_days": "{{value}} días vs período anterior",
+    "vsPrev_volume": "{{pct}}% vs período anterior",
+    "noMedian": "Sin datos suficientes",
+    "daysUnit": "días"
+  },
+  "table": {
+    "title": "Propiedades con mejor desempeño",
+    "property": "Propiedad",
+    "status": "Estado",
+    "views": "Vistas",
+    "visits": "Visitas",
+    "offers": "Ofertas",
+    "sales": "Ventas",
+    "conv": "Conv. %",
+    "empty": "No hay actividad en el rango seleccionado.",
+    "prev": "Anterior",
+    "next": "Siguiente"
+  },
+  "rates": {
+    "title": "Tasas de conversión entre etapas",
+    "viewsToVisits": "Vistas → visitas",
+    "visitsToOffers": "Visitas → ofertas",
+    "offersToSales": "Ofertas → ventas",
+    "viewsToSales": "Vistas → ventas"
+  }
+}

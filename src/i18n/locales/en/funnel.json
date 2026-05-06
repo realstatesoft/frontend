@@ -1,0 +1,82 @@
+{
+  "title": "Conversion funnel",
+  "breadcrumb": "Dashboard / Conversion funnel",
+  "subtitle": "Progress from views through visit requests, offers and signed contracts on your listings.",
+  "loading": "Loading analytics…",
+  "error": "Could not load funnel data.",
+  "filters": {
+    "from": "From",
+    "to": "To",
+    "granularity": "Group by",
+    "granularity_DAY": "Day",
+    "granularity_WEEK": "Week",
+    "granularity_MONTH": "Month",
+    "location": "Location (optional)",
+    "locationPlaceholder": "All",
+    "propertyType": "Property type",
+    "propertyType_any": "All",
+    "minPrice": "Min price",
+    "maxPrice": "Max price",
+    "comparePrevious": "Compare to previous period",
+    "apply": "Refresh",
+    "propertyTypes": {
+      "HOUSE": "House",
+      "APARTMENT": "Apartment",
+      "LAND": "Land",
+      "OFFICE": "Office",
+      "WAREHOUSE": "Warehouse",
+      "FARM": "Farm"
+    }
+  },
+  "stages": {
+    "views": "Views",
+    "visits": "Visits (requests)",
+    "offers": "Offers",
+    "sales": "Sales (signed)"
+  },
+  "conversionFromPrev": "conversion from previous stage",
+  "dropFromPrev": "drop from previous stage",
+  "dropLine": "↓ {{pct}}% drop",
+  "stagesFunnel": {
+    "views": "Views",
+    "visits": "Visits",
+    "offers": "Offers",
+    "sales": "Sales"
+  },
+  "funnelChartTitle": "Funnel",
+  "trendTitle": "Trend over period",
+  "kpis": {
+    "globalConversion": "Global conversion (sales / views)",
+    "medianDays": "Days view → signing (median)",
+    "closedVolume": "Closed volume",
+    "labelGlobalShort": "Global conversion",
+    "labelMedianShort": "Avg time · view → sale",
+    "labelVolumeShort": "Closed volume",
+    "vsPrevAbbr": "vs prev. period",
+    "vsPrev_pp": "{{value}} pp vs previous period",
+    "vsPrev_days": "{{value}} days vs previous period",
+    "vsPrev_volume": "{{pct}}% vs previous period",
+    "noMedian": "Not enough data",
+    "daysUnit": "days"
+  },
+  "table": {
+    "title": "Top performing properties",
+    "property": "Property",
+    "status": "Status",
+    "views": "Views",
+    "visits": "Visits",
+    "offers": "Offers",
+    "sales": "Sales",
+    "conv": "Conv. %",
+    "empty": "No activity in the selected range.",
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "rates": {
+    "title": "Step conversion rates",
+    "viewsToVisits": "Views → visits",
+    "visitsToOffers": "Visits → offers",
+    "offersToSales": "Offers → sales",
+    "viewsToSales": "Views → sales"
+  }
+}

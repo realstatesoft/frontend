@@ -19,7 +19,9 @@ export default function MyPropertyCard({ property }) {
     const tag = STATUS_DISPLAY_LABELS[property.status] ?? property.status ?? "—";
     const price = usePropertyPriceDisplay(property.price);
     const isRent = property.category === "RENT";
-    const priceDisplay = isRent ? `${price.label || "—"} Mensual` : (price.label || "—");
+    const priceDisplay = price.label
+        ? `${price.label}${isRent ? " Mensual" : ""}`
+        : "—";
     const type = PROPERTY_TYPE_LABELS[property.propertyType] ?? property.propertyType ?? "";
     const address = property.address || property.locationName || "";
     const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;

@@ -149,8 +149,8 @@ export default function PropertiesPage() {
 
             <PropertiesHero
                 search={search}
+                category={saleRent}
                 typeFilter={typeFilter}
-                saleRent={saleRent}
                 availability={availability}
                 minPrice={minPrice}
                 maxPrice={maxPrice}
@@ -160,8 +160,8 @@ export default function PropertiesPage() {
                 minBathrooms={minBathrooms}
                 totalResults={totalElements}
                 onSearch={handleSearch}
+                onCategoryChange={handleSaleRent}
                 onTypeChange={handleType}
-                onSaleRentChange={handleSaleRent}
                 onAvailabilityChange={handleAvailability}
                 onMinPriceChange={handleMinPrice}
                 onMaxPriceChange={handleMaxPrice}

@@ -1,0 +1,510 @@
+@use "../../styles/mixins" as *;
+
+.page {
+  @include flex-column;
+  gap: var(--spacing-xl);
+}
+
+.page__breadcrumb {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.page__header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.page__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.page__subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+}
+
+.filtersBar {
+  @include glass-card;
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: flex-end;
+}
+
+.filterGroup {
+  @include flex-column;
+  gap: 4px;
+  flex: 1 1 140px;
+  min-width: 120px;
+
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.filterInput,
+.filterSelect {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  outline: none;
+  transition: var(--transition-fast);
+  width: 100%;
+
+  &:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+}
+
+.filterSelect {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+.checkboxGroup {
+  @include flex-column;
+  gap: 4px;
+  flex: 1 1 100%;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 4px 0;
+
+  input[type='checkbox'] {
+    accent-color: var(--color-accent);
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  }
+
+  label {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 500;
+  }
+}
+
+.filtersActions {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  padding-top: var(--spacing-xs);
+}
+
+
+.page__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+
+  @include responsive(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.page__chartCard {
+  @include glass-card;
+  padding: var(--spacing-lg);
+}
+
+.funnelPanel {
+  @include flex-column;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-lg);
+}
+
+.cardSubtitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: var(--spacing-md) 0 var(--spacing-sm);
+  color: var(--color-text-muted);
+}
+
+.funnelVisual {
+  @include flex-column;
+  gap: 0;
+}
+
+.funnelDropLine {
+  margin: var(--spacing-sm) 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  letter-spacing: 0.02em;
+}
+
+.funnelStageRow {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) 4.25rem;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+
+  @include responsive(small) {
+    grid-template-columns: 6rem minmax(0, 1fr) 3.25rem;
+    gap: var(--spacing-sm);
+  }
+}
+
+.stageName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.barCell {
+  min-width: 0;
+}
+
+.barTrack {
+  height: 40px;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  padding-right: 8px;
+  box-sizing: border-box;
+  transition: width 0.4s ease;
+  overflow: hidden;
+}
+
+.barFillNonZero {
+  min-width: clamp(3.25rem, 24%, 100%);
+}
+
+.barInnerValue {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.stepRateCell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.stepRateValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+.funnelKpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid var(--color-border);
+
+  @include responsive(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.funnelKpiCol {
+  @include flex-column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.funnelKpiLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+
+.funnelKpiValue {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.kpiDeltaUp {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.kpiDeltaDown {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.kpiDeltaMuted {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.chartLegendRow {
+  display: flex;
+  gap: var(--spacing-xl);
+  align-items: stretch;
+  min-height: 308px;
+
+  @include responsive(mobile) {
+    flex-direction: column;
+    min-height: 0;
+  }
+}
+
+.chartMain {
+  flex: 1;
+  min-width: 0;
+  min-height: 280px;
+}
+
+.seriesLegend {
+  list-style: none;
+  margin: 0;
+  padding: var(--spacing-sm) 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.seriesLegendItem {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8125rem;
+}
+
+.seriesSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.seriesLegendName {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.seriesLegendTotal {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.tableCard {
+  @include glass-card;
+  overflow: hidden;
+}
+
+.tableHeader {
+  padding: var(--spacing-lg) var(--spacing-lg) 0;
+
+  .cardTitle {
+    margin-bottom: 0;
+  }
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  @include scrollbar-styled;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead tr {
+    background: var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: var(--transition-fast);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: var(--color-bg-surface-hover);
+    }
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    color: var(--color-text-secondary);
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.propCell {
+  max-width: 280px;
+}
+
+.propTitle {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.propAddr {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.tableEmptyNote {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.paginationBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    background: var(--color-bg-surface-hover);
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.error {
+  padding: var(--spacing-lg);
+  color: var(--color-danger-text, #dc2626);
+  @include glass-card;
+}
+
+.loadingWrapper {
+  @include flex-center;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl) var(--spacing-md);
+  min-height: 240px;
+  color: var(--color-text-muted);
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  animation: funnelSpin 0.8s linear infinite;
+}
+
+@keyframes funnelSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.chartEmpty {
+  @include flex-center;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: 100%;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}

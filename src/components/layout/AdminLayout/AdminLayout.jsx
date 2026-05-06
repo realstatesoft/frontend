@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { FiGrid, FiCheckSquare, FiFlag, FiFileText, FiShield, FiDollarSign, FiLayers } from 'react-icons/fi';
+import { FiGrid, FiCheckSquare, FiFlag, FiFileText, FiShield, FiDollarSign, FiLayers, FiSettings } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
 import useUIStore from '../../../store/useUIStore';
@@ -32,8 +32,8 @@ export default function AdminLayout() {
     { to: ADMIN_ROUTES.AUDIT_LOGS, icon: <FiShield />, label: t('layouts.admin.auditLogs') },
     { to: ADMIN_ROUTES.FLAGS, icon: <FiFlag />, label: t('layouts.admin.reports') },
     { to: ADMIN_ROUTES.DOCUMENTS, icon: <FiFileText />, label: t('layouts.admin.documents') },
-    { to: ADMIN_ROUTES.RENT_CONFIG, icon: <FiDollarSign />, label: t('layouts.admin.rentConfig') },
     { to: ADMIN_ROUTES.CONTRACT_TEMPLATES, icon: <FiLayers />, label: t('layouts.admin.contractTemplates') },
+    { to: ADMIN_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.admin.settings') },
   ];
 
   return (

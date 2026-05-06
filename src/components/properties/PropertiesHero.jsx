@@ -15,8 +15,8 @@ import { useAuth } from "../../hooks/useAuth";
  */
 export default function PropertiesHero({
     search,
+    category,
     typeFilter,
-    saleRent,
     availability,
     minPrice,
     maxPrice,
@@ -27,7 +27,7 @@ export default function PropertiesHero({
     totalResults,
     onSearch,
     onTypeChange,
-    onSaleRentChange,
+    onCategoryChange,
     onAvailabilityChange,
     onMinPriceChange,
     onMaxPriceChange,
@@ -76,8 +76,8 @@ export default function PropertiesHero({
 
     const filters = {
         q: search,
+        category,
         propertyType: typeFilter,
-        category: saleRent,
         availability,
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
@@ -91,7 +91,7 @@ export default function PropertiesHero({
     };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
-    const hasAnyFilter = !!(search || typeFilter || saleRent || advancedActiveCount);
+    const hasAnyFilter = !!(search || category || typeFilter || advancedActiveCount);
     const priceRangeNote =
         activePriceCurrency === "PYG"
             ? "Los filtros de precio se envían en PYG."
@@ -128,10 +128,17 @@ export default function PropertiesHero({
                                         className="d-flex justify-content-between"
                                         onClick={() => {
                                             const savedFilters = savedSearch.filters || {};
-                                            setCurrency(savedFilters.priceCurrency ?? "PYG");
+                                            if (savedFilters.priceCurrency) {
+                                                setCurrency(savedFilters.priceCurrency);
+                                            } else if (
+                                                savedFilters.minPrice != null ||
+                                                savedFilters.maxPrice != null
+                                            ) {
+                                                setCurrency("PYG");
+                                            }
                                             onSearch(savedFilters.q ?? "");
                                             onTypeChange(savedFilters.propertyType ?? "");
-                                            onSaleRentChange(savedFilters.category ?? "");
+                                            onCategoryChange(savedFilters.category ?? "");
                                             onAvailabilityChange(savedFilters.availability ?? "");
                                             onMinPriceChange(savedFilters.minPrice ?? "");
                                             onMaxPriceChange(savedFilters.maxPrice ?? "");
@@ -160,6 +167,19 @@ export default function PropertiesHero({
                             </Dropdown.Menu>
                         </Dropdown>
                     )}
+
+                    <PillSelect
+                        label="Operación"
+                        value={category}
+                        onChange={onCategoryChange}
+                        active={!!category}
+                    >
+                        <option value="">Todas</option>
+                        <option value="Venta">Venta</option>
+                        <option value="Alquiler">Alquiler</option>
+                    </PillSelect>
+
+                    <div className="filter-bar__divider" />
 
                     <PillSelect
                         label={t("search.type")}

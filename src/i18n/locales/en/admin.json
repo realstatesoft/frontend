@@ -224,5 +224,50 @@
       "description": "Description",
       "status": "Status"
     }
+  },
+  "settings": {
+    "title": "System settings",
+    "subtitle": "Adjust global platform parameters.",
+    "loadError": "Failed to load configuration.",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveError": "Could not save. Please try again.",
+    "commissions": {
+      "title": "Commissions",
+      "desc": "Commission and deposit percentages for sales and rentals.",
+      "salePercent": "Sale commission (%)",
+      "rentPercent": "Rental commission (%)",
+      "depositMonths": "Deposit months",
+      "depositMonthsHelp": "Between 1 and 12 months.",
+      "errorSalePercent": "Sale commission must be between 0 and 100.",
+      "errorRentPercent": "Rental commission must be between 0 and 100.",
+      "errorDepositMonths": "Deposit months must be between 1 and 12.",
+      "success": "Commissions updated successfully."
+    },
+    "reservations": {
+      "title": "Reservations",
+      "desc": "Expiry time and deposit required to reserve a property.",
+      "ttlHours": "Reservation validity (hours)",
+      "ttlHoursHelp": "Time before the reservation expires. Maximum 720 h (30 days).",
+      "depositPercent": "Reservation deposit (%)",
+      "depositPercentHelp": "Percentage of the property price charged as deposit.",
+      "errorTtlHours": "Validity hours must be between 1 and 720.",
+      "errorDepositPercent": "Deposit percentage must be between 0.01 and 100.",
+      "success": "Reservation settings updated."
+    },
+    "properties": {
+      "title": "Properties",
+      "desc": "Limits and restrictions for property listings.",
+      "maxImages": "Maximum images per property",
+      "maxImagesHelp": "Between 1 and 50 images.",
+      "errorMaxImages": "Maximum images must be between 1 and 50.",
+      "success": "Property settings updated."
+    },
+    "system": {
+      "title": "System",
+      "desc": "General platform configuration.",
+      "currency": "Default currency",
+      "success": "System settings updated."
+    }
   }
 }

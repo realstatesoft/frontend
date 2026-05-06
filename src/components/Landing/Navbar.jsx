@@ -37,7 +37,6 @@ import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
 import { useUnreadMessagesCount } from "../../hooks/useMessagesData";
 import LanguageSelector from "../common/LanguageSelector";
-import CurrencySelector from "../common/CurrencySelector";
 import { useQueryClient } from "@tanstack/react-query";
 import propertyApi from "../../services/properties/propertyApi";
 
@@ -128,6 +127,15 @@ function CustomNavbar() {
     return '/ofertas';
   };
 
+  const getSettingsLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'ADMIN') return '/admin/settings';
+    if (role === 'AGENT') return '/agent/settings';
+    return '/owner/settings';
+  };
+
+
+
   return (
     <Navbar expand="lg" className="bg-white border-bottom shadow-sm py-2" style={{ zIndex: 1040, borderRadius: "0 0 24px 24px" }}>
       <Container fluid className="px-3 px-lg-5">
@@ -171,138 +179,139 @@ function CustomNavbar() {
         {/* Bell icon for ADMIN + Profile icon with dropdown */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <LanguageSelector />
-          <CurrencySelector />
-          {isAuthenticated && isAdmin && (
-            <Link to="/admin/notifications" className="navbar-notification-bell" aria-label={t('notifications')}>
-              <IoNotificationsOutline size={20} />
-              {unreadCount > 0 && (
-                <span className="bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
-              )}
-            </Link>
-          )}
 
-          {isAuthenticated && messagesUnread > 0 && (
-            <Link to="/mensajes" className="navbar-messages-link" aria-label={t('messages')}>
-              <IoChatbubblesOutline size={20} />
-              <span className="bell-badge">{Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}</span>
-            </Link>
-          )}
+        {isAuthenticated && isAdmin && (
+          <Link to="/admin/notifications" className="navbar-notification-bell" aria-label={t('notifications')}>
+            <IoNotificationsOutline size={20} />
+            {unreadCount > 0 && (
+              <span className="bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </Link>
+        )}
 
-          <div className="profile-dropdown-wrapper" ref={dropdownRef}>
-            <button
-              className="profile-avatar-btn"
-              onClick={() => setDropdownOpen((o) => !o)}
-              aria-label={t('profileMenu')}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-              </svg>
-            </button>
+        {isAuthenticated && messagesUnread > 0 && (
+          <Link to="/mensajes" className="navbar-messages-link" aria-label={t('messages')}>
+            <IoChatbubblesOutline size={20} />
+            <span className="bell-badge">{Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}</span>
+          </Link>
+        )}
 
-            {dropdownOpen && (
-              <div className="profile-dropdown-menu">
-                {isAuthenticated ? (
-                  /* ── Usuario logueado ─────────────────────────── */
-                  <>
-                    {/* Seccion 1: navegacion personal */}
-                    <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <Person size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
+
+        <div className="profile-dropdown-wrapper" ref={dropdownRef}>
+          <button
+            className="profile-avatar-btn"
+            onClick={() => setDropdownOpen((o) => !o)}
+            aria-label={t('profileMenu')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+          </button>
+
+          {dropdownOpen && (
+            <div className="profile-dropdown-menu">
+              {isAuthenticated ? (
+                /* ── Usuario logueado ─────────────────────────── */
+                <>
+                  {/* Seccion 1: navegacion personal */}
+                  <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <Person size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
+                  </Link>
+                  <Link to={getOffersLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoCashOutline size={16} style={{ flexShrink: 0 }} /> {t('myOffers')}
+                  </Link>
+                  <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <HouseDoor size={16} style={{ flexShrink: 0 }} /> {t('myProperties')}
+                  </Link>
+                  <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> {t('myReservations')}
+                  </Link>
+                  {hasPublishedProperties && user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
                     </Link>
-                    <Link to={getOffersLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoCashOutline size={16} style={{ flexShrink: 0 }} /> {t('myOffers')}
+                  )}
+                  <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <Trash size={14} style={{ flexShrink: 0 }} /> {t('trash')}
+                  </Link>
+                  <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <Heart size={16} style={{ flexShrink: 0 }} /> {t('favorites')}
+                  </Link>
+                  <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> {t('preferences')}
+                  </Link>
+                  {user?.role?.toUpperCase() === 'USER' && (
+                    <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
                     </Link>
-                    <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <HouseDoor size={16} style={{ flexShrink: 0 }} /> {t('myProperties')}
+                  )}
+                  {!isAgent && !isAdmin && (
+                    <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
+                      {messagesUnread > 0 && (
+                        <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
+                          {Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}
+                        </span>
+                      )}
                     </Link>
-                    <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> {t('myReservations')}
+                  )}
+                  {user?.role?.toUpperCase() === "ADMIN" && (
+                    <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('adminPanel')}
                     </Link>
-                    {hasPublishedProperties && user?.role?.toUpperCase() === 'USER' && (
-                      <Link to="/owner/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
+                  )}
+
+                  {isAgent && (
+                    <>
+                      {hasPublishedProperties && (
+                        <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                          <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
+                        </Link>
+                      )}
+                      <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> {t('agenda')}
                       </Link>
-                    )}
-                    <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <Trash size={14} style={{ flexShrink: 0 }} /> {t('trash')}
-                    </Link>
-                    <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <Heart size={16} style={{ flexShrink: 0 }} /> {t('favorites')}
-                    </Link>
-                    <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> {t('preferences')}
-                    </Link>
-                    {user?.role?.toUpperCase() === 'USER' && (
-                      <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
                       </Link>
-                    )}
-                    {!isAgent && !isAdmin && (
-                      <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
-                        {messagesUnread > 0 && (
-                          <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
-                            {Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}
+                    </>
+                  )}
+
+                  {isAdmin && (
+                    <>
+                      <Link to="/admin/notifications" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoNotificationsOutline size={16} style={{ flexShrink: 0 }} /> {t('notifications')}
+                        {unreadCount > 0 && (
+                          <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
+                            {unreadCount}
                           </span>
                         )}
                       </Link>
-                    )}
-                    {user?.role?.toUpperCase() === "ADMIN" && (
-                      <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('adminPanel')}
+                      <Link to="/admin/approval" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoCheckmarkDoneOutline size={16} style={{ flexShrink: 0 }} /> {t('propertyApproval')}
                       </Link>
-                    )}
+                    </>
+                  )}
 
-                    {isAgent && (
-                      <>
-                        {hasPublishedProperties && (
-                          <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                            <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
-                          </Link>
-                        )}
-                        <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                          <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> {t('agenda')}
-                        </Link>
-                        <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                          <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
-                        </Link>
-                      </>
-                    )}
+                  <hr className="profile-dropdown-divider" />
 
-                    {isAdmin && (
-                      <>
-                        <Link to="/admin/notifications" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                          <IoNotificationsOutline size={16} style={{ flexShrink: 0 }} /> {t('notifications')}
-                          {unreadCount > 0 && (
-                            <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
-                              {unreadCount}
-                            </span>
-                          )}
-                        </Link>
-                        <Link to="/admin/approval" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                          <IoCheckmarkDoneOutline size={16} style={{ flexShrink: 0 }} /> {t('propertyApproval')}
-                        </Link>
-                      </>
-                    )}
-
-                    <hr className="profile-dropdown-divider" />
-
-                    {/* Seccion 2: configuracion y sesion */}
-                    <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <Gear size={16} style={{ flexShrink: 0 }} /> {t('settings')}
-                    </Link>
-                    <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
-                      <BoxArrowRight size={16} style={{ flexShrink: 0 }} /> {t('logout')}
-                    </button>
-                  </>
-                ) : (
-                  /* ── Usuario no logueado ──────────────────────── */
-                  <button className="profile-dropdown-item" onClick={handleLogin}>
-                    <BoxArrowInRight size={16} style={{ flexShrink: 0 }} /> {t('login')}
+                  {/* Seccion 2: configuracion y sesion */}
+                  <Link to={getSettingsLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <Gear size={16} style={{ flexShrink: 0 }} /> {t('settings')}
+                  </Link>
+                  <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
+                    <BoxArrowRight size={16} style={{ flexShrink: 0 }} /> {t('logout')}
                   </button>
-                )}
-              </div>
-            )}
-          </div>
+                </>
+              ) : (
+                /* ── Usuario no logueado ──────────────────────── */
+                <button className="profile-dropdown-item" onClick={handleLogin}>
+                  <BoxArrowInRight size={16} style={{ flexShrink: 0 }} /> {t('login')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         </div>
 
