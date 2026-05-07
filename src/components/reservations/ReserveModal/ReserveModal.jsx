@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Modal, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Send } from 'react-bootstrap-icons';
 import reservationApi from '../../../services/reservations/reservationApi';
 import { formatCurrency } from '../../../utils/formatters';
 import styles from './ReserveModal.module.scss';
@@ -67,11 +68,11 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <Form.Text className="text-muted d-block">
-              {t('modal.suggestion', { percent: defaultPercent })}
-            </Form.Text>
-            <div className="fw-semibold mt-2" data-testid="reserve-amount-formatted">
-              {formatCurrency(Number(amount) || 0)}
+            <div className={styles.infoBox}>
+              <span className={styles.infoLabel}>{t('modal.suggestion', { percent: defaultPercent })}</span>
+              <span className={styles.infoValue} data-testid="reserve-amount-formatted">
+                {formatCurrency(Number(amount) || 0)}
+              </span>
             </div>
           </Form.Group>
 
@@ -84,6 +85,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
+            <div className={styles.charCount}>{notes.length}/1000</div>
           </Form.Group>
           {error && <Alert variant="danger" role="alert">{error}</Alert>}
         </Modal.Body>
@@ -91,8 +93,10 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
           <Button variant="secondary" onClick={onClose} disabled={submitting}>
             {t('modal.cancel')}
           </Button>
-          <Button variant="primary" type="submit" disabled={submitting}>
-            {submitting ? <><Spinner size="sm" animation="border" className="me-2" />{t('modal.submitting')}</> : t('modal.submit')}
+          <Button variant="primary" type="submit" disabled={submitting} className={styles.submitBtn}>
+            {submitting
+              ? <><Spinner size="sm" animation="border" className="me-2" />{t('modal.submitting')}</>
+              : <><Send size={14} />{t('modal.submit')}</>}
           </Button>
         </Modal.Footer>
       </Form>

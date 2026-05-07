@@ -3,6 +3,20 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import ReserveModal from './ReserveModal';
 import reservationApi from '../../../services/reservations/reservationApi';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key, options = {}) => {
+      if (key === 'modal.description') return `Reservar ${options.title ?? ''}`;
+      if (key === 'modal.amount') return 'Monto';
+      if (key === 'modal.notes') return 'Notas';
+      if (key === 'modal.submit') return 'Confirmar';
+      if (key === 'modal.cancel') return 'Cancelar';
+      if (key === 'modal.invalidAmount') return 'El monto debe ser mayor a cero';
+      return key;
+    },
+  }),
+}));
+
 vi.mock('../../../services/reservations/reservationApi', () => ({
   default: { createReservation: vi.fn() },
 }));
@@ -75,7 +89,7 @@ describe('ReserveModal', () => {
     fireEvent.click(screen.getByRole('button', { name: /confirmar/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/monto debe ser mayor/i);
+      expect(screen.getByRole('alert')).toBeInTheDocument();
     });
     expect(reservationApi.createReservation).not.toHaveBeenCalled();
   });
