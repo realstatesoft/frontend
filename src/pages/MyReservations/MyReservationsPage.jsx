@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Container, Card, Spinner, Alert, Button, Badge, Table, Form, Pagination } from 'react-bootstrap';
-import { ArrowLeft, Eye } from 'react-bootstrap-icons';
+import { Container, Spinner, Alert, Form, Pagination } from 'react-bootstrap';
+import { ArrowLeft, Eye, XCircle } from 'react-bootstrap-icons';
+import Swal from 'sweetalert2';
 import CustomNavbar from '../../components/Landing/Navbar';
 import reservationApi from '../../services/reservations/reservationApi';
-import { formatCurrency } from '../../utils/formatters';
-import { statusVariant, statusLabel } from '../../utils/reservationStatus';
+import { formatCurrency, formatDate } from '../../utils/formatters';
+import { statusLabel } from '../../utils/reservationStatus';
 import styles from './MyReservationsPage.module.scss';
 
 const STATUS_OPTIONS = [
@@ -16,6 +17,20 @@ const STATUS_OPTIONS = [
   { value: 'EXPIRED',               label: 'Expirada' },
   { value: 'CONVERTED_TO_CONTRACT', label: 'Convertida a contrato' },
 ];
+
+const STATUS_COLORS = {
+  PENDING: '#ffc107', ACTIVE: '#198754',
+  CANCELLED: '#6c757d', EXPIRED: '#6c757d',
+  CONVERTED_TO_CONTRACT: '#0d6efd',
+};
+
+const STATUS_BADGE = {
+  PENDING:               { background: '#fff3cd', color: '#856404', border: '1px solid #ffc107' },
+  ACTIVE:                { background: '#d1e7dd', color: '#0a3622', border: '1px solid #a3cfbb' },
+  CANCELLED:             { background: '#e9ecef', color: '#495057', border: '1px solid #ced4da' },
+  EXPIRED:               { background: '#e9ecef', color: '#495057', border: '1px solid #ced4da' },
+  CONVERTED_TO_CONTRACT: { background: '#cfe2ff', color: '#084298', border: '1px solid #9ec5fe' },
+};
 
 const PAGE_SIZE = 10;
 
@@ -45,48 +60,45 @@ export default function MyReservationsPage() {
 
   useEffect(() => { load(page, status); }, [load, page, status]);
 
-  const handleStatusChange = (e) => {
-    setStatus(e.target.value);
-    setPage(0);
-  };
+  const handleStatusChange = (e) => { setStatus(e.target.value); setPage(0); };
 
   const handleCancel = async (id) => {
-    const reasonResult = window.prompt('Motivo:');
-    if (reasonResult === null) return;
+    const { value: reason, isConfirmed } = await Swal.fire({
+      title: '¿Cancelar esta reserva?',
+      input: 'textarea',
+      inputPlaceholder: 'Motivo (opcional)...',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#dc3545',
+    });
+    if (!isConfirmed) return;
     try {
-      await reservationApi.cancel(id, { reason: reasonResult });
+      await reservationApi.cancel(id, { reason: reason ?? '' });
       load(page, status);
     } catch {
       setError('No se pudo cancelar la reserva.');
     }
   };
 
-  const goToProperty = (propertyId) => {
-    if (propertyId) navigate(`/properties/${propertyId}`);
-  };
-
   return (
     <>
       <CustomNavbar />
       <Container className={styles.container}>
-        <div className="d-flex align-items-center gap-2 mb-3">
-          <Button
-            variant="light"
-            className="d-flex align-items-center gap-1"
-            onClick={() => navigate(-1)}
-            aria-label="Volver"
-          >
+        <div className={styles.header}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)} aria-label="Volver">
             <ArrowLeft size={18} /> Volver
-          </Button>
-          <h2 className="mb-0 ms-2">Mis reservas</h2>
+          </button>
+          <h2 className={styles.title}>Mis reservas</h2>
         </div>
 
-        <div className="mb-3" style={{ maxWidth: 260 }}>
+        <div className={styles.filterRow}>
           <Form.Select
             size="sm"
             value={status}
             onChange={handleStatusChange}
             aria-label="Filtrar por estado"
+            style={{ maxWidth: 260 }}
           >
             {STATUS_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -99,65 +111,63 @@ export default function MyReservationsPage() {
         {!loading && !error && items.length === 0 && (
           <Alert variant="info">Aún no tienes reservas.</Alert>
         )}
+
         {!loading && items.length > 0 && (
-          <>
-            <Card>
-              <Table responsive hover className="mb-0">
-                <thead>
-                  <tr>
-                    <th>Propiedad</th>
-                    <th>Monto</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((r) => (
-                    <tr key={r.id}>
-                      <td>
+          <div className={styles.list}>
+            {items.map((r) => (
+              <div key={r.id} className={styles.card}>
+                <div className={styles.colorBar} style={{ background: STATUS_COLORS[r.status] ?? '#6c757d' }} />
+                <div className={styles.cardBody}>
+                  <div className={styles.cardMain}>
+                    <div className={styles.thumbnail} />
+                    <div className={styles.info}>
+                      <div className={styles.propertyTitle}>
                         {r.propertyId
                           ? <Link to={`/properties/${r.propertyId}`}>{r.propertyTitle}</Link>
                           : r.propertyTitle}
-                      </td>
-                      <td>{formatCurrency(r.amount)}</td>
-                      <td>
-                        <Badge bg={statusVariant(r.status)}>{statusLabel(r.status)}</Badge>
-                      </td>
-                      <td>
-                        <div className="d-flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline-primary"
-                            onClick={() => goToProperty(r.propertyId)}
-                            aria-label="Ver propiedad"
-                          >
-                            <Eye size={14} /> Ver
-                          </Button>
-                          {(r.status === 'PENDING' || r.status === 'ACTIVE') && (
-                            <Button size="sm" variant="outline-danger" onClick={() => handleCancel(r.id)}>
-                              Cancelar
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Card>
+                      </div>
+                      <div className={styles.meta}>
+                        Enviada el {formatDate(r.createdAt)}
+                        {r.expiresAt ? ` · Expira ${formatDate(r.expiresAt)}` : ''}
+                      </div>
+                      <div className={styles.statusRow}>
+                        <span className={styles.statusBadge} style={STATUS_BADGE[r.status] ?? STATUS_BADGE.CANCELLED}>
+                          {statusLabel(r.status)}
+                        </span>
+                        <span className={styles.amount}>{formatCurrency(r.amount)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.actions}>
+                    <button
+                      className={styles.btnSecondary}
+                      onClick={() => r.propertyId && navigate(`/properties/${r.propertyId}`)}
+                      aria-label="Ver propiedad"
+                    >
+                      <Eye size={14} /> Ver propiedad
+                    </button>
+                    {(r.status === 'PENDING' || r.status === 'ACTIVE') && (
+                      <button className={styles.btnOutlineDanger} onClick={() => handleCancel(r.id)}>
+                        <XCircle size={14} /> Cancelar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-            {totalPages > 1 && (
-              <Pagination className="mt-3 justify-content-center">
-                <Pagination.Prev disabled={page === 0} onClick={() => setPage((p) => p - 1)} />
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <Pagination.Item key={i} active={i === page} onClick={() => setPage(i)}>
-                    {i + 1}
-                  </Pagination.Item>
-                ))}
-                <Pagination.Next disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} />
-              </Pagination>
-            )}
-          </>
+        {totalPages > 1 && (
+          <Pagination className="mt-3 justify-content-center">
+            <Pagination.Prev disabled={page === 0} onClick={() => setPage((p) => p - 1)} />
+            {Array.from({ length: totalPages }, (_, i) => (
+              <Pagination.Item key={i} active={i === page} onClick={() => setPage(i)}>
+                {i + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} />
+          </Pagination>
         )}
       </Container>
     </>
