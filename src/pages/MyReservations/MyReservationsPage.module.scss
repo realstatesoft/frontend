@@ -2,3 +2,123 @@
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  &:hover { background: #e9ecef; }
+}
+
+.title { margin: 0; font-size: 1.5rem; font-weight: 700; }
+
+.filterRow { margin-bottom: 20px; }
+
+.list { display: flex; flex-direction: column; gap: 12px; }
+
+.card {
+  display: flex;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.colorBar { width: 6px; flex-shrink: 0; }
+
+.cardBody {
+  flex: 1;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cardMain {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.thumbnail {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #dee2e6, #adb5bd);
+  flex-shrink: 0;
+}
+
+.info { flex: 1; min-width: 0; }
+
+.propertyTitle {
+  font-weight: 600;
+  font-size: 15px;
+  color: #212529;
+  margin-bottom: 3px;
+  a { color: #212529; text-decoration: none; &:hover { text-decoration: underline; } }
+}
+
+.meta { font-size: 12px; color: #6c757d; margin-bottom: 6px; }
+
+.statusRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.statusBadge {
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.amount { font-size: 13px; font-weight: 700; color: #212529; }
+
+.actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+
+.btnSecondary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  &:hover { background: #e9ecef; }
+}
+
+.btnOutlineDanger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #dc3545;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc3545;
+  cursor: pointer;
+  &:hover { background: #fff5f5; }
+}

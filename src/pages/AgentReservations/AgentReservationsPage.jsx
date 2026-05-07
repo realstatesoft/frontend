@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Container, Card, Spinner, Alert, Badge, Table, Form, Pagination } from 'react-bootstrap';
+import { Container, Spinner, Alert, Form, Pagination } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FiMessageSquare } from 'react-icons/fi';
+import { CheckCircleFill, XCircle } from 'react-bootstrap-icons';
 import Swal from 'sweetalert2';
 import reservationApi from '../../services/reservations/reservationApi';
 import NewConversationModal from '../../components/messages/NewConversationModal';
 import { formatCurrency, formatDate } from '../../utils/formatters';
-import { statusVariant, statusLabel } from '../../utils/reservationStatus';
+import { statusLabel } from '../../utils/reservationStatus';
 import styles from './AgentReservationsPage.module.scss';
 
 const STATUS_OPTIONS = [
@@ -17,6 +18,20 @@ const STATUS_OPTIONS = [
   { value: 'EXPIRED',               label: 'Expirada' },
   { value: 'CONVERTED_TO_CONTRACT', label: 'Convertida a contrato' },
 ];
+
+const STATUS_COLORS = {
+  PENDING: '#ffc107', ACTIVE: '#198754',
+  CANCELLED: '#6c757d', EXPIRED: '#6c757d',
+  CONVERTED_TO_CONTRACT: '#0d6efd',
+};
+
+const STATUS_BADGE = {
+  PENDING:               { background: '#fff3cd', color: '#856404', border: '1px solid #ffc107' },
+  ACTIVE:                { background: '#d1e7dd', color: '#0a3622', border: '1px solid #a3cfbb' },
+  CANCELLED:             { background: '#e9ecef', color: '#495057', border: '1px solid #ced4da' },
+  EXPIRED:               { background: '#e9ecef', color: '#495057', border: '1px solid #ced4da' },
+  CONVERTED_TO_CONTRACT: { background: '#cfe2ff', color: '#084298', border: '1px solid #9ec5fe' },
+};
 
 const PAGE_SIZE = 10;
 
@@ -38,8 +53,7 @@ export default function AgentReservationsPage() {
       const data = res.data?.data ?? {};
       setItems(data.content ?? []);
       setTotalPages(data.totalPages ?? 0);
-    } catch (err) {
-      console.error('getAssignedReservations failed', err);
+    } catch {
       setError('No se pudieron cargar las reservas.');
     } finally {
       setLoading(false);
@@ -48,22 +62,48 @@ export default function AgentReservationsPage() {
 
   useEffect(() => { load(page, status); }, [load, page, status]);
 
-  const handleStatusChange = (e) => {
-    setStatus(e.target.value);
-    setPage(0);
+  const handleStatusChange = (e) => { setStatus(e.target.value); setPage(0); };
+
+  const handleConfirm = async (id) => {
+    try {
+      await reservationApi.confirm(id);
+      load(page, status);
+    } catch {
+      setError('No se pudo confirmar la reserva.');
+    }
+  };
+
+  const handleReject = async (id, isActive) => {
+    const { value: reason, isConfirmed } = await Swal.fire({
+      title: isActive ? 'Motivo de cancelación' : 'Motivo de rechazo',
+      input: 'textarea',
+      inputPlaceholder: 'Escribí el motivo...',
+      showCancelButton: true,
+      confirmButtonText: isActive ? 'Cancelar reserva' : 'Rechazar',
+      cancelButtonText: 'Volver',
+      confirmButtonColor: '#dc3545',
+    });
+    if (!isConfirmed) return;
+    try {
+      await reservationApi.cancel(id, { reason: reason ?? '' });
+      load(page, status);
+    } catch {
+      setError('No se pudo procesar la acción.');
+    }
   };
 
   return (
     <Container className={styles.container}>
-      <h2>Reservas recibidas</h2>
-      <p className="text-muted">Reservas sobre las propiedades que tenés asignadas.</p>
+      <h2 className={styles.title}>Reservas recibidas</h2>
+      <p className={styles.subtitle}>Reservas sobre las propiedades que tenés asignadas.</p>
 
-      <div className="mb-3" style={{ maxWidth: 260 }}>
+      <div className={styles.filterRow}>
         <Form.Select
           size="sm"
           value={status}
           onChange={handleStatusChange}
           aria-label="Filtrar por estado"
+          style={{ maxWidth: 260 }}
         >
           {STATUS_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
@@ -76,74 +116,85 @@ export default function AgentReservationsPage() {
       {!loading && !error && items.length === 0 && (
         <Alert variant="info">No hay reservas sobre tus propiedades asignadas.</Alert>
       )}
+
       {!loading && items.length > 0 && (
-        <>
-          <Card>
-            <Table responsive hover className="mb-0">
-              <thead>
-                <tr>
-                  <th>Propiedad</th>
-                  <th>Interesado</th>
-                  <th>Monto</th>
-                  <th>Estado</th>
-                  <th>Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((r) => (
-                  <tr key={r.id}>
-                    <td><Link to={`/properties/${r.propertyId}`}>{r.propertyTitle}</Link></td>
-                    <td>
+        <div className={styles.list}>
+          {items.map((r) => (
+            <div key={r.id} className={styles.card}>
+              <div className={styles.colorBar} style={{ background: STATUS_COLORS[r.status] ?? '#6c757d' }} />
+              <div className={styles.cardBody}>
+                <div className={styles.cardTop}>
+                  <div>
+                    <div className={styles.propLabel}>Propiedad</div>
+                    <Link to={`/properties/${r.propertyId}`} className={styles.propTitle}>{r.propertyTitle}</Link>
+                  </div>
+                  <span className={styles.statusBadge} style={STATUS_BADGE[r.status] ?? STATUS_BADGE.CANCELLED}>
+                    {statusLabel(r.status)}
+                  </span>
+                </div>
+                <div className={styles.cardMeta}>
+                  <div className={styles.metaBlock}>
+                    <span className={styles.metaLabel}>Interesado</span>
+                    <span className={styles.metaValue}>
                       {r.buyerName}
-                      <button 
-                        className="btn btn-link btn-sm p-0 ms-2 text-primary"
-                        onClick={() => {
-                          setSelectedBuyer({ id: r.buyerId, name: r.buyerName });
-                          setShowMessageModal(true);
-                        }}
+                      <button
+                        className={styles.msgBtn}
+                        onClick={() => { setSelectedBuyer({ id: r.buyerId, name: r.buyerName }); setShowMessageModal(true); }}
                         title="Enviar mensaje"
                       >
                         <FiMessageSquare />
                       </button>
-                    </td>
-                    <td>{formatCurrency(r.amount)}</td>
-                    <td><Badge bg={statusVariant(r.status)}>{statusLabel(r.status)}</Badge></td>
-                    <td>{formatDate(r.createdAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Card>
+                    </span>
+                    <span className={styles.metaSub}>{r.buyerEmail}</span>
+                  </div>
+                  <div className={styles.metaBlock}>
+                    <span className={styles.metaLabel}>Monto ofrecido</span>
+                    <span className={styles.metaAmount}>{formatCurrency(r.amount)}</span>
+                  </div>
+                  <div className={styles.metaBlock}>
+                    <span className={styles.metaLabel}>Recibida el</span>
+                    <span className={styles.metaValue}>{formatDate(r.createdAt)}</span>
+                  </div>
+                </div>
+                {(r.status === 'PENDING' || r.status === 'ACTIVE') && (
+                  <div className={styles.actions}>
+                    {r.status === 'PENDING' && (
+                      <button className={styles.btnConfirm} onClick={() => handleConfirm(r.id)}>
+                        <CheckCircleFill size={14} /> Confirmar
+                      </button>
+                    )}
+                    <button
+                      className={styles.btnReject}
+                      onClick={() => handleReject(r.id, r.status === 'ACTIVE')}
+                    >
+                      <XCircle size={14} /> {r.status === 'PENDING' ? 'Rechazar' : 'Cancelar reserva'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-          {totalPages > 1 && (
-            <Pagination className="mt-3 justify-content-center">
-              <Pagination.Prev disabled={page === 0} onClick={() => setPage((p) => p - 1)} />
-              {Array.from({ length: totalPages }, (_, i) => (
-                <Pagination.Item key={i} active={i === page} onClick={() => setPage(i)}>
-                  {i + 1}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} />
-            </Pagination>
-          )}
-        </>
+      {totalPages > 1 && (
+        <Pagination className="mt-3 justify-content-center">
+          <Pagination.Prev disabled={page === 0} onClick={() => setPage((p) => p - 1)} />
+          {Array.from({ length: totalPages }, (_, i) => (
+            <Pagination.Item key={i} active={i === page} onClick={() => setPage(i)}>
+              {i + 1}
+            </Pagination.Item>
+          ))}
+          <Pagination.Next disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)} />
+        </Pagination>
       )}
 
       <NewConversationModal
         isOpen={showMessageModal}
-        onClose={() => {
-          setShowMessageModal(false);
-          setSelectedBuyer(null);
-        }}
+        onClose={() => { setShowMessageModal(false); setSelectedBuyer(null); }}
         preSelectedAgent={selectedBuyer}
         onSuccess={() => {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Mensaje enviado!',
-            text: 'Tu mensaje ha sido enviado correctamente.',
-            timer: 2000,
-            showConfirmButton: false,
-          });
+          Swal.fire({ icon: 'success', title: '¡Mensaje enviado!', timer: 2000, showConfirmButton: false });
         }}
       />
     </Container>
