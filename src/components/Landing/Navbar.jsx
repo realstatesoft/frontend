@@ -37,6 +37,7 @@ import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
 import { useUnreadMessagesCount } from "../../hooks/useMessagesData";
 import LanguageSelector from "../common/LanguageSelector";
+import CurrencySelector from "../common/CurrencySelector";
 import { useQueryClient } from "@tanstack/react-query";
 import propertyApi from "../../services/properties/propertyApi";
 
@@ -179,6 +180,7 @@ function CustomNavbar() {
         {/* Bell icon for ADMIN + Profile icon with dropdown */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <LanguageSelector />
+          <CurrencySelector />
 
         {isAuthenticated && isAdmin && (
           <Link to="/admin/notifications" className="navbar-notification-bell" aria-label={t('notifications')}>
