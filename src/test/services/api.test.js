@@ -93,7 +93,7 @@ describe('api service integration with interceptors', () => {
     
     const originalLocation = window.location;
     delete window.location;
-    window.location = { href: '', pathname: '/' };
+    window.location = { href: '', pathname: '/dashboard' };
 
     const errorResponse = {
         response: { status: 401 },

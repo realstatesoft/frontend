@@ -17,6 +17,7 @@ vi.mock('../../services/properties/propertyApi', () => ({
     trash: vi.fn(),
     registerView: vi.fn(),
     getViewCount: vi.fn(),
+    registerRecentView: vi.fn().mockResolvedValue(undefined),
   },
 }));
 

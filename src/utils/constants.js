@@ -23,6 +23,7 @@ export const OWNER_ROUTES = {
   MESSAGES: '/owner/mensajes',
   OFFERS: '/owner/ofertas',
   CONTRACTS: '/owner/contratos',
+  RESERVATIONS: '/owner/reservations',
   SETTINGS: '/owner/settings',
 };
 

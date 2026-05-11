@@ -243,9 +243,14 @@ function CustomNavbar() {
                     <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> {t('preferences')}
                   </Link>
                   {user?.role?.toUpperCase() === 'USER' && (
-                    <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
-                    </Link>
+                    <>
+                      <Link to="/tenant/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardTenant', 'Panel Inquilino')}
+                      </Link>
+                      <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
+                      </Link>
+                    </>
                   )}
                   {!isAgent && !isAdmin && (
                     <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>

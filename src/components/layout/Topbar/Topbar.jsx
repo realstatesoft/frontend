@@ -151,9 +151,26 @@ export default function Topbar({ extraActions }) {
               <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> {t('favorites')}
               </Link>
-              <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
-              </Link>
+              {(user?.role === 'USER' || user?.role === 'OWNER') && (
+                <>
+                  <Link to="/tenant/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardTenant', 'Panel Inquilino')}
+                  </Link>
+                  <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
+                  </Link>
+                </>
+              )}
+              {user?.role === 'AGENT' && (
+                <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAgent', 'Panel Agente')}
+                </Link>
+              )}
+              {user?.role === 'ADMIN' && (
+                <Link to="/admin/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAdmin', 'Panel Admin')}
+                </Link>
+              )}
               {user?.role === 'AGENT' && (
                 <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> {t('agenda')}

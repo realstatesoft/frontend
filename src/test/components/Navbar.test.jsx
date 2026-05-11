@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { i18n, initializeI18n } from '../../i18n';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────────
@@ -15,13 +16,19 @@ import useHasPublishedProperties from '../../hooks/useHasPublishedProperties';
 import { useUnreadMessagesCount } from '../../hooks/useMessagesData';
 import CustomNavbar from '../../components/Landing/Navbar';
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
+
 const renderNavbar = () =>
   render(
-    <I18nextProvider i18n={i18n}>
-      <MemoryRouter>
-        <CustomNavbar />
-      </MemoryRouter>
-    </I18nextProvider>
+    <QueryClientProvider client={queryClient}>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <CustomNavbar />
+        </MemoryRouter>
+      </I18nextProvider>
+    </QueryClientProvider>
   );
 
 describe('CustomNavbar', () => {
@@ -42,16 +49,16 @@ describe('CustomNavbar', () => {
       useUnreadMessagesCount.mockReturnValue({ data: 0 });
     });
 
-    it('renderiza el botón "Contactanos"', () => {
+    it('renderiza el botón de login para usuarios no autenticados', () => {
       renderNavbar();
-      expect(screen.getByText('Contactanos')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /menú de perfil/i })).toBeInTheDocument();
     });
 
     it('muestra los enlaces de navegación principales', () => {
       renderNavbar();
-      expect(screen.getByText('Inicio')).toBeInTheDocument();
-      expect(screen.getByText('Propiedades')).toBeInTheDocument();
-      expect(screen.getByText('Vender / Alquilar')).toBeInTheDocument();
+      expect(screen.getByText(/comprar/i)).toBeInTheDocument();
+      expect(screen.getByText(/alquilar/i)).toBeInTheDocument();
+      expect(screen.getByText(/vender/i)).toBeInTheDocument();
     });
 
     it('muestra el selector de idioma en el navbar público', () => {

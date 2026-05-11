@@ -40,6 +40,10 @@ const PreferencesPage = lazy(() => import("../pages/PreferencesPage"));
 const PaymentPage = lazy(() => import("../pages/Payment/PaymentPage"));
 const MyPaymentsPage = lazy(() => import("../pages/MyPayments/MyPaymentsPage"));
 
+// Tenant Dashboard
+const TenantLayout = lazy(() => import("../components/layout/TenantLayout/TenantLayout"));
+const TenantDashboardPage = lazy(() => import("../pages/TenantDashboard/TenantDashboardPage"));
+
 // Agent Dashboard (chunk-agent)
 const AgentLayout = lazy(() => import("../components/layout/AgentLayout/AgentLayout"));
 const DashboardPage = lazy(() => import("../pages/Dashboard/DashboardPage"));
@@ -130,7 +134,11 @@ export default function AppRouter() {
                 <Route path="/mensajes" element={<ClientMessagesPage />} />
                 <Route path="/contratos/:id" element={<ContractDetailPage />} />
                 <Route path="/ofertas" element={<OfferManagementPage />} />
-                <Route path="/owner/reservations" element={<OwnerReservationsPage />} />
+                <Route path="/ofertas" element={<OfferManagementPage />} />
+                <Route path="/tenant" element={<TenantLayout />}>
+                    <Route index element={<Navigate to="/tenant/dashboard" replace />} />
+                    <Route path="dashboard" element={<TenantDashboardPage />} />
+                </Route>
             </Route>
 
             {/* -- Rutas protegidas (Agent) ------------------------- */}
@@ -173,6 +181,7 @@ export default function AppRouter() {
                     <Route path="contratos" element={<ContractsPage />} />
                     <Route path="contratos/nuevo" element={<ContractCreatePage />} />
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="reservations" element={<OwnerReservationsPage />} />
                     <Route path="settings" element={<UserSettingsPage />} />
                 </Route>
             </Route>

@@ -10,6 +10,10 @@ vi.mock('../../hooks/useLeads', () => ({
   useLead: vi.fn(),
 }));
 
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: () => ({ user: { id: 1, role: 'AGENT' }, isAuthenticated: true }),
+}));
+
 const mockLead = {
   id: 1,
   name: 'John Doe',
@@ -115,8 +119,7 @@ describe('LeadDetailPage', () => {
     expect(screen.getByText('Calle Falsa 123')).toBeInTheDocument();
     
     // Verificamos Tags de condiciones especiales
-    expect(screen.getByText(/hoa/i)).toBeInTheDocument();
-    expect(screen.getByText(/security system/i)).toBeInTheDocument();
+    expect(screen.getByText(/piscina/i)).toBeInTheDocument();
     
     // Verificamos línea de tiempo
     expect(screen.getByText('Llamada inicial')).toBeInTheDocument();

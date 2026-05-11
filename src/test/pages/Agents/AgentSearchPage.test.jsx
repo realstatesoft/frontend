@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../../i18n';
 import AgentSearchPage from '../../../pages/Agents/AgentSearchPage';
 import agentApi from '../../../services/agents/agentApi';
 
@@ -65,10 +67,11 @@ describe('AgentSearchPage', () => {
     };
   })();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.stubGlobal('sessionStorage', mockSessionStorage);
     mockSessionStorage.clear();
     vi.clearAllMocks();
+    await initializeI18n();
 
     agentApi.getAllSpecialties.mockResolvedValue(mockSpecialties);
     agentApi.searchAgents.mockResolvedValue(mockAgents);
@@ -80,9 +83,11 @@ describe('AgentSearchPage', () => {
 
   const renderComponent = () => {
     return render(
-      <MemoryRouter>
-        <AgentSearchPage />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <AgentSearchPage />
+        </MemoryRouter>
+      </I18nextProvider>
     );
   };
 
