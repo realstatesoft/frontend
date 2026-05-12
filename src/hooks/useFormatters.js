@@ -16,20 +16,22 @@ export default function useFormatters() {
   const locale = LOCALE_MAP[currentLanguage] || 'es-PY';
 
   const formatCurrency = useCallback((amount, currencyOverride) => {
-    if (amount == null) return '$0';
-    
     const currency = currencyOverride || selectedCurrency || DEFAULT_CURRENCY;
+    const value = amount ?? 0;
     
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
       minimumFractionDigits: currency === 'PYG' ? 0 : 2,
       maximumFractionDigits: currency === 'PYG' ? 0 : 2,
-    }).format(amount);
+    }).format(value);
   }, [locale, selectedCurrency]);
 
   const formatDate = useCallback((dateStr, options = {}) => {
     if (!dateStr) return '';
+    
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
     
     const defaultOptions = {
       day: '2-digit',
@@ -37,11 +39,14 @@ export default function useFormatters() {
       year: 'numeric',
     };
 
-    return new Intl.DateTimeFormat(locale, { ...defaultOptions, ...options }).format(new Date(dateStr));
+    return new Intl.DateTimeFormat(locale, { ...defaultOptions, ...options }).format(date);
   }, [locale]);
 
   const formatDateTime = useCallback((dateStr, options = {}) => {
     if (!dateStr) return '';
+    
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
     
     const defaultOptions = {
       day: '2-digit',
@@ -51,7 +56,7 @@ export default function useFormatters() {
       minute: '2-digit',
     };
 
-    return new Intl.DateTimeFormat(locale, { ...defaultOptions, ...options }).format(new Date(dateStr));
+    return new Intl.DateTimeFormat(locale, { ...defaultOptions, ...options }).format(date);
   }, [locale]);
 
   return {

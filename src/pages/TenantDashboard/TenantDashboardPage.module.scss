@@ -2,6 +2,7 @@
 
 .dashboard {
   @include flex-column;
+  
   gap: var(--spacing-xl);
   max-width: 1100px;
   margin: 0 auto;
@@ -37,6 +38,7 @@
 
 .summaryCard {
   @include glass-card;
+  
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
@@ -44,6 +46,7 @@
 
   &__header {
     @include flex-between;
+    
     font-size: 0.875rem;
     color: var(--color-text-muted);
     font-weight: 500;
@@ -72,6 +75,7 @@
 // ─── Property Hero Card ──────────────────────────────────────────────────────
 .propertyCard {
   @include glass-card;
+  
   display: grid;
   grid-template-columns: 280px 1fr;
   overflow: hidden;
@@ -90,17 +94,20 @@
   &__content {
     padding: var(--spacing-xl);
     @include flex-column;
+    
     justify-content: space-between;
     gap: var(--spacing-lg);
   }
 
   &__top {
     @include flex-between;
+    
     align-items: flex-start;
   }
 
   &__main {
     @include flex-column;
+    
     gap: var(--spacing-xs);
   }
 
@@ -183,10 +190,12 @@
 
 .section {
   @include glass-card;
+  
   padding: var(--spacing-lg);
 
   &__header {
     @include flex-between;
+    
     margin-bottom: var(--spacing-lg);
     
     h3 {
@@ -217,6 +226,7 @@
     height: 40px;
     border-radius: 10px;
     @include flex-center;
+    
     margin-right: var(--spacing-md);
     font-size: 1.1rem;
 
@@ -244,6 +254,7 @@
   &__side {
     text-align: right;
     @include flex-column;
+    
     align-items: flex-end;
     gap: 6px;
   }
@@ -276,6 +287,7 @@
 // ─── Alert ───────────────────────────────────────────────────────────────────
 .alert {
   @include glass-card;
+  
   background: #fffbeb;
   border-color: #fde68a;
   padding: var(--spacing-lg);
@@ -308,6 +320,7 @@
 // ─── Inactive State ──────────────────────────────────────────────────────────
 .inactive {
   @include flex-center;
+  
   flex-direction: column;
   padding: 100px 20px;
   text-align: center;
