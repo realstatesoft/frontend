@@ -59,6 +59,7 @@ export async function initializeI18n() {
         'tour',
         'propertyViews',
         'locations',
+        'tenant',
       ],
       interpolation: {
         escapeValue: false,

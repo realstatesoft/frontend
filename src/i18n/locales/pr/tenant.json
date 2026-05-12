@@ -1,0 +1,52 @@
+{
+  "loading": "Carregando...",
+  "tenantDashboard": {
+    "errorTitle": "Erro ao carregar o dashboard",
+    "errorMessage": "Houve um problema ao obter as informações do seu aluguel.",
+    "exploreProperties": "Explorar propriedades",
+    "welcome": "Bem-vindo, {{name}}",
+    "defaultName": "Inquilino",
+    "subtitle": "Resumo do seu aluguel",
+    "nextPayment": "Próximo Pagamento",
+    "totalPaid": "Total Pago",
+    "totalPaidPeriod": "Nos últimos 12 meses",
+    "daysRemaining": "Dias Restantes",
+    "contractDays": "Dias de contrato",
+    "openTickets": "Tickets Abertos",
+    "maintenanceRequests": "Solicitações de manutenção"
+  },
+  "inactive": {
+    "title": "Sem aluguel ativo",
+    "message": "Você não tem um aluguel ativo no momento. Explore nossas propriedades disponíveis para encontrar seu próximo lar."
+  },
+  "tenant": {
+    "property": {
+      "owner": "Proprietário",
+      "status": {
+        "active": "Ativo"
+      },
+      "startDate": "Início do contrato",
+      "endDate": "Fim do contrato",
+      "viewLease": "Ver Contrato",
+      "details": "Detalhes",
+      "monthlyRent": "Aluguel mensal"
+    },
+    "paymentReminder": {
+      "title": "Lembrete de Pagamento",
+      "message": "Seu próximo pagamento vence em {{dueDate}}. Lembre-se de realizar o pagamento antes da data limite para evitar encargos adicionais."
+    }
+  },
+  "upcomingPayments": "Próximos Pagamentos",
+  "viewHistory": "Ver histórico",
+  "installmentLabel": "Parcela #{{number}}",
+  "dueLabel": "Vence:",
+  "paid": "Pago",
+  "payNow": "Pagar Agora",
+  "maintenance": {
+    "title": "Solicitações de Manutenção",
+    "newRequest": "Nova Solicitação",
+    "inProgress": "Em progresso",
+    "assigned": "Atribuído",
+    "empty": "Não há solicitações recentes."
+  }
+}

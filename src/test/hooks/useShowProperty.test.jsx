@@ -123,6 +123,15 @@ describe('useShowProperty', () => {
     });
   });
 
+  it('debe registrar la vista reciente si el usuario está autenticado', async () => {
+    renderHook(() => useShowProperty());
+
+    await waitFor(() => {
+      expect(propertyApi.registerRecentView).toHaveBeenCalledWith('123');
+    });
+  });
+
+
   it('no rompe la carga si falla el registro o el conteo de vistas', async () => {
     propertyApi.registerView.mockRejectedValue(new Error('register failed'));
     propertyApi.getViewCount.mockRejectedValue(new Error('count failed'));

@@ -27,6 +27,15 @@ export const OWNER_ROUTES = {
   SETTINGS: '/owner/settings',
 };
 
+export const TENANT_ROUTES = {
+  DASHBOARD: '/tenant/dashboard',
+  LEASE: '/tenant/lease',
+  PAYMENTS: '/tenant/payments',
+  MAINTENANCE: '/tenant/maintenance',
+  MESSAGES: '/tenant/messages',
+  SETTINGS: '/tenant/settings',
+};
+
 export const ADMIN_ROUTES = {
   DASHBOARD: '/admin/dashboard',
   APPROVAL: '/admin/approval',

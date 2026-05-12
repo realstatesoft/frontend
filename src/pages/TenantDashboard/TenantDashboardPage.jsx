@@ -5,8 +5,9 @@ import {
   FiFileText, FiEye, FiCreditCard, FiAlertTriangle, FiArrowRight
 } from 'react-icons/fi';
 import { useTenantDashboard } from '../../hooks/useTenantDashboard';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { useAuth } from '../../hooks/useAuth';
+import Button from '../../components/common/Button/Button';
 import styles from './TenantDashboardPage.module.scss';
 
 export default function TenantDashboardPage() {
@@ -14,16 +15,19 @@ export default function TenantDashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data, isLoading, error } = useTenantDashboard();
+  const { formatCurrency, formatDate } = useFormatters();
 
-  if (isLoading) return <div className={styles.loading} role="status">Cargando...</div>;
+  if (isLoading) return <div className={styles.loading} role="status">{t('loading', 'Cargando...')}</div>;
+
 
   if (error || !data) {
     return (
       <div className={styles.dashboard}>
         <div className={styles.inactive}>
           <FiAlertTriangle className={styles.inactive__icon} />
-          <h2>Error al cargar el dashboard</h2>
-          <p>Hubo un problema al obtener la información de tu arriendo.</p>
+          <h2>{t('tenantDashboard.errorTitle', 'Error al cargar el dashboard')}</h2>
+          <p>{t('tenantDashboard.errorMessage', 'Hubo un problema al obtener la información de tu arriendo.')}</p>
+
         </div>
       </div>
     );
@@ -46,9 +50,9 @@ export default function TenantDashboardPage() {
           <FiHome className={styles.inactive__icon} />
           <h2>{t('inactive.title', 'Sin arriendo activo')}</h2>
           <p>{t('inactive.message', 'No tienes un arriendo activo en este momento. Explora nuestras propiedades disponibles para encontrar tu próximo hogar.')}</p>
-          <button className={styles.btn} onClick={() => navigate('/properties')}>
-            Explorar propiedades <FiArrowRight />
-          </button>
+          <Button onClick={() => navigate('/properties')}>
+            {t('tenantDashboard.exploreProperties', 'Explorar propiedades')} <FiArrowRight />
+          </Button>
         </div>
       </div>
     );
@@ -58,15 +62,19 @@ export default function TenantDashboardPage() {
     <div className={styles.dashboard}>
       {/* Header */}
       <header className={styles.header}>
-        <h1 className={styles.title}>Bienvenido, {user?.name?.split(' ')[0] || 'Inquilino'}</h1>
-        <p className={styles.subtitle}>Resumen de tu arrendamiento</p>
+        <h1 className={styles.title}>
+          {t('tenantDashboard.welcome', { name: user?.name?.split(' ')[0] || t('tenantDashboard.defaultName', 'Inquilino') })}
+        </h1>
+        <p className={styles.subtitle}>{t('tenantDashboard.subtitle', 'Resumen de tu arrendamiento')}</p>
+
       </header>
 
       {/* Summary Grid */}
       <div className={styles.summaryGrid}>
         <div className={styles.summaryCard}>
           <div className={styles.summaryCard__header}>
-            Próximo Pago <FiCalendar className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--blue']} />
+            {t('tenantDashboard.nextPayment', 'Próximo Pago')} <FiCalendar className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--blue']} />
+
           </div>
           <div className={styles.summaryCard__value}>
             {nextInstallment ? formatDate(nextInstallment.dueDate) : '--/--/----'}
@@ -78,28 +86,34 @@ export default function TenantDashboardPage() {
 
         <div className={styles.summaryCard}>
           <div className={styles.summaryCard__header}>
-            Total Pagado <FiCheckCircle className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--green']} />
+            {t('tenantDashboard.totalPaid', 'Total Pagado')} <FiCheckCircle className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--green']} />
+
           </div>
           <div className={styles.summaryCard__value}>
             {formatCurrency(totalPaidLastYear)}
           </div>
-          <div className={styles.summaryCard__sub}>En los últimos 12 meses</div>
+          <div className={styles.summaryCard__sub}>{t('tenantDashboard.totalPaidPeriod', 'En los últimos 12 meses')}</div>
+
         </div>
 
         <div className={styles.summaryCard}>
           <div className={styles.summaryCard__header}>
-            Días Restantes <FiCalendar className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--blue']} />
+            {t('tenantDashboard.daysRemaining', 'Días Restantes')} <FiCalendar className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--blue']} />
+
           </div>
           <div className={styles.summaryCard__value}>{activeLease?.daysRemaining || '0'}</div>
-          <div className={styles.summaryCard__sub}>Días de contrato</div>
+          <div className={styles.summaryCard__sub}>{t('tenantDashboard.contractDays', 'Días de contrato')}</div>
+
         </div>
 
         <div className={styles.summaryCard}>
           <div className={styles.summaryCard__header}>
-            Tickets Abiertos <FiTool className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--orange']} />
+            {t('tenantDashboard.openTickets', 'Tickets Abiertos')} <FiTool className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--orange']} />
+
           </div>
           <div className={styles.summaryCard__value}>{openMaintenanceTickets}</div>
-          <div className={styles.summaryCard__sub}>Solicitudes de mantenimiento</div>
+          <div className={styles.summaryCard__sub}>{t('tenantDashboard.maintenanceRequests', 'Solicitudes de mantenimiento')}</div>
+
         </div>
       </div>
 
@@ -107,10 +121,11 @@ export default function TenantDashboardPage() {
       {activeLease && (
         <div className={styles.propertyCard}>
           <img 
-            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600" 
+            src={activeLease.propertyImage || activeLease.property?.image || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600"} 
             alt={activeLease.propertyTitle} 
             className={styles.propertyCard__image}
           />
+
           <div className={styles.propertyCard__content}>
             <div className={styles.propertyCard__top}>
               <div className={styles.propertyCard__main}>
@@ -118,35 +133,40 @@ export default function TenantDashboardPage() {
                 <p className={styles.propertyCard__desc}>{activeLease.propertyAddress}</p>
               </div>
               <div className={styles.propertyCard__landlord}>
-                <label>Propietario</label>
+                <label>{t('tenant.property.owner', 'Propietario')}</label>
+
                 <p>{activeLease.landlordName}</p>
                 <span>{activeLease.landlordEmail}</span>
               </div>
-              <span className={styles.propertyCard__badge}>Activo</span>
+              <span className={styles.propertyCard__badge}>{t('tenant.property.status.active', 'Activo')}</span>
+
             </div>
 
             <div className={styles.propertyCard__grid}>
               <div className={styles.propertyCard__infoBox}>
-                <label>Inicio de contrato</label>
+                <label>{t('tenant.property.startDate', 'Inicio de contrato')}</label>
+
                 <span>{formatDate(activeLease.startDate)}</span>
               </div>
               <div className={styles.propertyCard__infoBox}>
-                <label>Fin de contrato</label>
+                <label>{t('tenant.property.endDate', 'Fin de contrato')}</label>
+
                 <span>{formatDate(activeLease.endDate)}</span>
               </div>
             </div>
 
             <div className={styles.propertyCard__top}>
               <div className={styles.propertyCard__actions}>
-                <button className={styles.btn} onClick={() => navigate('/tenant/lease')}>
-                  <FiFileText /> Ver Contrato
-                </button>
-                <button className={styles.btn} onClick={() => navigate(`/properties/${activeLease.propertyId}`)}>
-                  <FiHome /> Detalles
-                </button>
+                <Button variant="secondary" onClick={() => navigate('/tenant/lease')}>
+                  <FiFileText /> {t('tenant.property.viewLease', 'Ver Contrato')}
+                </Button>
+                <Button variant="secondary" onClick={() => navigate(`/properties/${activeLease.propertyId}`)}>
+                  <FiHome /> {t('tenant.property.details', 'Detalles')}
+                </Button>
               </div>
               <div className={styles.propertyCard__rent}>
-                <label>Renta mensual</label>
+                <label>{t('tenant.property.monthlyRent', 'Renta mensual')}</label>
+
                 <span>{formatCurrency(activeLease.monthlyRent)}</span>
               </div>
             </div>
@@ -159,11 +179,12 @@ export default function TenantDashboardPage() {
         {/* Proximos Pagos */}
         <div className={styles.section}>
           <div className={styles.section__header}>
-            <h3>Próximos Pagos</h3>
-            <button className={styles.section__link} onClick={() => navigate('/tenant/payments')}>
-              Ver historial
-            </button>
+            <h3>{t('upcomingPayments', 'Próximos Pagos')}</h3>
+            <Button variant="secondary" size="sm" onClick={() => navigate('/tenant/payments')}>
+              {t('viewHistory', 'Ver historial')}
+            </Button>
           </div>
+
           
           {recentInstallments?.map((inst) => (
             <div key={inst.installmentId} className={styles.listItem}>
@@ -171,20 +192,22 @@ export default function TenantDashboardPage() {
                 <FiCreditCard />
               </div>
               <div className={styles.listItem__info}>
-                <h4>Cuota #{inst.installmentNumber}</h4>
-                <p>Vence: {formatDate(inst.dueDate)}</p>
+                <h4>{t('installmentLabel', { number: inst.installmentNumber })}</h4>
+                <p>{t('dueLabel', 'Vence:')} {formatDate(inst.dueDate)}</p>
               </div>
+
               <div className={styles.listItem__side}>
                 <div className={styles.listItem__amount}>{formatCurrency(inst.totalAmount)}</div>
                 {inst.status === 'PAID' ? (
                   <span className={`${styles.statusBadge} ${styles['statusBadge--paid']}`}>
-                    <FiCheckCircle /> Pagado
+                    <FiCheckCircle /> {t('paid', 'Pagado')}
                   </span>
                 ) : (
-                  <button className={styles.payBtn} onClick={() => navigate('/tenant/payments')}>
-                    Pagar Ahora
-                  </button>
+                  <Button size="sm" onClick={() => navigate('/tenant/payments')}>
+                    {t('payNow', 'Pagar Ahora')}
+                  </Button>
                 )}
+
               </div>
             </div>
           ))}
@@ -193,11 +216,12 @@ export default function TenantDashboardPage() {
         {/* Solicitudes de Mantenimiento */}
         <div className={styles.section}>
           <div className={styles.section__header}>
-            <h3>Solicitudes de Mantenimiento</h3>
-            <button className={styles.payBtn} onClick={() => navigate('/tenant/maintenance/new')}>
-              Nueva Solicitud
-            </button>
+            <h3>{t('maintenance.title', 'Solicitudes de Mantenimiento')}</h3>
+            <Button size="sm" onClick={() => navigate('/tenant/maintenance/new')}>
+              {t('maintenance.newRequest', 'Nueva Solicitud')}
+            </Button>
           </div>
+
           
           {recentMaintenanceTickets?.map((ticket) => (
             <div key={ticket.id} className={styles.listItem}>
@@ -210,15 +234,17 @@ export default function TenantDashboardPage() {
               </div>
               <div className={styles.listItem__side}>
                 <span className={`${styles.statusBadge} ${ticket.status === 'IN_PROGRESS' ? styles['statusBadge--progress'] : styles['statusBadge--assigned']}`}>
-                  {ticket.status === 'IN_PROGRESS' ? 'En progreso' : 'Asignado'}
+                  {ticket.status === 'IN_PROGRESS' ? t('maintenance.inProgress', 'En progreso') : t('maintenance.assigned', 'Asignado')}
                 </span>
+
               </div>
             </div>
           ))}
           
           {!recentMaintenanceTickets?.length && (
-            <div className={styles.empty}>No hay solicitudes recientes.</div>
+            <div className={styles.empty}>{t('maintenance.empty', 'No hay solicitudes recientes.')}</div>
           )}
+
         </div>
       </div>
 
@@ -227,12 +253,12 @@ export default function TenantDashboardPage() {
         <div className={styles.alert}>
           <FiAlertTriangle className={styles.alert__icon} />
           <div className={styles.alert__content}>
-            <h4>Recordatorio de Pago</h4>
+            <h4>{t('tenant.paymentReminder.title', 'Recordatorio de Pago')}</h4>
             <p>
-              Tu próximo pago vence el {formatDate(nextInstallment.dueDate)}. 
-              Recuerda realizar el pago antes de la fecha límite para evitar cargos adicionales.
+              {t('tenant.paymentReminder.message', { dueDate: formatDate(nextInstallment.dueDate) })}
             </p>
           </div>
+
         </div>
       )}
     </div>

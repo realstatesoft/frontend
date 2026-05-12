@@ -10,24 +10,28 @@ import useOwnerOverview from '../../hooks/useOwnerOverview';
 // Mock del hook
 vi.mock('../../hooks/useOwnerOverview');
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-});
+
 
 describe('OwnerDashboardPage', () => {
   beforeEach(async () => {
     await initializeI18n();
   });
 
-  const renderPage = () => render(
-    <QueryClientProvider client={queryClient}>
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <OwnerDashboardPage />
-        </MemoryRouter>
-      </I18nextProvider>
-    </QueryClientProvider>
-  );
+  const renderPage = () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <OwnerDashboardPage />
+          </MemoryRouter>
+        </I18nextProvider>
+      </QueryClientProvider>
+    );
+  };
+
 
   it('debe mostrar el estado de carga', () => {
     useOwnerOverview.mockReturnValue({ isLoading: true });
@@ -59,15 +63,7 @@ describe('OwnerDashboardPage', () => {
       isLoading: false 
     });
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <I18nextProvider i18n={i18n}>
-          <MemoryRouter>
-            <OwnerDashboardPage />
-          </MemoryRouter>
-        </I18nextProvider>
-      </QueryClientProvider>
-    );
+    renderPage();
 
     // Header y Stats
     expect(screen.getByText('Mi Panel')).toBeInTheDocument();
@@ -96,15 +92,7 @@ describe('OwnerDashboardPage', () => {
       isLoading: false 
     });
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <I18nextProvider i18n={i18n}>
-          <MemoryRouter>
-            <OwnerDashboardPage />
-          </MemoryRouter>
-        </I18nextProvider>
-      </QueryClientProvider>
-    );
+    renderPage();
 
     expect(screen.getByText(/Tienes 1 solicitud\(es\) de visita esperando respuesta/i)).toBeInTheDocument();
   });
@@ -124,15 +112,7 @@ describe('OwnerDashboardPage', () => {
       isLoading: false 
     });
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <I18nextProvider i18n={i18n}>
-          <MemoryRouter>
-            <OwnerDashboardPage />
-          </MemoryRouter>
-        </I18nextProvider>
-      </QueryClientProvider>
-    );
+    renderPage();
 
     // Alerta de contrato (Acción requerida)
     expect(screen.getByText(/Acción requerida/i)).toBeInTheDocument();

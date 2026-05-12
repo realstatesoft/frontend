@@ -134,7 +134,7 @@ export default function AppRouter() {
                 <Route path="/mensajes" element={<ClientMessagesPage />} />
                 <Route path="/contratos/:id" element={<ContractDetailPage />} />
                 <Route path="/ofertas" element={<OfferManagementPage />} />
-                <Route path="/ofertas" element={<OfferManagementPage />} />
+
                 <Route path="/tenant" element={<TenantLayout />}>
                     <Route index element={<Navigate to="/tenant/dashboard" replace />} />
                     <Route path="dashboard" element={<TenantDashboardPage />} />

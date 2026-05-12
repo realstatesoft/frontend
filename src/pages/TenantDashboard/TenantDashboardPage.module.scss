@@ -195,15 +195,6 @@
       margin: 0;
     }
   }
-
-  &__link {
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    
-    &:hover { color: var(--color-accent); }
-  }
 }
 
 // ─── List Items ──────────────────────────────────────────────────────────────
@@ -313,54 +304,6 @@
   }
 }
 
-// ─── Buttons ─────────────────────────────────────────────────────────────────
-.btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--color-border);
-  background: #fff;
-  color: var(--color-text-primary);
-
-  &:hover {
-    background: var(--color-bg-surface-hover);
-    transform: translateY(-1px);
-  }
-
-  &--primary {
-    background: #000;
-    color: #fff;
-    border: none;
-    
-    &:hover {
-      background: #333;
-    }
-  }
-
-  &--outline {
-    border-color: var(--color-border);
-    background: transparent;
-  }
-}
-
-.payBtn {
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-
-  &:hover { background: #333; }
-}
 
 // ─── Inactive State ──────────────────────────────────────────────────────────
 .inactive {

@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiBell, FiHome, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
 import { CiUser } from 'react-icons/ci';
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoCashOutline, IoChatbubblesOutline } from 'react-icons/io5';
+import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoCashOutline, IoChatbubblesOutline, IoPersonOutline, IoBriefcaseOutline, IoShieldOutline } from 'react-icons/io5';
 import { MdFavoriteBorder } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
@@ -154,22 +154,25 @@ export default function Topbar({ extraActions }) {
               {(user?.role === 'USER' || user?.role === 'OWNER') && (
                 <>
                   <Link to="/tenant/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardTenant', 'Panel Inquilino')}
+                    <IoHomeOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardTenant', 'Panel Inquilino')}
                   </Link>
                   <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
+                    <IoPersonOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
                   </Link>
                 </>
+
               )}
               {user?.role === 'AGENT' && (
                 <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                  <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAgent', 'Panel Agente')}
+                  <IoBriefcaseOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAgent', 'Panel Agente')}
                 </Link>
+
               )}
               {user?.role === 'ADMIN' && (
                 <Link to="/admin/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                  <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAdmin', 'Panel Admin')}
+                  <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAdmin', 'Panel Admin')}
                 </Link>
+
               )}
               {user?.role === 'AGENT' && (
                 <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>

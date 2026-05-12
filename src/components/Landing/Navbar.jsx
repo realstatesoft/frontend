@@ -29,6 +29,8 @@ import {
   IoCheckmarkDoneOutline,
   IoChatbubblesOutline,
   IoCashOutline,
+  IoHome,
+  IoBriefcase,
 } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -247,11 +249,14 @@ function CustomNavbar() {
                       <Link to="/tenant/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                         <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardTenant', 'Panel Inquilino')}
                       </Link>
-                      <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
-                      </Link>
+                      {(user.isOwner || hasPublishedProperties) && (
+                        <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                          <IoHome size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
+                        </Link>
+                      )}
                     </>
                   )}
+
                   {!isAgent && !isAdmin && (
                     <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
