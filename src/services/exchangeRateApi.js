@@ -15,12 +15,12 @@ function normalizeExchangeRateCurrency(currency) {
 
 const exchangeRateApi = {
   getExchangeRates() {
-    return api.get('/api/exchange-rates').then((res) => res.data);
+    return api.get('/exchange-rates').then((res) => res.data);
   },
 
   getExchangeRate(currency) {
     const normalizedCurrency = normalizeExchangeRateCurrency(currency);
-    return api.get(`/api/exchange-rates/${encodeURIComponent(normalizedCurrency)}`).then((res) => res.data);
+    return api.get(`/exchange-rates/${encodeURIComponent(normalizedCurrency)}`).then((res) => res.data);
   },
 };
 
