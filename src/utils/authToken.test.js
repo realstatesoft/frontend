@@ -40,7 +40,7 @@ describe('authToken utils', () => {
 
     it('removes access token cookie', () => {
       removeAccessToken();
-      expect(Cookies.remove).toHaveBeenCalledWith('accessToken');
+      expect(Cookies.remove).toHaveBeenCalledWith('accessToken', expect.any(Object));
     });
   });
 
@@ -61,7 +61,7 @@ describe('authToken utils', () => {
 
     it('removes refresh token cookie', () => {
       removeRefreshToken();
-      expect(Cookies.remove).toHaveBeenCalledWith('refreshToken');
+      expect(Cookies.remove).toHaveBeenCalledWith('refreshToken', expect.any(Object));
     });
   });
 
@@ -97,8 +97,8 @@ describe('authToken utils', () => {
   describe('clearSession', () => {
     it('calls all removal functions', () => {
       clearSession();
-      expect(Cookies.remove).toHaveBeenCalledWith('accessToken');
-      expect(Cookies.remove).toHaveBeenCalledWith('refreshToken');
+      expect(Cookies.remove).toHaveBeenCalledWith('accessToken', expect.any(Object));
+      expect(Cookies.remove).toHaveBeenCalledWith('refreshToken', expect.any(Object));
       expect(localStorage.getItem('userInfo')).toBeNull();
     });
   });

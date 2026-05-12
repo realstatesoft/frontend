@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../i18n';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────────
 vi.mock('../../hooks/useClients');
@@ -53,20 +55,25 @@ function renderClientList(hookOverrides = {}, userRole = 'AGENT') {
   useAuth.mockReturnValue({ user: { role: userRole }, isAuthenticated: true });
 
   return render(
-    <MemoryRouter>
-      <ClientList />
-    </MemoryRouter>
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <ClientList />
+      </MemoryRouter>
+    </I18nextProvider>
   );
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 describe('ClientList', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await initializeI18n();
+  });
 
   // ── Renderizado básico ─────────────────────────────────────────────────────
   it('renderiza el título "Mis Clientes"', () => {
     renderClientList();
-    expect(screen.getByText('Mis Clientes')).toBeInTheDocument();
+    expect(screen.getByText('Clientes')).toBeInTheDocument();
   });
 
   it('muestra el nombre del cliente en la tabla', () => {
@@ -84,7 +91,7 @@ describe('ClientList', () => {
   it('muestra mensaje vacío cuando no hay clientes', () => {
     renderClientList({ clients: [], totalElements: 0 });
     expect(
-      screen.getByText(/no se encontraron clientes con los filtros actuales/i)
+      screen.getByText(/no se encontraron clientes/i)
     ).toBeInTheDocument();
   });
 

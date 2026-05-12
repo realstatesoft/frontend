@@ -22,7 +22,7 @@ describe('searchPreferencesApi', () => {
 
     const result = await searchPreferencesApi.create(data);
 
-    expect(api.post).toHaveBeenCalledWith('/search-preferences', data);
+    expect(api.post).toHaveBeenCalledWith('search-preferences', data);
     expect(result).toEqual({ id: 1, ...data });
   });
 
@@ -31,7 +31,7 @@ describe('searchPreferencesApi', () => {
 
     await searchPreferencesApi.getMine();
 
-    expect(api.get).toHaveBeenCalledWith('/search-preferences/me', { params: undefined });
+    expect(api.get).toHaveBeenCalledWith('search-preferences/me', { params: undefined });
   });
 
   it('getMine passes params to API', async () => {
@@ -39,7 +39,7 @@ describe('searchPreferencesApi', () => {
 
     await searchPreferencesApi.getMine({ page: 1, size: 10 });
 
-    expect(api.get).toHaveBeenCalledWith('/search-preferences/me', { params: { page: 1, size: 10 } });
+    expect(api.get).toHaveBeenCalledWith('search-preferences/me', { params: { page: 1, size: 10 } });
   });
 
   it('update sends PUT to /search-preferences/:id', async () => {
@@ -48,7 +48,7 @@ describe('searchPreferencesApi', () => {
 
     const result = await searchPreferencesApi.update(1, data);
 
-    expect(api.put).toHaveBeenCalledWith('/search-preferences/1', data);
+    expect(api.put).toHaveBeenCalledWith('search-preferences/1', data);
     expect(result).toEqual({ id: 1, ...data });
   });
 
@@ -57,6 +57,6 @@ describe('searchPreferencesApi', () => {
 
     await searchPreferencesApi.delete(1);
 
-    expect(api.delete).toHaveBeenCalledWith('/search-preferences/1');
+    expect(api.delete).toHaveBeenCalledWith('search-preferences/1');
   });
 });

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { I18nextProvider } from 'react-i18next';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { i18n, initializeI18n } from '../../i18n';
 import OwnerDashboardPage from './OwnerDashboardPage';
 import useOwnerOverview from '../../hooks/useOwnerOverview';
@@ -9,20 +10,32 @@ import useOwnerOverview from '../../hooks/useOwnerOverview';
 // Mock del hook
 vi.mock('../../hooks/useOwnerOverview');
 
+
+
 describe('OwnerDashboardPage', () => {
   beforeEach(async () => {
     await initializeI18n();
   });
 
+  const renderPage = () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <MemoryRouter>
+            <OwnerDashboardPage />
+          </MemoryRouter>
+        </I18nextProvider>
+      </QueryClientProvider>
+    );
+  };
+
+
   it('debe mostrar el estado de carga', () => {
     useOwnerOverview.mockReturnValue({ isLoading: true });
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <OwnerDashboardPage />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderPage();
     expect(screen.getByText(/Cargando dashboard.../i)).toBeInTheDocument();
   });
 
@@ -50,13 +63,7 @@ describe('OwnerDashboardPage', () => {
       isLoading: false 
     });
 
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <OwnerDashboardPage />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderPage();
 
     // Header y Stats
     expect(screen.getByText('Mi Panel')).toBeInTheDocument();
@@ -85,13 +92,7 @@ describe('OwnerDashboardPage', () => {
       isLoading: false 
     });
 
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <OwnerDashboardPage />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderPage();
 
     expect(screen.getByText(/Tienes 1 solicitud\(es\) de visita esperando respuesta/i)).toBeInTheDocument();
   });
@@ -111,13 +112,7 @@ describe('OwnerDashboardPage', () => {
       isLoading: false 
     });
 
-    render(
-      <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
-          <OwnerDashboardPage />
-        </MemoryRouter>
-      </I18nextProvider>
-    );
+    renderPage();
 
     // Alerta de contrato (Acción requerida)
     expect(screen.getByText(/Acción requerida/i)).toBeInTheDocument();

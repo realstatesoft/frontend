@@ -1,0 +1,52 @@
+{
+  "loading": "Cargando...",
+  "tenantDashboard": {
+    "errorTitle": "Error al cargar el dashboard",
+    "errorMessage": "Hubo un problema al obtener la información de tu arriendo.",
+    "exploreProperties": "Explorar propiedades",
+    "welcome": "Bienvenido, {{name}}",
+    "defaultName": "Inquilino",
+    "subtitle": "Resumen de tu arrendamiento",
+    "nextPayment": "Próximo Pago",
+    "totalPaid": "Total Pagado",
+    "totalPaidPeriod": "En los últimos 12 meses",
+    "daysRemaining": "Días Restantes",
+    "contractDays": "Días de contrato",
+    "openTickets": "Tickets Abiertos",
+    "maintenanceRequests": "Solicitudes de mantenimiento"
+  },
+  "inactive": {
+    "title": "Sin arriendo activo",
+    "message": "No tienes un arriendo activo en este momento. Explora nuestras propiedades disponibles para encontrar tu próximo hogar."
+  },
+  "tenant": {
+    "property": {
+      "owner": "Propietario",
+      "status": {
+        "active": "Activo"
+      },
+      "startDate": "Inicio de contrato",
+      "endDate": "Fin de contrato",
+      "viewLease": "Ver Contrato",
+      "details": "Detalles",
+      "monthlyRent": "Renta mensual"
+    },
+    "paymentReminder": {
+      "title": "Recordatorio de Pago",
+      "message": "Tu próximo pago vence el {{dueDate}}. Recuerda realizar el pago antes de la fecha límite para evitar cargos adicionales."
+    }
+  },
+  "upcomingPayments": "Próximos Pagos",
+  "viewHistory": "Ver historial",
+  "installmentLabel": "Cuota #{{number}}",
+  "dueLabel": "Vence:",
+  "paid": "Pagado",
+  "payNow": "Pagar Ahora",
+  "maintenance": {
+    "title": "Solicitudes de Mantenimiento",
+    "newRequest": "Nueva Solicitud",
+    "inProgress": "En progreso",
+    "assigned": "Asignado",
+    "empty": "No hay solicitudes recientes."
+  }
+}

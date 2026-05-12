@@ -15,7 +15,7 @@ vi.mock('../../../hooks/useAuth', () => ({
 
 vi.mock('../../../hooks/useContracts', () => ({
   useContractDetail: vi.fn().mockReturnValue({
-    data: { data: { id: 1, status: 'DRAFT', contractNumber: 'CT-123', contractType: 'SALE' } },
+    data: { id: 1, status: 'DRAFT', contractNumber: 'CT-123', contractType: 'SALE' },
     isLoading: false
   }),
   useUpdateContract: vi.fn().mockReturnValue({ mutateAsync: vi.fn(), isPending: false }),

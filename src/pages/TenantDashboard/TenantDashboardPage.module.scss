@@ -1,0 +1,337 @@
+@use "../../styles/mixins" as *;
+
+.dashboard {
+  @include flex-column;
+  
+  gap: var(--spacing-xl);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+.header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+// ─── Summary Grid ────────────────────────────────────────────────────────────
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+
+  @include responsive(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summaryCard {
+  @include glass-card;
+  
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  &__header {
+    @include flex-between;
+    
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  &__icon {
+    font-size: 1.1rem;
+    
+    &--blue { color: var(--color-accent); }
+    &--green { color: var(--color-success); }
+    &--orange { color: var(--color-warning); }
+  }
+
+  &__value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__sub {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+}
+
+// ─── Property Hero Card ──────────────────────────────────────────────────────
+.propertyCard {
+  @include glass-card;
+  
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  overflow: hidden;
+
+  @include responsive(tablet) {
+    grid-template-columns: 1fr;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 200px;
+  }
+
+  &__content {
+    padding: var(--spacing-xl);
+    @include flex-column;
+    
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+  }
+
+  &__top {
+    @include flex-between;
+    
+    align-items: flex-start;
+  }
+
+  &__main {
+    @include flex-column;
+    
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  &__desc {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  &__badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #000;
+    color: #fff;
+  }
+
+  &__rent {
+    text-align: right;
+    
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-bottom: 4px;
+    }
+
+    span {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+
+  &__infoBox {
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-bottom: 2px;
+    }
+    span {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+  }
+}
+
+// ─── Two Column Section ──────────────────────────────────────────────────────
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+
+  @include responsive(tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section {
+  @include glass-card;
+  
+  padding: var(--spacing-lg);
+
+  &__header {
+    @include flex-between;
+    
+    margin-bottom: var(--spacing-lg);
+    
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+}
+
+// ─── List Items ──────────────────────────────────────────────────────────────
+.listItem {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  transition: var(--transition-fast);
+
+  &:hover {
+    border-color: var(--color-border-hover);
+    background: var(--color-bg-surface-hover);
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    @include flex-center;
+    
+    margin-right: var(--spacing-md);
+    font-size: 1.1rem;
+
+    &--payment { background: rgba(245, 158, 11, 0.1); color: var(--color-warning); }
+    &--paid { background: rgba(34, 197, 94, 0.1); color: var(--color-success); }
+    &--maintenance { background: rgba(14, 165, 233, 0.1); color: var(--color-info); }
+  }
+
+  &__info {
+    flex: 1;
+    
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 0 0 2px 0;
+    }
+    
+    p {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+  }
+
+  &__side {
+    text-align: right;
+    @include flex-column;
+    
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  &__amount {
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+}
+
+// ─── Status Badges ───────────────────────────────────────────────────────────
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  &--progress { background: #fee2e2; color: #ef4444; }
+  &--assigned { background: #f1f5f9; color: #475569; }
+  &--paid { 
+    background: transparent; 
+    color: var(--color-text-muted); 
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+// ─── Alert ───────────────────────────────────────────────────────────────────
+.alert {
+  @include glass-card;
+  
+  background: #fffbeb;
+  border-color: #fde68a;
+  padding: var(--spacing-lg);
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-start;
+
+  &__icon {
+    color: var(--color-warning);
+    font-size: 1.25rem;
+    margin-top: 2px;
+  }
+
+  &__content {
+    h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #92400e;
+      margin: 0 0 4px 0;
+    }
+    p {
+      font-size: 0.9rem;
+      color: #b45309;
+      margin: 0;
+    }
+  }
+}
+
+
+// ─── Inactive State ──────────────────────────────────────────────────────────
+.inactive {
+  @include flex-center;
+  
+  flex-direction: column;
+  padding: 100px 20px;
+  text-align: center;
+  gap: var(--spacing-md);
+
+  &__icon {
+    font-size: 4rem;
+    color: var(--color-text-muted);
+    opacity: 0.3;
+  }
+  
+  h2 { font-weight: 700; margin: 0; }
+  p { color: var(--color-text-muted); max-width: 400px; }
+}

@@ -17,6 +17,7 @@ vi.mock('../../services/properties/propertyApi', () => ({
     trash: vi.fn(),
     registerView: vi.fn(),
     getViewCount: vi.fn(),
+    registerRecentView: vi.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -121,6 +122,15 @@ describe('useShowProperty', () => {
       expect(result.current.viewCount).toBe(7);
     });
   });
+
+  it('debe registrar la vista reciente si el usuario está autenticado', async () => {
+    renderHook(() => useShowProperty());
+
+    await waitFor(() => {
+      expect(propertyApi.registerRecentView).toHaveBeenCalledWith('123');
+    });
+  });
+
 
   it('no rompe la carga si falla el registro o el conteo de vistas', async () => {
     propertyApi.registerView.mockRejectedValue(new Error('register failed'));

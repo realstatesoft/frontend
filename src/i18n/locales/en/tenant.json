@@ -1,0 +1,52 @@
+{
+  "loading": "Loading...",
+  "tenantDashboard": {
+    "errorTitle": "Error loading dashboard",
+    "errorMessage": "There was a problem getting your lease information.",
+    "exploreProperties": "Explore properties",
+    "welcome": "Welcome, {{name}}",
+    "defaultName": "Tenant",
+    "subtitle": "Lease summary",
+    "nextPayment": "Next Payment",
+    "totalPaid": "Total Paid",
+    "totalPaidPeriod": "In the last 12 months",
+    "daysRemaining": "Days Remaining",
+    "contractDays": "Contract days",
+    "openTickets": "Open Tickets",
+    "maintenanceRequests": "Maintenance requests"
+  },
+  "inactive": {
+    "title": "No active lease",
+    "message": "You don't have an active lease at the moment. Explore our available properties to find your next home."
+  },
+  "tenant": {
+    "property": {
+      "owner": "Owner",
+      "status": {
+        "active": "Active"
+      },
+      "startDate": "Start of contract",
+      "endDate": "End of contract",
+      "viewLease": "View Lease",
+      "details": "Details",
+      "monthlyRent": "Monthly rent"
+    },
+    "paymentReminder": {
+      "title": "Payment Reminder",
+      "message": "Your next payment is due on {{dueDate}}. Remember to make the payment before the deadline to avoid additional charges."
+    }
+  },
+  "upcomingPayments": "Upcoming Payments",
+  "viewHistory": "View history",
+  "installmentLabel": "Installment #{{number}}",
+  "dueLabel": "Due:",
+  "paid": "Paid",
+  "payNow": "Pay Now",
+  "maintenance": {
+    "title": "Maintenance Requests",
+    "newRequest": "New Request",
+    "inProgress": "In progress",
+    "assigned": "Assigned",
+    "empty": "No recent requests."
+  }
+}

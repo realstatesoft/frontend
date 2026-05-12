@@ -102,6 +102,11 @@ import esFunnel from './locales/es/funnel.json';
 import enFunnel from './locales/en/funnel.json';
 import prFunnel from './locales/pr/funnel.json';
 
+import esTenant from './locales/es/tenant.json';
+import enTenant from './locales/en/tenant.json';
+import prTenant from './locales/pr/tenant.json';
+
+
 export const resources = {
   es: {
     common: esCommon,
@@ -130,6 +135,7 @@ export const resources = {
     propertyViews: esPropertyViews,
     locations: esLocations,
     funnel: esFunnel,
+    tenant: esTenant,
   },
   en: {
     common: enCommon,
@@ -158,6 +164,7 @@ export const resources = {
     propertyViews: enPropertyViews,
     locations: enLocations,
     funnel: enFunnel,
+    tenant: enTenant,
   },
   pr: {
     common: prCommon,
@@ -186,5 +193,6 @@ export const resources = {
     propertyViews: prPropertyViews,
     locations: prLocations,
     funnel: prFunnel,
+    tenant: prTenant,
   },
 };

@@ -20,7 +20,7 @@ export default function OwnerLayout() {
   const { sidebarCollapsed } = useUIStore();
   const location = useLocation();
 
-  if (user?.role !== 'USER') return <RoleRedirect />;
+  if (user?.role !== 'USER' && user?.role !== 'OWNER') return <RoleRedirect />;
 
   const isDashboard = location.pathname === OWNER_ROUTES.DASHBOARD;
 
@@ -30,16 +30,17 @@ export default function OwnerLayout() {
   ].filter(Boolean).join(' ');
 
   const OWNER_NAV_ITEMS = [
-    { section: t('sidebar.sectionMain') },
-    { to: OWNER_ROUTES.DASHBOARD, icon: <FiGrid />, label: t('layouts.owner.dashboard') },
-    { to: OWNER_ROUTES.PROPERTIES, icon: <FiHome />, label: t('layouts.owner.properties') },
-    { section: t('sidebar.sectionManagement') },
-    { to: OWNER_ROUTES.VISITS, icon: <FiEye />, label: t('layouts.owner.visits') },
-    { to: OWNER_ROUTES.OFFERS, icon: <FiDollarSign />, label: t('layouts.owner.offers') },
-    { to: OWNER_ROUTES.CONTRACTS, icon: <FiFileText />, label: t('layouts.owner.contracts') },
-    { section: t('sidebar.sectionCommunication') },
-    { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: t('layouts.owner.messages'), showBadge: true },
-    { to: OWNER_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.owner.settings') },
+    { section: t('sidebar.sectionMain', 'PRINCIPAL') },
+    { to: OWNER_ROUTES.DASHBOARD, icon: <FiGrid />, label: t('layouts.owner.dashboard', 'Mi Panel') },
+    { to: OWNER_ROUTES.PROPERTIES, icon: <FiHome />, label: t('layouts.owner.properties', 'Mis Propiedades') },
+    { section: t('sidebar.sectionManagement', 'GESTIÓN') },
+    { to: OWNER_ROUTES.VISITS, icon: <FiEye />, label: t('layouts.owner.visits', 'Visitas') },
+    { to: OWNER_ROUTES.OFFERS, icon: <FiDollarSign />, label: t('layouts.owner.offers', 'Ofertas') },
+    { to: OWNER_ROUTES.RESERVATIONS, icon: <FiFileText />, label: t('layouts.owner.reservations', 'Reservas Recibidas') },
+    { to: OWNER_ROUTES.CONTRACTS, icon: <FiFileText />, label: t('layouts.owner.contracts', 'Mis Contratos') },
+    { section: t('sidebar.sectionCommunication', 'COMUNICACIÓN') },
+    { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: t('layouts.owner.messages', 'Mensajes'), showBadge: true },
+    { to: OWNER_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.owner.settings', 'Configuración') },
   ];
 
   return (
