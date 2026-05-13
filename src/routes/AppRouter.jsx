@@ -43,6 +43,7 @@ const MyPaymentsPage = lazy(() => import("../pages/MyPayments/MyPaymentsPage"));
 // Tenant Dashboard
 const TenantLayout = lazy(() => import("../components/layout/TenantLayout/TenantLayout"));
 const TenantDashboardPage = lazy(() => import("../pages/TenantDashboard/TenantDashboardPage"));
+const TenantLeasePage = lazy(() => import("../pages/TenantDashboard/TenantLeasePage"));
 
 // Agent Dashboard (chunk-agent)
 const AgentLayout = lazy(() => import("../components/layout/AgentLayout/AgentLayout"));
@@ -138,6 +139,7 @@ export default function AppRouter() {
                 <Route path="/tenant" element={<TenantLayout />}>
                     <Route index element={<Navigate to="/tenant/dashboard" replace />} />
                     <Route path="dashboard" element={<TenantDashboardPage />} />
+                    <Route path="lease" element={<TenantLeasePage />} />
                 </Route>
             </Route>
 
