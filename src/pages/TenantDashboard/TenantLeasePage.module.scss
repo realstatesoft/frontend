@@ -79,7 +79,7 @@
     text-transform: uppercase;
 
     &--active {
-      background: #0f172a; // Dark badge from the design
+      background: $color-dark-slate; // Dark badge from the design
       color: #fff;
     }
   }
@@ -155,7 +155,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #fafafa;
+    background: $light;
     border: 1px solid $border-color-soft;
     border-radius: $radius-md;
     padding: 2rem;
@@ -181,7 +181,7 @@
     justify-content: center;
     gap: 0.5rem;
     width: 100%;
-    background: #0f172a;
+    background: $color-dark-slate;
     color: #fff;
     border: none;
     border-radius: $radius-sm;

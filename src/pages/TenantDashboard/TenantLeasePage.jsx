@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 export default function TenantLeasePage() {
   const { data: lease, isLoading, error } = useTenantLease();
   const { formatCurrency } = useFormatters();
-  const { t } = useTranslation('tenant');
 
   if (isLoading) {
     return (
@@ -41,7 +40,10 @@ export default function TenantLeasePage() {
     autoRenew,
     renewalNoticeDays,
     landlord,
-    documents
+    documents,
+    pets,
+    includedServices,
+    emergencyContact
   } = lease;
 
   const isActive = status === 'ACTIVE';
@@ -104,18 +106,24 @@ export default function TenantLeasePage() {
             <p className={styles.tenantLease__docName}>
               {mainDoc ? mainDoc.fileName : `Contrato_Arrendamiento_L${id}.pdf`}
             </p>
-            <button
-              className={styles.tenantLease__downloadBtn}
-              onClick={() => {
-                if (mainDoc?.fileUrl) {
-                  window.open(mainDoc.fileUrl, '_blank');
-                } else {
-                  alert('El documento no está disponible.');
-                }
-              }}
-            >
-              <FiDownload /> Descargar PDF
-            </button>
+            {mainDoc?.fileUrl ? (
+              <a
+                href={mainDoc.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.tenantLease__downloadBtn}
+                style={{ textDecoration: 'none' }}
+              >
+                <FiDownload /> Descargar PDF
+              </a>
+            ) : (
+              <button
+                className={styles.tenantLease__downloadBtn}
+                onClick={() => alert('El documento no está disponible.')}
+              >
+                <FiDownload /> Descargar PDF
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -134,14 +142,18 @@ export default function TenantLeasePage() {
             <span className={styles.tenantLease__detailLabel}>Día de Vencimiento</span>
             <span className={styles.tenantLease__detailValue}>{dueDay} de cada mes</span>
           </div>
-          <div className={styles.tenantLease__detailItem}>
-            <span className={styles.tenantLease__detailLabel}>Mascotas Permitidas</span>
-            <span className={styles.tenantLease__detailValue}>Sí (pequeñas)</span> {/* Placeholder per design */}
-          </div>
-          <div className={styles.tenantLease__detailItem}>
-            <span className={styles.tenantLease__detailLabel}>Servicios Incluidos</span>
-            <span className={styles.tenantLease__detailValue}>Agua, Mantenimiento de áreas comunes</span> {/* Placeholder per design */}
-          </div>
+          {pets && (
+            <div className={styles.tenantLease__detailItem}>
+              <span className={styles.tenantLease__detailLabel}>Mascotas Permitidas</span>
+              <span className={styles.tenantLease__detailValue}>{pets === 'ALLOWED' ? 'Sí' : pets === 'NOT_ALLOWED' ? 'No' : pets}</span>
+            </div>
+          )}
+          {includedServices && (
+            <div className={styles.tenantLease__detailItem}>
+              <span className={styles.tenantLease__detailLabel}>Servicios Incluidos</span>
+              <span className={styles.tenantLease__detailValue}>{includedServices}</span>
+            </div>
+          )}
           <div className={styles.tenantLease__detailItem}>
             <span className={styles.tenantLease__detailLabel}>Aviso de Desocupación</span>
             <span className={styles.tenantLease__detailValue}>{renewalNoticeDays} días</span>
@@ -169,10 +181,12 @@ export default function TenantLeasePage() {
             <span className={styles.tenantLease__detailLabel}>Email</span>
             <span className={styles.tenantLease__detailValue}>{landlord?.email || '-'}</span>
           </div>
-          <div className={styles.tenantLease__detailItem}>
-            <span className={styles.tenantLease__detailLabel}>Contacto de Emergencia</span>
-            <span className={styles.tenantLease__detailValue}>+595 981 123 456</span> {/* Placeholder per design */}
-          </div>
+          {emergencyContact && (
+            <div className={styles.tenantLease__detailItem}>
+              <span className={styles.tenantLease__detailLabel}>Contacto de Emergencia</span>
+              <span className={styles.tenantLease__detailValue}>{emergencyContact}</span>
+            </div>
+          )}
         </div>
       </section>
     </div>
