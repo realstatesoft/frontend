@@ -114,7 +114,7 @@ describe('TenantLeasePage', () => {
 
   it('muestra spinner mientras carga', () => {
     renderPage([], { isLoading: true });
-    const spinner = document.querySelector('.spinner-border');
+    const spinner = screen.getByRole('status');
     expect(spinner).toBeInTheDocument();
   });
 

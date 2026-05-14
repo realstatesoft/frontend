@@ -31,18 +31,18 @@ const rentService = {
   // ─── INSTALLMENTS & PAYMENTS ────────────────────────────────────────
 
   getLeaseInstallments(leaseId) {
-    return api.get(`/rentals/installments?leaseId=${leaseId}`).then((res) => res.data?.data ?? res.data);
+    return api.get(`/rentals/installments?leaseId=${encodeURIComponent(leaseId)}`).then((res) => res.data?.data ?? res.data);
   },
 
   getLeasePayments(leaseId) {
-    return api.get(`/rentals/payments?leaseId=${leaseId}`).then((res) => res.data?.data ?? res.data);
+    return api.get(`/rentals/payments?leaseId=${encodeURIComponent(leaseId)}`).then((res) => res.data?.data ?? res.data);
   },
 
-  registerManualPayment(installmentId, payload) {
-    const idempotencyKey = uuidv4();
-    return api.post(`/rentals/installments/${installmentId}/payments`, payload, {
+  registerManualPayment(installmentId, payload, idempotencyKey) {
+    const key = idempotencyKey || `${installmentId}-${JSON.stringify(payload)}`;
+    return api.post(`/rentals/installments/${encodeURIComponent(installmentId)}/payments`, payload, {
       headers: {
-        'Idempotency-Key': idempotencyKey,
+        'Idempotency-Key': key,
       },
     }).then((res) => res.data?.data ?? res.data);
   },

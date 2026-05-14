@@ -67,8 +67,6 @@ export default function ContractDetailPage() {
   // Verificar si el usuario actual ya firmó
   const userHasSigned = signatures.some(s => (s.signerId === user?.userId || s.signerEmail === user?.email) && s.signed);
   const canSign = (contract.status === 'SENT' || contract.status === 'PARTIALLY_SIGNED') && !userHasSigned;
-  const canSend = contract.status === 'DRAFT';
-
   const handleRefresh = () => {
     refetchContract();
     refetchSigs();

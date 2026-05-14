@@ -33,6 +33,7 @@ export default function LeasePaymentsPage() {
   
   const [statusFilter, setStatusFilter] = useState('');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedInstallmentId, setSelectedInstallmentId] = useState(null);
   const [downloading, setDownloading] = useState(null);
 
   const filteredInstallments = useMemo(() => {
@@ -160,7 +161,7 @@ export default function LeasePaymentsPage() {
                 <td>
                   <div className={styles.actions}>
                     {['PENDING', 'OVERDUE', 'PARTIAL'].includes(inst.status) && (
-                      <Button size="sm" onClick={() => setShowPaymentModal(true)}>
+                      <Button size="sm" onClick={() => { setSelectedInstallmentId(inst.id); setShowPaymentModal(true); }}>
                         Pagar
                       </Button>
                     )}
@@ -191,9 +192,10 @@ export default function LeasePaymentsPage() {
 
       <ManualPaymentModal
         show={showPaymentModal}
-        onHide={() => setShowPaymentModal(false)}
+        onHide={() => { setShowPaymentModal(false); setSelectedInstallmentId(null); }}
         installments={installments}
         onSave={registerPayment}
+        initialInstallmentId={selectedInstallmentId}
       />
     </div>
   );

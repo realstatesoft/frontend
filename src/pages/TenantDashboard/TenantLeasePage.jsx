@@ -8,6 +8,7 @@ import styles from './TenantLeasePage.module.scss';
 import useFormatters from '../../hooks/useFormatters';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import Swal from 'sweetalert2';
 
 export default function TenantLeasePage() {
   const { data: leases, isLoading, error } = useTenantLease();
@@ -31,7 +32,11 @@ export default function TenantLeasePage() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Error descargando PDF:', err);
-      alert('No se pudo descargar el PDF. Intenta de nuevo más tarde.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo descargar el PDF. Intenta de nuevo más tarde.',
+      });
     } finally {
       setDownloadingId(null);
     }
@@ -40,7 +45,7 @@ export default function TenantLeasePage() {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
-        <Spinner animation="border" variant="primary" />
+        <Spinner animation="border" variant="primary" role="status" />
       </div>
     );
   }

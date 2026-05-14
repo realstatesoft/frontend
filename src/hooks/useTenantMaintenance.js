@@ -5,11 +5,15 @@ export function useTenantMaintenance() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
 
-  const fetchMaintenance = useCallback(async (page = 0, size = 10) => {
+  const fetchMaintenance = useCallback(async (currentPage = 0, currentSize = 10) => {
     setIsLoading(true);
+    setPage(currentPage);
+    setSize(currentSize);
     try {
-      const response = await tenantService.getMaintenance(page, size);
+      const response = await tenantService.getMaintenance(currentPage, currentSize);
       setData(response);
       setError(null);
     } catch (err) {
@@ -26,7 +30,7 @@ export function useTenantMaintenance() {
   const createRequest = async (formData) => {
     try {
       const response = await tenantService.createMaintenanceRequest(formData);
-      await fetchMaintenance();
+      await fetchMaintenance(page, size);
       return response;
     } catch (err) {
       throw err;
@@ -36,7 +40,7 @@ export function useTenantMaintenance() {
   const rateRequest = async (id, rating) => {
     try {
       await tenantService.rateMaintenanceRequest(id, rating);
-      await fetchMaintenance();
+      await fetchMaintenance(page, size);
     } catch (err) {
       throw err;
     }

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiUpload, FiX, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import Button from '../../../components/common/Button/Button';
@@ -38,6 +38,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
+  const previewUrlsRef = useRef([]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -77,7 +78,9 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
         return;
       }
       validFiles.push(file);
-      previews.push(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      previews.push(url);
+      previewUrlsRef.current.push(url);
     }
 
     setImages((prev) => [...prev, ...previews]);
@@ -101,9 +104,20 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
   };
 
   const removeImage = (index) => {
+    const urlToRevoke = images[index];
+    if (urlToRevoke) {
+      URL.revokeObjectURL(urlToRevoke);
+      previewUrlsRef.current = previewUrlsRef.current.filter((u) => u !== urlToRevoke);
+    }
     setImages((prev) => prev.filter((_, i) => i !== index));
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
+
+  useEffect(() => {
+    return () => {
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -206,6 +220,15 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           onClick={() => fileInputRef.current.click()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInputRef.current.click();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Subir fotos de mantenimiento"
         >
           <input
             type="file"

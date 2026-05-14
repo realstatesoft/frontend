@@ -9,19 +9,23 @@ const BASE_URL = import.meta.env.VITE_API_URL;
  * @param {string} folder - Carpeta en el bucket (default "general")
  * @returns {Promise<{ data: { success, data: { id, url, filename, size, contentType } } }>}
  */
-export function uploadImage(file, folder = "general") {
+export function uploadImage(file, folder = "general", requestConfig = {}) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("folder", folder);
 
   const token = getAccessToken();
-  
-  // Usamos axios directamente para evitar que los interceptores de 'api' 
+
+  const headers = {
+    ...(requestConfig.headers || {}),
+    "Authorization": `Bearer ${token}`,
+    // NO incluir Content-Type aquí para que el navegador lo genere con el boundary correcto
+  };
+
+  // Usamos axios directamente para evitar que los interceptores de 'api'
   // (que pueden tener Content-Type: application/json) interfieran con FormData.
   return axios.post(`${BASE_URL}/images/upload`, formData, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      // NO incluir Content-Type aquí para que el navegador lo genere con el boundary correcto
-    },
+    ...requestConfig,
+    headers,
   });
 }

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTenantLeaseById } from '../../hooks/useTenantDashboard';
 import tenantService from '../../services/tenantService';
+import Swal from 'sweetalert2';
+import { formatFileSize } from '../../utils/fileHelpers';
 import { Spinner, Alert, Button as BootstrapButton } from 'react-bootstrap';
 import { FiHome, FiCalendar, FiDollarSign, FiFileText, FiDownload, FiAlertTriangle, FiMail, FiPhone, FiUser, FiPaperclip, FiArrowLeft } from 'react-icons/fi';
 import styles from './TenantLeasePage.module.scss';
@@ -32,7 +34,11 @@ export default function TenantLeaseDetailPage() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Error descargando PDF:', err);
-      alert('No se pudo descargar el PDF. Intenta de nuevo más tarde.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo descargar el PDF. Intenta de nuevo más tarde.',
+      });
     } finally {
       setDownloading(false);
     }
@@ -41,7 +47,7 @@ export default function TenantLeaseDetailPage() {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
-        <Spinner animation="border" variant="primary" />
+        <Spinner animation="border" variant="primary" role="status" />
       </div>
     );
   }
@@ -227,7 +233,7 @@ export default function TenantLeaseDetailPage() {
             Documentos Adjuntos
           </h2>
           <div className={styles.tenantLease__documentsList}>
-            {documents.slice(1).map((doc, index) => (
+            {(documents || []).slice(1).map((doc, index) => (
               <div key={doc.id || index} className={styles.tenantLease__documentItem}>
                 <div className={styles.tenantLease__documentInfo}>
                   <FiFileText className={styles.tenantLease__docIcon} />
@@ -317,8 +323,4 @@ export default function TenantLeaseDetailPage() {
   );
 }
 
-function formatFileSize(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-}
+

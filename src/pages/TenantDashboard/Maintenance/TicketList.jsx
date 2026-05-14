@@ -50,7 +50,19 @@ function TicketItem({ ticket, onRate }) {
 
   return (
     <div className={`${styles.ticketItem} ${isExpanded ? styles.expanded : ''}`}>
-      <div className={styles.ticketHeader} onClick={() => setIsExpanded(!isExpanded)}>
+      <div
+        className={styles.ticketHeader}
+        onClick={() => setIsExpanded(!isExpanded)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+      >
         <div className={styles.ticketMain}>
           <div className={styles.ticketTitleRow}>
             <h4>{ticket.title}</h4>
@@ -115,6 +127,8 @@ function TicketItem({ ticket, onRate }) {
                       type="button"
                       className={star <= rating ? styles.starActive : ''}
                       onClick={() => setRating(star)}
+                      aria-label={`${star} estrella${star > 1 ? 's' : ''}`}
+                      aria-pressed={star <= rating}
                     >
                       <FiStar />
                     </button>

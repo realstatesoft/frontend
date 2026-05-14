@@ -8,7 +8,13 @@ export function useLeasePayments(leaseId) {
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
-    if (!leaseId) return;
+    if (!leaseId) {
+      setIsLoading(false);
+      setInstallments([]);
+      setPayments([]);
+      setError(null);
+      return;
+    }
     setIsLoading(true);
     try {
       const [instRes, payRes] = await Promise.all([

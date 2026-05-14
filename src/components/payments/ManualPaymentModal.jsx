@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Form, Spinner } from 'react-bootstrap';
 import { FiSave, FiX } from 'react-icons/fi';
 import Button from '../common/Button/Button';
@@ -12,20 +12,33 @@ const PAYMENT_METHODS = [
   { value: 'OTHER', label: 'Otro' },
 ];
 
-export default function ManualPaymentModal({ show, onHide, installments, onSave }) {
+export default function ManualPaymentModal({ show, onHide, installments, onSave, initialInstallmentId }) {
   const { formatCurrency } = useFormatters();
   const pendingInstallments = installments?.filter(i => ['PENDING', 'OVERDUE', 'PARTIAL'].includes(i.status)) || [];
 
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     installmentId: '',
     amount: '',
     paymentDate: new Date().toISOString().split('T')[0],
     method: 'TRANSFER',
     reference: '',
     notes: '',
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialInstallmentId) {
+      const inst = pendingInstallments.find(i => String(i.id) === String(initialInstallmentId));
+      setFormData(prev => ({
+        ...prev,
+        installmentId: String(initialInstallmentId),
+        amount: inst ? (inst.balance || inst.totalAmount) : '',
+      }));
+    }
+  }, [initialInstallmentId, pendingInstallments]);
 
   const handleInstallmentChange = (e) => {
     const instId = e.target.value;
@@ -49,15 +62,24 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave 
       return;
     }
 
+    const amount = parseFloat(formData.amount);
+    const selected = pendingInstallments.find(i => String(i.id) === formData.installmentId);
+    const maxAmount = selected?.balance || selected?.totalAmount || 0;
+    if (amount <= 0 || amount > maxAmount) {
+      Swal.fire('Error', `El monto debe ser mayor a 0 y no superar el saldo pendiente (${formatCurrency(maxAmount)})`, 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await onSave(formData.installmentId, {
-        amount: parseFloat(formData.amount),
+        amount,
         date: formData.paymentDate,
         method: formData.method,
         reference: formData.reference,
         notes: formData.notes,
       });
+      setFormData(initialFormState);
       Swal.fire({
         icon: 'success',
         title: 'Pago registrado',

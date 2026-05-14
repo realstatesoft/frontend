@@ -157,10 +157,10 @@ export default function TenantDashboardPage() {
 
             <div className={styles.propertyCard__top}>
               <div className={styles.propertyCard__actions}>
-                <Button variant="secondary" onClick={() => navigate('/tenant/lease')}>
+                <Button variant="secondary" onClick={() => navigate(`/tenant/lease/${lease.leaseId}`)}>
                   <FiFileText /> {t('tenant.property.viewLease', 'Ver Contrato')}
                 </Button>
-                <Button variant="secondary" onClick={() => navigate(`/properties/${lease.propertyId}`)}>
+                <Button variant="secondary" onClick={() => lease.propertyId && navigate(`/properties/${lease.propertyId}`)} disabled={!lease.propertyId}>
                   <FiHome /> {t('tenant.property.details', 'Detalles')}
                 </Button>
               </div>

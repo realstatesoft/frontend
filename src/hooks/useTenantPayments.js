@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import tenantService from '../services/tenantService';
 
 export function useTenantPayments(initialPage = 0, size = 12) {
@@ -6,17 +6,25 @@ export function useTenantPayments(initialPage = 0, size = 12) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(initialPage);
+  const requestIdRef = useRef(0);
 
   const fetchPayments = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     setIsLoading(true);
     try {
       const response = await tenantService.getPayments(page, size);
-      setData(response);
-      setError(null);
+      if (requestId === requestIdRef.current) {
+        setData(response);
+        setError(null);
+      }
     } catch (err) {
-      setError(err);
+      if (requestId === requestIdRef.current) {
+        setError(err);
+      }
     } finally {
-      setIsLoading(false);
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [page, size]);
 

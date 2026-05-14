@@ -93,7 +93,7 @@ export default function TenantMaintenancePage() {
           <div className={styles.stats}>
             <div className={styles.statCard}>
               <span className={styles.statLabel}>Tickets Abiertos</span>
-              <span className={styles.statValue}>{data?.countsByStatus?.SUBMITTED || 0 + (data?.countsByStatus?.IN_PROGRESS || 0) + (data?.countsByStatus?.ACKNOWLEDGED || 0)}</span>
+              <span className={styles.statValue}>{(data?.countsByStatus?.SUBMITTED || 0) + (data?.countsByStatus?.IN_PROGRESS || 0) + (data?.countsByStatus?.ACKNOWLEDGED || 0)}</span>
             </div>
             <div className={styles.statCard}>
               <span className={styles.statLabel}>Completados</span>
