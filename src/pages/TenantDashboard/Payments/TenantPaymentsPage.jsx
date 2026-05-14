@@ -119,9 +119,21 @@ export default function TenantPaymentsPage() {
           <h3>Pagar Renta</h3>
           <p>Realiza tu pago mensual de forma segura</p>
           <Button className={styles.actionCard__btn} onClick={() => {
-            const nextPending = data?.installments?.find(i => i.status !== 'PAID');
-            if (nextPending) handlePayInstallment(nextPending);
-            else Swal.fire({ icon: 'info', title: 'Todo al día', text: 'No tienes cuotas pendientes de pago.' });
+            const pendingInstallments = data?.installments?.filter(i => i.status !== 'PAID');
+            if (pendingInstallments && pendingInstallments.length > 0) {
+              const totalAmount = pendingInstallments.reduce((sum, inst) => sum + (inst.balance ?? inst.totalAmount ?? 0), 0);
+              const referenceIds = pendingInstallments.map(inst => inst.id).join(',');
+              
+              const url = buildPaymentUrl({
+                amount: totalAmount,
+                type: 'OTHER',
+                description: pendingInstallments.length > 1 ? `Total de rentas pendientes (${pendingInstallments.length} cuotas)` : `Cuota ${pendingInstallments[0].installmentNumber} - ${pendingInstallments[0].period}`,
+                referenceId: referenceIds,
+              });
+              navigate(url);
+            } else {
+              Swal.fire({ icon: 'info', title: 'Todo al día', text: 'No tienes cuotas pendientes de pago.' });
+            }
           }}>Pagar Ahora</Button>
         </div>
         <div className={styles.actionCard}>

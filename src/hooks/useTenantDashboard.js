@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import tenantService from '../services/tenantService';
 
@@ -10,11 +11,15 @@ export function useTenantDashboard() {
 }
 
 export function useTenantLease() {
-  return useQuery({
-    queryKey: ['tenantLease'],
-    queryFn: tenantService.getLease,
+  const [page, setPage] = useState(0);
+
+  const query = useQuery({
+    queryKey: ['tenantLease', page],
+    queryFn: () => tenantService.getLease(page),
     staleTime: 1000 * 60 * 5,
   });
+
+  return { ...query, page, setPage };
 }
 
 export function useTenantLeaseById(id) {

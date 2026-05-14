@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
-  FiCalendar, FiCheckCircle, FiTool, FiHome, 
+  FiCalendar, FiCheckCircle, FiTool, FiHome,
   FiFileText, FiEye, FiCreditCard, FiAlertTriangle, FiArrowRight
 } from 'react-icons/fi';
 import { useTenantDashboard } from '../../hooks/useTenantDashboard';
 import useFormatters from '../../hooks/useFormatters';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/common/Button/Button';
+import { buildPaymentUrl } from '../../services/payments/buildPaymentUrl';
 import styles from './TenantDashboardPage.module.scss';
 
 export default function TenantDashboardPage() {
@@ -202,7 +203,15 @@ export default function TenantDashboardPage() {
                     <FiCheckCircle /> {t('paid', 'Pagado')}
                   </span>
                 ) : (
-                  <Button size="sm" onClick={() => navigate('/tenant/payments')}>
+                  <Button size="sm" onClick={() => {
+                    const url = buildPaymentUrl({
+                      amount: inst.balance ?? inst.totalAmount ?? 0,
+                      type: 'OTHER',
+                      description: `Cuota ${inst.installmentNumber}`,
+                      referenceId: String(inst.installmentId),
+                    });
+                    navigate(url);
+                  }}>
                     {t('payNow', 'Pagar Ahora')}
                   </Button>
                 )}

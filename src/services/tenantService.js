@@ -5,8 +5,8 @@ const tenantService = {
     return api.get('/tenant/dashboard').then((res) => res.data.data);
   },
 
-  getLease() {
-    return api.get('/tenant/lease').then((res) => res.data.data);
+  getLease(page = 0, size = 5) {
+    return api.get(`/tenant/lease?page=${page}&size=${size}`).then((res) => res.data.data);
   },
 
   getLeaseById(id) {
@@ -19,11 +19,11 @@ const tenantService = {
     });
   },
 
-  getPayments(page = 0, size = 12) {
+  getPayments(page = 0, size = 6) {
     return api.get(`/tenant/payments?page=${page}&size=${size}`).then((res) => res.data.data);
   },
 
-  getMaintenance(page = 0, size = 10) {
+  getMaintenance(page = 0, size = 8) {
     return api.get(`/tenant/maintenance?page=${page}&size=${size}`).then((res) => res.data.data);
   },
 

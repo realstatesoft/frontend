@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
 
 export default function TenantLeasePage() {
-  const { data: leases, isLoading, error } = useTenantLease();
+  const { data, isLoading, error, page, setPage } = useTenantLease();
   const { formatCurrency } = useFormatters();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -57,6 +57,8 @@ export default function TenantLeasePage() {
       </div>
     );
   }
+
+  const leases = data?.content;
 
   if (!leases || leases.length === 0) {
     return (
@@ -176,6 +178,26 @@ export default function TenantLeasePage() {
           </div>
         );
       })}
+
+      {data?.totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+          <BootstrapButton
+            variant="secondary"
+            disabled={page === 0}
+            onClick={() => setPage(page - 1)}
+          >
+            Anterior
+          </BootstrapButton>
+          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Página {page + 1} de {data.totalPages}</span>
+          <BootstrapButton
+            variant="secondary"
+            disabled={page >= data.totalPages - 1}
+            onClick={() => setPage(page + 1)}
+          >
+            Siguiente
+          </BootstrapButton>
+        </div>
+      )}
     </div>
   );
 }
