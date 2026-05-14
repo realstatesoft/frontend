@@ -79,6 +79,10 @@ export default function ContractCreatePage() {
   const { user } = useAuth();
   const role = user?.role?.toUpperCase();
   const isAgent = role === 'AGENT';
+  const isAdmin = role === 'ADMIN';
+  const canAccessClients = isAgent || isAdmin;
+  const canAccessTemplates = isAgent || isAdmin;
+  const canUpdateStatus = isAgent || isAdmin;
   const isPublicContractsFlow = !isAgent;
   const isGuidedSellerFlow = !isAgent;
   const contractsHomePath = isAgent ? '/agent/contratos' : '/owner/contratos';
@@ -194,11 +198,12 @@ export default function ContractCreatePage() {
           ? propertyApi.getAgentScope({ size: 100 })
           : propertyApi.getMe({ page: 0, size: 100, status: 'PUBLISHED' });
 
-        const [propsRes, clientsRes, agentsRes] = await Promise.all([
+        const promises = [
           propsPromise,
-          searchClients({ page: 0, size: 100, sort: 'created_at,desc' }),
+          canAccessClients ? searchClients({ page: 0, size: 100, sort: 'created_at,desc' }) : Promise.resolve({ content: [] }),
           getAllAgents({ page: 0, size: 100 }),
-        ]);
+        ];
+        const [propsRes, clientsRes, agentsRes] = await Promise.all(promises);
         if (cancelled) return;
 
         const raw = propsRes?.data?.data?.content ?? propsRes?.data?.data ?? propsRes?.data ?? [];
@@ -261,6 +266,11 @@ export default function ContractCreatePage() {
   }, [isAgent, user?.agentProfileId]);
 
   useEffect(() => {
+    if (!canAccessTemplates) {
+      setActiveTemplates([]);
+      setLoadingTemplates(false);
+      return;
+    }
     let cancelled = false;
     setLoadingTemplates(true);
     contractTemplateApi
@@ -277,7 +287,7 @@ export default function ContractCreatePage() {
     return () => {
       cancelled = true;
     };
-  }, [form.contractType]);
+  }, [form.contractType, canAccessTemplates]);
 
   // ─── Buscar por MLS-ID (Prop ID) ──────────────────────────────────────────
   const [mlsSearch, setMlsSearch] = useState('');

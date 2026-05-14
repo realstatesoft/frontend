@@ -1,4 +1,5 @@
 import api from './api';
+import { v4 as uuidv4 } from 'uuid';
 
 const rentService = {
   /**
@@ -26,6 +27,26 @@ const rentService = {
   updateRentConfig(payload) {
     return api.put('/config/rent', payload).then((res) => res.data);
   },
+
+  // ─── INSTALLMENTS & PAYMENTS ────────────────────────────────────────
+
+  getLeaseInstallments(leaseId) {
+    return api.get(`/rentals/installments?leaseId=${leaseId}`).then((res) => res.data?.data ?? res.data);
+  },
+
+  getLeasePayments(leaseId) {
+    return api.get(`/rentals/payments?leaseId=${leaseId}`).then((res) => res.data?.data ?? res.data);
+  },
+
+  registerManualPayment(installmentId, payload) {
+    const idempotencyKey = uuidv4();
+    return api.post(`/rentals/installments/${installmentId}/payments`, payload, {
+      headers: {
+        'Idempotency-Key': idempotencyKey,
+      },
+    }).then((res) => res.data?.data ?? res.data);
+  },
 };
 
 export default rentService;
+

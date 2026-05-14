@@ -10,10 +10,11 @@ export function useContractsAsListingAgent(enabled = true) {
   });
 }
 
-export function useContractsAsBuyerAgent() {
+export function useContractsAsBuyerAgent(enabled = true) {
   return useQuery({
     queryKey: ['contracts', 'buyer-agent'],
     queryFn: contractApi.getAsBuyerAgent,
+    enabled,
     staleTime: 1000 * 60 * 3,
   });
 }

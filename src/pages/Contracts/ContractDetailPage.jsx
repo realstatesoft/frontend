@@ -5,7 +5,8 @@ import {
   useContractDetail, 
   useContractSignatures, 
   useSignContract,
-  useDownloadContract
+  useDownloadContract,
+  useUpdateContractStatus
 } from '../../hooks/useContracts';
 import { useAuth } from '../../hooks/useAuth';
 import { 
@@ -16,6 +17,7 @@ import {
 import Badge from '../../components/common/Badge/Badge';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import ContractSignModal from './ContractSignModal';
+import contractApi from '../../services/contracts/contractApi';
 import styles from './ContractDetailPage.module.scss';
 import Swal from 'sweetalert2';
 
@@ -39,10 +41,12 @@ export default function ContractDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSignModalOpen, setIsSignModalOpen] = useState(false);
+  const [activatingLease, setActivatingLease] = useState(false);
 
   const { data: contractRes, isLoading: loadingContract, refetch: refetchContract } = useContractDetail(id);
   const { data: signaturesRes, isLoading: loadingSigs, refetch: refetchSigs } = useContractSignatures(id);
   const downloadMutation = useDownloadContract();
+  const updateStatus = useUpdateContractStatus();
   
   const contract = contractRes;
   const signatures = signaturesRes ?? [];
@@ -63,11 +67,57 @@ export default function ContractDetailPage() {
   // Verificar si el usuario actual ya firmó
   const userHasSigned = signatures.some(s => (s.signerId === user?.userId || s.signerEmail === user?.email) && s.signed);
   const canSign = (contract.status === 'SENT' || contract.status === 'PARTIALLY_SIGNED') && !userHasSigned;
+  const canSend = contract.status === 'DRAFT';
 
   const handleRefresh = () => {
     refetchContract();
     refetchSigs();
   };
+
+  const handleSend = async () => {
+    try {
+      await updateStatus.mutateAsync({ id: contract.id, status: 'SENT' });
+      Swal.fire({
+        icon: 'success',
+        title: 'Contrato enviado',
+        text: 'El contrato fue enviado a las partes para firma.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      refetchContract();
+    } catch {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo enviar el contrato.',
+      });
+    }
+  };
+
+  const handleActivateLease = async () => {
+    setActivatingLease(true);
+    try {
+      await contractApi.activateLease(contract.id);
+      Swal.fire({
+        icon: 'success',
+        title: 'Lease activado',
+        text: 'El arriendo fue activado y las cuotas fueron generadas. El inquilino ya puede verlo en su dashboard.',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      refetchContract();
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err?.response?.data?.message ?? 'No se pudo activar el lease.',
+      });
+    } finally {
+      setActivatingLease(false);
+    }
+  };
+
+  const canActivateLease = contract.contractType === 'RENT' && contract.status === 'SIGNED';
 
   const handleDownload = async () => {
     try {
@@ -102,19 +152,38 @@ export default function ContractDetailPage() {
           </div>
           <div className={styles.header__actions}>
             {contract.status === 'DRAFT' && (
-              <button 
-                className={styles.btnSecondary} 
-                onClick={() => {
-                  const base = user?.role === 'AGENT' ? 'agent' : 'owner';
-                  navigate(`/${base}/contratos/${contract.id}/editar`);
-                }}
-              >
-                <FiEdit3 /> Editar Borrador
-              </button>
+              <>
+                <button 
+                  className={styles.btnSecondary} 
+                  onClick={() => {
+                    const base = user?.role === 'AGENT' ? 'agent' : 'owner';
+                    navigate(`/${base}/contratos/${contract.id}/editar`);
+                  }}
+                >
+                  <FiEdit3 /> Editar Borrador
+                </button>
+                <button 
+                  className={styles.btnPrimary} 
+                  onClick={handleSend}
+                  disabled={updateStatus.isPending}
+                >
+                  <FiCheckCircle /> {updateStatus.isPending ? 'Enviando...' : 'Enviar Contrato'}
+                </button>
+              </>
             )}
             {canSign && (
               <button className={styles.btnPrimary} onClick={() => setIsSignModalOpen(true)}>
                 <FiPenTool /> Firmar Contrato
+              </button>
+            )}
+            {canActivateLease && (
+              <button 
+                className={styles.btnPrimary} 
+                onClick={handleActivateLease}
+                disabled={activatingLease}
+                title="Crear el arriendo y generar las cuotas mensuales"
+              >
+                <FiCheckCircle /> {activatingLease ? 'Activando...' : 'Activar Arriendo'}
               </button>
             )}
             <button 

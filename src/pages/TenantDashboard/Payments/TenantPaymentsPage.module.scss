@@ -1,0 +1,293 @@
+.page {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+
+  .title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0.25rem 0 0;
+  }
+}
+
+.actionCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.actionCard {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  &__icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    background: #eff6ff;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+
+    &--green {
+      background: #f0fdf4;
+      color: #10b981;
+    }
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0 0 1.5rem;
+    flex: 1;
+  }
+
+  &__btn {
+    width: 100%;
+  }
+}
+
+.historySection {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+
+  .sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 1.5rem;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.installmentCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  &__main {
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: #fafafa;
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
+
+.iconWrapper {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+
+  &--paid {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  &--pending {
+    background: #fef9c3;
+    color: #a16207;
+  }
+}
+
+.installmentInfo {
+  flex: 1;
+
+  h4 {
+    margin: 0 0 0.25rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+}
+
+.installmentAmount {
+  text-align: right;
+
+  @media (max-width: 640px) {
+    text-align: left;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+
+    @media (max-width: 640px) {
+      margin: 0;
+    }
+  }
+
+  .badges {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .payBtn {
+    background: #111827;
+    color: white;
+    border: none;
+    padding: 0.25rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+
+    &:hover {
+      background: #374151;
+    }
+  }
+}
+
+.paymentsDetail {
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem 1.25rem;
+  background: white;
+}
+
+.paymentRow, .invoiceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed #f3f4f6;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+.paymentDate {
+  font-size: 0.875rem;
+  color: #374151;
+  width: 120px;
+}
+
+.paymentMethod {
+  font-size: 0.875rem;
+  color: #6b7280;
+  flex: 1;
+}
+
+.paymentAmt {
+  font-weight: 600;
+  color: #111827;
+  margin-right: 1rem;
+}
+
+.invoiceRow {
+  span {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+
+  .emptyIcon {
+    font-size: 2.5rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+
+  span {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #6b7280;
+  gap: 1rem;
+
+  svg {
+    font-size: 2.5rem;
+    color: #ef4444;
+  }
+}

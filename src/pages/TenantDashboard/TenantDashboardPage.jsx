@@ -35,7 +35,7 @@ export default function TenantDashboardPage() {
 
   const {
     status,
-    activeLease,
+    activeLeases,
     nextInstallment,
     totalPaidLastYear,
     openMaintenanceTickets,
@@ -101,7 +101,11 @@ export default function TenantDashboardPage() {
             {t('tenantDashboard.daysRemaining', 'Días Restantes')} <FiCalendar className={styles.summaryCard__icon + ' ' + styles['summaryCard__icon--blue']} />
 
           </div>
-          <div className={styles.summaryCard__value}>{activeLease?.daysRemaining || '0'}</div>
+          <div className={styles.summaryCard__value}>
+            {activeLeases?.length
+              ? Math.min(...activeLeases.map(l => l.daysRemaining || 0))
+              : '0'}
+          </div>
           <div className={styles.summaryCard__sub}>{t('tenantDashboard.contractDays', 'Días de contrato')}</div>
 
         </div>
@@ -117,41 +121,37 @@ export default function TenantDashboardPage() {
         </div>
       </div>
 
-      {/* Mi Propiedad Hero Card */}
-      {activeLease && (
-        <div className={styles.propertyCard}>
-          <img 
-            src={activeLease.propertyImage || activeLease.property?.image || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600"} 
-            alt={activeLease.propertyTitle} 
+      {/* Mis Propiedades */}
+      {activeLeases?.map((lease) => (
+        <div key={lease.leaseId} className={styles.propertyCard}>
+          <img
+            src={lease.propertyImage || lease.property?.image || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600"}
+            alt={lease.propertyTitle}
             className={styles.propertyCard__image}
           />
 
           <div className={styles.propertyCard__content}>
             <div className={styles.propertyCard__top}>
               <div className={styles.propertyCard__main}>
-                <h2 className={styles.propertyCard__title}>{activeLease.propertyTitle}</h2>
-                <p className={styles.propertyCard__desc}>{activeLease.propertyAddress}</p>
+                <h2 className={styles.propertyCard__title}>{lease.propertyTitle}</h2>
+                <p className={styles.propertyCard__desc}>{lease.propertyAddress}</p>
               </div>
               <div className={styles.propertyCard__landlord}>
                 <label>{t('tenant.property.owner', 'Propietario')}</label>
-
-                <p>{activeLease.landlordName}</p>
-                <span>{activeLease.landlordEmail}</span>
+                <p>{lease.landlordName}</p>
+                <span>{lease.landlordEmail}</span>
               </div>
               <span className={styles.propertyCard__badge}>{t('tenant.property.status.active', 'Activo')}</span>
-
             </div>
 
             <div className={styles.propertyCard__grid}>
               <div className={styles.propertyCard__infoBox}>
                 <label>{t('tenant.property.startDate', 'Inicio de contrato')}</label>
-
-                <span>{formatDate(activeLease.startDate)}</span>
+                <span>{formatDate(lease.startDate)}</span>
               </div>
               <div className={styles.propertyCard__infoBox}>
                 <label>{t('tenant.property.endDate', 'Fin de contrato')}</label>
-
-                <span>{formatDate(activeLease.endDate)}</span>
+                <span>{formatDate(lease.endDate)}</span>
               </div>
             </div>
 
@@ -160,19 +160,18 @@ export default function TenantDashboardPage() {
                 <Button variant="secondary" onClick={() => navigate('/tenant/lease')}>
                   <FiFileText /> {t('tenant.property.viewLease', 'Ver Contrato')}
                 </Button>
-                <Button variant="secondary" onClick={() => navigate(`/properties/${activeLease.propertyId}`)}>
+                <Button variant="secondary" onClick={() => navigate(`/properties/${lease.propertyId}`)}>
                   <FiHome /> {t('tenant.property.details', 'Detalles')}
                 </Button>
               </div>
               <div className={styles.propertyCard__rent}>
                 <label>{t('tenant.property.monthlyRent', 'Renta mensual')}</label>
-
-                <span>{formatCurrency(activeLease.monthlyRent)}</span>
+                <span>{formatCurrency(lease.monthlyRent)}</span>
               </div>
             </div>
           </div>
         </div>
-      )}
+      ))}
 
       {/* Two Column Section */}
       <div className={styles.detailsGrid}>
@@ -217,7 +216,7 @@ export default function TenantDashboardPage() {
         <div className={styles.section}>
           <div className={styles.section__header}>
             <h3>{t('maintenance.title', 'Solicitudes de Mantenimiento')}</h3>
-            <Button size="sm" onClick={() => navigate('/tenant/maintenance/new')}>
+            <Button size="sm" onClick={() => navigate('/tenant/maintenance')}>
               {t('maintenance.newRequest', 'Nueva Solicitud')}
             </Button>
           </div>

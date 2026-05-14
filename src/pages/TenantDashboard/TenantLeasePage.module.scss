@@ -34,6 +34,36 @@
     border: 1px solid $border-color-soft;
   }
 
+  // --- Expiration Banner ---
+  &__expiryBanner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid $warning-border;
+    border-radius: $radius-md;
+    background: $warning-bg;
+    color: $warning-text;
+
+    strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  }
+
+  &__expiryIcon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
   &__cardTitle {
     font-size: 1.15rem;
     font-weight: 700;
@@ -123,6 +153,13 @@
     color: $text-dark;
   }
 
+  &__infoSub {
+    display: block;
+    font-size: 0.85rem;
+    color: $text-muted;
+    margin-top: 0.15rem;
+  }
+
   &__infoPrice {
     display: block;
     font-size: 1.5rem;
@@ -191,9 +228,29 @@
     cursor: pointer;
     transition: background 0.2s;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background: lighten(#0f172a, 10%);
     }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // --- Special Conditions ---
+  &__specialConditions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid $border-color-soft;
+  }
+
+  &__specialText {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: $text-dark;
+    white-space: pre-wrap;
+    margin-top: 0.75rem;
   }
 
   // --- Common Details Card ---
@@ -205,6 +262,195 @@
     padding: 2rem;
     margin-bottom: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  // --- Documents Card ---
+  &__documentsCard {
+    background: #fff;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-lg;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  &__sectionIcon {
+    margin-right: 0.5rem;
+    color: $primary;
+  }
+
+  &__documentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  &__documentItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: $light;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-md;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      border-color: $primary;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  &__documentInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__docIcon {
+    font-size: 1.5rem;
+    color: $primary;
+    flex-shrink: 0;
+  }
+
+  &__docFileName {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: $text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
+
+  &__docMeta {
+    display: block;
+    font-size: 0.8rem;
+    color: $text-muted;
+    margin-top: 0.15rem;
+  }
+
+  &__docDownloadBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: $radius-sm;
+    background: $color-dark-slate;
+    color: #fff;
+    flex-shrink: 0;
+    transition: background 0.2s;
+
+    &:hover {
+      background: lighten(#0f172a, 10%);
+    }
+
+    svg {
+      font-size: 1.1rem;
+    }
+  }
+
+  // --- Contact Card ---
+  &__contactCard {
+    background: #fff;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-lg;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  &__contactGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__contactBox {
+    background: $light;
+    border: 1px solid $border-color-soft;
+    border-radius: $radius-md;
+    padding: 1.5rem;
+  }
+
+  &__contactTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0 0 1rem 0;
+  }
+
+  &__contactIcon {
+    color: $primary;
+  }
+
+  &__contactDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__contactItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__contactLabel {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  &__contactValue {
+    font-size: 0.95rem;
+    color: $text-dark;
+  }
+
+  &__contactLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: $primary;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $primary-dark;
+      text-decoration: underline;
+    }
+
+    svg {
+      font-size: 1rem;
+    }
+  }
+
+  &__contactEmpty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: $text-muted;
+  }
+
+  &__emergencyText {
+    font-size: 0.95rem;
+    color: $text-dark;
+    line-height: 1.5;
+    margin: 0;
   }
 
   &__detailsGrid {

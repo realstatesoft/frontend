@@ -2,8 +2,6 @@ import { useEffect, useMemo } from 'react';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import Underline from '@tiptap/extension-underline';
-import Link from '@tiptap/extension-link';
 import styles from './ContractTemplateRichEditor.module.scss';
 
 function MenuBar({ editor, disabled }) {
@@ -199,15 +197,15 @@ export default function ContractTemplateRichEditor({ value, onChange, placeholde
     () => [
       StarterKit.configure({
         heading: { levels: [2, 3] },
-      }),
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        HTMLAttributes: {
-          rel: 'noopener noreferrer nofollow',
-          target: '_blank',
+        link: {
+          openOnClick: false,
+          autolink: true,
+          HTMLAttributes: {
+            rel: 'noopener noreferrer nofollow',
+            target: '_blank',
+          },
         },
+        underline: {},
       }),
       Placeholder.configure({
         placeholder: placeholder || 'Escribe el contenido base del contrato…',

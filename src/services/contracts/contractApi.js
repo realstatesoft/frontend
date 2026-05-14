@@ -81,6 +81,15 @@ const contractApi = {
   },
 
   /**
+   * Activar lease desde un contrato de alquiler firmado.
+   * @param {number} id
+   */
+  activateLease(id) {
+    const encodedId = encodeURIComponent(id);
+    return api.post(`/contracts/${encodedId}/activate-lease`).then((res) => (res.data && res.data.data !== undefined) ? res.data.data : res.data);
+  },
+
+  /**
    * Descargar el contrato como PDF.
    * Retorna un objeto { url, filename } para disparar la descarga.
    * @param {number} id

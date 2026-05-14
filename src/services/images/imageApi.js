@@ -1,15 +1,27 @@
-import api from "../api";
+import axios from "axios";
+import { getAccessToken } from "../../utils/authToken";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Sube una imagen al storage.
  * @param {File} file - Archivo de imagen (jpg, png, webp — máx 5 MB)
  * @param {string} folder - Carpeta en el bucket (default "general")
- * @param {object} [requestConfig] - Config adicional para axios (ej. headers)
  * @returns {Promise<{ data: { success, data: { id, url, filename, size, contentType } } }>}
  */
-export function uploadImage(file, folder = "general", requestConfig = {}) {
+export function uploadImage(file, folder = "general") {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("folder", folder);
-  return api.post("/images/upload", formData, requestConfig);
+
+  const token = getAccessToken();
+  
+  // Usamos axios directamente para evitar que los interceptores de 'api' 
+  // (que pueden tener Content-Type: application/json) interfieran con FormData.
+  return axios.post(`${BASE_URL}/images/upload`, formData, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      // NO incluir Content-Type aquí para que el navegador lo genere con el boundary correcto
+    },
+  });
 }
