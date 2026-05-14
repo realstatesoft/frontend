@@ -24,9 +24,10 @@ const PRIORITIES = [
   { value: 'EMERGENCY', label: 'Urgencia / Emergencia' },
 ];
 
-export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmitting }) {
+export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmitting, leases = [] }) {
   const { t } = useTranslation('tenant');
   const [formData, setFormData] = useState({
+    leaseId: leases.length === 1 ? leases[0].id : '',
     title: '',
     description: '',
     category: '',
@@ -121,7 +122,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.description || !formData.category) {
+    if (!formData.leaseId || !formData.title || !formData.description || !formData.category) {
       setError('Por favor completa todos los campos obligatorios.');
       return;
     }
@@ -151,6 +152,26 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
       {error && (
         <div className={styles.errorMessage}>
           <FiAlertCircle /> {error}
+        </div>
+      )}
+
+      {leases.length > 1 && (
+        <div className={styles.field}>
+          <label htmlFor="leaseId">Propiedad *</label>
+          <select
+            id="leaseId"
+            name="leaseId"
+            value={formData.leaseId}
+            onChange={handleInputChange}
+            required
+          >
+            <option value="" disabled>Selecciona la propiedad afectada</option>
+            {leases.map((lease) => (
+              <option key={lease.id} value={lease.id}>
+                {lease.propertyTitle || lease.propertyAddress}
+              </option>
+            ))}
+          </select>
         </div>
       )}
 

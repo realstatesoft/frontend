@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiPlus, FiAlertTriangle, FiTool } from 'react-icons/fi';
 import { useTenantMaintenance } from '../../../hooks/useTenantMaintenance';
+import { useTenantDashboard } from '../../../hooks/useTenantDashboard';
 import MaintenanceRequestForm from './MaintenanceRequestForm';
 import TicketList from './TicketList';
 import Button from '../../../components/common/Button/Button';
@@ -11,6 +12,7 @@ import Swal from 'sweetalert2';
 export default function TenantMaintenancePage() {
   const { t } = useTranslation('tenant');
   const { data, isLoading, error, createRequest, rateRequest } = useTenantMaintenance();
+  const { data: dashboardData } = useTenantDashboard();
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -86,6 +88,7 @@ export default function TenantMaintenancePage() {
             onSubmit={handleCreateRequest} 
             onCancel={() => setShowForm(false)}
             isSubmitting={isSubmitting}
+            leases={dashboardData?.activeLeases || []}
           />
         </div>
       ) : (

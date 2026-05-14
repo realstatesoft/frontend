@@ -31,6 +31,7 @@ export default function TenantPaymentsPage() {
   const { data, isLoading, error, page, setPage } = useTenantPayments();
   const { formatCurrency, formatDate } = useFormatters();
   const [downloading, setDownloading] = useState(null); // 'receipt-id' or 'invoice-id'
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
   const handlePayInstallment = (inst) => {
     const url = buildPaymentUrl({
@@ -103,12 +104,42 @@ export default function TenantPaymentsPage() {
     );
   }
 
+  // Frontend year filtering since backend doesn't filter by year yet.
+  const availableYears = data?.installments 
+    ? [...new Set(data.installments.map(inst => new Date(inst.dueDate).getFullYear().toString()))].sort().reverse()
+    : [new Date().getFullYear().toString()];
+  
+  if (!availableYears.includes(selectedYear) && availableYears.length > 0) {
+    // If the selected year is not in the list, keep the selection but allow the user to see empty results,
+    // or we could default to the first available. For now, just keep selectedYear.
+  }
+
+  const filteredInstallments = selectedYear === 'ALL' 
+    ? data?.installments 
+    : data?.installments?.filter(inst => new Date(inst.dueDate).getFullYear().toString() === selectedYear);
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.headerText}>
           <h1 className={styles.title}>Pagos</h1>
           <p className={styles.subtitle}>Gestiona tus pagos de renta</p>
+        </div>
+        
+        {/* Totales anuales en el header */}
+        <div className={styles.headerStats}>
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>Total Pagado (12 meses)</span>
+            <span className={styles.statValue}>{formatCurrency(data?.totalPaidYear || 0)}</span>
+          </div>
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>Cuotas al Día</span>
+            <span className={`${styles.statValue} ${styles['statValue--success']}`}>{data?.onTime || 0}</span>
+          </div>
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>Cuotas Morosas</span>
+            <span className={`${styles.statValue} ${styles['statValue--danger']}`}>{data?.late || 0}</span>
+          </div>
         </div>
       </header>
 
@@ -151,10 +182,22 @@ export default function TenantPaymentsPage() {
       </div>
 
       <section className={styles.historySection}>
-        <h3 className={styles.sectionTitle}>Historial de Pagos</h3>
+        <div className={styles.sectionHeader}>
+          <h3 className={styles.sectionTitle}>Historial de Pagos</h3>
+          <select 
+            className={styles.yearFilter}
+            value={selectedYear} 
+            onChange={(e) => setSelectedYear(e.target.value)}
+          >
+            <option value="ALL">Todos los años</option>
+            {availableYears.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
 
         <div className={styles.list}>
-          {data?.installments?.map((inst) => (
+          {filteredInstallments?.map((inst) => (
             <div key={inst.id} className={styles.installmentCard}>
               <div className={styles.installmentCard__main}>
                 <div className={`${styles.iconWrapper} ${inst.status === 'PAID' ? styles['iconWrapper--paid'] : styles['iconWrapper--pending']}`}>
@@ -216,10 +259,10 @@ export default function TenantPaymentsPage() {
             </div>
           ))}
 
-          {(!data?.installments || data.installments.length === 0) && (
+          {(!filteredInstallments || filteredInstallments.length === 0) && (
             <div className={styles.empty}>
               <FiClock className={styles.emptyIcon} />
-              <p>No tienes cuotas registradas en este contrato.</p>
+              <p>No tienes cuotas registradas en este período.</p>
             </div>
           )}
         </div>
