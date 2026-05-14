@@ -20,7 +20,25 @@ vi.mock('../../hooks/useAuth', () => ({
 // Mock de i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key, defaultValue) => defaultValue || key,
+    t: (key, defaultValue, vars) => {
+      if (typeof defaultValue === 'string' && vars) {
+        let result = defaultValue;
+        Object.entries(vars).forEach(([k, v]) => {
+          result = result.replace(`{{${k}}}`, v);
+        });
+        return result;
+      }
+      if (typeof defaultValue === 'string') return defaultValue;
+      return key;
+    },
+  }),
+  initReactI18next: { type: '3rdParty', init: () => {} },
+}));
+
+vi.mock('../../hooks/useFormatters', () => ({
+  default: () => ({
+    formatCurrency: (amount, currency = 'USD') => `$ ${amount ?? 0}`,
+    formatDate: (date) => date || '--/--/----',
   }),
 }));
 
@@ -62,14 +80,14 @@ describe('TenantDashboardPage', () => {
       isLoading: false,
       data: {
         status: 'ACTIVE',
-        activeLease: {
+        activeLeases: [{
           propertyTitle: 'Propiedad de Prueba',
           propertyAddress: 'Calle Falsa 123',
           landlordName: 'Dueño Test',
           daysRemaining: 45,
           monthlyRent: 1500,
           currency: 'USD'
-        },
+        }],
         pendingBalance: 0,
         unreadMessages: 2,
         openMaintenanceTickets: 1,

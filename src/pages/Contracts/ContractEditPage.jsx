@@ -20,6 +20,11 @@ export default function ContractEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const role = user?.role?.toUpperCase();
+  const isAgent = role === 'AGENT';
+  const isAdmin = role === 'ADMIN';
+  const canUpdateStatus = isAgent || isAdmin;
+  const canAccessTemplates = isAgent || isAdmin;
 
   const { data: contractRes, isLoading: loadingContract } = useContractDetail(id);
   const contract = contractRes;
@@ -130,6 +135,11 @@ export default function ContractEditPage() {
 
   useEffect(() => {
     if (!form?.contractType) return;
+    if (!canAccessTemplates) {
+      setActiveTemplates([]);
+      setLoadingTemplates(false);
+      return;
+    }
     let cancelled = false;
     setLoadingTemplates(true);
     contractTemplateApi
@@ -146,7 +156,7 @@ export default function ContractEditPage() {
     return () => {
       cancelled = true;
     };
-  }, [form?.contractType]);
+  }, [form?.contractType, canAccessTemplates]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

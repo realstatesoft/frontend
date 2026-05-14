@@ -1,0 +1,136 @@
+.page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+
+  .backBtn {
+    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4b5563;
+  }
+
+  .titleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #111827;
+    }
+  }
+}
+
+.totalsCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.totalCard {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+
+  span {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  &--danger {
+    h4 {
+      color: #ef4444;
+    }
+  }
+}
+
+.filters {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+
+  .statusSelect {
+    max-width: 200px;
+  }
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  td {
+    padding: 1rem 1.25rem;
+    vertical-align: middle;
+    color: #111827;
+  }
+}
+
+.row {
+  &--overdue {
+    background-color: #fef2f2 !important;
+  }
+}
+
+.paymentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.paymentLine {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+  color: #6b7280;
+}
+
+.error {
+  svg {
+    font-size: 2.5rem;
+    color: #ef4444;
+  }
+}

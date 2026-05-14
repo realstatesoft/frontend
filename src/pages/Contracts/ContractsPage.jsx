@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiFileText, FiCheckCircle, FiDollarSign, FiEye, FiRefreshCw, FiPlus, FiEdit2, FiFeather, FiDownload } from 'react-icons/fi';
 import Swal from 'sweetalert2';
@@ -31,7 +31,7 @@ import ContractStatusModal from './ContractStatusModal';
 import ContractSignModal from './ContractSignModal';
 import styles from './ContractsPage.module.scss';
 
-const TABS = [
+const TABS_ALL = [
   { key: 'seller',    label: 'Propietario / Vendedor'  },
   { key: 'buyer',     label: 'Comprador / Inquilino'   },
   { key: 'listing',   label: 'Agente Listador'          },
@@ -51,12 +51,25 @@ export default function ContractsPage() {
   const [signContract, setSignContract]         = useState(null);
 
   const { user }                = useAuth();
+  const role = user?.role?.toUpperCase();
+  const isAgent = role === 'AGENT';
+  const isAdmin = role === 'ADMIN';
+
+  // Si no es agente, forzar tab válido
+  useEffect(() => {
+    if (!isAgent && (activeTab === 'listing' || activeTab === 'buyerAgent')) {
+      setActiveTab('seller');
+    }
+  }, [isAgent, activeTab]);
+
   const { data: sellerRes,  isLoading: loadingSeller  } = useContractsAsSeller();
   const { data: buyerRes,   isLoading: loadingBuyer   } = useContractsAsBuyer();
-  const { data: listingRes, isLoading: loadingListing } = useContractsAsListingAgent();
-  const { data: bAgentRes,  isLoading: loadingBAgent  } = useContractsAsBuyerAgent();
+  const { data: listingRes, isLoading: loadingListing } = useContractsAsListingAgent(isAgent);
+  const { data: bAgentRes,  isLoading: loadingBAgent  } = useContractsAsBuyerAgent(isAgent);
   const updateStatus = useUpdateContractStatus();
   const downloadMutation = useDownloadContract();
+
+  const TABS = isAgent ? TABS_ALL : TABS_ALL.filter(t => t.key === 'seller' || t.key === 'buyer');
 
   const rawLookup = {
     seller:     sellerRes,
