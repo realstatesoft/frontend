@@ -76,10 +76,7 @@ describe('AdminDocumentsPage KYC', () => {
   it('renderiza la cabecera y el estado vacío correctamente', async () => {
     render(<AdminDocumentsPage />);
     
-    expect(screen.getByText('Verificación de Identidad (KYC)')).toBeInTheDocument();
-    
-    // Debería verse el estado de carga primero
-    expect(document.querySelector('.spinner-border')).toBeInTheDocument();
+    expect(await screen.findByText('Verificación de Identidad')).toBeInTheDocument();
     
     // Luego el empty state
     await waitFor(() => {

@@ -10,6 +10,7 @@ vi.mock('../../hooks/useAuth', () => ({
 }));
 vi.mock('../../hooks/useMessagesData', () => ({
   useConversations: vi.fn(() => ({ data: { data: [] } })),
+  useUnreadMessagesCount: vi.fn(() => ({ data: 0 })),
 }));
 vi.mock('../../store/useUIStore', () => ({
   default: vi.fn(() => ({ sidebarCollapsed: false, toggleSidebar: vi.fn(), darkMode: false, toggleDarkMode: vi.fn() })),

@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../../i18n';
 
 // Mocks
 import notificationApi from '../../../services/notifications/notificationApi';
@@ -40,15 +42,18 @@ vi.mock('react-router-dom', async () => {
 
 describe('AdminNotificationsPage', () => {
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks();
+    await initializeI18n();
   });
 
   const renderComponent = () => {
     return render(
-      <MemoryRouter>
-        <AdminNotificationsPage />
-      </MemoryRouter>
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <AdminNotificationsPage />
+        </MemoryRouter>
+      </I18nextProvider>
     );
   };
 

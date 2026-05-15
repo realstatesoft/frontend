@@ -1,8 +1,10 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { I18nextProvider } from 'react-i18next';
+import { i18n, initializeI18n } from '../../i18n';
 import VisitRequests from '../../pages/VisitRequests';
 
 vi.mock('../../hooks/useAuth', () => ({
@@ -41,21 +43,27 @@ vi.mock('../../services/visits/visitApi', () => ({
 }));
 
 describe('VisitRequests Page', () => {
+  beforeEach(async () => {
+    await initializeI18n();
+  });
+
   it('renders the visit requests table for an agent', async () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
 
     render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
-          <VisitRequests />
-        </MemoryRouter>
-      </QueryClientProvider>
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>
+            <VisitRequests />
+          </MemoryRouter>
+        </QueryClientProvider>
+      </I18nextProvider>
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Solicitudes de Visitas/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Solicitudes de Visita/i })).toBeInTheDocument();
     });
 
     await waitFor(() => {

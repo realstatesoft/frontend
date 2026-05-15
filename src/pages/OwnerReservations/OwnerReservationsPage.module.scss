@@ -88,6 +88,13 @@
   &:hover { background: #157347; }
 }
 
+.btnContract {
+  display: flex; align-items: center; gap: 6px;
+  background: #0d6efd; border: none; border-radius: 8px;
+  padding: 7px 18px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer;
+  &:hover { background: #0b5ed7; }
+}
+
 .btnReject {
   display: flex; align-items: center; gap: 6px;
   background: #fff; border: 1px solid #dc3545; border-radius: 8px;

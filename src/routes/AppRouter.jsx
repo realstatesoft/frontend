@@ -40,6 +40,15 @@ const PreferencesPage = lazy(() => import("../pages/PreferencesPage"));
 const PaymentPage = lazy(() => import("../pages/Payment/PaymentPage"));
 const MyPaymentsPage = lazy(() => import("../pages/MyPayments/MyPaymentsPage"));
 
+// Tenant Dashboard
+const TenantLayout = lazy(() => import("../components/layout/TenantLayout/TenantLayout"));
+const TenantDashboardPage = lazy(() => import("../pages/TenantDashboard/TenantDashboardPage"));
+const TenantLeasePage = lazy(() => import("../pages/TenantDashboard/TenantLeasePage"));
+const TenantLeaseDetailPage = lazy(() => import("../pages/TenantDashboard/TenantLeaseDetailPage"));
+const TenantMaintenancePage = lazy(() => import("../pages/TenantDashboard/Maintenance/TenantMaintenancePage"));
+const TenantPaymentsPage = lazy(() => import("../pages/TenantDashboard/Payments/TenantPaymentsPage"));
+
+
 // Agent Dashboard (chunk-agent)
 const AgentLayout = lazy(() => import("../components/layout/AgentLayout/AgentLayout"));
 const DashboardPage = lazy(() => import("../pages/Dashboard/DashboardPage"));
@@ -58,6 +67,7 @@ const OfferManagementPage = lazy(() => import("../pages/Offers/OfferManagementPa
 const AgentLeadsPage = lazy(() => import("../pages/AgentLeads/AgentLeadsPage"));
 const LeadDetailPage = lazy(() => import("../pages/Leads/LeadDetailPage"));
 const AgentReservationsPage = lazy(() => import("../pages/AgentReservations/AgentReservationsPage"));
+const LeasePaymentsPage = lazy(() => import("../pages/Contracts/LeasePaymentsPage"));
 
 // Owner Dashboard (chunk-owner)
 const OwnerLayout = lazy(() => import("../components/layout/OwnerLayout/OwnerLayout"));
@@ -130,7 +140,15 @@ export default function AppRouter() {
                 <Route path="/mensajes" element={<ClientMessagesPage />} />
                 <Route path="/contratos/:id" element={<ContractDetailPage />} />
                 <Route path="/ofertas" element={<OfferManagementPage />} />
-                <Route path="/owner/reservations" element={<OwnerReservationsPage />} />
+
+                <Route path="/tenant" element={<TenantLayout />}>
+                    <Route index element={<Navigate to="/tenant/dashboard" replace />} />
+                    <Route path="dashboard" element={<TenantDashboardPage />} />
+                    <Route path="lease" element={<TenantLeasePage />} />
+                    <Route path="lease/:id" element={<TenantLeaseDetailPage />} />
+                    <Route path="maintenance" element={<TenantMaintenancePage />} />
+                    <Route path="payments" element={<TenantPaymentsPage />} />
+                </Route>
             </Route>
 
             {/* -- Rutas protegidas (Agent) ------------------------- */}
@@ -148,6 +166,7 @@ export default function AppRouter() {
                     <Route path="contratos" element={<ContractsPage />} />
                     <Route path="contratos/nuevo" element={<ContractCreatePage />} />
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="contratos/:id/pagos" element={<LeasePaymentsPage />} />
                     <Route path="contratos/:id/editar" element={<ContractEditPage />} />
                     <Route path="reportes" element={<ReportsPage />} />
                     <Route path="reportes/embudo" element={<ConversionFunnelPage />} />
@@ -173,6 +192,8 @@ export default function AppRouter() {
                     <Route path="contratos" element={<ContractsPage />} />
                     <Route path="contratos/nuevo" element={<ContractCreatePage />} />
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
+                    <Route path="contratos/:id/pagos" element={<LeasePaymentsPage />} />
+                    <Route path="reservations" element={<OwnerReservationsPage />} />
                     <Route path="settings" element={<UserSettingsPage />} />
                 </Route>
             </Route>

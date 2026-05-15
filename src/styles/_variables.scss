@@ -1,5 +1,6 @@
 // Colores principales
 $primary: #2563eb;
+$primary-dark: #1d4ed8;
 $secondary: #64748b;
 $success: #22c55e;
 $danger: #ef4444;
@@ -7,6 +8,7 @@ $warning: #f59e0b;
 $info: #0ea5e9;
 $light: #f8fafc;
 $dark: #1e293b;
+$color-dark-slate: #0f172a;
 
 // texto 
 $text-dark: #1a1a1a;
@@ -19,6 +21,11 @@ $doc-border-color: #cbd5e1;
 $neutral-soft: #f0ede8;
 $input-bg-light: #F9F9F9;
 $shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.07);
+
+// warning variants
+$warning-bg: #fffbeb;
+$warning-border: #fde68a;
+$warning-text: #92400e;
 
 $radius-sm: 8px;
 $radius-md: 12px;

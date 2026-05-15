@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Container, Spinner, Alert, Form, Pagination } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircleFill, XCircle } from 'react-bootstrap-icons';
+import { ArrowLeft, CheckCircleFill, XCircle, FileEarmarkText } from 'react-bootstrap-icons';
 import Swal from 'sweetalert2';
 import reservationApi from '../../services/reservations/reservationApi';
 import { formatCurrency, formatDate } from '../../utils/formatters';
@@ -91,6 +91,16 @@ export default function OwnerReservationsPage() {
     }
   };
 
+  const handleCreateContract = (reservation) => {
+    const params = new URLSearchParams();
+    params.set('propertyId', reservation.propertyId);
+    params.set('buyerId', reservation.buyerId);
+    params.set('buyerName', reservation.buyerName);
+    params.set('buyerEmail', reservation.buyerEmail);
+    if (reservation.amount) params.set('amount', reservation.amount);
+    navigate(`/owner/contratos/nuevo?${params.toString()}`);
+  };
+
   return (
     <>
       <CustomNavbar />
@@ -156,6 +166,14 @@ export default function OwnerReservationsPage() {
                       {r.status === 'PENDING' && (
                         <button className={styles.btnConfirm} onClick={() => handleConfirm(r.id)}>
                           <CheckCircleFill size={14} /> Confirmar
+                        </button>
+                      )}
+                      {r.status === 'ACTIVE' && (
+                        <button
+                          className={styles.btnContract}
+                          onClick={() => handleCreateContract(r)}
+                        >
+                          <FileEarmarkText size={14} /> Crear contrato
                         </button>
                       )}
                       <button

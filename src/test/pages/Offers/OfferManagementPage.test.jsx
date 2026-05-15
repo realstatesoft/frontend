@@ -137,7 +137,7 @@ describe('OfferManagementPage', () => {
 
     renderPage();
 
-    const contactLink = await screen.findByRole('button', { name: /Contactar/i });
+    const contactLink = await screen.findByRole('button', { name: /WhatsApp/i });
     expect(contactLink).toHaveAttribute('href', expect.stringContaining('wa.me'));
   });
 

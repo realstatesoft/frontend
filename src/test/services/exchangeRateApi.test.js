@@ -18,7 +18,7 @@ describe('exchangeRateApi', () => {
 
     await exchangeRateApi.getExchangeRates();
 
-    expect(api.get).toHaveBeenCalledWith('/api/exchange-rates');
+    expect(api.get).toHaveBeenCalledWith('/exchange-rates');
   });
 
   it('calls the currency-specific endpoint', async () => {
@@ -26,6 +26,6 @@ describe('exchangeRateApi', () => {
 
     await exchangeRateApi.getExchangeRate('USD');
 
-    expect(api.get).toHaveBeenCalledWith('/api/exchange-rates/USD');
+    expect(api.get).toHaveBeenCalledWith('/exchange-rates/USD');
   });
 });

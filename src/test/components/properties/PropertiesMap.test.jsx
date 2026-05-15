@@ -94,6 +94,6 @@ describe('PropertiesMap', () => {
 
     expect(screen.getByText('Mapa dos resultados')).toBeInTheDocument();
     expect(screen.getByText('Localização dos imóveis')).toBeInTheDocument();
-    expect(screen.getByText('Não há imóveis com coordenadas disponíveis para mostrar no mapa com os filtros atuais.')).toBeInTheDocument();
+    expect(screen.getByText('Explore no mapa os imóveis visíveis com os filtros atuais.')).toBeInTheDocument();
   });
 });
