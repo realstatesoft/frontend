@@ -13,7 +13,7 @@ export default function SaveSearchModal({
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { fieldErrors, validate, clearFieldError } = useFormValidation();
+  const { fieldErrors, validate, clearFieldError, clearAllErrors } = useFormValidation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +45,7 @@ export default function SaveSearchModal({
     setName("");
     setNotificationsEnabled(false);
     setError(null);
+    clearAllErrors();
     onHide();
   };
 

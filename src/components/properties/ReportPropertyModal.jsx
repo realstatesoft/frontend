@@ -25,7 +25,7 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
     e.preventDefault();
     const valid = validate({
       flagType: { value: flagType, label: t('reportProperty.typeLabel', { defaultValue: 'Tipo de reporte' }), required: true },
-      reason: { value: reason.length >= 10 ? reason : "", label: t('reportProperty.reasonLabel', { defaultValue: 'Motivo' }), required: true, minLength: 10 },
+      reason: { value: reason, label: t('reportProperty.reasonLabel', { defaultValue: 'Motivo' }), required: true, minLength: 10 },
     });
     if (!valid) return;
 

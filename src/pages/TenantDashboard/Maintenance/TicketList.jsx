@@ -48,6 +48,7 @@ function getTicketImages(ticket) {
 function TicketDetails({ ticket, onRate }) {
   const [rating, setRating] = useState(0);
   const { formatDate } = useFormatters();
+  const { t } = useTranslation('tenant');
   const images = useMemo(() => getTicketImages(ticket), [ticket]);
 
   const handleRate = async (e) => {
@@ -73,14 +74,14 @@ function TicketDetails({ ticket, onRate }) {
       </div>
 
       <div className={styles.description}>
-        <h5>Descripcion</h5>
+        <h5>{t('maintenance.description', 'Descripción')}</h5>
         <p>{ticket.description}</p>
       </div>
 
       {images.length > 0 && (
         <div className={styles.imageSection}>
           <h5>
-            <FiImage /> Evidencia adjunta
+            <FiImage /> {t('maintenance.evidence', 'Evidencia adjunta')}
           </h5>
           <div className={styles.imageGrid}>
             {images.map((src, idx) => (
@@ -94,7 +95,7 @@ function TicketDetails({ ticket, onRate }) {
 
       {ticket.vendor && (
         <div className={styles.vendorInfo}>
-          <h5>Tecnico asignado</h5>
+          <h5>{t('maintenance.assignedTech', 'Técnico asignado')}</h5>
           <div className={styles.vendorContent}>
             <div className={styles.vendorAvatar}>
               <FiUser />
@@ -108,7 +109,7 @@ function TicketDetails({ ticket, onRate }) {
       )}
 
       <div className={styles.timeline}>
-        <h5>Historial de actualizaciones</h5>
+        <h5>{t('maintenance.history', 'Historial de actualizaciones')}</h5>
         <div className={styles.timelineList}>
           {ticket.statusHistory?.map((entry, idx) => (
             <div key={idx} className={styles.timelineItem}>
@@ -124,7 +125,7 @@ function TicketDetails({ ticket, onRate }) {
 
       {ticket.status === 'COMPLETED' && !ticket.rating && (
         <div className={styles.ratingSection}>
-          <h5>Como calificarias el servicio?</h5>
+          <h5>{t('maintenance.ratingPrompt', '¿Cómo calificarías el servicio?')}</h5>
           <form onSubmit={handleRate} className={styles.ratingForm}>
             <div className={styles.stars}>
               {[1, 2, 3, 4, 5].map((star) => (
@@ -141,7 +142,7 @@ function TicketDetails({ ticket, onRate }) {
               ))}
             </div>
             <Button size="sm" type="submit" disabled={rating === 0}>
-              Enviar calificacion
+              {t('maintenance.submitRating', 'Enviar calificación')}
             </Button>
           </form>
         </div>
@@ -149,7 +150,7 @@ function TicketDetails({ ticket, onRate }) {
 
       {ticket.rating && (
         <div className={styles.ratedSection}>
-          <h5>Calificacion enviada</h5>
+          <h5>{t('maintenance.ratingSent', 'Calificación enviada')}</h5>
           <div className={styles.stars}>
             {[1, 2, 3, 4, 5].map((star) => (
               <FiStar key={star} className={star <= ticket.rating ? styles.starActive : ''} />
@@ -184,7 +185,7 @@ export default function TicketList({ tickets, onRate }) {
     <div className={styles.workspace}>
       <aside className={styles.listPane}>
         <div className={styles.listPaneHeader}>
-          <h4>Solicitudes</h4>
+          <h4>{t('maintenance.requests', 'Solicitudes')}</h4>
           <span>{tickets.length}</span>
         </div>
 

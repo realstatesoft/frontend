@@ -30,7 +30,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
     setError(null);
 
     const valid = validate({
-      amount: { value: String(Number(amount) > 0 ? amount : ""), label: t('modal.amount'), required: true },
+      amount: { value: amount, label: t('modal.amount'), required: true },
     });
     if (!valid) return;
 

@@ -23,15 +23,15 @@ export default function TenantMaintenancePage() {
       setShowForm(false);
       Swal.fire({
         icon: 'success',
-        title: 'Solicitud enviada',
-        text: 'Tu solicitud de mantenimiento ha sido registrada con éxito.',
+        title: t('maintenance.successTitle', 'Solicitud enviada'),
+        text: t('maintenance.successText', 'Tu solicitud de mantenimiento ha sido registrada con éxito.'),
         confirmButtonColor: '#3b82f6',
       });
     } catch {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al enviar tu solicitud. Por favor intenta de nuevo.',
+        title: t('maintenance.errorTitle', 'Error'),
+        text: t('maintenance.errorSubmitText', 'Hubo un problema al enviar tu solicitud. Por favor intenta de nuevo.'),
       });
     } finally {
       setIsSubmitting(false);
@@ -43,16 +43,16 @@ export default function TenantMaintenancePage() {
       await rateRequest(id, rating);
       Swal.fire({
         icon: 'success',
-        title: 'Calificación enviada',
-        text: 'Gracias por tu feedback.',
+        title: t('maintenance.ratingSuccessTitle', 'Calificación enviada'),
+        text: t('maintenance.ratingSuccessText', 'Gracias por tu feedback.'),
         timer: 2000,
         showConfirmButton: false,
       });
     } catch {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'No se pudo enviar la calificación.',
+        title: t('maintenance.errorTitle', 'Error'),
+        text: t('maintenance.errorRateText', 'No se pudo enviar la calificación.'),
       });
     }
   };

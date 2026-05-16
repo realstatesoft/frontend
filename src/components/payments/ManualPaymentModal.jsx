@@ -29,7 +29,7 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
   const [formData, setFormData] = useState(initialFormState);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { fieldErrors, validate, clearFieldError } = useFormValidation();
+  const { fieldErrors, validate, clearFieldError, clearAllErrors } = useFormValidation();
 
   useEffect(() => {
     if (initialInstallmentId) {
@@ -41,6 +41,12 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
       }));
     }
   }, [initialInstallmentId, pendingInstallments]);
+
+  useEffect(() => {
+    if (!show) {
+      clearAllErrors();
+    }
+  }, [show, clearAllErrors]);
 
   const handleInstallmentChange = (e) => {
     const instId = e.target.value;

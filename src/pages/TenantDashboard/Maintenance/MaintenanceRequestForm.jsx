@@ -41,6 +41,14 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
   const previewUrlsRef = useRef([]);
   const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
+  useEffect(() => {
+    if (leases.length === 1) {
+      setFormData(prev => ({ ...prev, leaseId: leases[0].leaseId }));
+    } else if (leases.length === 0) {
+      setFormData(prev => ({ ...prev, leaseId: '' }));
+    }
+  }, [leases]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -125,7 +133,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
     e.preventDefault();
 
     const valid = validate({
-      leaseId: { value: formData.leaseId, label: "Propiedad", required: leases.length > 1 },
+      leaseId: { value: formData.leaseId, label: "Propiedad", required: true },
       title: { value: formData.title, label: "Título", required: true },
       category: { value: formData.category, label: "Categoría", required: true },
       description: { value: formData.description, label: "Descripción", required: true },

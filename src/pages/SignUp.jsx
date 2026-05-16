@@ -279,48 +279,12 @@ export default function SignUp() {
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowConfirmPassword(!showConfirmPassword); }}
             role="button" tabIndex={0}
-            aria-label={showPassword ? t('hidePassword') : t('showPassword')}
-          >
-            {showConfirmPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
-          </InputGroup.Text>
-        </InputGroup>
-        {fieldErrors.confirmPassword && <div className="field-error-msg">{fieldErrors.confirmPassword}</div>}
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label className="form-label">{t('password')}</Form.Label>
-        <InputGroup className="input-group-custom">
-          <InputGroup.Text><Lock size={18} /></InputGroup.Text>
-          <Form.Control
-            type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange}
-            placeholder={t('passwordPlaceholder')} required
-          />
-          <InputGroup.Text
-            onClick={() => setShowPassword(!showPassword)}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowPassword(!showPassword); }}
-            role="button" tabIndex={0}
-            aria-label={showPassword ? t('hidePassword') : t('showPassword')}
-          >
-            {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
-          </InputGroup.Text>
-        </InputGroup>
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label className="form-label">{t('confirmPassword')}</Form.Label>
-        <InputGroup className="input-group-custom">
-          <InputGroup.Text><Lock size={18} /></InputGroup.Text>
-          <Form.Control
-            type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-            placeholder={t('confirmPasswordPlaceholder')} required
-          />
-          <InputGroup.Text
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowConfirmPassword(!showConfirmPassword); }}
-            role="button" tabIndex={0}
             aria-label={showConfirmPassword ? t('hidePassword') : t('showPassword')}
           >
             {showConfirmPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
           </InputGroup.Text>
         </InputGroup>
+        {fieldErrors.confirmPassword && <div className="field-error-msg">{fieldErrors.confirmPassword}</div>}
       </Form.Group>
       <Form.Group className="mb-4 d-flex align-items-center">
         <Form.Check

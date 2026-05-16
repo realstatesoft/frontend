@@ -13,7 +13,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const [selectedContact, setSelectedContact] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const { fieldErrors, validate, clearFieldError } = useFormValidation();
+  const { fieldErrors, validate, clearFieldError, clearAllErrors } = useFormValidation();
   
   const { canSeeAgents, canSeeClients } = useContacts();
   const { data: agentsData, isLoading: agentsLoading, error: agentsError } = useAgents(search);
@@ -80,6 +80,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     setMessage('');
     setSearch('');
     setError('');
+    clearAllErrors();
     onClose();
   };
 

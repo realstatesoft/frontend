@@ -32,8 +32,6 @@ export default function StepAddress({ form, set, nextStep }) {
   const [addressError, setAddressError] = useState(null);
   const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
-  const canContinue = form.address.trim().length > 5 && mapCoords !== null;
-
   const handleMapChange = async (coords) => {
     setMapCoords(coords);
     set("geolocation", coords);
@@ -107,8 +105,8 @@ export default function StepAddress({ form, set, nextStep }) {
           {PROPERTY_TYPES.map((type) => (
             <div
               key={type.value}
-              className={`sell-wizard__card ${form.propertyType === type.value ? "sell-wizard__card--selected" : ""}`}
-              onClick={() => set("propertyType", type.value)}
+              className={`sell-wizard__card ${form.propertyType === type.value ? "sell-wizard__card--selected" : ""} ${fieldErrors.propertyType ? "field-error" : ""}`}
+              onClick={() => { set("propertyType", type.value); clearFieldError("propertyType"); }}
             >
               <div className="sell-wizard__card-icon">
                 <type.Icon size={22} />
@@ -117,6 +115,7 @@ export default function StepAddress({ form, set, nextStep }) {
             </div>
           ))}
         </div>
+        {fieldErrors.propertyType && <div className="field-error-msg mt-2">{fieldErrors.propertyType}</div>}
       </div>
 
       {/* Address */}
@@ -149,6 +148,7 @@ export default function StepAddress({ form, set, nextStep }) {
         <label className="sell-wizard__label">
           <GeoAlt className="me-1" /> Ubicación en el mapa
         </label>
+        {fieldErrors.geolocation && <div className="field-error-msg mb-2">{fieldErrors.geolocation}</div>}
         <p className="sell-wizard__hint">
           Hacé clic en el mapa para marcar la ubicación exacta de tu propiedad.
         </p>
@@ -181,7 +181,6 @@ export default function StepAddress({ form, set, nextStep }) {
             if (!valid) return;
             nextStep();
           }}
-          disabled={!canContinue}
         >
           Continuar <ArrowRight />
         </button>

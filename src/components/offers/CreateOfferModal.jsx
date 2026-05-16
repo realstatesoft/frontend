@@ -111,7 +111,6 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
                 placeholder={t('modal.amountPlaceholder')}
                 value={displayAmount}
                 onChange={(e) => { handleAmountChange(e); clearFieldError('amount'); }}
-                required
                 className={`border-start-0 ps-0 fw-bold ${fieldErrors.amount ? 'field-error' : ''}`}
                 style={{ fontSize: '1.1rem' }}
               />

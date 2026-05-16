@@ -35,6 +35,7 @@ export default function TenantPaymentsPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
   const handlePayInstallment = async (inst) => {
+    if (payingId) return;
     const confirm = await Swal.fire({
       title: 'Confirmar pago',
       text: `¿Deseas pagar ${formatCurrency(inst.balance ?? inst.totalAmount ?? 0)} por la cuota ${inst.installmentNumber}?`,
@@ -174,7 +175,8 @@ export default function TenantPaymentsPage() {
           <div className={styles.actionCard__icon}><FiCreditCard /></div>
           <h3>Pagar Renta</h3>
           <p>Realiza tu pago mensual de forma segura</p>
-          <Button className={styles.actionCard__btn} onClick={() => {
+          <Button className={styles.actionCard__btn} disabled={!!payingId} onClick={() => {
+            if (payingId) return;
             const pendingInstallments = data?.installments?.filter(i => i.status !== 'PAID');
             if (pendingInstallments && pendingInstallments.length > 0) {
               handlePayInstallment(pendingInstallments[0]);
@@ -228,7 +230,7 @@ export default function TenantPaymentsPage() {
                   <div className={styles.badges}>
                     <Badge variant={STATUS_VARIANTS[inst.status]}>{STATUS_LABELS[inst.status] || inst.status}</Badge>
                     {inst.status !== 'PAID' && (
-                      <Button size="sm" className={styles.payBtn} disabled={payingId === inst.id} onClick={() => handlePayInstallment(inst)}>
+                      <Button size="sm" className={styles.payBtn} disabled={!!payingId} onClick={() => handlePayInstallment(inst)}>
                         {payingId === inst.id ? 'Procesando...' : 'Pagar'}
                       </Button>
                     )}
