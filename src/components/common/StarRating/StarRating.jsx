@@ -1,11 +1,22 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const SIZE_MAP = {
   sm: 14,
   md: 20,
   lg: 28,
 };
+
+/**
+ * Clamps value to [1-5]. Returns null for null/undefined, NaN, or out-of-range.
+ */
+function clampValue(val) {
+  if (val == null) return null;
+  const n = Number(val);
+  if (isNaN(n) || n < 1 || n > 5) return null;
+  return n;
+}
 
 function StarIcon({ filled, hovered, size }) {
   const px = SIZE_MAP[size] ?? SIZE_MAP.md;
@@ -49,19 +60,22 @@ export default function StarRating({
   // input-only props
   onChange,
 }) {
+  const { t } = useTranslation("common");
   const [hoverIndex, setHoverIndex] = useState(null);
 
-  const numericValue = value != null ? Number(value) : null;
+  const numericValue = clampValue(value);
 
   if (readonly) {
+    const ariaLabel = numericValue != null
+      ? showCount
+        ? t("starRating.labelWithCount", { value: numericValue, count })
+        : t("starRating.label", { value: numericValue })
+      : t("starRating.noRating");
+
     return (
       <div
         role="img"
-        aria-label={
-          numericValue != null
-            ? `${numericValue} de 5 estrellas${showCount ? `, ${count} reseñas` : ""}`
-            : "Sin calificación"
-        }
+        aria-label={ariaLabel}
         style={{ display: "inline-flex", alignItems: "center", gap: 2 }}
       >
         {Array.from({ length: 5 }, (_, i) => (
@@ -94,19 +108,22 @@ export default function StarRating({
   return (
     <div
       role="radiogroup"
-      aria-label="Calificación"
+      aria-label={t("starRating.groupLabel")}
       style={{ display: "inline-flex", alignItems: "center", gap: 2 }}
       onMouseLeave={() => setHoverIndex(null)}
     >
       {Array.from({ length: 5 }, (_, i) => {
         const starValue = i + 1;
+        const starLabel = starValue === 1
+          ? `${starValue} ${t("starRating.starSingular")}`
+          : `${starValue} ${t("starRating.starPlural")}`;
         return (
           <button
             key={i}
             type="button"
             role="radio"
             aria-checked={numericValue === starValue}
-            aria-label={`${starValue} ${starValue === 1 ? "estrella" : "estrellas"}`}
+            aria-label={starLabel}
             onClick={() => onChange?.(starValue)}
             onMouseEnter={() => setHoverIndex(i)}
             style={{

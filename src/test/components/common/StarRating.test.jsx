@@ -3,9 +3,22 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import StarRating from "../../../components/common/StarRating";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// Mock react-i18next so tests don't need the full i18n setup
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key, opts) => {
+      const map = {
+        "starRating.label": `${opts?.value} de 5 estrellas`,
+        "starRating.labelWithCount": `${opts?.value} de 5 estrellas, ${opts?.count} reseñas`,
+        "starRating.noRating": "Sin calificación",
+        "starRating.starSingular": "estrella",
+        "starRating.starPlural": "estrellas",
+        "starRating.groupLabel": "Calificación",
+      };
+      return map[key] ?? key;
+    },
+  }),
+}));
 
 /** Returns all SVG elements inside the container (one per star). */
 const getStars = (container) => container.querySelectorAll("svg");
@@ -42,6 +55,24 @@ describe("StarRating — modo display (readonly)", () => {
 
   it("cuando value es null no rellena ninguna estrella", () => {
     const { container } = render(<StarRating value={null} />);
+    const stars = getStars(container);
+    Array.from(stars).forEach((s) => expect(isFilled(s)).toBe(false));
+  });
+
+  it("cuando value es NaN no rellena ninguna estrella", () => {
+    const { container } = render(<StarRating value={NaN} />);
+    const stars = getStars(container);
+    Array.from(stars).forEach((s) => expect(isFilled(s)).toBe(false));
+  });
+
+  it("cuando value es 0 (fuera de rango) no rellena ninguna estrella", () => {
+    const { container } = render(<StarRating value={0} />);
+    const stars = getStars(container);
+    Array.from(stars).forEach((s) => expect(isFilled(s)).toBe(false));
+  });
+
+  it("cuando value es 6 (fuera de rango) no rellena ninguna estrella", () => {
+    const { container } = render(<StarRating value={6} />);
     const stars = getStars(container);
     Array.from(stars).forEach((s) => expect(isFilled(s)).toBe(false));
   });
