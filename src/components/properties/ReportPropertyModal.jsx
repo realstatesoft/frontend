@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 import propertyFlagsApi from '../../services/propertyFlagsApi';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuccess }) {
   const { t } = useTranslation('showProperty');
@@ -11,6 +12,7 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const isMounted = useRef(true);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   useEffect(() => {
     isMounted.current = true;
@@ -21,7 +23,11 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!flagType || reason.trim().length < 10) return;
+    const valid = validate({
+      flagType: { value: flagType, label: t('reportProperty.typeLabel', { defaultValue: 'Tipo de reporte' }), required: true },
+      reason: { value: reason.length >= 10 ? reason : "", label: t('reportProperty.reasonLabel', { defaultValue: 'Motivo' }), required: true, minLength: 10 },
+    });
+    if (!valid) return;
 
     setLoading(true);
     setError('');
@@ -84,15 +90,16 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
               <Form.Label>{t('reportProperty.typeLabel', { defaultValue: 'Tipo de reporte' })} <span className="text-danger">*</span></Form.Label>
               <Form.Select 
                 value={flagType}
-                onChange={(e) => setFlagType(e.target.value)}
+                onChange={(e) => { setFlagType(e.target.value); clearFieldError('flagType'); }}
                 disabled={loading}
-                required
+                className={fieldErrors.flagType ? 'field-error' : ''}
               >
                 <option value="">{t('reportProperty.selectType', { defaultValue: 'Selecciona un tipo...' })}</option>
                 <option value="FRAUD">{t('reportProperty.fraud', { defaultValue: 'Fraude' })}</option>
                 <option value="ILLEGAL">{t('reportProperty.illegal', { defaultValue: 'Contenido ilegal' })}</option>
                 <option value="SPAM">{t('reportProperty.spam', { defaultValue: 'Spam o contenido duplicado' })}</option>
               </Form.Select>
+              {fieldErrors.flagType && <div className="field-error-msg">{fieldErrors.flagType}</div>}
             </Form.Group>
 
             <Form.Group className="mb-3">
@@ -103,10 +110,11 @@ export default function ReportPropertyModal({ propertyId, isOpen, onClose, onSuc
                 maxLength={1000}
                 placeholder={t('reportProperty.reasonPlaceholder', { defaultValue: 'Describí con detalle por qué estás reportando esta propiedad...' })}
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={(e) => { setReason(e.target.value); clearFieldError('reason'); }}
                 disabled={loading}
-                required
+                className={fieldErrors.reason ? 'field-error' : ''}
               />
+              {fieldErrors.reason && <div className="field-error-msg">{fieldErrors.reason}</div>}
               <div className="d-flex justify-content-end mt-1">
                 <small className={reason.length >= 1000 ? "text-danger" : "text-muted"}>
                   {1000 - reason.length} caracteres restantes

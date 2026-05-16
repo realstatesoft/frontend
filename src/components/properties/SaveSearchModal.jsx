@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
+import { useFormValidation } from "../../hooks/useFormValidation";
 
 export default function SaveSearchModal({
   show,
@@ -12,14 +13,15 @@ export default function SaveSearchModal({
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!name.trim()) {
-      setError("El nombre es requerido");
-      return;
-    }
+    const valid = validate({
+      name: { value: name, label: "Nombre de la búsqueda", required: true },
+    });
+    if (!valid) return;
     
     setLoading(true);
     setError(null);
@@ -61,11 +63,13 @@ export default function SaveSearchModal({
               value={name}
               onChange={(e) => {
               setName(e.target.value);
+              clearFieldError('name');
               if (error) setError(null);
             }}
               maxLength={100}
-              required
+              className={fieldErrors.name ? 'field-error' : ''}
             />
+            {fieldErrors.name && <div className="field-error-msg">{fieldErrors.name}</div>}
           </Form.Group>
 
           <Form.Group className="mb-3">

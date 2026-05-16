@@ -7,7 +7,7 @@ import useFormatters from '../../../hooks/useFormatters';
 import Button from '../../../components/common/Button/Button';
 import Badge from '../../../components/common/Badge/Badge';
 import { downloadPdf } from '../../../utils/downloadHelper';
-import { buildPaymentUrl } from '../../../services/payments/buildPaymentUrl';
+import rentService from '../../../services/rentService';
 import Swal from 'sweetalert2';
 import styles from './TenantPaymentsPage.module.scss';
 
@@ -28,28 +28,53 @@ const STATUS_LABELS = {
 export default function TenantPaymentsPage() {
   const { t } = useTranslation('tenant');
   const navigate = useNavigate();
-  const { data, isLoading, error, page, setPage } = useTenantPayments();
+  const { data, isLoading, error, page, setPage, refresh } = useTenantPayments();
   const { formatCurrency, formatDate } = useFormatters();
   const [downloading, setDownloading] = useState(null); // 'receipt-id' or 'invoice-id'
+  const [payingId, setPayingId] = useState(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
-  const handlePayInstallment = (inst) => {
-    const url = buildPaymentUrl({
-      amount: inst.balance ?? inst.totalAmount ?? 0,
-      type: 'OTHER',
-      description: `Cuota ${inst.installmentNumber} - ${inst.period}`,
-      referenceId: String(inst.id),
+  const handlePayInstallment = async (inst) => {
+    const confirm = await Swal.fire({
+      title: 'Confirmar pago',
+      text: `¿Deseas pagar ${formatCurrency(inst.balance ?? inst.totalAmount ?? 0)} por la cuota ${inst.installmentNumber}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, pagar',
+      cancelButtonText: 'Cancelar',
     });
-    navigate(url);
+    if (!confirm.isConfirmed) return;
+
+    setPayingId(inst.id);
+    try {
+      await rentService.registerManualPayment(
+        inst.id,
+        { amount: inst.balance ?? inst.totalAmount ?? 0, method: 'CARD' },
+        `tenant-${inst.id}-${Date.now()}`
+      );
+      Swal.fire({
+        icon: 'success',
+        title: 'Pago exitoso',
+        text: 'La cuota fue pagada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      refresh();
+    } catch (err) {
+      const msg = err.response?.data?.message ?? 'No se pudo procesar el pago.';
+      Swal.fire({ icon: 'error', title: 'Error', text: msg });
+    } finally {
+      setPayingId(null);
+    }
   };
 
   const handleDownloadReceipt = async (paymentId, installmentNumber, dateStr) => {
     setDownloading(`receipt-${paymentId}`);
     const filename = `receipt-${installmentNumber}-${dateStr}.pdf`;
-    const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt.pdf`, filename);
-    
+    const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt-url`, filename);
+
     if (!res.success) {
-      if (res.status === 202) {
+      if (res.status === 404) {
         Swal.fire({
           icon: 'info',
           title: 'En proceso',
@@ -71,10 +96,10 @@ export default function TenantPaymentsPage() {
   const handleDownloadInvoice = async (installmentId, installmentNumber, dateStr) => {
     setDownloading(`invoice-${installmentId}`);
     const filename = `invoice-${installmentNumber}-${dateStr}.pdf`;
-    const res = await downloadPdf(`/rentals/installments/${installmentId}/invoice.pdf`, filename);
-    
+    const res = await downloadPdf(`/rentals/installments/${installmentId}/invoice-url`, filename);
+
     if (!res.success) {
-      if (res.status === 202) {
+      if (res.status === 404) {
         Swal.fire({
           icon: 'info',
           title: 'En proceso',
@@ -152,16 +177,7 @@ export default function TenantPaymentsPage() {
           <Button className={styles.actionCard__btn} onClick={() => {
             const pendingInstallments = data?.installments?.filter(i => i.status !== 'PAID');
             if (pendingInstallments && pendingInstallments.length > 0) {
-              const totalAmount = pendingInstallments.reduce((sum, inst) => sum + (inst.balance ?? inst.totalAmount ?? 0), 0);
-              const referenceIds = pendingInstallments.map(inst => inst.id).join(',');
-              
-              const url = buildPaymentUrl({
-                amount: totalAmount,
-                type: 'OTHER',
-                description: pendingInstallments.length > 1 ? `Total de rentas pendientes (${pendingInstallments.length} cuotas)` : `Cuota ${pendingInstallments[0].installmentNumber} - ${pendingInstallments[0].period}`,
-                referenceId: referenceIds,
-              });
-              navigate(url);
+              handlePayInstallment(pendingInstallments[0]);
             } else {
               Swal.fire({ icon: 'info', title: 'Todo al día', text: 'No tienes cuotas pendientes de pago.' });
             }
@@ -212,7 +228,9 @@ export default function TenantPaymentsPage() {
                   <div className={styles.badges}>
                     <Badge variant={STATUS_VARIANTS[inst.status]}>{STATUS_LABELS[inst.status] || inst.status}</Badge>
                     {inst.status !== 'PAID' && (
-                      <Button size="sm" className={styles.payBtn} onClick={() => handlePayInstallment(inst)}>Pagar</Button>
+                      <Button size="sm" className={styles.payBtn} disabled={payingId === inst.id} onClick={() => handlePayInstallment(inst)}>
+                        {payingId === inst.id ? 'Procesando...' : 'Pagar'}
+                      </Button>
                     )}
                   </div>
                 </div>

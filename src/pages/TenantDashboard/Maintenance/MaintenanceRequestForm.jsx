@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { FiUpload, FiX, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import Button from '../../../components/common/Button/Button';
 import { uploadImage } from '../../../services/images/imageApi';
 import styles from './MaintenanceRequestForm.module.scss';
+import { useFormValidation } from '../../../hooks/useFormValidation';
 
 const CATEGORIES = [
   { value: 'PLUMBING', label: 'Plomería' },
@@ -25,9 +25,8 @@ const PRIORITIES = [
 ];
 
 export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmitting, leases = [] }) {
-  const { t } = useTranslation('tenant');
   const [formData, setFormData] = useState({
-    leaseId: leases.length === 1 ? leases[0].id : '',
+    leaseId: leases.length === 1 ? leases[0].leaseId : '',
     title: '',
     description: '',
     category: '',
@@ -40,6 +39,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
   const previewUrlsRef = useRef([]);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -47,6 +47,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+    clearFieldError(name);
   };
 
   const validateFile = (file) => {
@@ -122,10 +123,14 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.leaseId || !formData.title || !formData.description || !formData.category) {
-      setError('Por favor completa todos los campos obligatorios.');
-      return;
-    }
+
+    const valid = validate({
+      leaseId: { value: formData.leaseId, label: "Propiedad", required: leases.length > 1 },
+      title: { value: formData.title, label: "Título", required: true },
+      category: { value: formData.category, label: "Categoría", required: true },
+      description: { value: formData.description, label: "Descripción", required: true },
+    });
+    if (!valid) return;
 
     setError('');
     try {
@@ -163,15 +168,16 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
             name="leaseId"
             value={formData.leaseId}
             onChange={handleInputChange}
-            required
+            className={fieldErrors.leaseId ? 'field-error' : ''}
           >
             <option value="" disabled>Selecciona la propiedad afectada</option>
             {leases.map((lease) => (
-              <option key={lease.id} value={lease.id}>
+              <option key={lease.leaseId} value={lease.leaseId}>
                 {lease.propertyTitle || lease.propertyAddress}
               </option>
             ))}
           </select>
+          {fieldErrors.leaseId && <div className="field-error-msg">{fieldErrors.leaseId}</div>}
         </div>
       )}
 
@@ -184,8 +190,9 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
           value={formData.title}
           onChange={handleInputChange}
           placeholder="Ej: Filtración de agua en baño"
-          required
+          className={fieldErrors.title ? 'field-error' : ''}
         />
+        {fieldErrors.title && <div className="field-error-msg">{fieldErrors.title}</div>}
       </div>
 
       <div className={styles.grid}>
@@ -196,22 +203,24 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
             name="category"
             value={formData.category}
             onChange={handleInputChange}
-            required
+            className={fieldErrors.category ? 'field-error' : ''}
           >
             <option value="" disabled>Selecciona una categoría</option>
             {CATEGORIES.map((cat) => (
               <option key={cat.value} value={cat.value}>{cat.label}</option>
             ))}
           </select>
+          {fieldErrors.category && <div className="field-error-msg">{fieldErrors.category}</div>}
         </div>
 
-        <div className={styles.field}>
+        <div className={`${styles.field} ${styles.priorityField}`}>
           <label htmlFor="priority">Prioridad</label>
           <select
             id="priority"
             name="priority"
             value={formData.priority}
             onChange={handleInputChange}
+            className={styles.prioritySelect}
           >
             {PRIORITIES.map((pri) => (
               <option key={pri.value} value={pri.value}>{pri.label}</option>
@@ -229,8 +238,9 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
           onChange={handleInputChange}
           placeholder="Describe el problema, cuándo comenzó y su ubicación exacta..."
           rows={4}
-          required
+          className={fieldErrors.description ? 'field-error' : ''}
         />
+        {fieldErrors.description && <div className="field-error-msg">{fieldErrors.description}</div>}
       </div>
 
       <div className={styles.field}>

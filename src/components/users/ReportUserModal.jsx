@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
 import userReportsApi from '../../services/userReportsApi';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 /** Razones de reporte con etiquetas en español */
 const REPORT_REASONS = [
@@ -26,6 +27,7 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const isMounted = useRef(true);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   useEffect(() => {
     isMounted.current = true;
@@ -46,7 +48,10 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!reason) return;
+    const valid = validate({
+      reason: { value: reason, label: t('reportUser.reasonLabel', { defaultValue: 'Motivo del reporte' }), required: true },
+    });
+    if (!valid) return;
 
     setLoading(true);
     setError('');
@@ -112,9 +117,9 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
               </Form.Label>
               <Form.Select
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={(e) => { setReason(e.target.value); clearFieldError('reason'); }}
                 disabled={loading}
-                required
+                className={fieldErrors.reason ? 'field-error' : ''}
               >
                 <option value="">{t('reportUser.selectReason', { defaultValue: 'Seleccioná un motivo...' })}</option>
                 {REPORT_REASONS.map((r) => (
@@ -123,6 +128,7 @@ export default function ReportUserModal({ reportedUser, open, onClose }) {
                   </option>
                 ))}
               </Form.Select>
+              {fieldErrors.reason && <div className="field-error-msg">{fieldErrors.reason}</div>}
             </Form.Group>
 
             <Form.Group className="mb-3">

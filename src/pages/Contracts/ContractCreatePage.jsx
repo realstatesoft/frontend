@@ -25,6 +25,7 @@ import contractTemplateApi from '../../services/contracts/contractTemplateApi';
 import { htmlToPlainText, hasMeaningfulHtmlContent, plainTextToTipTapHtml } from '../../utils/htmlToPlainText';
 import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 /* ─── Formulario inicial ─────────────────────────────────────────────────────── */
 
@@ -75,6 +76,8 @@ export default function ContractCreatePage() {
   const [activeTemplates, setActiveTemplates] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [isPreFilling, setIsPreFilling] = useState(false);
+
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   const { user } = useAuth();
   const role = user?.role?.toUpperCase();
@@ -440,22 +443,13 @@ export default function ContractCreatePage() {
   }, [form.contractType, selectedClauses, customTerms]);
 
   const handleSubmit = async (sendAfterCreate = false) => {
-    if (!form.propertyId) {
-      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'La propiedad es obligatoria.' });
-      return;
-    }
-    if (!form.buyerId) {
-      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El comprador/inquilino es obligatorio.' });
-      return;
-    }
-    if (!form.amount || parseFloat(form.amount) <= 0) {
-      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El monto total es obligatorio y debe ser mayor a 0.' });
-      return;
-    }
-    if (!form.startDate) {
-      Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'La fecha de inicio es obligatoria.' });
-      return;
-    }
+    const valid = validate({
+      propertyId: { value: form.propertyId, label: "Propiedad", required: true },
+      buyerId: { value: form.buyerId, label: "Comprador/Inquilino", required: true },
+      amount: { value: form.amount && parseFloat(form.amount) > 0 ? form.amount : "", label: "Monto", required: true },
+      startDate: { value: form.startDate, label: "Fecha de inicio", required: true },
+    });
+    if (!valid) return;
 
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
@@ -604,9 +598,9 @@ export default function ContractCreatePage() {
                 <select
                   id="cc-property"
                   name="propertyId"
-                  className={styles.form__select}
+                  className={`${styles.form__select} ${fieldErrors.propertyId ? 'field-error' : ''}`}
                   value={form.propertyId}
-                  onChange={handlePropertyChange}
+                  onChange={(e) => { handlePropertyChange(e); clearFieldError('propertyId'); }}
                   required
                 >
                   <option value="">— Seleccionar propiedad —</option>
@@ -616,6 +610,7 @@ export default function ContractCreatePage() {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.propertyId && <div className="field-error-msg">{fieldErrors.propertyId}</div>}
               </div>
 
               <div className={styles.form__row}>
@@ -672,12 +667,13 @@ export default function ContractCreatePage() {
               <PriceInput
                 id="cc-amount"
                 name="amount"
-                className={styles.form__input}
+                className={`${styles.form__input} ${fieldErrors.amount ? 'field-error' : ''}`}
                 value={form.amount}
-                onChange={(e) => handleChange({ target: { name: 'amount', value: e.target.value } })}
+                onChange={(e) => { handleChange({ target: { name: 'amount', value: e.target.value } }); clearFieldError('amount'); }}
                 placeholder="0"
                 required
               />
+              {fieldErrors.amount && <div className="field-error-msg">{fieldErrors.amount}</div>}
             </div>
           </fieldset>
 
@@ -706,9 +702,9 @@ export default function ContractCreatePage() {
                 <select
                   id="cc-buyer"
                   name="buyerId"
-                  className={styles.form__select}
+                  className={`${styles.form__select} ${fieldErrors.buyerId ? 'field-error' : ''}`}
                   value={form.buyerId}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e); clearFieldError('buyerId'); }}
                   required
                 >
                   <option value="">— Seleccionar cliente —</option>
@@ -720,6 +716,7 @@ export default function ContractCreatePage() {
                       </option>
                     ))}
                 </select>
+                {fieldErrors.buyerId && <div className="field-error-msg">{fieldErrors.buyerId}</div>}
               </div>
             </div>
           </fieldset>
@@ -858,11 +855,12 @@ export default function ContractCreatePage() {
                   id="cc-start"
                   type="date"
                   name="startDate"
-                  className={styles.form__input}
+                  className={`${styles.form__input} ${fieldErrors.startDate ? 'field-error' : ''}`}
                   value={form.startDate}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e); clearFieldError('startDate'); }}
                   required
                 />
+                {fieldErrors.startDate && <div className="field-error-msg">{fieldErrors.startDate}</div>}
               </div>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="cc-end">

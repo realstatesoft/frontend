@@ -8,6 +8,7 @@ import api from '../../services/api';
 import { ADMIN_ROUTES } from '../../utils/constants';
 import './Login.scss'; 
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 export default function LogIn() {
     const { login } = useAuth(); 
@@ -48,16 +49,25 @@ export default function LogIn() {
         password: ''
     });
 
+    const { fieldErrors, validate, clearFieldError } = useFormValidation();
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
+        clearFieldError(e.target.name);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
+
+        const valid = validate({
+            email: { value: formData.email, label: t("email"), required: true, pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: t("invalidEmail") || 'Email inválido' } },
+            password: { value: formData.password, label: t("password"), required: true },
+        });
+        if (!valid) return;
 
         setIsSubmitting(true);
         setErrorMessage('');
@@ -107,7 +117,7 @@ export default function LogIn() {
                         </a>
                     </p>
 
-                    <Form onSubmit={handleSubmit}>
+                    <Form onSubmit={handleSubmit} noValidate>
                         <Form.Group className="mb-3">
                             <Form.Label className="form-label">
                                 {t("email")}
@@ -122,9 +132,11 @@ export default function LogIn() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder={t("emailPlaceholder")}
-                                    required
+                                    className={fieldErrors.email ? 'field-error' : ''}
+                                    isInvalid={!!fieldErrors.email}
                                 />
                             </InputGroup>
+                            {fieldErrors.email && <div className="field-error-msg">{fieldErrors.email}</div>}
                         </Form.Group>
 
                         <Form.Group className="mb-3 password-group">
@@ -141,7 +153,8 @@ export default function LogIn() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder={t("passwordPlaceholder")}
-                                    required
+                                    className={fieldErrors.password ? 'field-error' : ''}
+                                    isInvalid={!!fieldErrors.password}
                                 />
                                 <InputGroup.Text
                                     onClick={() => setShowPassword(!showPassword)}
@@ -153,6 +166,7 @@ export default function LogIn() {
                                     {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
                                 </InputGroup.Text>
                             </InputGroup>
+                            {fieldErrors.password && <div className="field-error-msg">{fieldErrors.password}</div>}
                         </Form.Group>
 
                         <div className="remember-forgot-row">

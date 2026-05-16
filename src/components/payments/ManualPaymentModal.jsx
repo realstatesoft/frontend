@@ -4,6 +4,7 @@ import { FiSave, FiX } from 'react-icons/fi';
 import Button from '../common/Button/Button';
 import Swal from 'sweetalert2';
 import useFormatters from '../../hooks/useFormatters';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 const PAYMENT_METHODS = [
   { value: 'CASH', label: 'Efectivo' },
@@ -28,6 +29,7 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
   const [formData, setFormData] = useState(initialFormState);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   useEffect(() => {
     if (initialInstallmentId) {
@@ -57,10 +59,14 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.installmentId || !formData.amount || !formData.paymentDate || !formData.method) {
-      Swal.fire('Error', 'Completa los campos obligatorios', 'error');
-      return;
-    }
+
+    const valid = validate({
+      installmentId: { value: formData.installmentId, label: "Cuota", required: true },
+      amount: { value: formData.amount && parseFloat(formData.amount) > 0 ? formData.amount : "", label: "Monto", required: true },
+      paymentDate: { value: formData.paymentDate, label: "Fecha de pago", required: true },
+      method: { value: formData.method, label: "Método de pago", required: true },
+    });
+    if (!valid) return;
 
     const amount = parseFloat(formData.amount);
     const selected = pendingInstallments.find(i => String(i.id) === formData.installmentId);
@@ -107,8 +113,8 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
             <Form.Select 
               name="installmentId" 
               value={formData.installmentId} 
-              onChange={handleInstallmentChange}
-              required
+              onChange={(e) => { handleInstallmentChange(e); clearFieldError('installmentId'); }}
+              className={fieldErrors.installmentId ? 'field-error' : ''}
             >
               <option value="">Selecciona una cuota</option>
               {pendingInstallments.map(inst => (
@@ -117,6 +123,7 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
                 </option>
               ))}
             </Form.Select>
+            {fieldErrors.installmentId && <div className="field-error-msg">{fieldErrors.installmentId}</div>}
             {pendingInstallments.length === 0 && (
               <Form.Text className="text-danger">No hay cuotas pendientes.</Form.Text>
             )}
@@ -129,11 +136,12 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
               step="0.01"
               name="amount"
               value={formData.amount}
-              onChange={handleChange}
+              onChange={(e) => { handleChange(e); clearFieldError('amount'); }}
               placeholder="0.00"
-              required
               disabled={!formData.installmentId}
+              className={fieldErrors.amount ? 'field-error' : ''}
             />
+            {fieldErrors.amount && <div className="field-error-msg">{fieldErrors.amount}</div>}
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -142,9 +150,10 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
               type="date"
               name="paymentDate"
               value={formData.paymentDate}
-              onChange={handleChange}
-              required
+              onChange={(e) => { handleChange(e); clearFieldError('paymentDate'); }}
+              className={fieldErrors.paymentDate ? 'field-error' : ''}
             />
+            {fieldErrors.paymentDate && <div className="field-error-msg">{fieldErrors.paymentDate}</div>}
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -152,13 +161,14 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
             <Form.Select
               name="method"
               value={formData.method}
-              onChange={handleChange}
-              required
+              onChange={(e) => { handleChange(e); clearFieldError('method'); }}
+              className={fieldErrors.method ? 'field-error' : ''}
             >
               {PAYMENT_METHODS.map(m => (
                 <option key={m.value} value={m.value}>{m.label}</option>
               ))}
             </Form.Select>
+            {fieldErrors.method && <div className="field-error-msg">{fieldErrors.method}</div>}
           </Form.Group>
 
           <Form.Group className="mb-3">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { createEvent } from '../../services/agents/agentAgendaService';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 const EVENT_TYPE_OPTIONS = (t) => [
     { value: 'VISIT',    label: t('options.visit') },
@@ -41,6 +42,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
     const [form, setForm]       = useState(INITIAL_FORM);
     const [loading, setLoading] = useState(false);
     const [error, setError]     = useState(null);
+    const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
     // Pre-fill date when opened from a day cell
     useEffect(() => {
@@ -56,11 +58,21 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
+        clearFieldError(name);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
+
+        const valid = validate({
+            title: { value: form.title, label: t('fields.title'), required: true },
+            date: { value: form.date, label: t('fields.date'), required: true },
+            startTime: { value: form.startTime, label: t('fields.startTime'), required: true },
+            endTime: { value: form.endTime, label: t('fields.endTime'), required: true },
+            eventType: { value: form.eventType, label: t('fields.type'), required: true },
+        });
+        if (!valid) return;
 
         const startsAt = toISOLocal(form.date, form.startTime);
         const endsAt   = toISOLocal(form.date, form.endTime);
@@ -122,9 +134,10 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 placeholder={t('placeholders.title')}
                                 value={form.title}
                                 onChange={handleChange}
-                                required
                                 disabled={loading}
+                                className={fieldErrors.title ? 'field-error' : ''}
                             />
+                            {fieldErrors.title && <div className="field-error-msg">{fieldErrors.title}</div>}
                         </Col>
 
                         <Col xs={6} md={3}>
@@ -136,9 +149,10 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 name="date"
                                 value={form.date}
                                 onChange={handleChange}
-                                required
                                 disabled={loading}
+                                className={fieldErrors.date ? 'field-error' : ''}
                             />
+                            {fieldErrors.date && <div className="field-error-msg">{fieldErrors.date}</div>}
                         </Col>
 
                         <Col xs={3} md={2}>
@@ -150,9 +164,10 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 name="startTime"
                                 value={form.startTime}
                                 onChange={handleChange}
-                                required
                                 disabled={loading}
+                                className={fieldErrors.startTime ? 'field-error' : ''}
                             />
+                            {fieldErrors.startTime && <div className="field-error-msg">{fieldErrors.startTime}</div>}
                         </Col>
 
                         <Col xs={3} md={2}>
@@ -164,9 +179,10 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 name="endTime"
                                 value={form.endTime}
                                 onChange={handleChange}
-                                required
                                 disabled={loading}
+                                className={fieldErrors.endTime ? 'field-error' : ''}
                             />
+                            {fieldErrors.endTime && <div className="field-error-msg">{fieldErrors.endTime}</div>}
                         </Col>
                     </Row>
 
@@ -180,14 +196,15 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 name="eventType"
                                 value={form.eventType}
                                 onChange={handleChange}
-                                required
                                 disabled={loading}
+                                className={fieldErrors.eventType ? 'field-error' : ''}
                             >
                                 <option value="">{t('placeholders.type')}</option>
                                 {EVENT_TYPE_OPTIONS(t).map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                 ))}
                             </Form.Select>
+                            {fieldErrors.eventType && <div className="field-error-msg">{fieldErrors.eventType}</div>}
                         </Col>
 
                         <Col xs={12} md={8}>

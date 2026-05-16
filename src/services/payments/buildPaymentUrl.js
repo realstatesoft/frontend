@@ -17,6 +17,7 @@ export function buildPaymentUrl({
   referenceId = '',
   planLabel = '',
   planDays = null,
+  concept = '',
 } = {}) {
   if (!ALLOWED_TYPES.includes(type)) {
     throw new Error(`Invalid payment type "${type}". Allowed: ${ALLOWED_TYPES.join(', ')}`);
@@ -29,6 +30,7 @@ export function buildPaymentUrl({
   if (referenceId) params.set('referenceId', String(referenceId));
   if (planLabel) params.set('planLabel', planLabel);
   if (planDays) params.set('planDays', String(planDays));
+  if (concept) params.set('concept', concept);
 
   return `/payment?${params.toString()}`;
 }

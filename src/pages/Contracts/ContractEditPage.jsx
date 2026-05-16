@@ -15,6 +15,7 @@ import { htmlToPlainText, hasMeaningfulHtmlContent, plainTextToTipTapHtml } from
 import { useAuth } from '../../hooks/useAuth';
 import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 export default function ContractEditPage() {
   const { id } = useParams();
@@ -38,6 +39,8 @@ export default function ContractEditPage() {
   const [customTerms, setCustomTerms] = useState('');
   const [activeTemplates, setActiveTemplates] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
+
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   const updateContract = useUpdateContract();
   const updateStatus   = useUpdateContractStatus();
@@ -219,6 +222,11 @@ export default function ContractEditPage() {
 
   const handleSubmit = async (sendAfterSave = false) => {
     if (!form) return;
+    const valid = validate({
+      amount: { value: form.amount && parseFloat(form.amount) > 0 ? form.amount : "", label: "Monto", required: true },
+    });
+    if (!valid) return;
+
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
 
@@ -370,12 +378,12 @@ export default function ContractEditPage() {
                 <PriceInput
                   id="ce-amount"
                   name="amount"
-                  className={styles.form__input}
+                  className={`${styles.form__input} ${fieldErrors.amount ? 'field-error' : ''}`}
                   value={form.amount}
-                  // PriceInput handles formatting; we ensure the value passed to handleChange is what we want to store/submit
-                  onChange={(e) => handleChange({ target: { name: 'amount', value: e.target.value } })}
+                  onChange={(e) => { handleChange({ target: { name: 'amount', value: e.target.value } }); clearFieldError('amount'); }}
                   placeholder="0"
                 />
+                {fieldErrors.amount && <div className="field-error-msg">{fieldErrors.amount}</div>}
               </div>
             </div>
             <div className={styles.form__row}>

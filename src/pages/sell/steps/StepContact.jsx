@@ -1,7 +1,10 @@
 import React from "react";
 import { Person, Telephone, Envelope, ArrowLeft, ArrowRight } from "react-bootstrap-icons";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 export default function StepContact({ form, set, nextStep, prevStep }) {
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
+
   const canContinue =
     form.firstName.trim().length >= 2 &&
     form.lastName.trim().length >= 2 &&
@@ -20,11 +23,12 @@ export default function StepContact({ form, set, nextStep, prevStep }) {
         </label>
         <input
           type="text"
-          className="sell-wizard__input"
+          className={`sell-wizard__input ${fieldErrors.firstName ? 'field-error' : ''}`}
           placeholder="Tu nombre"
           value={form.firstName}
-          onChange={(e) => set("firstName", e.target.value)}
+          onChange={(e) => { set("firstName", e.target.value); clearFieldError("firstName"); }}
         />
+        {fieldErrors.firstName && <div className="field-error-msg">{fieldErrors.firstName}</div>}
       </div>
 
       <div className="sell-wizard__form-group">
@@ -33,11 +37,12 @@ export default function StepContact({ form, set, nextStep, prevStep }) {
         </label>
         <input
           type="text"
-          className="sell-wizard__input"
+          className={`sell-wizard__input ${fieldErrors.lastName ? 'field-error' : ''}`}
           placeholder="Tu apellido"
           value={form.lastName}
-          onChange={(e) => set("lastName", e.target.value)}
+          onChange={(e) => { set("lastName", e.target.value); clearFieldError("lastName"); }}
         />
+        {fieldErrors.lastName && <div className="field-error-msg">{fieldErrors.lastName}</div>}
       </div>
 
       <div className="sell-wizard__form-group">
@@ -46,11 +51,12 @@ export default function StepContact({ form, set, nextStep, prevStep }) {
         </label>
         <input
           type="tel"
-          className="sell-wizard__input"
+          className={`sell-wizard__input ${fieldErrors.phone ? 'field-error' : ''}`}
           placeholder="+595 981 123 456"
           value={form.phone}
-          onChange={(e) => set("phone", e.target.value)}
+          onChange={(e) => { set("phone", e.target.value); clearFieldError("phone"); }}
         />
+        {fieldErrors.phone && <div className="field-error-msg">{fieldErrors.phone}</div>}
       </div>
 
       <div className="sell-wizard__form-group">
@@ -77,7 +83,15 @@ export default function StepContact({ form, set, nextStep, prevStep }) {
         <button
           type="button"
           className="sell-wizard__btn sell-wizard__btn--next"
-          onClick={nextStep}
+          onClick={() => {
+            const valid = validate({
+              firstName: { value: form.firstName, label: "Nombre", required: true, minLength: 2 },
+              lastName: { value: form.lastName, label: "Apellido", required: true, minLength: 2 },
+              phone: { value: form.phone, label: "Teléfono", required: true, minLength: 8 },
+            });
+            if (!valid) return;
+            nextStep();
+          }}
           disabled={!canContinue}
         >
           Ver agentes sugeridos <ArrowRight />
