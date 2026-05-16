@@ -1,97 +1,115 @@
+@use "../../../styles/mixins" as *;
+
 .page {
-  padding: 2rem;
-  max-width: 1000px;
+  padding: var(--spacing-xl);
+  max-width: 1220px;
   margin: 0 auto;
+
+  @include responsive(mobile) {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
+  @include flex-between;
 
-  @media (max-width: 640px) {
+  align-items: flex-start;
+  margin-bottom: var(--spacing-xl);
+
+  @include responsive(mobile) {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--spacing-md);
   }
 }
 
 .title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #111827;
   margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
 }
 
 .subtitle {
-  font-size: 1rem;
-  color: #6b7280;
-  margin: 0.25rem 0 0;
+  margin: 6px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.96rem;
 }
 
 .formContainer {
-  margin-top: 1rem;
-  animation: slide-in 0.3s ease-out;
+  margin-top: var(--spacing-sm);
+  animation: slide-in 0.25s ease-out;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+
+  @include responsive(mobile) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .statCard {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid #e5e7eb;
+  @include glass-card;
+
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 6px;
+}
 
-  .statLabel {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #6b7280;
-  }
+.statLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
 
-  .statValue {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #111827;
-  }
+.statValue {
+  font-size: 1.9rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--color-text-primary);
 }
 
 .section {
   h3 {
-    font-size: 1.25rem;
+    margin: 0 0 var(--spacing-md);
+    font-size: 1.1rem;
     font-weight: 700;
-    color: #111827;
-    margin-bottom: 1.25rem;
+    color: var(--color-text-primary);
   }
 }
 
-.loading, .error {
-  display: flex;
+.loading,
+.error {
+  @include flex-center;
+
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: #6b7280;
-  gap: 1rem;
+  min-height: 360px;
+  gap: var(--spacing-sm);
+  color: var(--color-text-secondary);
 
   svg {
-    font-size: 2.5rem;
-    color: #ef4444;
+    font-size: 2.2rem;
+    color: var(--color-danger);
   }
 }
 
 @keyframes slide-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

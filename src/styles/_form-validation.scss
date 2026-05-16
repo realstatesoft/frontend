@@ -1,0 +1,55 @@
+// =====================================================
+// Form Validation - Resaltado de campos obligatorios
+// =====================================================
+
+.field-error {
+  border: 2px solid #ef4444 !important;
+  background-color: #fef2f2 !important;
+
+  &:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+  }
+}
+
+.field-error-msg {
+  color: #ef4444;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+// Login y SignUp - mayor specificity para anular border: none en .form-control
+.login-card .input-group-custom .form-control.field-error,
+.signup-card .input-group-custom .form-control.field-error {
+  border: 2px solid #ef4444 !important;
+  background-color: #fef2f2 !important;
+
+  &:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+  }
+}
+
+// SellWizard - selects e inputs nativos
+.sell-wizard .field-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+// ContractCreatePage - CSS Modules
+.form__select.field-error,
+.form__input.field-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+// Checkbox con error
+.field-error-checkbox {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

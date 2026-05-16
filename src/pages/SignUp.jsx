@@ -8,6 +8,7 @@ import { IoCheckmark, IoArrowForwardOutline } from 'react-icons/io5';
 import PreferencesForm from '../components/preferences/PreferencesForm';
 import { useUserPreferences } from '../hooks/useUserPreferences';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../hooks/useFormValidation';
 import './SignUp.scss';
 
 export default function SignUp() {
@@ -34,6 +35,8 @@ export default function SignUp() {
     terminos: false
   });
 
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
+
   const {
     options,
     optionsLoading,
@@ -49,6 +52,7 @@ export default function SignUp() {
       ...formData,
       [name]: type === 'checkbox' ? checked : value
     });
+    clearFieldError(name);
   };
 
   const nextStep = () => {
@@ -65,12 +69,25 @@ export default function SignUp() {
 
   const handleStep1Submit = (e) => {
     e.preventDefault();
+    const valid = validate({
+      nombre: { value: formData.nombre, label: t('firstName'), required: true },
+      apellido: { value: formData.apellido, label: t('lastName'), required: true },
+    });
+    if (!valid) return;
     nextStep();
   };
 
   const handleStep2Submit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    const valid = validate({
+      email: { value: formData.email, label: t('email'), required: true, pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: t('invalidEmail') || 'Email inválido' } },
+      password: { value: formData.password, label: t('password'), required: true, minLength: 6 },
+      confirmPassword: { value: formData.confirmPassword, label: t('confirmPassword'), required: true },
+    });
+
+    if (!valid) return;
 
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage(t('passwordMismatch'));
@@ -161,7 +178,7 @@ export default function SignUp() {
   // ── Renders de Pasos ───────────────────────────────────────────────────────
 
   const renderStep1 = () => (
-    <Form onSubmit={handleStep1Submit}>
+    <Form onSubmit={handleStep1Submit} noValidate>
       <Row className="g-3 mb-3">
         <Col xs={6}>
           <Form.Group>
@@ -170,9 +187,12 @@ export default function SignUp() {
               <InputGroup.Text><Person size={18} /></InputGroup.Text>
               <Form.Control
                 type="text" name="nombre" value={formData.nombre} onChange={handleChange}
-                placeholder={t('firstNamePlaceholder')} required
+                placeholder={t('firstNamePlaceholder')}
+                className={fieldErrors.nombre ? 'field-error' : ''}
+                isInvalid={!!fieldErrors.nombre}
               />
             </InputGroup>
+            {fieldErrors.nombre && <div className="field-error-msg">{fieldErrors.nombre}</div>}
           </Form.Group>
         </Col>
         <Col xs={6}>
@@ -182,9 +202,12 @@ export default function SignUp() {
               <InputGroup.Text><Person size={18} /></InputGroup.Text>
               <Form.Control
                 type="text" name="apellido" value={formData.apellido} onChange={handleChange}
-                placeholder={t('lastNamePlaceholder')} required
+                placeholder={t('lastNamePlaceholder')}
+                className={fieldErrors.apellido ? 'field-error' : ''}
+                isInvalid={!!fieldErrors.apellido}
               />
             </InputGroup>
+            {fieldErrors.apellido && <div className="field-error-msg">{fieldErrors.apellido}</div>}
           </Form.Group>
         </Col>
       </Row>
@@ -207,16 +230,19 @@ export default function SignUp() {
   );
 
   const renderStep2 = () => (
-    <Form onSubmit={handleStep2Submit}>
+    <Form onSubmit={handleStep2Submit} noValidate>
       <Form.Group className="mb-3">
         <Form.Label className="form-label">{t('email')}</Form.Label>
         <InputGroup className="input-group-custom">
           <InputGroup.Text><Envelope size={18} /></InputGroup.Text>
           <Form.Control
             type="email" name="email" value={formData.email} onChange={handleChange}
-            placeholder={t('emailPlaceholder')} required
+            placeholder={t('emailPlaceholder')}
+            className={fieldErrors.email ? 'field-error' : ''}
+            isInvalid={!!fieldErrors.email}
           />
         </InputGroup>
+        {fieldErrors.email && <div className="field-error-msg">{fieldErrors.email}</div>}
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label className="form-label">{t('password')}</Form.Label>
@@ -224,7 +250,9 @@ export default function SignUp() {
           <InputGroup.Text><Lock size={18} /></InputGroup.Text>
           <Form.Control
             type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange}
-            placeholder={t('passwordPlaceholder')} required
+            placeholder={t('passwordPlaceholder')}
+            className={fieldErrors.password ? 'field-error' : ''}
+            isInvalid={!!fieldErrors.password}
           />
           <InputGroup.Text
             onClick={() => setShowPassword(!showPassword)}
@@ -235,6 +263,7 @@ export default function SignUp() {
             {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
           </InputGroup.Text>
         </InputGroup>
+        {fieldErrors.password && <div className="field-error-msg">{fieldErrors.password}</div>}
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label className="form-label">{t('confirmPassword')}</Form.Label>
@@ -242,7 +271,9 @@ export default function SignUp() {
           <InputGroup.Text><Lock size={18} /></InputGroup.Text>
           <Form.Control
             type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-            placeholder={t('confirmPasswordPlaceholder')} required
+            placeholder={t('confirmPasswordPlaceholder')}
+            className={fieldErrors.confirmPassword ? 'field-error' : ''}
+            isInvalid={!!fieldErrors.confirmPassword}
           />
           <InputGroup.Text
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -253,6 +284,7 @@ export default function SignUp() {
             {showConfirmPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
           </InputGroup.Text>
         </InputGroup>
+        {fieldErrors.confirmPassword && <div className="field-error-msg">{fieldErrors.confirmPassword}</div>}
       </Form.Group>
       <Form.Group className="mb-4 d-flex align-items-center">
         <Form.Check

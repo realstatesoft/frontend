@@ -1,5 +1,6 @@
 import React from "react";
 import { Check, ArrowLeft, ArrowRight } from "react-bootstrap-icons";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 const SPECIAL_CONDITIONS = [
   { value: "solar_panels", label: "Paneles solares alquilados o financiados" },
@@ -15,6 +16,7 @@ const SPECIAL_CONDITIONS = [
 ];
 
 export default function StepSpecialConditions({ form, set, nextStep, prevStep }) {
+  const { fieldErrors, validate } = useFormValidation();
   const toggleCondition = (value) => {
     const current = form.specialConditions || [];
     
@@ -71,7 +73,13 @@ export default function StepSpecialConditions({ form, set, nextStep, prevStep })
         <button
           type="button"
           className="sell-wizard__btn sell-wizard__btn--next"
-          onClick={nextStep}
+          onClick={() => {
+            const valid = validate({
+              specialConditions: { value: (form.specialConditions || []).length > 0 ? "ok" : "", label: "Condiciones especiales", required: true },
+            });
+            if (!valid) return;
+            nextStep();
+          }}
           disabled={!canContinue}
         >
           Continuar <ArrowRight />

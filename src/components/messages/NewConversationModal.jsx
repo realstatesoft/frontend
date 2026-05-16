@@ -4,6 +4,7 @@ import { useAgents, useClients, useContacts } from '../../hooks/useContacts';
 import { useSendMessage } from '../../hooks/useMessagesData';
 import styles from './NewConversationModal.module.scss';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 export default function NewConversationModal({ isOpen, onClose, preSelectedAgent, onSuccess }) {
   const { t } = useTranslation('messages');
@@ -12,6 +13,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   const [selectedContact, setSelectedContact] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const { fieldErrors, validate, clearFieldError, clearAllErrors } = useFormValidation();
   
   const { canSeeAgents, canSeeClients } = useContacts();
   const { data: agentsData, isLoading: agentsLoading, error: agentsError } = useAgents(search);
@@ -50,7 +52,10 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
   };
 
   const handleSend = async () => {
-    if (!message.trim() || !selectedContact) return;
+    const valid = validate({
+      message: { value: message, label: "Mensaje", required: true },
+    });
+    if (!valid || !selectedContact) return;
     
     setError('');
     try {
@@ -75,6 +80,7 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
     setMessage('');
     setSearch('');
     setError('');
+    clearAllErrors();
     onClose();
   };
 
@@ -111,8 +117,10 @@ export default function NewConversationModal({ isOpen, onClose, preSelectedAgent
               rows={4}
               placeholder={t('newConversation.messagePlaceholder')}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) => { setMessage(e.target.value); clearFieldError('message'); }}
+              className={fieldErrors.message ? 'field-error' : ''}
             />
+            {fieldErrors.message && <div className="field-error-msg">{fieldErrors.message}</div>}
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

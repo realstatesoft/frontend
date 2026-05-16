@@ -74,6 +74,20 @@
     }
   }
 
+  .priorityField {
+    min-width: 0;
+  }
+
+  .prioritySelect {
+    width: 100%;
+    min-width: 220px;
+    min-height: 48px;
+
+    @media (max-width: 640px) {
+      min-width: 0;
+    }
+  }
+
   .dropzone {
     border: 2px dashed #d1d5db;
     border-radius: 0.5rem;

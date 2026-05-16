@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 // Importamos los componentes de React Bootstrap
 import { Container, Card, Form, InputGroup } from 'react-bootstrap';
 // Asegúrate de tener instalados los íconos: npm install react-bootstrap-icons
@@ -6,11 +6,21 @@ import { Envelope, ArrowLeft } from 'react-bootstrap-icons';
 import logo from '../assets/Logotipo.png';
 import BotonLogin from '../components/loginButton';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../hooks/useFormValidation';
 
 const ForgotPassword = () => {
     const { t } = useTranslation('auth');
-    // Color azul principal de tu aplicación
     const primaryColor = '#2563eb';
+    const [email, setEmail] = useState('');
+    const { fieldErrors, validate, clearFieldError } = useFormValidation();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const valid = validate({
+            email: { value: email, label: t('email'), required: true, pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: t('invalidEmail') || 'Email inválido' } },
+        });
+        if (!valid) return;
+    };
 
     return (
         // Contenedor principal centrado y con fondo claro
@@ -42,7 +52,7 @@ const ForgotPassword = () => {
                     </p>
 
                     {/* Formulario */}
-                    <Form>
+                    <Form onSubmit={handleSubmit} noValidate>
                         <Form.Group className="mb-4">
                             <Form.Label className="fw-bold" style={{ fontSize: '0.85rem' }}>
                                 {t('email')}
@@ -54,10 +64,13 @@ const ForgotPassword = () => {
                                 <Form.Control
                                     type="email"
                                     placeholder={t('emailPlaceholder')}
-                                    className="bg-light border-start-0 ps-0"
+                                    value={email}
+                                    onChange={(e) => { setEmail(e.target.value); clearFieldError('email'); }}
+                                    className={`bg-light border-start-0 ps-0 ${fieldErrors.email ? 'field-error' : ''}`}
                                     style={{ padding: '0.7rem', borderRadius: '0 0.5rem 0.5rem 0' }}
                                 />
                             </InputGroup>
+                            {fieldErrors.email && <div className="field-error-msg">{fieldErrors.email}</div>}
                         </Form.Group>
 
                         {/* Botón Principal (tu componente con tu color azul) */}

@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "react-bootstrap-icons";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 function YesNoButtons({ value, onChange }) {
   return (
@@ -57,6 +58,7 @@ function Counter({ label, value, onChange, min = 0, max = 10 }) {
 }
 
 export default function StepFeatures({ form, set, nextStep, prevStep }) {
+  const { fieldErrors, validate } = useFormValidation();
   const canContinue = form.hasPool !== null;
 
   return (
@@ -122,7 +124,13 @@ export default function StepFeatures({ form, set, nextStep, prevStep }) {
         <button
           type="button"
           className="sell-wizard__btn sell-wizard__btn--next"
-          onClick={nextStep}
+          onClick={() => {
+            const valid = validate({
+              hasPool: { value: form.hasPool !== null ? "ok" : "", label: "Piscina", required: true },
+            });
+            if (!valid) return;
+            nextStep();
+          }}
           disabled={!canContinue}
         >
           Continuar <ArrowRight />

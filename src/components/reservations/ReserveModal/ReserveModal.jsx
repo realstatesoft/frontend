@@ -5,6 +5,7 @@ import reservationApi from '../../../services/reservations/reservationApi';
 import { formatCurrency } from '../../../utils/formatters';
 import styles from './ReserveModal.module.scss';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../../../hooks/useFormValidation';
 
 export default function ReserveModal({ show, property, defaultPercent, onClose, onCreated }) {
   const { t } = useTranslation('reservations');
@@ -16,6 +17,7 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   useEffect(() => {
     setAmount(initialAmount);
@@ -26,6 +28,11 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    const valid = validate({
+      amount: { value: amount, label: t('modal.amount'), required: true },
+    });
+    if (!valid) return;
 
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
@@ -66,8 +73,11 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
               min="0"
               step="0.01"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => { setAmount(e.target.value); clearFieldError('amount'); }}
+              className={fieldErrors.amount ? 'field-error' : ''}
+              isInvalid={!!fieldErrors.amount}
             />
+            {fieldErrors.amount && <div className="field-error-msg">{fieldErrors.amount}</div>}
             <div className={styles.infoBox}>
               <span className={styles.infoLabel}>{t('modal.suggestion', { percent: defaultPercent })}</span>
               <span className={styles.infoValue} data-testid="reserve-amount-formatted">

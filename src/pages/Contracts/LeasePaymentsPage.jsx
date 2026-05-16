@@ -55,10 +55,10 @@ export default function LeasePaymentsPage() {
 
   const handleDownloadReceipt = async (paymentId) => {
     setDownloading(paymentId);
-    const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt.pdf`, `receipt-${paymentId}.pdf`);
-    
+    const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt-url`, `receipt-${paymentId}.pdf`);
+
     if (!res.success) {
-      if (res.status === 202) {
+      if (res.status === 404) {
         Swal.fire({ icon: 'info', title: 'Generando...', text: res.message, timer: 3000, showConfirmButton: false });
       } else {
         Swal.fire('Error', 'No se pudo descargar el recibo.', 'error');

@@ -40,7 +40,7 @@ export default function PaymentPage() {
 
   const normalizedType = PAYMENT_TYPE_DEFAULTS[type] ? type : 'OTHER';
   const typeDefaults = PAYMENT_TYPE_DEFAULTS[normalizedType];
-  const concept = typeDefaults.concept(planLabel);
+  const concept = searchParams.get('concept') ?? typeDefaults.concept(planLabel);
   const redirectUrl = typeDefaults.redirectUrl;
   const cancelUrl = typeDefaults.cancelUrl(referenceId);
   const planDays = searchParams.get('planDays') ?? null;
