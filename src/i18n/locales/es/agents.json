@@ -79,5 +79,42 @@
       "negotiation": "Negociación profesional"
     },
     "cta": "Encontrar un Agente"
+  },
+  "review": {
+    "buttonLeave": "Dejar una reseña",
+    "buttonEdit": "Editar mi reseña",
+    "modalTitleCreate": "Escribir Reseña",
+    "modalTitleEdit": "Editar Reseña",
+    "modalSubtitle": "Comparte tu experiencia con {{name}}",
+    "ratingLabel": "Calificación",
+    "titleLabel": "Título de la reseña",
+    "titlePlaceholder": "Ej: Excelente profesional, muy recomendado",
+    "titleHint": "Mínimo 10 caracteres",
+    "commentLabel": "Tu experiencia",
+    "commentPlaceholder": "Cuéntanos sobre tu experiencia trabajando con este agente...",
+    "commentHint": "Mínimo 20 caracteres",
+    "propertyLabel": "Propiedad relacionada",
+    "propertyOptional": "(opcional)",
+    "propertyPlaceholder": "Ej: Av. España 1234, Asunción",
+    "propertyHint": "Si esta reseña está relacionada con una transacción específica",
+    "guidelinesTitle": "Lineamientos para reseñas",
+    "guidelineHonest": "Sé honesto y objetivo en tu evaluación",
+    "guidelinePersonal": "Enfócate en tu experiencia personal",
+    "guidelineRespect": "Evita lenguaje ofensivo o inapropiado",
+    "guidelinePrivacy": "No compartas información confidencial",
+    "cancelButton": "Cancelar",
+    "submitButton": "Publicar Reseña",
+    "updateButton": "Actualizar Reseña",
+    "successTitle": "¡Gracias por tu reseña!",
+    "successText": "Tu opinión ha sido publicada correctamente.",
+    "errorTitle": "Error",
+    "errorText": "No se pudo guardar la reseña. Intenta de nuevo.",
+    "validation": {
+      "ratingRequired": "La calificación es obligatoria (1 a 5 estrellas)",
+      "titleMin": "El título debe tener al menos 10 caracteres",
+      "titleMax": "El título no puede superar 100 caracteres",
+      "commentMin": "La experiencia debe tener al menos 10 caracteres",
+      "commentMax": "La experiencia no puede superar 1000 caracteres"
+    }
   }
 }

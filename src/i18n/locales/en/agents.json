@@ -79,5 +79,42 @@
       "negotiation": "Professional negotiation"
     },
     "cta": "Find an Agent"
+  },
+  "review": {
+    "buttonLeave": "Leave a review",
+    "buttonEdit": "Edit my review",
+    "modalTitleCreate": "Write a Review",
+    "modalTitleEdit": "Edit Review",
+    "modalSubtitle": "Share your experience with {{name}}",
+    "ratingLabel": "Rating",
+    "titleLabel": "Review title",
+    "titlePlaceholder": "E.g.: Excellent professional, highly recommended",
+    "titleHint": "Minimum 10 characters",
+    "commentLabel": "Your experience",
+    "commentPlaceholder": "Tell us about your experience working with this agent...",
+    "commentHint": "Minimum 20 characters",
+    "propertyLabel": "Related property",
+    "propertyOptional": "(optional)",
+    "propertyPlaceholder": "E.g.: 1234 Main St, Asunción",
+    "propertyHint": "If this review is related to a specific transaction",
+    "guidelinesTitle": "Review guidelines",
+    "guidelineHonest": "Be honest and objective in your evaluation",
+    "guidelinePersonal": "Focus on your personal experience",
+    "guidelineRespect": "Avoid offensive or inappropriate language",
+    "guidelinePrivacy": "Do not share confidential information",
+    "cancelButton": "Cancel",
+    "submitButton": "Publish Review",
+    "updateButton": "Update Review",
+    "successTitle": "Thank you for your review!",
+    "successText": "Your review has been published successfully.",
+    "errorTitle": "Error",
+    "errorText": "Could not save the review. Please try again.",
+    "validation": {
+      "ratingRequired": "Rating is required (1 to 5 stars)",
+      "titleMin": "Title must be at least 10 characters",
+      "titleMax": "Title cannot exceed 100 characters",
+      "commentMin": "Experience must be at least 10 characters",
+      "commentMax": "Experience cannot exceed 1000 characters"
+    }
   }
 }

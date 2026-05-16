@@ -10,6 +10,8 @@ import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
 import { useTranslation } from "react-i18next";
 import NewConversationModal from "../../components/messages/NewConversationModal";
+import ReviewForm from "../../components/Agents/ReviewForm";
+import agentReviewsService from "../../services/agents/agentReviewsService";
 import { useAuth } from "../../hooks/useAuth";
 import "./AgentProfilePage.scss";
 
@@ -19,11 +21,13 @@ export default function PublicAgentProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation("agents");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [myReview, setMyReview] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +56,18 @@ export default function PublicAgentProfilePage() {
       cancelled = true;
     };
   }, [id]);
+
+  // Carga la reseña propia del usuario para este agente (si existe)
+  useEffect(() => {
+    if (!isAuthenticated || !id) return;
+    agentReviewsService
+      .getMyReview(id)
+      .then((res) => {
+        const data = res?.data?.data ?? res?.data ?? null;
+        setMyReview(data);
+      })
+      .catch(() => setMyReview(null));
+  }, [id, isAuthenticated]);
 
   if (loading) {
     return (
@@ -184,6 +200,15 @@ export default function PublicAgentProfilePage() {
                   onClick={() => setShowMessageModal(true)}
                 >
                   <FiMessageSquare className="me-1" /> {t("message")}
+                </button>
+              )}
+              {isAuthenticated && user?.agentProfileId !== agent?.id && (
+                <button
+                  className="btn btn-outline-warning px-4 py-2"
+                  style={{ borderRadius: "8px", fontWeight: 600 }}
+                  onClick={() => setShowReviewModal(true)}
+                >
+                  ★ {myReview ? t("review.buttonEdit") : t("review.buttonLeave")}
                 </button>
               )}
             </div>
@@ -336,6 +361,14 @@ export default function PublicAgentProfilePage() {
             showConfirmButton: false,
           });
         }}
+      />
+      <ReviewForm
+        show={showReviewModal}
+        onHide={() => setShowReviewModal(false)}
+        agentId={agent?.id ?? parseInt(id)}
+        agentName={name}
+        existingReview={myReview}
+        agentProperties={[]}
       />
       <Footer />
     </>
