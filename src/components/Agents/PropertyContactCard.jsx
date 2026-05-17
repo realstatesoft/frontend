@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Image, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { StarFill } from "react-bootstrap-icons";
+import StarRating from "../common/StarRating";
 import { FiMessageSquare } from "react-icons/fi";
 import agentApi from "../../services/agents/agentApi";
 import { getWhatsAppLink } from "../../utils/whatsapp";
@@ -158,25 +158,23 @@ export default function PropertyContactCard({ property }) {
               : t("contactCard.owner")}
         </p>
 
-        {(rating != null || totalReviews > 0) && (
-          <div className="mb-3 d-flex align-items-center justify-content-center gap-1">
-            <span style={{ color: "#f0ad4e", fontSize: "0.95rem" }}>
-              {"★".repeat(5)}
-            </span>
-            <span style={{ fontSize: "0.85rem", color: "#111" }}>
-              {rating ?? "—"} ({t("profile.reviews", { count: totalReviews })})
-            </span>
-          </div>
-        )}
-
-        {!(rating != null || totalReviews > 0) && (
-          <div className="mb-3 d-flex align-items-center justify-content-center gap-1">
-            <StarFill size={14} style={{ color: "#f0ad4e" }} />
-            <span style={{ fontSize: "0.85rem", color: "#666" }}>
-              {t("contactCard.noRatings")}
-            </span>
-          </div>
-        )}
+        <div className="mb-3 d-flex align-items-center justify-content-center gap-1">
+          {rating != null ? (
+            <>
+              <StarRating value={rating} size="sm" readonly />
+              <span style={{ fontSize: "0.85rem", color: "#111" }}>
+                {rating} ({t("profile.reviews", { count: totalReviews })})
+              </span>
+            </>
+          ) : (
+            <>
+              <StarRating value={null} size="sm" readonly />
+              <span style={{ fontSize: "0.85rem", color: "#666" }}>
+                {t("contactCard.noRatings")}
+              </span>
+            </>
+          )}
+        </div>
 
         <Button
           variant="outline-dark"

@@ -14,6 +14,7 @@ import ReviewForm from "../../components/Agents/ReviewForm";
 import agentReviewsService from "../../services/agents/agentReviewsService";
 import { useAuth } from "../../hooks/useAuth";
 import "./AgentProfilePage.scss";
+import StarRating from "../../components/common/StarRating";
 
 // No external avatar URL — missing avatars fall back to rendered initials.
 
@@ -163,8 +164,11 @@ export default function PublicAgentProfilePage() {
                 <div className="d-flex flex-wrap gap-3 mt-1">
                   <span className="text-muted profile-email">{email}</span>
                   {hasRating && (
-                    <span className="text-muted text-warning fw-medium">
-                      ★ {rating} ({t("profile.reviews", { count: reviewsCount })})
+                    <span className="d-flex align-items-center gap-1">
+                      <StarRating value={rating} size="sm" readonly />
+                      <span className="text-muted" style={{ fontSize: "0.9rem" }}>
+                        {Number(rating).toFixed(1)} ({t("profile.reviews", { count: reviewsCount })})
+                      </span>
                     </span>
                   )}
                 </div>
