@@ -159,5 +159,9 @@
     "poor": "Deficiente",
     "noRatings": "Sin calificaciones aún",
     "noRatingsText": "Este agente aún no tiene reseñas."
+  },
+  "reviews": {
+    "sectionTitle": "Reseñas de clientes",
+    "myReviewTitle": "Tu reseña"
   }
 }

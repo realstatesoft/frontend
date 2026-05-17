@@ -150,5 +150,9 @@
     "poor": "Ruim",
     "noRatings": "Sem avaliações ainda",
     "noRatingsText": "Este agente ainda não tem avaliações."
+  },
+  "reviews": {
+    "sectionTitle": "Avaliações de clientes",
+    "myReviewTitle": "Sua avaliação"
   }
 }
