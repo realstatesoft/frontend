@@ -30,6 +30,7 @@ export default function ReviewForm({
   agentName = "",
   existingReview = null,
   agentProperties = [],
+  onSaved,
 }) {
   const { t } = useTranslation("agents");
   const queryClient = useQueryClient();
@@ -65,8 +66,8 @@ export default function ReviewForm({
     const schema = createReviewSchema((key) => t(key));
     const result = schema.safeParse({
       rating: rating ?? undefined,
-      title,
-      comment,
+      title: title.trim(),
+      comment: comment.trim(),
       propertyId,
     });
 
@@ -99,10 +100,13 @@ export default function ReviewForm({
 
     setSubmitting(true);
     try {
+      let savedReview;
       if (isEditMode) {
-        await agentReviewsService.updateReview(agentId, existingReview.id, payload);
+        const res = await agentReviewsService.updateReview(agentId, existingReview.id, payload);
+        savedReview = res?.data?.data ?? res?.data ?? { ...existingReview, ...payload };
       } else {
-        await agentReviewsService.createReview(agentId, payload);
+        const res = await agentReviewsService.createReview(agentId, payload);
+        savedReview = res?.data?.data ?? res?.data ?? payload;
       }
 
       // Invalidar queries para refrescar datos
@@ -110,6 +114,7 @@ export default function ReviewForm({
       queryClient.invalidateQueries({ queryKey: ["summary", agentId] });
 
       onHide();
+      onSaved?.(savedReview);
 
       Swal.fire({
         icon: "success",

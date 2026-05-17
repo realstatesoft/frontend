@@ -61,13 +61,21 @@ export default function PublicAgentProfilePage() {
   // Carga la reseña propia del usuario para este agente (si existe)
   useEffect(() => {
     if (!isAuthenticated || !id) return;
+    let cancelled = false;
+    setMyReview(null);
     agentReviewsService
       .getMyReview(id)
       .then((res) => {
+        if (cancelled) return;
         const data = res?.data?.data ?? res?.data ?? null;
         setMyReview(data);
       })
-      .catch(() => setMyReview(null));
+      .catch(() => {
+        if (!cancelled) setMyReview(null);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [id, isAuthenticated]);
 
   if (loading) {
@@ -373,6 +381,7 @@ export default function PublicAgentProfilePage() {
         agentName={name}
         existingReview={myReview}
         agentProperties={[]}
+        onSaved={(savedReview) => setMyReview(savedReview)}
       />
       <Footer />
     </>

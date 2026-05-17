@@ -92,7 +92,7 @@
     "titleHint": "Minimum 10 characters",
     "commentLabel": "Your experience",
     "commentPlaceholder": "Tell us about your experience working with this agent...",
-    "commentHint": "Minimum 20 characters",
+    "commentHint": "Minimum 10 characters",
     "propertyLabel": "Related property",
     "propertyOptional": "(optional)",
     "propertyPlaceholder": "E.g.: 1234 Main St, Asunción",

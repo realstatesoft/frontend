@@ -7,7 +7,7 @@ import { z } from "zod";
 export function createReviewSchema(t = (key) => key) {
   return z.object({
     rating: z
-      .number({ required_error: t("review.validation.ratingRequired") })
+      .number({ error: t("review.validation.ratingRequired") })
       .int()
       .min(1, t("review.validation.ratingRequired"))
       .max(5, t("review.validation.ratingRequired")),
