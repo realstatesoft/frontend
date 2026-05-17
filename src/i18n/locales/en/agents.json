@@ -143,5 +143,21 @@
     "relativeToday": "Today",
     "relativeYesterday": "Yesterday",
     "relativeDaysAgo": "{{count}} days ago"
+  },
+  "ratingSummary": {
+    "title": "Ratings & Reviews",
+    "reviewsCount_one": "{{count}} review",
+    "reviewsCount_other": "{{count}} reviews",
+    "starsLabel": "stars",
+    "fiveStarsPercent": "5 stars",
+    "fourPlusPercent": "4+ stars",
+    "ratingLabel": "Rating",
+    "excellent": "Excellent",
+    "veryGood": "Very good",
+    "good": "Good",
+    "fair": "Fair",
+    "poor": "Poor",
+    "noRatings": "No ratings yet",
+    "noRatingsText": "This agent has no reviews yet."
   }
 }

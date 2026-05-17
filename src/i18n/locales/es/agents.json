@@ -143,5 +143,21 @@
     "relativeToday": "Hoy",
     "relativeYesterday": "Ayer",
     "relativeDaysAgo": "Hace {{count}} días"
+  },
+  "ratingSummary": {
+    "title": "Calificaciones y Reseñas",
+    "reviewsCount_one": "{{count}} reseña",
+    "reviewsCount_other": "{{count}} reseñas",
+    "starsLabel": "estrellas",
+    "fiveStarsPercent": "5 estrellas",
+    "fourPlusPercent": "4+ estrellas",
+    "ratingLabel": "Valoración",
+    "excellent": "Excelente",
+    "veryGood": "Muy bueno",
+    "good": "Bueno",
+    "fair": "Regular",
+    "poor": "Deficiente",
+    "noRatings": "Sin calificaciones aún",
+    "noRatingsText": "Este agente aún no tiene reseñas."
   }
 }

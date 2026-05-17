@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import NewConversationModal from "../../components/messages/NewConversationModal";
 import ReviewForm from "../../components/Agents/ReviewForm";
 import ReviewList from "../../components/Agents/ReviewList";
+import RatingSummaryCard from "../../components/Agents/RatingSummaryCard";
 import agentReviewsService from "../../services/agents/agentReviewsService";
 import { useAuth } from "../../hooks/useAuth";
 import "./AgentProfilePage.scss";
@@ -359,6 +360,7 @@ export default function PublicAgentProfilePage() {
       {/* ── Reviews section ── */}
       <div style={{ backgroundColor: "#f8f9fb" }}>
         <Container className="py-4">
+          <RatingSummaryCard agentId={agent?.id ?? parseInt(id)} />
           <ReviewList
             agentId={agent?.id ?? parseInt(id)}
             onSavedOwnReview={(savedReview) => setMyReview(savedReview)}
