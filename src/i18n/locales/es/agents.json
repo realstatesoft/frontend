@@ -116,5 +116,32 @@
       "commentMin": "La experiencia debe tener al menos 10 caracteres",
       "commentMax": "La experiencia no puede superar 1000 caracteres"
     }
+  },
+  "reviewList": {
+    "reviewsCount_one": "{{count}} Reseña",
+    "reviewsCount_other": "{{count}} Reseñas",
+    "sortLabel": "Ordenar",
+    "sortNewest": "Más recientes",
+    "sortOldest": "Más antiguas",
+    "sortHighest": "Mayor calificación",
+    "sortLowest": "Menor calificación",
+    "loadMore": "Ver más reseñas",
+    "loading": "Cargando reseñas...",
+    "loadError": "No se pudieron cargar las reseñas.",
+    "emptyTitle": "Todavía no hay reseñas",
+    "emptyText": "Sé el primero en calificar a este agente.",
+    "verified": "Verificado",
+    "helpful": "Útil",
+    "editButton": "Editar",
+    "deleteButton": "Eliminar",
+    "deleteConfirmTitle": "¿Eliminar reseña?",
+    "deleteConfirmText": "Esta acción no se puede deshacer.",
+    "deleteConfirmYes": "Sí, eliminar",
+    "deleteConfirmNo": "Cancelar",
+    "deleteSuccess": "Tu reseña ha sido eliminada.",
+    "deleteError": "No se pudo eliminar la reseña. Intenta nuevamente.",
+    "relativeToday": "Hoy",
+    "relativeYesterday": "Ayer",
+    "relativeDaysAgo": "Hace {{count}} días"
   }
 }

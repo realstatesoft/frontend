@@ -107,5 +107,32 @@
       "commentMin": "A experiência deve ter pelo menos 10 caracteres",
       "commentMax": "A experiência não pode ultrapassar 1000 caracteres"
     }
+  },
+  "reviewList": {
+    "reviewsCount_one": "{{count}} Avaliação",
+    "reviewsCount_other": "{{count}} Avaliações",
+    "sortLabel": "Ordenar",
+    "sortNewest": "Mais recentes",
+    "sortOldest": "Mais antigas",
+    "sortHighest": "Maior avaliação",
+    "sortLowest": "Menor avaliação",
+    "loadMore": "Ver mais avaliações",
+    "loading": "Carregando avaliações...",
+    "loadError": "Não foi possível carregar as avaliações.",
+    "emptyTitle": "Ainda não há avaliações",
+    "emptyText": "Seja o primeiro a avaliar este agente.",
+    "verified": "Verificado",
+    "helpful": "Útil",
+    "editButton": "Editar",
+    "deleteButton": "Excluir",
+    "deleteConfirmTitle": "Excluir avaliação?",
+    "deleteConfirmText": "Esta ação não pode ser desfeita.",
+    "deleteConfirmYes": "Sim, excluir",
+    "deleteConfirmNo": "Cancelar",
+    "deleteSuccess": "Sua avaliação foi excluída.",
+    "deleteError": "Não foi possível excluir a avaliação. Tente novamente.",
+    "relativeToday": "Hoje",
+    "relativeYesterday": "Ontem",
+    "relativeDaysAgo": "Há {{count}} dias"
   }
 }

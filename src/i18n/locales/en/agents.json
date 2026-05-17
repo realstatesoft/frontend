@@ -116,5 +116,32 @@
       "commentMin": "Experience must be at least 10 characters",
       "commentMax": "Experience cannot exceed 1000 characters"
     }
+  },
+  "reviewList": {
+    "reviewsCount_one": "{{count}} Review",
+    "reviewsCount_other": "{{count}} Reviews",
+    "sortLabel": "Sort",
+    "sortNewest": "Most recent",
+    "sortOldest": "Oldest first",
+    "sortHighest": "Highest rating",
+    "sortLowest": "Lowest rating",
+    "loadMore": "Load more reviews",
+    "loading": "Loading reviews...",
+    "loadError": "Could not load reviews.",
+    "emptyTitle": "No reviews yet",
+    "emptyText": "Be the first to rate this agent.",
+    "verified": "Verified",
+    "helpful": "Helpful",
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "deleteConfirmTitle": "Delete review?",
+    "deleteConfirmText": "This action cannot be undone.",
+    "deleteConfirmYes": "Yes, delete",
+    "deleteConfirmNo": "Cancel",
+    "deleteSuccess": "Your review has been deleted.",
+    "deleteError": "Could not delete the review. Please try again.",
+    "relativeToday": "Today",
+    "relativeYesterday": "Yesterday",
+    "relativeDaysAgo": "{{count}} days ago"
   }
 }
