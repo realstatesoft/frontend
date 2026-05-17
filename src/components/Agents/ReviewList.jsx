@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button, Dropdown, Spinner } from "react-bootstrap";
 import {
-  ThumbsUp,
+  HandThumbsUp,
   ThreeDotsVertical,
   PencilSquare,
   Trash,
@@ -198,7 +198,7 @@ function ReviewItem({ review, onEdit, onDelete, t, lang }) {
               borderRadius: 20,
             }}
           >
-            <ThumbsUp size={13} />
+            <HandThumbsUp size={13} />
             {t("reviewList.helpful")} ({helpfulCount})
           </span>
         </div>
