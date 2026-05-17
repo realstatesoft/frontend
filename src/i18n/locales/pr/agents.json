@@ -70,5 +70,42 @@
       "negotiation": "Negociação profissional"
     },
     "cta": "Encontrar um corretor"
+  },
+  "review": {
+    "buttonLeave": "Deixar uma avaliação",
+    "buttonEdit": "Editar minha avaliação",
+    "modalTitleCreate": "Escrever Avaliação",
+    "modalTitleEdit": "Editar Avaliação",
+    "modalSubtitle": "Compartilhe sua experiência com {{name}}",
+    "ratingLabel": "Avaliação",
+    "titleLabel": "Título da avaliação",
+    "titlePlaceholder": "Ex: Excelente profissional, muito recomendado",
+    "titleHint": "Mínimo 10 caracteres",
+    "commentLabel": "Sua experiência",
+    "commentPlaceholder": "Conte-nos sobre sua experiência trabalhando com este corretor...",
+    "commentHint": "Mínimo 10 caracteres",
+    "propertyLabel": "Imóvel relacionado",
+    "propertyOptional": "(opcional)",
+    "propertyPlaceholder": "Ex: Av. Espanha 1234, Assunção",
+    "propertyHint": "Se esta avaliação está relacionada a uma transação específica",
+    "guidelinesTitle": "Diretrizes para avaliações",
+    "guidelineHonest": "Seja honesto e objetivo na sua avaliação",
+    "guidelinePersonal": "Foque na sua experiência pessoal",
+    "guidelineRespect": "Evite linguagem ofensiva ou inapropriada",
+    "guidelinePrivacy": "Não compartilhe informações confidenciais",
+    "cancelButton": "Cancelar",
+    "submitButton": "Publicar Avaliação",
+    "updateButton": "Atualizar Avaliação",
+    "successTitle": "Obrigado pela sua avaliação!",
+    "successText": "Sua avaliação foi publicada com sucesso.",
+    "errorTitle": "Erro",
+    "errorText": "Não foi possível salvar a avaliação. Tente novamente.",
+    "validation": {
+      "ratingRequired": "A avaliação é obrigatória (1 a 5 estrelas)",
+      "titleMin": "O título deve ter pelo menos 10 caracteres",
+      "titleMax": "O título não pode ultrapassar 100 caracteres",
+      "commentMin": "A experiência deve ter pelo menos 10 caracteres",
+      "commentMax": "A experiência não pode ultrapassar 1000 caracteres"
+    }
   }
 }
