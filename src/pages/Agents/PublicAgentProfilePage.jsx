@@ -11,6 +11,7 @@ import agentApi from "../../services/agents/agentApi";
 import { useTranslation } from "react-i18next";
 import NewConversationModal from "../../components/messages/NewConversationModal";
 import ReviewForm from "../../components/Agents/ReviewForm";
+import ReviewList from "../../components/Agents/ReviewList";
 import agentReviewsService from "../../services/agents/agentReviewsService";
 import { useAuth } from "../../hooks/useAuth";
 import "./AgentProfilePage.scss";
@@ -352,6 +353,17 @@ export default function PublicAgentProfilePage() {
               </div>
             )}
           </div>
+        </Container>
+      </div>
+
+      {/* ── Reviews section ── */}
+      <div style={{ backgroundColor: "#f8f9fb" }}>
+        <Container className="py-4">
+          <ReviewList
+            agentId={agent?.id ?? parseInt(id)}
+            onSavedOwnReview={(savedReview) => setMyReview(savedReview)}
+            onDeletedOwnReview={() => setMyReview(null)}
+          />
         </Container>
       </div>
 
