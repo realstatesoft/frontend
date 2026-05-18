@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
-import { ArrowLeft, CheckLg } from "react-bootstrap-icons";
+import { ArrowLeft, CheckLg, PencilSquare, Trash } from "react-bootstrap-icons";
 import { FiMessageSquare } from "react-icons/fi";
 import Swal from "sweetalert2";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
 import { useTranslation } from "react-i18next";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NewConversationModal from "../../components/messages/NewConversationModal";
 import ReviewForm from "../../components/Agents/ReviewForm";
 import ReviewList from "../../components/Agents/ReviewList";
@@ -30,7 +31,6 @@ export default function PublicAgentProfilePage() {
   const [error, setError] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [myReview, setMyReview] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,25 +60,17 @@ export default function PublicAgentProfilePage() {
     };
   }, [id]);
 
-  // Carga la reseña propia del usuario para este agente (si existe)
-  useEffect(() => {
-    if (!isAuthenticated || !id) return;
-    let cancelled = false;
-    setMyReview(null);
-    agentReviewsService
-      .getMyReview(id)
-      .then((res) => {
-        if (cancelled) return;
-        const data = res?.data?.data ?? res?.data ?? null;
-        setMyReview(data);
-      })
-      .catch(() => {
-        if (!cancelled) setMyReview(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [id, isAuthenticated]);
+  const queryClient = useQueryClient();
+
+  const { data: myReview = null } = useQuery({
+    queryKey: ["myReview", id],
+    queryFn: async () => {
+      const res = await agentReviewsService.getMyReview(id);
+      return res?.data?.data ?? res?.data ?? null;
+    },
+    enabled: Boolean(isAuthenticated && id),
+    retry: false,
+  });
 
   if (loading) {
     return (
@@ -121,9 +113,27 @@ export default function PublicAgentProfilePage() {
     .filter((s) => Boolean(s.name));
   const stats = agent.stats;
 
-  const rating = agent.avgRating;
-  const reviewsCount = agent.totalReviews;
-  const hasRating = rating != null;
+  const handleDeleteMyReview = async () => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: t("reviewList.deleteConfirmTitle"),
+      text: t("reviewList.deleteConfirmText"),
+      showCancelButton: true,
+      confirmButtonText: t("reviewList.deleteConfirmYes"),
+      cancelButtonText: t("reviewList.deleteConfirmNo"),
+      confirmButtonColor: "#dc3545",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      await agentReviewsService.deleteReview(agent?.id ?? parseInt(id), myReview.id);
+      queryClient.invalidateQueries({ queryKey: ["myReview", id] });
+      queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
+      queryClient.invalidateQueries({ queryKey: ["reviews", agent?.id ?? parseInt(id)] });
+      Swal.fire({ icon: "success", text: t("reviewList.deleteSuccess"), timer: 2000, showConfirmButton: false });
+    } catch {
+      Swal.fire({ icon: "error", title: t("reviewList.deleteError") });
+    }
+  };
 
   return (
     <>
@@ -173,14 +183,7 @@ export default function PublicAgentProfilePage() {
                 <h2 className="mb-1 profile-name">{name}</h2>
                 <div className="d-flex flex-wrap gap-3 mt-1">
                   <span className="text-muted profile-email">{email}</span>
-                  {hasRating && (
-                    <span className="d-flex align-items-center gap-1">
-                      <StarRating value={rating} size="sm" readonly />
-                      <span className="text-muted" style={{ fontSize: "0.9rem" }}>
-                        {Number(rating).toFixed(1)} ({t("profile.reviews", { count: reviewsCount })})
-                      </span>
-                    </span>
-                  )}
+
                 </div>
               </div>
             </div>
@@ -216,15 +219,7 @@ export default function PublicAgentProfilePage() {
                   <FiMessageSquare className="me-1" /> {t("message")}
                 </button>
               )}
-              {isAuthenticated && user?.agentProfileId !== agent?.id && (
-                <button
-                  className="btn btn-outline-warning px-4 py-2"
-                  style={{ borderRadius: "8px", fontWeight: 600 }}
-                  onClick={() => setShowReviewModal(true)}
-                >
-                  ★ {myReview ? t("review.buttonEdit") : t("review.buttonLeave")}
-                </button>
-              )}
+
             </div>
           </div>
 
@@ -358,13 +353,65 @@ export default function PublicAgentProfilePage() {
       </div>
 
       {/* ── Reviews section ── */}
-      <div style={{ backgroundColor: "#f8f9fb" }}>
-        <Container className="py-4">
+      <div id="resenas" style={{ backgroundColor: "#f8f9fb" }}>
+        <Container className="py-5">
+          <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <h3 className="mb-0 fw-semibold">{t("reviews.sectionTitle")}</h3>
+            {isAuthenticated && user?.agentProfileId !== agent?.id && (
+              <button
+                className="btn btn-outline-warning px-4 py-2"
+                style={{ borderRadius: "8px", fontWeight: 600 }}
+                onClick={() => setShowReviewModal(true)}
+              >
+                ★ {myReview ? t("review.buttonEdit") : t("review.buttonLeave")}
+              </button>
+            )}
+          </div>
           <RatingSummaryCard agentId={agent?.id ?? parseInt(id)} />
+          {myReview && (
+            <div className="my-review-card mb-4 p-3 rounded-3 border border-warning bg-white">
+              <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                <span className="fw-bold" style={{ color: "#f0a500" }}>
+                  ⭐ {t("reviews.myReviewTitle")}
+                </span>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => setShowReviewModal(true)}
+                  >
+                    <PencilSquare size={13} className="me-1" />
+                    {t("reviewList.editButton")}
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={handleDeleteMyReview}
+                  >
+                    <Trash size={13} className="me-1" />
+                    {t("reviewList.deleteButton")}
+                  </button>
+                </div>
+              </div>
+              <StarRating value={myReview.rating} size="sm" readonly />
+              {myReview.title && (
+                <p className="mb-1 fw-semibold mt-2" style={{ fontSize: "0.9rem" }}>
+                  {myReview.title}
+                </p>
+              )}
+              <p className="mb-0 text-muted" style={{ fontSize: "0.88rem" }}>
+                {myReview.comment}
+              </p>
+            </div>
+          )}
           <ReviewList
             agentId={agent?.id ?? parseInt(id)}
-            onSavedOwnReview={(savedReview) => setMyReview(savedReview)}
-            onDeletedOwnReview={() => setMyReview(null)}
+            onSavedOwnReview={() => {
+              queryClient.invalidateQueries({ queryKey: ["myReview", id] });
+              queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
+            }}
+            onDeletedOwnReview={() => {
+              queryClient.invalidateQueries({ queryKey: ["myReview", id] });
+              queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
+            }}
           />
         </Container>
       </div>
@@ -395,7 +442,11 @@ export default function PublicAgentProfilePage() {
         agentName={name}
         existingReview={myReview}
         agentProperties={[]}
-        onSaved={(savedReview) => setMyReview(savedReview)}
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ["myReview", id] });
+          queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
+          queryClient.invalidateQueries({ queryKey: ["reviews", agent?.id ?? parseInt(id)] });
+        }}
       />
       <Footer />
     </>

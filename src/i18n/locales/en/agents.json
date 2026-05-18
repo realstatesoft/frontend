@@ -159,5 +159,9 @@
     "poor": "Poor",
     "noRatings": "No ratings yet",
     "noRatingsText": "This agent has no reviews yet."
+  },
+  "reviews": {
+    "sectionTitle": "Customer Reviews",
+    "myReviewTitle": "Your review"
   }
 }
