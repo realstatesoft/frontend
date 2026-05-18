@@ -70,8 +70,9 @@ export function PropertyFeaturesSection({
     e.preventDefault();
     e.stopPropagation();
     if (!canAddMore || uploadingMedia) return;
+    const allowedTypes = new Set(ACCEPT_IMAGES.split(","));
     const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith("image/")
+      allowedTypes.has(f.type)
     );
     files.slice(0, MAX_IMAGES - photoCount).forEach((f) => addMedia(f));
   };
@@ -230,10 +231,9 @@ export function PropertyFeaturesSection({
             <div 
               onDrop={handleDrop}
               onDragOver={handleDragOver}
-              className={`p-3 border rounded-3 mb-2 ${!canAddMore ? 'bg-light' : 'bg-white'}`}
+              className={`p-3 rounded-3 mb-2 ${!canAddMore ? 'bg-light' : 'bg-white'}`}
               style={{ 
-                borderStyle: 'dashed !important',
-                borderColor: uploadingMedia ? '#3B6BF5' : '#dee2e6',
+                border: `1px dashed ${uploadingMedia ? '#3B6BF5' : '#dee2e6'}`,
                 minHeight: galleryMedia.length === 0 ? '120px' : 'auto',
                 display: 'flex',
                 flexDirection: 'column',
