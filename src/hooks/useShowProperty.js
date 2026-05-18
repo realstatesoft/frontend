@@ -482,7 +482,7 @@ export function useShowProperty() {
 
   // Valores derivados para la UI
   const images = useMemo(() => {
-    const filtered = property?.media?.filter((m) => m.type === "IMAGE") || [];
+    const filtered = property?.media?.filter((m) => m.type === "PHOTO" || m.type === "IMAGE") || [];
     if (filtered.length === 0) return PLACEHOLDER_IMAGES;
     return filtered
       .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
