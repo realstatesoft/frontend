@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import StarRating from "../common/StarRating";
-import agentReviewsService from "../../services/agents/agentReviewsService";
+import agentReviewsService from "../../services/agentReviewsService";
 import { createReviewSchema } from "../../validation/reviewSchema";
 
 /**
@@ -102,16 +102,18 @@ export default function ReviewForm({
     try {
       let savedReview;
       if (isEditMode) {
-        const res = await agentReviewsService.updateReview(agentId, existingReview.id, payload);
-        savedReview = res?.data?.data ?? res?.data ?? { ...existingReview, ...payload };
+        savedReview =
+          (await agentReviewsService.updateReview(agentId, existingReview.id, payload)) ??
+          { ...existingReview, ...payload };
       } else {
-        const res = await agentReviewsService.createReview(agentId, payload);
-        savedReview = res?.data?.data ?? res?.data ?? payload;
+        savedReview = (await agentReviewsService.createReview(agentId, payload)) ?? payload;
       }
 
       // Invalidar queries para refrescar datos
-      queryClient.invalidateQueries({ queryKey: ["reviews", agentId] });
-      queryClient.invalidateQueries({ queryKey: ["summary", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-reviews", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-review-summary", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["agents", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["my-agent-review", agentId] });
 
       onHide();
       onSaved?.(savedReview);
@@ -123,11 +125,11 @@ export default function ReviewForm({
         timer: 2500,
         showConfirmButton: false,
       });
-    } catch {
+    } catch (error) {
       Swal.fire({
         icon: "error",
         title: t("review.errorTitle"),
-        text: t("review.errorText"),
+        text: error?.message || t("review.errorText"),
       });
     } finally {
       setSubmitting(false);

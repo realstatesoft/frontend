@@ -12,7 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import StarRating from "../common/StarRating";
 import ReviewForm from "./ReviewForm";
-import agentReviewsService from "../../services/agents/agentReviewsService";
+import agentReviewsService from "../../services/agentReviewsService";
 import useAgentReviews from "../../hooks/useAgentReviews";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -247,12 +247,9 @@ export default function ReviewList({ agentId, onSavedOwnReview, onDeletedOwnRevi
   } = useAgentReviews(agentId, { sort });
 
   // Flatten pages into a single array
-  const allReviews = data?.pages.flatMap((page) => {
-    const pageData = page?.data?.data ?? page?.data;
-    return pageData?.content ?? [];
-  }) ?? [];
+  const allReviews = data?.pages.flatMap((page) => page?.content ?? []) ?? [];
 
-  const firstPageData = data?.pages[0]?.data?.data ?? data?.pages[0]?.data;
+  const firstPageData = data?.pages[0];
   const totalCount = firstPageData?.totalElements ?? allReviews.length;
 
   const activeSortLabel = t(
@@ -282,8 +279,10 @@ export default function ReviewList({ agentId, onSavedOwnReview, onDeletedOwnRevi
 
     try {
       await agentReviewsService.deleteReview(agentId, review.id);
-      queryClient.invalidateQueries({ queryKey: ["reviews", agentId] });
-      queryClient.invalidateQueries({ queryKey: ["summary", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-reviews", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-review-summary", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["agents", agentId] });
+      queryClient.invalidateQueries({ queryKey: ["my-agent-review", agentId] });
       if (review.isOwn) onDeletedOwnReview?.();
       Swal.fire({
         icon: "success",
