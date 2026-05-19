@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container, Card, Spinner, Alert, Badge, Table,
@@ -14,9 +14,19 @@ import { formatDate } from '../../utils/formatters';
 import { buildPageItems, PAGE_ELLIPSIS } from '../../utils/pagination';
 import styles from './MySubscriptionsPage.module.scss';
 
+const STATUS_VARIANT = {
+  ACTIVE: 'success', PENDING: 'warning', CANCELLED: 'secondary', EXPIRED: 'danger',
+};
+
+function safeStatusKey(status) {
+  if (typeof status !== 'string' || !status.length) return null;
+  return `mySubscriptionsPage.status${status.charAt(0) + status.slice(1).toLowerCase()}`;
+}
+
 function ActiveSubscriptionCard({ subscription, onCancel, t }) {
   const isPending = subscription.status === 'PENDING';
-  const statusVariant = { ACTIVE: 'success', PENDING: 'warning', CANCELLED: 'secondary', EXPIRED: 'danger' };
+  const statusKey = safeStatusKey(subscription.status);
+  const badgeVariant = STATUS_VARIANT[subscription.status] ?? 'secondary';
 
   return (
     <Card className={`${styles.activeCard} ${isPending ? styles.activeCardPending : ''}`}>
@@ -31,8 +41,8 @@ function ActiveSubscriptionCard({ subscription, onCancel, t }) {
             </div>
             <h4 className={styles.activePlanName}>{subscription.plan?.name}</h4>
           </div>
-          <Badge bg={statusVariant[subscription.status]} className="ms-auto align-self-start">
-            {t(`mySubscriptionsPage.status${subscription.status.charAt(0) + subscription.status.slice(1).toLowerCase()}`)}
+          <Badge bg={badgeVariant} className="ms-auto align-self-start">
+            {statusKey ? t(statusKey) : subscription.status}
           </Badge>
         </div>
 
@@ -118,6 +128,8 @@ export default function MySubscriptionsPage() {
   const [cancelError, setCancelError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
+  const latestHistoryReqRef = useRef(0);
+
   const loadActive = useCallback(() => {
     setLoadingActive(true);
     subscriptionApi.getMyActiveSubscription()
@@ -127,16 +139,24 @@ export default function MySubscriptionsPage() {
   }, []);
 
   const loadHistory = useCallback(() => {
+    const reqId = ++latestHistoryReqRef.current;
     setLoadingHistory(true);
     setHistoryError(null);
     subscriptionApi.getMySubscriptions({ page, size: 8 })
       .then(res => {
+        if (reqId !== latestHistoryReqRef.current) return;
         const data = res?.data?.data;
         setHistory(data?.content ?? []);
         setTotalPages(data?.totalPages ?? 0);
       })
-      .catch(() => setHistoryError(t('mySubscriptionsPage.historyError')))
-      .finally(() => setLoadingHistory(false));
+      .catch(() => {
+        if (reqId !== latestHistoryReqRef.current) return;
+        setHistoryError(t('mySubscriptionsPage.historyError'));
+      })
+      .finally(() => {
+        if (reqId !== latestHistoryReqRef.current) return;
+        setLoadingHistory(false);
+      });
   }, [page, t]);
 
   useEffect(() => { loadActive(); }, [loadActive]);
@@ -164,8 +184,8 @@ export default function MySubscriptionsPage() {
   }
 
   function statusLabel(status) {
-    const key = `mySubscriptionsPage.status${status.charAt(0) + status.slice(1).toLowerCase()}`;
-    return t(key, status);
+    const key = safeStatusKey(status);
+    return key ? t(key, status) : (status ?? '');
   }
 
   const pendingIfNoActive = !activeSubscription && history.find(s => s.status === 'PENDING');

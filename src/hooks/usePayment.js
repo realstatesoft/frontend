@@ -100,7 +100,7 @@ export default function usePayment({ amount, concept, type, description, referen
     }
     if (type === 'SUBSCRIPTION') {
       const planId = parseInt(referenceId, 10);
-      if (!planId || isNaN(planId)) return null;
+      if (!Number.isInteger(planId) || planId <= 0) return null;
       return { subscriptionPlanId: planId };
     }
     return {};

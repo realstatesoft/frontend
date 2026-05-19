@@ -166,6 +166,7 @@ export default function AdminSubscriptionPlansPage() {
   const [deleteError, setDeleteError] = useState(null);
 
   const [actionMsg, setActionMsg] = useState(null);
+  const [deactivating, setDeactivating] = useState(false);
 
   const loadPlans = useCallback(() => {
     setLoading(true);
@@ -215,12 +216,16 @@ export default function AdminSubscriptionPlansPage() {
   }
 
   async function handleDeactivate(plan) {
+    if (deactivating) return;
+    setDeactivating(true);
     try {
       await subscriptionApi.deactivatePlan(plan.id);
       setActionMsg({ type: 'success', text: t('adminSubscriptionPlansPage.deactivateSuccess', { name: plan.name }) });
       loadPlans();
     } catch (err) {
       setActionMsg({ type: 'danger', text: err.response?.data?.message ?? t('adminSubscriptionPlansPage.genericError') });
+    } finally {
+      setDeactivating(false);
     }
   }
 
@@ -331,7 +336,7 @@ export default function AdminSubscriptionPlansPage() {
                           <FiEdit2 size={14} />
                         </Button>
                         {plan.active && (
-                          <Button variant="outline-warning" size="sm" title={t('adminSubscriptionPlansPage.statusInactive')} onClick={() => handleDeactivate(plan)}>
+                          <Button variant="outline-warning" size="sm" title={t('adminSubscriptionPlansPage.statusInactive')} disabled={deactivating} onClick={() => handleDeactivate(plan)}>
                             <FiPauseCircle size={14} />
                           </Button>
                         )}
