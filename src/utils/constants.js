@@ -46,6 +46,7 @@ export const ADMIN_ROUTES = {
   SETTINGS: '/admin/settings',
   CONTRACT_TEMPLATES: '/admin/contract-templates',
   PAYMENTS: '/admin/payments',
+  SUBSCRIPTION_PLANS: '/admin/subscription-plans',
 };
 
 export const STATUS_COLORS = {
