@@ -5,12 +5,14 @@ import offerApi from '../../services/offers/offerApi';
 import Swal from 'sweetalert2';
 import { formatPrice, parsePriceInput } from '../../utils/priceFormat';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 export default function CreateOfferModal({ show, onHide, property, onSuccess, offerToEdit = null }) {
   const { t } = useTranslation('offers');
   const [displayAmount, setDisplayAmount] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   // Inicializar modo edición si se provee una oferta
   useEffect(() => {
@@ -34,10 +36,10 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
     
     const numericAmount = parseFloat(parsePriceInput(displayAmount));
     
-    if (!numericAmount || numericAmount <= 0) {
-      Swal.fire(t('modal.invalidAmountTitle'), t('modal.invalidAmount'), 'error');
-      return;
-    }
+    const valid = validate({
+      amount: { value: numericAmount && numericAmount > 0 ? String(numericAmount) : "", label: t('modal.amountLabel'), required: true },
+    });
+    if (!valid) return;
 
     setLoading(true);
     try {
@@ -108,12 +110,12 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
                 inputMode="numeric"
                 placeholder={t('modal.amountPlaceholder')}
                 value={displayAmount}
-                onChange={handleAmountChange}
-                required
-                className="border-start-0 ps-0 fw-bold"
+                onChange={(e) => { handleAmountChange(e); clearFieldError('amount'); }}
+                className={`border-start-0 ps-0 fw-bold ${fieldErrors.amount ? 'field-error' : ''}`}
                 style={{ fontSize: '1.1rem' }}
               />
             </InputGroup>
+            {fieldErrors.amount && <div className="field-error-msg">{fieldErrors.amount}</div>}
             {property && (
               <Form.Text className="text-muted">
                 {t('modal.priceLabel', { price: `₲ ${formatPrice(property.price)}` })}

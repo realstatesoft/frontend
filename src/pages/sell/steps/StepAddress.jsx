@@ -15,6 +15,7 @@ import { Spinner } from "react-bootstrap";
 import PropertyMap from "../../../components/commons/PropertyMap";
 import { reverseGeocode } from "../../../utils/geocoding";
 import locationApi from "../../../services/locations/locationApi";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 
 const PROPERTY_TYPES = [
   { value: "HOUSE", label: "Casa", Icon: HouseDoor },
@@ -29,14 +30,14 @@ export default function StepAddress({ form, set, nextStep }) {
   const [mapCoords, setMapCoords] = useState(form.geolocation || null);
   const [loadingAddress, setLoadingAddress] = useState(false);
   const [addressError, setAddressError] = useState(null);
-
-  const canContinue = form.address.trim().length > 5 && mapCoords !== null;
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
 
   const handleMapChange = async (coords) => {
     setMapCoords(coords);
     set("geolocation", coords);
     set("latitude", coords.lat);
     set("longitude", coords.lng);
+    clearFieldError("geolocation");
 
     // Reverse geocode to get address
     setLoadingAddress(true);
@@ -104,8 +105,8 @@ export default function StepAddress({ form, set, nextStep }) {
           {PROPERTY_TYPES.map((type) => (
             <div
               key={type.value}
-              className={`sell-wizard__card ${form.propertyType === type.value ? "sell-wizard__card--selected" : ""}`}
-              onClick={() => set("propertyType", type.value)}
+              className={`sell-wizard__card ${form.propertyType === type.value ? "sell-wizard__card--selected" : ""} ${fieldErrors.propertyType ? "field-error" : ""}`}
+              onClick={() => { set("propertyType", type.value); clearFieldError("propertyType"); }}
             >
               <div className="sell-wizard__card-icon">
                 <type.Icon size={22} />
@@ -114,6 +115,7 @@ export default function StepAddress({ form, set, nextStep }) {
             </div>
           ))}
         </div>
+        {fieldErrors.propertyType && <div className="field-error-msg mt-2">{fieldErrors.propertyType}</div>}
       </div>
 
       {/* Address */}
@@ -123,11 +125,12 @@ export default function StepAddress({ form, set, nextStep }) {
         </label>
         <input
           type="text"
-          className="sell-wizard__input"
+          className={`sell-wizard__input ${fieldErrors.address ? 'field-error' : ''}`}
           placeholder="Hacé clic en el mapa o ingresá la dirección"
           value={form.address}
-          onChange={(e) => set("address", e.target.value)}
+          onChange={(e) => { set("address", e.target.value); clearFieldError("address"); }}
         />
+        {fieldErrors.address && <div className="field-error-msg">{fieldErrors.address}</div>}
         {loadingAddress && (
           <div className="sell-wizard__address-loading">
             <Spinner animation="border" size="sm" /> Buscando dirección...
@@ -145,6 +148,7 @@ export default function StepAddress({ form, set, nextStep }) {
         <label className="sell-wizard__label">
           <GeoAlt className="me-1" /> Ubicación en el mapa
         </label>
+        {fieldErrors.geolocation && <div className="field-error-msg mb-2">{fieldErrors.geolocation}</div>}
         <p className="sell-wizard__hint">
           Hacé clic en el mapa para marcar la ubicación exacta de tu propiedad.
         </p>
@@ -168,8 +172,15 @@ export default function StepAddress({ form, set, nextStep }) {
         <button
           type="button"
           className="sell-wizard__btn sell-wizard__btn--next"
-          onClick={nextStep}
-          disabled={!canContinue}
+          onClick={() => {
+            const valid = validate({
+              address: { value: form.address, label: "Dirección", required: true },
+              propertyType: { value: form.propertyType, label: "Tipo de propiedad", required: true },
+              geolocation: { value: mapCoords ? "ok" : "", label: "Ubicación en el mapa", required: true },
+            });
+            if (!valid) return;
+            nextStep();
+          }}
         >
           Continuar <ArrowRight />
         </button>

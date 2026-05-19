@@ -18,5 +18,13 @@
   "noData": "No data",
   "select": "Select",
   "yes": "Yes",
-  "fallbackDemo": "Spanish fallback text"
+  "fallbackDemo": "Spanish fallback text",
+  "starRating": {
+    "label": "{{value}} out of 5 stars",
+    "labelWithCount": "{{value}} out of 5 stars, {{count}} reviews",
+    "noRating": "No rating",
+    "starSingular": "star",
+    "starPlural": "stars",
+    "groupLabel": "Rating"
+  }
 }

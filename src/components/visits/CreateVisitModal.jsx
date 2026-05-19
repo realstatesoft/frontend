@@ -3,6 +3,7 @@ import { Modal, Button, Form, Row, Col, Alert, Spinner, Badge } from 'react-boot
 import { createVisitRequest, getAgentAvailability } from '../../services/visits/visitApi';
 import { Calendar3, Clock, InfoCircle } from 'react-bootstrap-icons';
 import { useTranslation } from 'react-i18next';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
   const { t } = useTranslation('visits');
@@ -15,6 +16,7 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { fieldErrors, validate, clearFieldError } = useFormValidation();
   
   // Availability states
   const [busySlots, setBusySlots] = useState([]);
@@ -52,6 +54,12 @@ const CreateVisitModal = ({ show, onHide, property, agentId, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!property?.id) return;
+
+    const valid = validate({
+      proposedAt: { value: formData.proposedAt && formData.proposedAt.includes('T') ? formData.proposedAt : "", label: t('create.step1'), required: true },
+    });
+    if (!valid) return;
+
     setLoading(true);
     setError(null);
 

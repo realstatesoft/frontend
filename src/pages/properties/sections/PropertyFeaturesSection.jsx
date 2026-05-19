@@ -70,8 +70,9 @@ export function PropertyFeaturesSection({
     e.preventDefault();
     e.stopPropagation();
     if (!canAddMore || uploadingMedia) return;
+    const allowedTypes = new Set(ACCEPT_IMAGES.split(","));
     const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith("image/")
+      allowedTypes.has(f.type)
     );
     files.slice(0, MAX_IMAGES - photoCount).forEach((f) => addMedia(f));
   };
@@ -227,7 +228,25 @@ export function PropertyFeaturesSection({
         <Col md={6}>
           <Form.Group>
             <FormLabel>Contenido Multimedia</FormLabel>
-            <Row className="g-2 mb-2">
+            <div 
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              className={`p-3 rounded-3 mb-2 ${!canAddMore ? 'bg-light' : 'bg-white'}`}
+              style={{ 
+                border: `1px dashed ${uploadingMedia ? '#3B6BF5' : '#dee2e6'}`,
+                minHeight: galleryMedia.length === 0 ? '120px' : 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center'
+              }}
+            >
+              {galleryMedia.length === 0 && (
+                <div className="text-center text-muted mb-2">
+                  <i className="bi bi-images d-block mb-1" style={{ fontSize: 24 }} />
+                  <small>Arrastrá tus fotos aquí o usá el botón de abajo</small>
+                </div>
+              )}
+              <Row className="g-2">
               {galleryMedia.map((item) => (
                 <Col xs={3} key={item.url || item.originalIndex}>
                   <div
@@ -383,7 +402,8 @@ export function PropertyFeaturesSection({
                   </Col>
                 );
               })}
-            </Row>
+              </Row>
+            </div>
             {(() => {
               const totalCount = galleryMedia.length + floorPlanItems.length;
               return totalCount > 0 ? (
@@ -395,6 +415,30 @@ export function PropertyFeaturesSection({
               ) : null;
             })()}
             <Stack direction="horizontal" gap={2} className="flex-wrap">
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="d-none"
+                accept={ACCEPT_IMAGES}
+                multiple
+                onChange={handleFileChange}
+              />
+              <Button
+                variant="primary"
+                size="sm"
+                type="button"
+                className="d-flex align-items-center gap-1"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={!canAddMore || uploadingMedia}
+              >
+                {uploadingMedia ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  <i className="bi bi-plus-circle" />
+                )}
+                {uploadingMedia ? "Subiendo..." : "Añadir fotos"}
+              </Button>
+
               <input
                 type="file"
                 ref={floorPlanInputRef}

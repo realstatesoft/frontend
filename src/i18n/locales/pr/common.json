@@ -17,5 +17,13 @@
   "noData": "Sem dados",
   "select": "Selecionar",
   "yes": "Sim",
-  "fallbackDemo": "Texto de respaldo em espanhol"
+  "fallbackDemo": "Texto de respaldo em espanhol",
+  "starRating": {
+    "label": "{{value}} de 5 estrelas",
+    "labelWithCount": "{{value}} de 5 estrelas, {{count}} avaliações",
+    "noRating": "Sem avaliação",
+    "starSingular": "estrela",
+    "starPlural": "estrelas",
+    "groupLabel": "Avaliação"
+  }
 }

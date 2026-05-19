@@ -2,16 +2,23 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
-import { ArrowLeft, CheckLg } from "react-bootstrap-icons";
+import { ArrowLeft, CheckLg, PencilSquare, Trash } from "react-bootstrap-icons";
 import { FiMessageSquare } from "react-icons/fi";
 import Swal from "sweetalert2";
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import NewConversationModal from "../../components/messages/NewConversationModal";
+import ReviewForm from "../../components/Agents/ReviewForm";
+import ReviewList from "../../components/Agents/ReviewList";
+import RatingSummaryCard from "../../components/Agents/RatingSummaryCard";
+import agentReviewsService from "../../services/agentReviewsService";
+import { useMyAgentReview } from "../../hooks/useAgentReviews";
 import { useAuth } from "../../hooks/useAuth";
 import "./AgentProfilePage.scss";
+import StarRating from "../../components/common/StarRating";
 
 // No external avatar URL — missing avatars fall back to rendered initials.
 
@@ -19,11 +26,12 @@ export default function PublicAgentProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation("agents");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +60,11 @@ export default function PublicAgentProfilePage() {
       cancelled = true;
     };
   }, [id]);
+
+  const queryClient = useQueryClient();
+  const resolvedAgentId = agent?.id ?? Number(id);
+
+  const { data: myReview = null } = useMyAgentReview(resolvedAgentId);
 
   if (loading) {
     return (
@@ -94,9 +107,28 @@ export default function PublicAgentProfilePage() {
     .filter((s) => Boolean(s.name));
   const stats = agent.stats;
 
-  const rating = agent.avgRating;
-  const reviewsCount = agent.totalReviews;
-  const hasRating = rating != null;
+  const handleDeleteMyReview = async () => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: t("reviewList.deleteConfirmTitle"),
+      text: t("reviewList.deleteConfirmText"),
+      showCancelButton: true,
+      confirmButtonText: t("reviewList.deleteConfirmYes"),
+      cancelButtonText: t("reviewList.deleteConfirmNo"),
+      confirmButtonColor: "#dc3545",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      await agentReviewsService.deleteReview(resolvedAgentId, myReview.id);
+      queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-reviews", resolvedAgentId] });
+      queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
+      Swal.fire({ icon: "success", text: t("reviewList.deleteSuccess"), timer: 2000, showConfirmButton: false });
+    } catch {
+      Swal.fire({ icon: "error", title: t("reviewList.deleteError") });
+    }
+  };
 
   return (
     <>
@@ -146,11 +178,7 @@ export default function PublicAgentProfilePage() {
                 <h2 className="mb-1 profile-name">{name}</h2>
                 <div className="d-flex flex-wrap gap-3 mt-1">
                   <span className="text-muted profile-email">{email}</span>
-                  {hasRating && (
-                    <span className="text-muted text-warning fw-medium">
-                      ★ {rating} ({t("profile.reviews", { count: reviewsCount })})
-                    </span>
-                  )}
+
                 </div>
               </div>
             </div>
@@ -186,6 +214,7 @@ export default function PublicAgentProfilePage() {
                   <FiMessageSquare className="me-1" /> {t("message")}
                 </button>
               )}
+
             </div>
           </div>
 
@@ -318,6 +347,72 @@ export default function PublicAgentProfilePage() {
         </Container>
       </div>
 
+      {/* ── Reviews section ── */}
+      <div id="resenas" style={{ backgroundColor: "#f8f9fb" }}>
+        <Container className="py-5">
+          <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <h3 className="mb-0 fw-semibold">{t("reviews.sectionTitle")}</h3>
+            {isAuthenticated && user?.agentProfileId !== agent?.id && (
+              <button
+                className="btn btn-outline-warning px-4 py-2"
+                style={{ borderRadius: "8px", fontWeight: 600 }}
+                onClick={() => setShowReviewModal(true)}
+              >
+                ★ {myReview ? t("review.buttonEdit") : t("review.buttonLeave")}
+              </button>
+            )}
+          </div>
+          <RatingSummaryCard agentId={resolvedAgentId} />
+          {myReview && (
+            <div className="my-review-card mb-4 p-3 rounded-3 border border-warning bg-white">
+              <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                <span className="fw-bold" style={{ color: "#f0a500" }}>
+                  ⭐ {t("reviews.myReviewTitle")}
+                </span>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => setShowReviewModal(true)}
+                  >
+                    <PencilSquare size={13} className="me-1" />
+                    {t("reviewList.editButton")}
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={handleDeleteMyReview}
+                  >
+                    <Trash size={13} className="me-1" />
+                    {t("reviewList.deleteButton")}
+                  </button>
+                </div>
+              </div>
+              <StarRating value={myReview.rating} size="sm" readonly />
+              {myReview.title && (
+                <p className="mb-1 fw-semibold mt-2" style={{ fontSize: "0.9rem" }}>
+                  {myReview.title}
+                </p>
+              )}
+              <p className="mb-0 text-muted" style={{ fontSize: "0.88rem" }}>
+                {myReview.comment}
+              </p>
+            </div>
+          )}
+          <ReviewList
+            agentId={resolvedAgentId}
+            onSavedOwnReview={() => {
+              queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
+            }}
+            onDeletedOwnReview={() => {
+              queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
+            }}
+          />
+        </Container>
+      </div>
+
       <NewConversationModal
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
@@ -335,6 +430,20 @@ export default function PublicAgentProfilePage() {
             timer: 2000,
             showConfirmButton: false,
           });
+        }}
+      />
+      <ReviewForm
+        show={showReviewModal}
+        onHide={() => setShowReviewModal(false)}
+        agentId={resolvedAgentId}
+        agentName={name}
+        existingReview={myReview}
+        agentProperties={[]}
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+          queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+          queryClient.invalidateQueries({ queryKey: ["agent-reviews", resolvedAgentId] });
+          queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
         }}
       />
       <Footer />
