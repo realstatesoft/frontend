@@ -36,7 +36,10 @@ export default function SubscriptionPlansPage() {
   }, [t]);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setActiveSubscription(null);
+      return;
+    }
     subscriptionApi.getMyActiveSubscription()
       .then(res => setActiveSubscription(res?.data?.data ?? null))
       .catch(() => {});

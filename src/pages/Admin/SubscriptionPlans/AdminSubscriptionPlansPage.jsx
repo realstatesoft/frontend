@@ -14,7 +14,7 @@ function PlanModal({ show, onHide, onSave, initialData, saving, saveError, t }) 
   const [form, setForm] = useState(EMPTY_FORM);
 
   useEffect(() => {
-    if (show) setForm(initialData ?? EMPTY_FORM);
+    if (show) setForm(initialData ? { ...initialData, description: initialData.description ?? '' } : EMPTY_FORM);
   }, [show, initialData]);
 
   function setField(field) {
