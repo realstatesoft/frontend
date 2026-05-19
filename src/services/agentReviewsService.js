@@ -1,6 +1,6 @@
 import api from "./api";
 
-const REVIEW_CONFLICT_MESSAGE = "Ya enviaste una reseña para este agente";
+const REVIEW_CONFLICT_MESSAGE = "Ya enviaste una resena para este agente";
 
 function mapReviewApiError(error) {
   if (error?.response?.status === 409) {
@@ -34,7 +34,7 @@ export async function getReviewSummary(agentId) {
 export async function getMyReview(agentId) {
   const encodedAgentId = encodeURIComponent(agentId);
   try {
-    const response = await api.get(`/agents/${encodedAgentId}/reviews/mine`);
+    const response = await api.get(`/agents/${encodedAgentId}/reviews/me`);
     return response.data?.data ?? response.data ?? null;
   } catch (error) {
     if (error?.response?.status === 404) {
