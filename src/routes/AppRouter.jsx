@@ -88,6 +88,9 @@ const AdminContractTemplatesPage = lazy(() => import("../pages/Admin/AdminContra
 const AdminPaymentsPage = lazy(() => import("../pages/Admin/AdminPaymentsPage"));
 
 const AdminSettingsPage = lazy(() => import("../pages/Admin/Settings/AdminSettingsPage"));
+const AdminSubscriptionPlansPage = lazy(() => import("../pages/Admin/SubscriptionPlans/AdminSubscriptionPlansPage"));
+const SubscriptionPlansPage = lazy(() => import("../pages/Subscriptions/SubscriptionPlansPage"));
+const MySubscriptionsPage = lazy(() => import("../pages/MySubscriptions/MySubscriptionsPage"));
 const AgentSettingsPage = lazy(() => import("../pages/AgentSettings/AgentSettingsPage"));
 const UserSettingsPage = lazy(() => import("../pages/UserSettings/UserSettingsPage"));
 
@@ -117,6 +120,7 @@ export default function AppRouter() {
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/agents/:id" element={<PublicAgentProfilePage />} />
             <Route path="/AgentSearch" element={<AgentSearchPage />} />
+            <Route path="/subscriptions" element={<SubscriptionPlansPage />} />
 
             {/* -- Rutas protegidas (requieren autenticación) ---------- */}
             <Route element={<ProtectedRoute />}>
@@ -129,6 +133,7 @@ export default function AppRouter() {
                 <Route path="/reservations" element={<MyReservationsPage />} />
                 <Route path="/payment" element={<PaymentPage />} />
                 <Route path="/my-payments" element={<MyPaymentsPage />} />
+                <Route path="/my-subscriptions" element={<MySubscriptionsPage />} />
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
@@ -218,6 +223,7 @@ export default function AppRouter() {
                     <Route path="settings" element={<AdminSettingsPage />} />
                     <Route path="contract-templates" element={<AdminContractTemplatesPage />} />
                     <Route path="payments" element={<AdminPaymentsPage />} />
+                    <Route path="subscription-plans" element={<AdminSubscriptionPlansPage />} />
                 </Route>
             </Route>
 
