@@ -1,33 +1,54 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import agentReviewsService from "../services/agents/agentReviewsService";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useAuth } from "./useAuth";
+import {
+  getReviews,
+  getReviewSummary,
+  getMyReview,
+} from "../services/agentReviewsService";
 
 const PAGE_SIZE = 5;
 
 /**
- * Hook de paginación infinita para las reseñas de un agente.
- *
- * @param {number|string} agentId
- * @param {{ sort?: string, size?: number }} options
- *   sort — parámetro de ordenamiento compatible con Spring Boot Pageable
- *          p. ej. "createdAt,desc" | "createdAt,asc" | "rating,desc" | "rating,asc"
+ * Hook de paginacion infinita para las resenas de un agente.
  */
-export default function useAgentReviews(
+export function useAgentReviews(
   agentId,
-  { sort = "createdAt,desc", size = PAGE_SIZE } = {}
+  { sort = "createdAt,desc", rating, size = PAGE_SIZE } = {}
 ) {
   return useInfiniteQuery({
-    queryKey: ["reviews", agentId, sort],
-    queryFn: ({ pageParam = 0 }) =>
-      agentReviewsService.getReviews(agentId, { page: pageParam, size, sort }),
+    queryKey: ["agent-reviews", agentId, sort, rating, size],
+    queryFn: ({ pageParam = 0 }) => getReviews(agentId, pageParam, size, { sort, rating }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      // Soporta { data: { data: { content, number, last } } } y { data: { content, number, last } }
-      const pageData = lastPage?.data?.data ?? lastPage?.data;
-      if (!pageData || pageData.last) return undefined;
-      return (pageData.number ?? 0) + 1;
+      if (!lastPage?.hasNextPage) return undefined;
+      return (lastPage?.pageNumber ?? 0) + 1;
     },
     enabled: Boolean(agentId),
     staleTime: 1000 * 60 * 2,
     retry: 1,
   });
 }
+
+export function useAgentReviewSummary(agentId) {
+  return useQuery({
+    queryKey: ["agent-review-summary", agentId],
+    queryFn: () => getReviewSummary(agentId),
+    enabled: Boolean(agentId),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+  });
+}
+
+export function useMyAgentReview(agentId) {
+  const { isAuthenticated } = useAuth();
+
+  return useQuery({
+    queryKey: ["my-agent-review", agentId],
+    queryFn: () => getMyReview(agentId),
+    enabled: Boolean(agentId && isAuthenticated),
+    initialData: null,
+    retry: false,
+  });
+}
+
+export default useAgentReviews;

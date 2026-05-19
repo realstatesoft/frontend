@@ -9,12 +9,13 @@ import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import NewConversationModal from "../../components/messages/NewConversationModal";
 import ReviewForm from "../../components/Agents/ReviewForm";
 import ReviewList from "../../components/Agents/ReviewList";
 import RatingSummaryCard from "../../components/Agents/RatingSummaryCard";
-import agentReviewsService from "../../services/agents/agentReviewsService";
+import agentReviewsService from "../../services/agentReviewsService";
+import { useMyAgentReview } from "../../hooks/useAgentReviews";
 import { useAuth } from "../../hooks/useAuth";
 import "./AgentProfilePage.scss";
 import StarRating from "../../components/common/StarRating";
@@ -61,16 +62,9 @@ export default function PublicAgentProfilePage() {
   }, [id]);
 
   const queryClient = useQueryClient();
+  const resolvedAgentId = agent?.id ?? Number(id);
 
-  const { data: myReview = null } = useQuery({
-    queryKey: ["myReview", id],
-    queryFn: async () => {
-      const res = await agentReviewsService.getMyReview(id);
-      return res?.data?.data ?? res?.data ?? null;
-    },
-    enabled: Boolean(isAuthenticated && id),
-    retry: false,
-  });
+  const { data: myReview = null } = useMyAgentReview(resolvedAgentId);
 
   if (loading) {
     return (
@@ -125,10 +119,11 @@ export default function PublicAgentProfilePage() {
     });
     if (!result.isConfirmed) return;
     try {
-      await agentReviewsService.deleteReview(agent?.id ?? parseInt(id), myReview.id);
-      queryClient.invalidateQueries({ queryKey: ["myReview", id] });
-      queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
-      queryClient.invalidateQueries({ queryKey: ["reviews", agent?.id ?? parseInt(id)] });
+      await agentReviewsService.deleteReview(resolvedAgentId, myReview.id);
+      queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+      queryClient.invalidateQueries({ queryKey: ["agent-reviews", resolvedAgentId] });
+      queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
       Swal.fire({ icon: "success", text: t("reviewList.deleteSuccess"), timer: 2000, showConfirmButton: false });
     } catch {
       Swal.fire({ icon: "error", title: t("reviewList.deleteError") });
@@ -367,7 +362,7 @@ export default function PublicAgentProfilePage() {
               </button>
             )}
           </div>
-          <RatingSummaryCard agentId={agent?.id ?? parseInt(id)} />
+          <RatingSummaryCard agentId={resolvedAgentId} />
           {myReview && (
             <div className="my-review-card mb-4 p-3 rounded-3 border border-warning bg-white">
               <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
@@ -403,14 +398,16 @@ export default function PublicAgentProfilePage() {
             </div>
           )}
           <ReviewList
-            agentId={agent?.id ?? parseInt(id)}
+            agentId={resolvedAgentId}
             onSavedOwnReview={() => {
-              queryClient.invalidateQueries({ queryKey: ["myReview", id] });
-              queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
+              queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
             }}
             onDeletedOwnReview={() => {
-              queryClient.invalidateQueries({ queryKey: ["myReview", id] });
-              queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
+              queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+              queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
             }}
           />
         </Container>
@@ -438,14 +435,15 @@ export default function PublicAgentProfilePage() {
       <ReviewForm
         show={showReviewModal}
         onHide={() => setShowReviewModal(false)}
-        agentId={agent?.id ?? parseInt(id)}
+        agentId={resolvedAgentId}
         agentName={name}
         existingReview={myReview}
         agentProperties={[]}
         onSaved={() => {
-          queryClient.invalidateQueries({ queryKey: ["myReview", id] });
-          queryClient.invalidateQueries({ queryKey: ["summary", agent?.id ?? parseInt(id)] });
-          queryClient.invalidateQueries({ queryKey: ["reviews", agent?.id ?? parseInt(id)] });
+          queryClient.invalidateQueries({ queryKey: ["my-agent-review", resolvedAgentId] });
+          queryClient.invalidateQueries({ queryKey: ["agent-review-summary", resolvedAgentId] });
+          queryClient.invalidateQueries({ queryKey: ["agent-reviews", resolvedAgentId] });
+          queryClient.invalidateQueries({ queryKey: ["agents", resolvedAgentId] });
         }}
       />
       <Footer />
