@@ -20,8 +20,10 @@ export function useAgentReviews(
     queryFn: ({ pageParam = 0 }) => getReviews(agentId, pageParam, size, { sort, rating }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      if (!lastPage?.hasNextPage) return undefined;
-      return (lastPage?.pageNumber ?? 0) + 1;
+      const hasNoNextPage =
+        lastPage?.hasNextPage === false || lastPage?.last === true;
+      if (hasNoNextPage) return undefined;
+      return (lastPage?.pageNumber ?? lastPage?.number ?? 0) + 1;
     },
     enabled: Boolean(agentId),
     staleTime: 1000 * 60 * 2,

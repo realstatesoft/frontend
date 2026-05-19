@@ -1,11 +1,13 @@
 import api from "./api";
 
-const REVIEW_CONFLICT_MESSAGE = "Ya enviaste una resena para este agente";
+const REVIEW_CONFLICT_CODE = "REVIEW_CONFLICT";
 
 function mapReviewApiError(error) {
   if (error?.response?.status === 409) {
-    const conflictError = new Error(REVIEW_CONFLICT_MESSAGE);
+    const conflictError = new Error(REVIEW_CONFLICT_CODE);
+    conflictError.code = REVIEW_CONFLICT_CODE;
     conflictError.status = 409;
+    conflictError.apiMessage = error?.response?.data?.message;
     conflictError.cause = error;
     return conflictError;
   }
