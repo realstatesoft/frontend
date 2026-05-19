@@ -106,10 +106,6 @@ function CancelModal({ show, onHide, onConfirm, cancelling, error, t }) {
   );
 }
 
-const STATUS_VARIANT = {
-  ACTIVE: 'success', PENDING: 'warning', CANCELLED: 'secondary', EXPIRED: 'danger',
-};
-
 export default function MySubscriptionsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
