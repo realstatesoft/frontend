@@ -98,7 +98,11 @@ export default function usePayment({ amount, concept, type, description, referen
         highlightDays: parsedDays
       };
     }
-    // TO DO agregar otros tipos de pago si es necesario
+    if (type === 'SUBSCRIPTION') {
+      const planId = parseInt(referenceId, 10);
+      if (!Number.isInteger(planId) || planId <= 0) return null;
+      return { subscriptionPlanId: planId };
+    }
     return {};
   }
 

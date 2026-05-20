@@ -31,6 +31,7 @@ import {
   IoCashOutline,
   IoHome,
   IoBriefcase,
+  IoStarOutline,
 } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -176,6 +177,10 @@ function CustomNavbar() {
             <Nav.Link as={Link} to="/agents">
               {t('agents') || 'Agentes'}
             </Nav.Link>
+
+            <Nav.Link as={Link} to="/subscriptions">
+              {t('subscriptions') || 'Suscripciones'}
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
 
@@ -229,6 +234,9 @@ function CustomNavbar() {
                   </Link>
                   <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> {t('myReservations')}
+                  </Link>
+                  <Link to="/my-subscriptions" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoStarOutline size={16} style={{ flexShrink: 0 }} /> {t('mySubscriptions') || 'Mis suscripciones'}
                   </Link>
                   {hasPublishedProperties && user?.role?.toUpperCase() === 'USER' && (
                     <Link to="/owner/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>

@@ -6,7 +6,7 @@ export const PAYMENT_TYPE_DEFAULTS = {
   RESERVATION:        { redirectUrl: '/',              cancelUrl: (_id) => '/',              concept: () => 'Reserva' },
   CONTRACT:           { redirectUrl: '/contracts',     cancelUrl: (_id) => '/contracts',     concept: () => 'Contrato' },
   PROPERTY_HIGHLIGHT: { redirectUrl: '/properties/me', cancelUrl: (_id) => '/properties/me', concept: (planLabel) => `Destacar propiedad – Plan ${planLabel}` },
-  SUBSCRIPTION:       { redirectUrl: '/',              cancelUrl: (_id) => '/',              concept: () => 'Suscripción' },
+  SUBSCRIPTION:       { redirectUrl: '/subscriptions',  cancelUrl: (_id) => '/subscriptions', concept: (planLabel) => planLabel ? `Suscripción – ${planLabel}` : 'Suscripción' },
   OTHER:              { redirectUrl: '',               cancelUrl: (_id) => '',               concept: () => '' },
 };
 
