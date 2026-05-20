@@ -163,3 +163,32 @@ describe("StarRating — modo input (readonly=false)", () => {
     Array.from(stars).forEach((s) => expect(isFilled(s)).toBe(false));
   });
 });
+
+// ---------------------------------------------------------------------------
+// Readonly mode — non-interactive
+// ---------------------------------------------------------------------------
+
+describe("StarRating — modo readonly no interactivo", () => {
+  it("no renderiza botones ni responde a clicks", () => {
+    const onChange = vi.fn();
+    const { container } = render(
+      <StarRating value={3} readonly onChange={onChange} />
+    );
+
+    const buttons = container.querySelectorAll("button");
+    expect(buttons).toHaveLength(0);
+
+    const stars = getStars(container);
+    expect(stars).toHaveLength(5);
+    fireEvent.click(stars[0]);
+    fireEvent.click(stars[2]);
+    fireEvent.click(stars[4]);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("tiene role=img en lugar de radiogroup en modo readonly", () => {
+    render(<StarRating value={3} />);
+    expect(screen.getByRole("img")).toBeInTheDocument();
+    expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
+  });
+});
