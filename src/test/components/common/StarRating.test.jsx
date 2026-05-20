@@ -187,7 +187,7 @@ describe("StarRating — modo readonly no interactivo", () => {
   });
 
   it("tiene role=img en lugar de radiogroup en modo readonly", () => {
-    render(<StarRating value={3} />);
+    render(<StarRating value={3} readonly />);
     expect(screen.getByRole("img")).toBeInTheDocument();
     expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
   });
