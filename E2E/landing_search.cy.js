@@ -35,10 +35,10 @@ describe('Landing Page & Search Flow', () => {
     cy.get('.rounded-pill button').contains(/Alquilar/i).click();
     
     // Selecciona tipo "Casa"
-    cy.get('select.form-select').eq(0).select('Casa');
+    cy.contains('select', 'Tipo de Propiedad').select('Casa');
     
     // Selecciona "3" habitaciones
-    cy.get('select.form-select').eq(1).select('3');
+    cy.contains('select', 'Todos').select('3');
     
     // Clic en botón de búsqueda
     cy.get('button.btn.text-white').contains(/Buscar/i).click();

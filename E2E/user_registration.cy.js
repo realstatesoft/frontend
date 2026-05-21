@@ -67,6 +67,8 @@ describe('User Registration Flow', () => {
 
     // Paso 2 (Usando un email que probablemente exista)
     const existingEmail = Cypress.env('ADMIN_EMAIL');
+    // Validar presencia de variables de entorno para evitar errores crípticos
+    expect(existingEmail, 'Cypress.env("ADMIN_EMAIL") debe estar definido').to.be.a('string').and.not.be.empty;
     cy.get('input[name="email"]').type(existingEmail);
     cy.get('input[name="password"]').type(validPassword);
     cy.get('input[name="confirmPassword"]').type(validPassword);

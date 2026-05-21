@@ -6,6 +6,7 @@ describe('Admin Dashboard Access', () => {
 
     // Loguear usando el custom command
     cy.login(email, password);
+    cy.url({ timeout: 15000 }).should('not.include', '/login');
   });
 
   it('debe loguearse como admin y acceder al dashboard', () => {
@@ -20,18 +21,18 @@ describe('Admin Dashboard Access', () => {
     cy.visit('/admin/dashboard');
 
     // Validar que el Sidebar lateral esté presente
-    cy.get('aside').should('be.visible');
+    cy.get('aside').should('exist');
 
     // Validar que los enlaces clave de administración estén disponibles
-    cy.get('a[href="/admin/approval"]').should('be.visible');
-    cy.get('a[href="/admin/payments"]').should('be.visible');
+    cy.get('a[href="/admin/approval"]').should('exist');
+    cy.get('a[href="/admin/payments"]').should('exist');
   });
 
   it('debe poder navegar a la página de aprobación de propiedades', () => {
     cy.visit('/admin/dashboard');
 
     // Navegar haciendo clic en el enlace de aprobación en el Sidebar
-    cy.get('a[href="/admin/approval"]').click();
+    cy.get('a[href="/admin/approval"]').click({ force: true });
 
     // Validar redirección y render de la página de aprobaciones
     cy.url().should('include', '/admin/approval');

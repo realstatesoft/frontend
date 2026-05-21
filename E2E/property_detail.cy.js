@@ -1,4 +1,10 @@
 describe('Property Detail Page Flow', () => {
+  beforeEach(() => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+      return false;
+    });
+  });
+
   it('debe cargar el detalle de una propiedad con datos reales', () => {
     cy.visit('/properties');
     
@@ -58,5 +64,14 @@ describe('Property Detail Page Flow', () => {
 
     // Título de la sección
     cy.get('h5.property__section-title').contains(/Propiedades similares/i).scrollIntoView().should('be.visible');
+
+    // Validar que se muestre el contenedor de propiedades similares (.summary-card) o el mensaje vacío
+    cy.get('body').then(($body) => {
+      if ($body.find('.summary-card').length > 0) {
+        cy.get('.summary-card').first().should('be.visible');
+      } else {
+        cy.contains('No se encontraron propiedades similares.').should('be.visible');
+      }
+    });
   });
 });

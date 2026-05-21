@@ -27,6 +27,10 @@ describe('User Authentication Flow', () => {
     const email = Cypress.env('ADMIN_EMAIL'); 
     const password = Cypress.env('ADMIN_PASSWORD');
 
+    // Validar presencia de variables de entorno para evitar errores crípticos
+    expect(email, 'Cypress.env("ADMIN_EMAIL") debe estar definido').to.be.a('string').and.not.be.empty;
+    expect(password, 'Cypress.env("ADMIN_PASSWORD") debe estar definido').to.be.a('string').and.not.be.empty;
+
     cy.visit('/login');
 
     cy.get('input[name="email"]').type(email);
@@ -40,6 +44,10 @@ describe('User Authentication Flow', () => {
   it('debe iniciar sesión correctamente como AGENTE y redirigir al dashboard de agente', () => {
     const email = Cypress.env('AGENTE_EMAIL'); 
     const password = Cypress.env('AGENTE_PASSWORD');
+
+    // Validar presencia de variables de entorno para evitar errores crípticos
+    expect(email, 'Cypress.env("AGENTE_EMAIL") debe estar definido').to.be.a('string').and.not.be.empty;
+    expect(password, 'Cypress.env("AGENTE_PASSWORD") debe estar definido').to.be.a('string').and.not.be.empty;
 
     cy.visit('/login');
 

@@ -9,12 +9,8 @@ describe('Property Detail Image Gallery Flow', () => {
       .should('be.visible')
       .and('have.attr', 'src');
 
-    // Validar que, si existen miniaturas, sean visibles
-    cy.get('body').then(($body) => {
-      if ($body.find('.property__thumb-image').length > 0) {
-        cy.get('.property__thumb-image').first().should('be.visible');
-      }
-    });
+    // Validar que existen miniaturas y sean visibles
+    cy.get('.property__thumb-image').should('have.length.at.least', 1).first().should('be.visible');
   });
 
   it('debe permitir interactuar con las miniaturas de la galería', () => {
@@ -24,21 +20,10 @@ describe('Property Detail Image Gallery Flow', () => {
 
     cy.get('.property__main-image', { timeout: 15000 }).should('be.visible');
 
-    cy.get('body').then(($body) => {
-      if ($body.find('.property__thumb-image').length > 0) {
-        // Obtenemos la URL de la primera miniatura
-        cy.get('.property__thumb-image')
-          .first()
-          .should('be.visible')
-          .then(($thumb) => {
-            const thumbSrc = $thumb.attr('src');
-            // Hacemos clic en ella
-            cy.wrap($thumb).click({ force: true });
-            cy.log('Miniatura clickeada:', thumbSrc);
-          });
-      } else {
-        cy.log('No hay miniaturas en esta propiedad para interactuar.');
-      }
-    });
+    // Clicar en la primera miniatura y validar que no rompa la navegación
+    cy.get('.property__thumb-image').first().should('be.visible').click({ force: true });
+
+    // Validar que la miniatura clickeada sigue existiendo y visible (sin crash de la página)
+    cy.get('.property__thumb-image').first().should('be.visible');
   });
 });

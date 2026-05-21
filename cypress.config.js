@@ -22,7 +22,6 @@ function loadEnv() {
               const cleanKey = key.replace("CYPRESS_", "");
               env[cleanKey] = value;
             }
-            env[key] = value;
           }
         }
       });
