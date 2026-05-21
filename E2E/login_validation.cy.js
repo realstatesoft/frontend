@@ -20,7 +20,7 @@ describe('Login Form Validation Flow', () => {
     cy.get('button[type="submit"]').click();
 
     // Debe mostrarse el error de formato en el campo de correo
-    cy.get('.field-error-msg').should('contain', 'Email' || 'inválido');
+    cy.get('.field-error-msg').invoke('text').should('match', /Email|inválido/i);
   });
 
   it('debe alternar la visibilidad de la contraseña al hacer clic en el ícono del ojo', () => {

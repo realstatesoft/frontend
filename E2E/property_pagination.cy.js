@@ -48,14 +48,16 @@ describe('Property Pagination Flow', () => {
 
   it('debe permitir cambiar de página usando botones numéricos y regresar', () => {
     cy.get('body').then(($body) => {
-      // Buscar botones de número de página. Buscamos botones con texto "2"
-      const pageTwoBtn = $body.find('button').filter((i, el) => el.textContent.trim() === '2');
-      if (pageTwoBtn.length > 0) {
-        cy.wrap(pageTwoBtn).first().click();
+      // Buscar si existe un botón con el número de página "2"
+      const buttons = $body.find('button').toArray();
+      const hasPageTwo = buttons.some(el => el.textContent.trim() === '2');
+      if (hasPageTwo) {
+        // Navegar a la página 2
+        cy.contains('button', '2').first().click();
         cy.get('.spinner-border').should('not.exist');
 
         // Volver a la página 1 haciendo clic en el botón "1"
-        cy.get('button').filter((i, el) => el.textContent.trim() === '1').first().click();
+        cy.contains('button', '1').first().click();
         cy.get('.spinner-border').should('not.exist');
       }
     });
