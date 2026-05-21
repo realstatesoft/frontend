@@ -1,5 +1,5 @@
 describe('Property Detail Page Flow', () => {
-  beforeEach(() => {
+  before(() => {
     Cypress.on('uncaught:exception', (err, runnable) => {
       // Ignore only specific known Leaflet errors
       if (err.message && (err.message.includes('_leaflet_pos') || err.message.includes('leaflet'))) {
