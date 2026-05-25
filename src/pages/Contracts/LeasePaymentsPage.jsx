@@ -25,6 +25,12 @@ const STATUS_LABELS = {
   PARTIAL: 'Parcial',
 };
 
+const buildReceiptFilename = (installmentNumber, date) => {
+  const cuota = String(installmentNumber ?? 'cuota').replace(/[^a-zA-Z0-9_-]+/g, '-');
+  const fecha = String(date ?? new Date().toISOString().slice(0, 10)).slice(0, 10);
+  return `receipt-${cuota}-${fecha}.pdf`;
+};
+
 export default function LeasePaymentsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -53,18 +59,24 @@ export default function LeasePaymentsPage() {
     }, { total: 0, paid: 0, balance: 0, overdue: 0 });
   }, [installments]);
 
-  const handleDownloadReceipt = async (paymentId) => {
-    setDownloading(paymentId);
-    const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt-url`, `receipt-${paymentId}.pdf`);
+  const handleDownloadReceipt = async (paymentId, installmentNumber, date) => {
+    setDownloading(`receipt-${paymentId}`);
+    try {
+      const res = await downloadPdf(
+        `/rentals/payments/${paymentId}/receipt.pdf`,
+        buildReceiptFilename(installmentNumber, date)
+      );
 
-    if (!res.success) {
-      if (res.status === 404) {
-        Swal.fire({ icon: 'info', title: 'Generando...', text: res.message, timer: 3000, showConfirmButton: false });
-      } else {
-        Swal.fire('Error', 'No se pudo descargar el recibo.', 'error');
+      if (!res.success) {
+        if (res.status === 202) {
+          Swal.fire({ icon: 'info', title: 'PDF en generación', text: res.message, timer: 3000, showConfirmButton: false });
+        } else {
+          Swal.fire('Error', 'No se pudo descargar el recibo.', 'error');
+        }
       }
+    } finally {
+      setDownloading(null);
     }
-    setDownloading(null);
   };
 
   if (isLoading) return <div className={styles.loading}><Spinner animation="border" /></div>;
@@ -165,16 +177,18 @@ export default function LeasePaymentsPage() {
                         Pagar
                       </Button>
                     )}
-                    {inst.status === 'PAID' && inst.payments?.length > 0 && inst.payments[0].id && (
-                      <Button 
-                        variant="secondary" 
+                    {inst.status === 'PAID' && inst.payments?.map((payment) => payment.id && (
+                      <Button
+                        key={payment.id}
+                        variant="secondary"
                         size="sm"
-                        disabled={downloading === inst.payments[0].id}
-                        onClick={() => handleDownloadReceipt(inst.payments[0].id)}
+                        disabled={downloading === `receipt-${payment.id}`}
+                        onClick={() => handleDownloadReceipt(payment.id, inst.installmentNumber, payment.date)}
                       >
-                        <FiDownload /> Recibo
+                        {downloading === `receipt-${payment.id}` ? <Spinner animation="border" size="sm" /> : <FiDownload />}
+                        Recibo
                       </Button>
-                    )}
+                    ))}
                   </div>
                 </td>
               </tr>
