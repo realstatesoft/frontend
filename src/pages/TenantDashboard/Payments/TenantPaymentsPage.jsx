@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 import { FiCreditCard, FiCheckCircle, FiClock, FiDownload, FiAlertTriangle, FiFileText } from 'react-icons/fi';
 import { useTenantPayments } from '../../../hooks/useTenantPayments';
 import useFormatters from '../../../hooks/useFormatters';
@@ -23,6 +24,12 @@ const STATUS_LABELS = {
   PAID: 'Pagado',
   OVERDUE: 'Atrasado',
   PARTIAL: 'Pago Parcial',
+};
+
+const buildPdfFilename = (prefix, installmentNumber, date) => {
+  const cuota = String(installmentNumber ?? 'cuota').replace(/[^a-zA-Z0-9_-]+/g, '-');
+  const fecha = String(date ?? new Date().toISOString().slice(0, 10)).slice(0, 10);
+  return `${prefix}-${cuota}-${fecha}.pdf`;
 };
 
 export default function TenantPaymentsPage() {
@@ -71,52 +78,58 @@ export default function TenantPaymentsPage() {
 
   const handleDownloadReceipt = async (paymentId, installmentNumber, dateStr) => {
     setDownloading(`receipt-${paymentId}`);
-    const filename = `receipt-${installmentNumber}-${dateStr}.pdf`;
-    const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt-url`, filename);
+    try {
+      const filename = buildPdfFilename('receipt', installmentNumber, dateStr);
+      const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt.pdf`, filename);
 
-    if (!res.success) {
-      if (res.status === 404) {
-        Swal.fire({
-          icon: 'info',
-          title: 'En proceso',
-          text: res.message,
-          timer: 3000,
-          showConfirmButton: false,
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo descargar el recibo.',
-        });
+      if (!res.success) {
+        if (res.status === 202) {
+          Swal.fire({
+            icon: 'info',
+            title: 'PDF en generación',
+            text: res.message,
+            timer: 3000,
+            showConfirmButton: false,
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo descargar el recibo.',
+          });
+        }
       }
+    } finally {
+      setDownloading(null);
     }
-    setDownloading(null);
   };
 
   const handleDownloadInvoice = async (installmentId, installmentNumber, dateStr) => {
     setDownloading(`invoice-${installmentId}`);
-    const filename = `invoice-${installmentNumber}-${dateStr}.pdf`;
-    const res = await downloadPdf(`/rentals/installments/${installmentId}/invoice-url`, filename);
+    try {
+      const filename = buildPdfFilename('invoice', installmentNumber, dateStr);
+      const res = await downloadPdf(`/rentals/installments/${installmentId}/invoice.pdf`, filename);
 
-    if (!res.success) {
-      if (res.status === 404) {
-        Swal.fire({
-          icon: 'info',
-          title: 'En proceso',
-          text: res.message,
-          timer: 3000,
-          showConfirmButton: false,
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo descargar la factura.',
-        });
+      if (!res.success) {
+        if (res.status === 202) {
+          Swal.fire({
+            icon: 'info',
+            title: 'PDF en generación',
+            text: res.message,
+            timer: 3000,
+            showConfirmButton: false,
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo descargar la factura.',
+          });
+        }
       }
+    } finally {
+      setDownloading(null);
     }
-    setDownloading(null);
   };
 
   if (isLoading && !data) return <div className={styles.loading}>Cargando...</div>;
@@ -252,9 +265,10 @@ export default function TenantPaymentsPage() {
                           variant="secondary"
                           size="sm"
                           disabled={downloading === `receipt-${payment.id}`}
-                          onClick={() => handleDownloadReceipt(payment.id, inst.installmentNumber, formatDate(payment.date))}
+                          onClick={() => handleDownloadReceipt(payment.id, inst.installmentNumber, payment.date)}
                         >
-                          <FiDownload /> {downloading === `receipt-${payment.id}` ? '...' : 'Recibo'}
+                          {downloading === `receipt-${payment.id}` ? <Spinner animation="border" size="sm" /> : <FiDownload />}
+                          Recibo
                         </Button>
                       )}
                     </div>
@@ -268,9 +282,10 @@ export default function TenantPaymentsPage() {
                         variant="secondary"
                         size="sm"
                         disabled={downloading === `invoice-${inst.id}`}
-                        onClick={() => handleDownloadInvoice(inst.id, inst.installmentNumber, formatDate(inst.dueDate))}
+                        onClick={() => handleDownloadInvoice(inst.id, inst.installmentNumber, inst.dueDate)}
                       >
-                        <FiFileText /> {downloading === `invoice-${inst.id}` ? 'Descargando...' : 'Descargar Factura'}
+                        {downloading === `invoice-${inst.id}` ? <Spinner animation="border" size="sm" /> : <FiFileText />}
+                        Descargar Factura
                       </Button>
                     </div>
                   )}
