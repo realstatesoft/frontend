@@ -16,17 +16,6 @@ export function removeAccessToken() {
   Cookies.remove("accessToken", BASE_COOKIE_OPTIONS);
 }
 
-// ─── Refresh Token (cookie persistente 7 días) ────────────────────────────────
-export function getRefreshToken() {
-  return Cookies.get("refreshToken") ?? null;
-}
-export function setRefreshToken(token) {
-  Cookies.set("refreshToken", token, { ...BASE_COOKIE_OPTIONS, expires: 7 });
-}
-export function removeRefreshToken() {
-  Cookies.remove("refreshToken", BASE_COOKIE_OPTIONS);
-}
-
 // ─── Información del usuario (localStorage) ───────────────────────────────────
 export function getUserInfo() {
   try {
@@ -45,6 +34,5 @@ export function removeUserInfo() {
 // ─── Limpiar toda la sesión ───────────────────────────────────────────────────
 export function clearSession() {
   removeAccessToken();
-  removeRefreshToken();
   removeUserInfo();
 }
