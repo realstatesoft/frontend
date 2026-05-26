@@ -32,7 +32,7 @@ const ServicesSection = () => {
             title: t("services.sell.title"),
             description: t("services.sell.description"),
             linkText: t("services.sell.link"),
-            to: "/properties/create",
+            to: "/create-property",
             state: null,
             color: "#d1fae5",
         },

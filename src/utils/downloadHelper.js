@@ -1,8 +1,21 @@
+import axios from 'axios';
 import api from '../services/api';
+
+const extractUrlFromApiResponse = async (response) => {
+  const contentType = response.headers?.['content-type'] || '';
+  if (!contentType.includes('application/json')) return null;
+
+  const text = response.data instanceof Blob ? await response.data.text() : JSON.stringify(response.data);
+  const payload = JSON.parse(text);
+  return typeof payload?.data === 'string' ? payload.data : null;
+};
+
+const isAbsoluteUrl = (url) => /^https?:\/\//i.test(url);
 
 export const downloadPdf = async (url, filename) => {
   try {
-    const response = await api.get(url, {
+    const client = isAbsoluteUrl(url) ? axios : api;
+    const response = await client.get(url, {
       responseType: 'blob',
       headers: { Accept: 'application/pdf' },
     });
@@ -13,6 +26,11 @@ export const downloadPdf = async (url, filename) => {
 
     const contentType = response.headers?.['content-type'] || '';
     const isPdfResponse = !contentType || contentType.includes('application/pdf') || contentType.includes('application/octet-stream');
+    const fileUrl = await extractUrlFromApiResponse(response);
+    if (fileUrl) {
+      return downloadPdf(fileUrl, filename);
+    }
+
     if (!response.data || !isPdfResponse) {
       return { success: false, message: 'El archivo recibido no es un PDF válido.' };
     }
