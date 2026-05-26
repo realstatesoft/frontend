@@ -17,8 +17,6 @@ vi.mock('axios', async (importOriginal) => {
 vi.mock('../../utils/authToken', () => ({
   getAccessToken: vi.fn(),
   setAccessToken: vi.fn(),
-  getRefreshToken: vi.fn(),
-  setRefreshToken: vi.fn(),
   clearSession: vi.fn()
 }));
 
@@ -63,14 +61,11 @@ describe('api service integration with interceptors', () => {
         config: originalRequest
     };
 
-    authToken.getRefreshToken.mockReturnValue('refresh-123');
-    
-    // Simular éxito del refresco de token
+    // Simular éxito del refresco de token — el backend devuelve solo accessToken
     axios.post.mockResolvedValue({
         data: {
             data: {
                 accessToken: 'nuevo-token',
-                refreshToken: 'nuevo-refresh'
             }
         }
     });
@@ -81,16 +76,14 @@ describe('api service integration with interceptors', () => {
     } catch (e) {
         // Ignoramos el error del reintento final
     }
-    
+
     expect(authToken.setAccessToken).toHaveBeenCalledWith('nuevo-token');
-    expect(authToken.setRefreshToken).toHaveBeenCalledWith('nuevo-refresh');
     expect(originalRequest._retry).toBe(true);
   });
 
-  it('no refresca token si no hay refreshToken presente', async () => {
+  it('redirige al login si el refresco de token falla con 401', async () => {
     const responseInterceptorError = api.interceptors.response.handlers[0].rejected;
-    authToken.getRefreshToken.mockReturnValue(null);
-    
+
     const originalLocation = window.location;
     delete window.location;
     window.location = { href: '', pathname: '/dashboard' };
@@ -100,6 +93,8 @@ describe('api service integration with interceptors', () => {
         config: { url: '/test' }
     };
 
+    axios.post.mockRejectedValue({ response: { status: 401 } });
+
     try {
         await responseInterceptorError(errorResponse);
     } catch (e) {
@@ -108,7 +103,7 @@ describe('api service integration with interceptors', () => {
 
     expect(authToken.clearSession).toHaveBeenCalled();
     expect(window.location.href).toContain('/login');
-    
+
     window.location = originalLocation;
   });
 });
