@@ -76,11 +76,12 @@ export default function TenantPaymentsPage() {
     }
   };
 
-  const handleDownloadReceipt = async (paymentId, installmentNumber, dateStr) => {
+  const handleDownloadReceipt = async (payment, installmentNumber, dateStr) => {
+    const paymentId = payment.id;
     setDownloading(`receipt-${paymentId}`);
     try {
-      const filename = buildPdfFilename('receipt', installmentNumber, dateStr);
-      const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt.pdf`, filename);
+      const filename = buildPdfFilename('recibo', installmentNumber, dateStr);
+      const res = await downloadPdf(payment.receiptUrl || `/tenant/payments/${paymentId}/receipt.pdf`, filename);
 
       if (!res.success) {
         if (res.status === 202) {
@@ -104,11 +105,12 @@ export default function TenantPaymentsPage() {
     }
   };
 
-  const handleDownloadInvoice = async (installmentId, installmentNumber, dateStr) => {
+  const handleDownloadInvoice = async (inst) => {
+    const installmentId = inst.id;
     setDownloading(`invoice-${installmentId}`);
     try {
-      const filename = buildPdfFilename('invoice', installmentNumber, dateStr);
-      const res = await downloadPdf(`/rentals/installments/${installmentId}/invoice.pdf`, filename);
+      const filename = buildPdfFilename('factura', inst.installmentNumber, inst.dueDate);
+      const res = await downloadPdf(inst.invoiceUrl || `/tenant/payments/installments/${installmentId}/invoice.pdf`, filename);
 
       if (!res.success) {
         if (res.status === 202) {
@@ -265,7 +267,7 @@ export default function TenantPaymentsPage() {
                           variant="secondary"
                           size="sm"
                           disabled={downloading === `receipt-${payment.id}`}
-                          onClick={() => handleDownloadReceipt(payment.id, inst.installmentNumber, payment.date)}
+                          onClick={() => handleDownloadReceipt(payment, inst.installmentNumber, payment.date)}
                         >
                           {downloading === `receipt-${payment.id}` ? <Spinner animation="border" size="sm" /> : <FiDownload />}
                           Recibo
@@ -282,7 +284,7 @@ export default function TenantPaymentsPage() {
                         variant="secondary"
                         size="sm"
                         disabled={downloading === `invoice-${inst.id}`}
-                        onClick={() => handleDownloadInvoice(inst.id, inst.installmentNumber, inst.dueDate)}
+                        onClick={() => handleDownloadInvoice(inst)}
                       >
                         {downloading === `invoice-${inst.id}` ? <Spinner animation="border" size="sm" /> : <FiFileText />}
                         Descargar Factura

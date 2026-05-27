@@ -46,7 +46,7 @@ const CtaSection = () => {
                                     {t("cta.explore")}
                                 </Link>
                                 <Link
-                                    to="/properties/create"
+                                    to="/create-property"
                                     className="btn rounded-pill px-4 py-2 fw-semibold"
                                     style={{
                                         backgroundColor: "transparent",

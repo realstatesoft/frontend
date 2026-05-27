@@ -36,6 +36,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
   const [images, setImages] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSubmittingLocal, setIsSubmittingLocal] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
   const previewUrlsRef = useRef([]);
@@ -131,6 +132,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting || isSubmittingLocal) return;
 
     const valid = validate({
       leaseId: { value: formData.leaseId, label: "Propiedad", required: true },
@@ -141,6 +143,7 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
     if (!valid) return;
 
     setError('');
+    setIsSubmittingLocal(true);
     try {
       // 1. Upload images
       const imageUrls = [];
@@ -154,8 +157,12 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
     } catch (err) {
       setError('Error al enviar la solicitud. Por favor intenta de nuevo.');
       console.error(err);
+    } finally {
+      setIsSubmittingLocal(false);
     }
   };
+
+  const submitDisabled = isSubmitting || isSubmittingLocal;
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
@@ -310,11 +317,11 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
       </div>
 
       <div className={styles.actions}>
-        <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
+        <Button type="button" variant="secondary" onClick={onCancel} disabled={submitDisabled}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
+        <Button type="submit" disabled={submitDisabled} aria-busy={submitDisabled}>
+          {submitDisabled ? 'Enviando...' : 'Enviar Solicitud'}
         </Button>
       </div>
     </form>
