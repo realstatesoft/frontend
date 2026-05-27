@@ -12,12 +12,17 @@ const extractUrlFromApiResponse = async (response) => {
 
 const isAbsoluteUrl = (url) => /^https?:\/\//i.test(url);
 
-export const downloadPdf = async (url, filename) => {
+export const downloadPdf = async (url, filename, visited = new Set()) => {
+  if (visited.has(url) || visited.size >= 5) {
+    return { success: false, message: 'Se detectó un bucle de redirección al descargar el archivo.' };
+  }
+  visited.add(url);
+
   try {
     const client = isAbsoluteUrl(url) ? axios : api;
     const response = await client.get(url, {
       responseType: 'blob',
-      headers: { Accept: 'application/pdf' },
+      headers: { Accept: 'application/pdf, application/json' },
     });
 
     if (response.status === 202) {
@@ -28,7 +33,7 @@ export const downloadPdf = async (url, filename) => {
     const isPdfResponse = !contentType || contentType.includes('application/pdf') || contentType.includes('application/octet-stream');
     const fileUrl = await extractUrlFromApiResponse(response);
     if (fileUrl) {
-      return downloadPdf(fileUrl, filename);
+      return downloadPdf(fileUrl, filename, visited);
     }
 
     if (!response.data || !isPdfResponse) {
