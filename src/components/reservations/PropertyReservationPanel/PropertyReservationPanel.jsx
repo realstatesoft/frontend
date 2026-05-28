@@ -69,10 +69,11 @@ export default function PropertyReservationPanel({ property, currentUser, defaul
   const handleConfirm = async (id) => {
     try {
       await reservationApi.confirm(id);
-      refresh();
     } catch {
       setError(t('panel.confirmError'));
+      return;
     }
+    refresh();
   };
 
   const askReason = (title) => Swal.fire({

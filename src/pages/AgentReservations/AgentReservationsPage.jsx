@@ -67,10 +67,11 @@ export default function AgentReservationsPage() {
   const handleConfirm = async (id) => {
     try {
       await reservationApi.confirm(id);
-      load(page, status);
     } catch {
       setError('No se pudo confirmar la reserva.');
+      return;
     }
+    load(page, status);
   };
 
   const handleReject = async (id, isActive) => {
