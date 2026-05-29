@@ -33,15 +33,10 @@ const SearchSection = () => {
 
     let minBedrooms = bedrooms === "4+" ? "4" : bedrooms;
 
-    let typeFilter = "";
-    if (type === "Casa") typeFilter = "HOUSE";
-    else if (type === "Departamento") typeFilter = "APARTMENT";
-    else if (type === "Terreno") typeFilter = "LAND";
-
     navigate("/properties", {
       state: {
         search: locationStr,
-        typeFilter,
+        typeFilter: type,
         minBedrooms,
         minPrice,
         maxPrice,

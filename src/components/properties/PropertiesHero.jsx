@@ -90,7 +90,7 @@ export default function PropertiesHero({
         fetchSavedSearches();
     };
 
-    const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
+    const advancedActiveCount = [availability, minPrice, maxPrice, minBathrooms].filter(Boolean).length;
     const hasAnyFilter = !!(search || category || typeFilter || advancedActiveCount);
     const priceRangeNote =
         activePriceCurrency === "PYG"
@@ -226,7 +226,7 @@ export default function PropertiesHero({
                     {hasAnyFilter && (
                         <>
                             <div className="filter-bar__divider" />
-                            <button className="filter-bar__clear" onClick={onClear} title={t("search.clearFilters")} type="button">
+                            <button className="filter-bar__clear" onClick={() => { setShowAdvanced(false); onClear(); }} title={t("search.clearFilters")} type="button">
                                 ✕
                             </button>
                             <div className="filter-bar__divider" />
