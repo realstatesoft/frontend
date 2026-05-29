@@ -71,7 +71,7 @@ export default function AgentReservationsPage() {
       setError('No se pudo confirmar la reserva.');
       return;
     }
-    load(page, status);
+    await load(page, status);
   };
 
   const handleReject = async (id, isActive) => {
@@ -87,7 +87,7 @@ export default function AgentReservationsPage() {
     if (!isConfirmed) return;
     try {
       await reservationApi.cancel(id, { reason: reason ?? '' });
-      load(page, status);
+      await load(page, status);
     } catch {
       setError('No se pudo procesar la acción.');
     }

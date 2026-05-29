@@ -11,6 +11,7 @@ import {
   CONTRACT_TYPE,
 } from '../../constants/contractConstants';
 import styles from './ContractsPage.module.scss';
+import NumericInput from '../../components/common/NumericInput';
 
 const INITIAL_FORM = {
   propertyId: '',
@@ -366,32 +367,28 @@ export default function ContractCreateModal({ onClose }) {
                   <label className={styles.form__label} htmlFor="cc-comm">
                     Total comisión
                   </label>
-                  <input
+                  <NumericInput
+                    plainInput
+                    allowDecimal
                     id="cc-comm"
-                    type="number"
                     name="commissionPct"
                     className={styles.form__input}
                     value={form.commissionPct}
                     onChange={handleChange}
-                    min="0"
-                    max="100"
-                    step="0.01"
                   />
                 </div>
                 <div className={styles.form__row}>
                   <label className={styles.form__label} htmlFor="cc-comm-listing">
                     Comisión agente listador
                   </label>
-                  <input
+                  <NumericInput
+                    plainInput
+                    allowDecimal
                     id="cc-comm-listing"
-                    type="number"
                     name="listingAgentCommissionPct"
                     className={styles.form__input}
                     value={form.listingAgentCommissionPct}
                     onChange={handleChange}
-                    min="0"
-                    max="100"
-                    step="0.01"
                     disabled={!form.listingAgentId}
                   />
                 </div>
@@ -399,16 +396,14 @@ export default function ContractCreateModal({ onClose }) {
                   <label className={styles.form__label} htmlFor="cc-comm-buyer">
                     Comisión agente comprador
                   </label>
-                  <input
+                  <NumericInput
+                    plainInput
+                    allowDecimal
                     id="cc-comm-buyer"
-                    type="number"
                     name="buyerAgentCommissionPct"
                     className={styles.form__input}
                     value={form.buyerAgentCommissionPct}
                     onChange={handleChange}
-                    min="0"
-                    max="100"
-                    step="0.01"
                     disabled={!form.buyerAgentId}
                   />
                 </div>

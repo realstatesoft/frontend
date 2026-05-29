@@ -6,6 +6,7 @@ import { formatCurrency } from '../../../utils/formatters';
 import styles from './ReserveModal.module.scss';
 import { useTranslation } from 'react-i18next';
 import { useFormValidation } from '../../../hooks/useFormValidation';
+import NumericInput from '../../common/NumericInput';
 
 export default function ReserveModal({ show, property, defaultPercent, onClose, onCreated }) {
   const { t } = useTranslation('reservations');
@@ -68,10 +69,8 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
           </p>
           <Form.Group className="mb-3" controlId="reserveAmount">
             <Form.Label>{t('modal.amount')}</Form.Label>
-            <Form.Control
-              type="number"
-              min="0"
-              step="0.01"
+            <NumericInput
+              allowDecimal
               value={amount}
               onChange={(e) => { setAmount(e.target.value); clearFieldError('amount'); }}
               className={fieldErrors.amount ? 'field-error' : ''}

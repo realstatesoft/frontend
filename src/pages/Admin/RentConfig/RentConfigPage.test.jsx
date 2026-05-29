@@ -26,8 +26,8 @@ describe('RentConfigPage', () => {
     const depositInput = await screen.findByLabelText(/Meses de depósito/i);
     const commissionInput = screen.getByLabelText(/Porcentaje de comisión/i);
 
-    expect(depositInput).toHaveValue(0);
-    expect(commissionInput).toHaveValue(0);
+    expect(depositInput).toHaveValue('0');
+    expect(commissionInput).toHaveValue('0');
   });
 
   it('rejects non-finite / out-of-range input without calling the API', async () => {

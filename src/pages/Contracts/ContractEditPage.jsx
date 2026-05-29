@@ -16,6 +16,7 @@ import { useAuth } from '../../hooks/useAuth';
 import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import NumericInput from '../../components/common/NumericInput';
 
 export default function ContractEditPage() {
   const { id } = useParams();
@@ -460,39 +461,39 @@ export default function ContractEditPage() {
             <div className={styles.form__grid3}>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="ce-comm">Total comisión</label>
-                <input
+                <NumericInput
+                  plainInput
+                  allowDecimal
                   id="ce-comm"
-                  type="number"
                   name="commissionPct"
                   className={styles.form__input}
                   value={form.commissionPct}
                   onChange={handleChange}
-                  min="0" max="100" step="0.01"
                 />
               </div>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="ce-comm-listing">Agente listador</label>
-                <input
+                <NumericInput
+                  plainInput
+                  allowDecimal
                   id="ce-comm-listing"
-                  type="number"
                   name="listingAgentCommissionPct"
                   className={styles.form__input}
                   value={form.listingAgentCommissionPct}
                   onChange={handleChange}
-                  min="0" max="100" step="0.01"
                   disabled={!form.listingAgentId}
                 />
               </div>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="ce-comm-buyer">Agente comprador</label>
-                <input
+                <NumericInput
+                  plainInput
+                  allowDecimal
                   id="ce-comm-buyer"
-                  type="number"
                   name="buyerAgentCommissionPct"
                   className={styles.form__input}
                   value={form.buyerAgentCommissionPct}
                   onChange={handleChange}
-                  min="0" max="100" step="0.01"
                   disabled={!form.buyerAgentId}
                 />
               </div>
