@@ -41,7 +41,12 @@ export default function NumericInput({
     }
 
     if (onChange) {
-      const target = { ...e.target, value: cleaned };
+      const target = {
+        ...e.target,
+        name: e.target?.name,
+        type: e.target?.type,
+        value: cleaned,
+      };
       onChange({
         ...e,
         target,
