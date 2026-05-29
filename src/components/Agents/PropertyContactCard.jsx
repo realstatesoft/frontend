@@ -68,7 +68,10 @@ export default function PropertyContactCard({ property }) {
         if (!cancelled) setAgent(null);
       })
       .finally(() => {
-        if (!cancelled) setLoadingAgent(false);
+        if (!cancelled) {
+          clearTimeout(id);
+          setLoadingAgent(false);
+        }
       });
 
     return () => {
