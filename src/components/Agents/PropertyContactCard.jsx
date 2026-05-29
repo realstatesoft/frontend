@@ -28,14 +28,15 @@ export default function PropertyContactCard({ property }) {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [showOfferModal, setShowOfferModal] = useState(false);
 
-  const hasAgent = Boolean(property?.agentId);
+  const effectiveAgentProfileId = property?.agentId ?? property?.ownerAgentProfileId;
+  const hasAgent = Boolean(effectiveAgentProfileId);
   
   const navigate = useNavigate();
 
   // Lógica para ocultar el botón de oferta
   // Ahora permitimos que se vea aunque no esté autenticado
   const isOwner = isAuthenticated && user?.userId === property?.ownerId;
-  const isAgent = isAuthenticated && user?.agentProfileId && property?.agentId && user.agentProfileId === property.agentId;
+  const isAgent = isAuthenticated && user?.agentProfileId && effectiveAgentProfileId && user.agentProfileId === effectiveAgentProfileId;
   const hideOfferButton = isOwner || isAgent;
 
   const handleAction = (callback) => {
@@ -48,7 +49,7 @@ export default function PropertyContactCard({ property }) {
   };
 
   useEffect(() => {
-    if (!hasAgent || !property.agentId) return;
+    if (!hasAgent || !effectiveAgentProfileId) return;
 
     let cancelled = false;
     const id = setTimeout(() => {
@@ -56,7 +57,7 @@ export default function PropertyContactCard({ property }) {
     }, 0);
 
     agentApi
-      .getAgentById(property.agentId)
+      .getAgentById(effectiveAgentProfileId)
       .then((res) => {
         if (cancelled) return;
         const payload = res?.data ?? res;
@@ -76,7 +77,7 @@ export default function PropertyContactCard({ property }) {
       setAgent(null);
       setLoadingAgent(false);
     };
-  }, [hasAgent, property?.agentId]);
+  }, [hasAgent, effectiveAgentProfileId]);
 
   const name = agent?.userName ?? property?.ownerName ?? t("contactCard.owner");
   const avatarUrl = agent?.userAvatarUrl ?? property?.ownerAvatarUrl ?? DEFAULT_AVATAR;

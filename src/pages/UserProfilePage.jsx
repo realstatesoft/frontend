@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../hooks/useAuth";
@@ -14,27 +14,66 @@ function EditProfileModal({ profile, onClose, onSaved }) {
   const [form, setForm] = useState({
     name: profile?.name || "",
     phone: profile?.phone || "",
-    avatarUrl: profile?.avatarUrl || "",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(profile?.avatarUrl || null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Solo se permiten imágenes (JPEG, PNG, WebP).");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("La imagen no puede superar 5 MB.");
+      return;
+    }
+    setError(null);
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  }
+
+  // Cleanup blob URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
-      const { data: res } = await api.put("/users/me", {
+      let updatedProfile;
+
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        const { data: avatarRes } = await api.post("/users/me/avatar", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        updatedProfile = avatarRes.data;
+      }
+
+      const { data: profileRes } = await api.put("/users/me", {
         name: form.name,
         phone: form.phone,
-        avatarUrl: form.avatarUrl,
       });
-      onSaved(res.data);
+      updatedProfile = profileRes.data;
+
+      onSaved(updatedProfile);
     } catch {
       setError("No se pudo guardar los cambios. Intenta de nuevo.");
     } finally {
@@ -66,6 +105,49 @@ function EditProfileModal({ profile, onClose, onSaved }) {
         <form onSubmit={handleSubmit} className="uedit-form">
           {error && <div className="uedit-error">{error}</div>}
 
+          {/* ─── Avatar upload ─────────────────────────────────────── */}
+          <div className="uedit-field">
+            <label className="uedit-label">
+              <CiUser size={15} /> Foto de perfil
+            </label>
+            <div className="uedit-avatar-upload">
+              <div
+                className="uedit-avatar-upload__circle"
+                onClick={() => fileInputRef.current?.click()}
+                title="Haz clic para cambiar tu foto"
+              >
+                {previewUrl ? (
+                  <img src={previewUrl} alt="Preview" onError={(e) => { e.target.style.display = "none"; }} />
+                ) : (
+                  <CiUser size={36} />
+                )}
+                <div className="uedit-avatar-upload__overlay">
+                  <IoPencilOutline size={16} />
+                </div>
+              </div>
+              <div className="uedit-avatar-upload__info">
+                <button
+                  type="button"
+                  className="uedit-avatar-upload__btn"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {selectedFile ? "Cambiar imagen" : "Subir foto"}
+                </button>
+                <span className="uedit-avatar-upload__hint">
+                  {selectedFile ? selectedFile.name : "JPEG, PNG, WebP — máx. 5 MB"}
+                </span>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+            </div>
+          </div>
+
+          {/* ─── Name ──────────────────────────────────────────────── */}
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-name">
               <CiUser size={15} /> Nombre completo
@@ -82,6 +164,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
             />
           </div>
 
+          {/* ─── Phone ─────────────────────────────────────────────── */}
           <div className="uedit-field">
             <label className="uedit-label" htmlFor="uedit-phone">
               <CiPhone size={15} /> Teléfono
@@ -96,32 +179,6 @@ function EditProfileModal({ profile, onClose, onSaved }) {
               placeholder="+595 991 000 000"
               maxLength={30}
             />
-          </div>
-
-          <div className="uedit-field">
-            <label className="uedit-label" htmlFor="uedit-avatar">
-              <CiUser size={15} /> URL de foto de perfil
-            </label>
-            <input
-              id="uedit-avatar"
-              name="avatarUrl"
-              type="url"
-              className="uedit-input"
-              value={form.avatarUrl}
-              onChange={handleChange}
-              placeholder="https://ejemplo.com/foto.jpg"
-            />
-            {form.avatarUrl && (
-              <div className="uedit-avatar-preview">
-                <img
-                  src={form.avatarUrl}
-                  alt="Preview"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </div>
-            )}
           </div>
 
           <div className="uedit-footer">
