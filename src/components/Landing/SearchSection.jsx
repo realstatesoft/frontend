@@ -36,7 +36,7 @@ const SearchSection = () => {
     navigate("/properties", {
       state: {
         search: locationStr,
-        typeFilter: type,
+        typeFilter: type || null,
         minBedrooms,
         minPrice,
         maxPrice,

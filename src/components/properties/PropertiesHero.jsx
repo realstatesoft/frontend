@@ -91,7 +91,7 @@ export default function PropertiesHero({
     };
 
     const advancedActiveCount = [availability, minPrice, maxPrice, minBathrooms].filter(Boolean).length;
-    const hasAnyFilter = !!(search || category || typeFilter || advancedActiveCount);
+    const hasAnyFilter = !!(search || category || typeFilter || minBedrooms || advancedActiveCount);
     const priceRangeNote =
         activePriceCurrency === "PYG"
             ? "Los filtros de precio se envían en PYG."
