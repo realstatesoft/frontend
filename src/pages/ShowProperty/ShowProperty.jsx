@@ -39,11 +39,25 @@ import PropertyPriceNotice from "../../components/common/PropertyPriceNotice";
 import { useTranslation } from "react-i18next";
 import "./show-property.scss";
 
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
 const Property360Tour = lazy(() => import("../../components/properties/Property360Tour/Property360Tour"));
 
 export default function ShowProperty() {
   const { t } = useTranslation("showProperty");
   const BASE_URL = import.meta.env.VITE_DEPLOY_URL
+
+  useEffect(() => {
+    // Fix default marker icon path issue in Leaflet + Vite
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    });
+  }, []);
 
   const {
     property,
@@ -516,16 +530,21 @@ export default function ShowProperty() {
                       className="rounded mt-4 border-soft"
                       style={{ height: "260px", overflow: "hidden" }}
                     >
-                      <iframe
-                        title="Mapa de la propiedad"
-                        width="100%"
-                        height="100%"
-                        frameBorder="0"
-                        style={{ border: 0 }}
-                        src={mapUrl}
-                        allowFullScreen
-                        loading="lazy"
-                      />
+                      <MapContainer
+                        key={`${property.lat}-${property.lng}`}
+                        center={[Number(property.lat ?? -27.3369), Number(property.lng ?? -55.8668)]}
+                        zoom={15}
+                        scrollWheelZoom={false}
+                        style={{ height: "100%", width: "100%", zIndex: 1 }}
+                      >
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        {property.lat != null && property.lng != null && (
+                          <Marker position={[Number(property.lat), Number(property.lng)]} />
+                        )}
+                      </MapContainer>
                     </div>
 
                     <div className="property__meta-box mt-4">
