@@ -291,14 +291,17 @@ export default function MaintenanceRequestForm({ onSubmit, onCancel, isSubmittin
 
         {images.length > 0 && (
           <div className={styles.previewGrid}>
-            {images.map((src, index) => (
-              <div key={index} className={styles.previewItem}>
-                <img src={src} alt={`Preview ${index}`} />
-                <button type="button" onClick={(e) => { e.stopPropagation(); removeImage(index); }}>
-                  <FiX />
-                </button>
-              </div>
-            ))}
+            {images.map((src, index) => {
+              const safeSrc = src && (src.startsWith('blob:') || src.startsWith('http://') || src.startsWith('https://')) ? src : '';
+              return (
+                <div key={index} className={styles.previewItem}>
+                  <img src={safeSrc} alt={`Preview ${index}`} />
+                  <button type="button" onClick={(e) => { e.stopPropagation(); removeImage(index); }}>
+                    <FiX />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
