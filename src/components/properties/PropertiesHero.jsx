@@ -6,6 +6,7 @@ import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/pro
 import SaveSearchModal from "./SaveSearchModal";
 import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
 import { useAuth } from "../../hooks/useAuth";
+import NumericInput from "../common/NumericInput";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -263,13 +264,12 @@ export default function PropertiesHero({
                                     <span className="filter-bar__panel-label">
                                         {t("search.minPrice")} ({activePriceCurrency})
                                     </span>
-                                    <Form.Control
-                                        type="number"
+                                    <NumericInput
                                         size="sm"
                                         placeholder={`0 ${activePriceCurrency}`}
-                                        min={0}
                                         value={minPrice}
                                         onChange={(e) => onMinPriceChange(e.target.value)}
+                                        allowDecimal
                                     />
                                 </Col>
 
@@ -277,13 +277,12 @@ export default function PropertiesHero({
                                     <span className="filter-bar__panel-label">
                                         {t("search.maxPrice")} ({activePriceCurrency})
                                     </span>
-                                    <Form.Control
-                                        type="number"
+                                    <NumericInput
                                         size="sm"
                                         placeholder={`${t("search.noLimit")} (${activePriceCurrency})`}
-                                        min={0}
                                         value={maxPrice}
                                         onChange={(e) => onMaxPriceChange(e.target.value)}
+                                        allowDecimal
                                     />
                                 </Col>
 

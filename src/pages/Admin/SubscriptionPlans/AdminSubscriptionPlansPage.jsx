@@ -7,6 +7,7 @@ import { MdSubscriptions } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import subscriptionApi from '../../../services/subscriptions/subscriptionApi';
 import styles from '../../Admin/Settings/AdminSettingsPage.module.scss';
+import NumericInput from '../../../components/common/NumericInput';
 
 const EMPTY_FORM = { name: '', description: '', price: '', durationMonths: 1, active: true };
 
@@ -75,10 +76,8 @@ function PlanModal({ show, onHide, onSave, initialData, saving, saveError, t }) 
                 <Form.Label className="fw-semibold">
                   {t('adminSubscriptionPlansPage.modal.fieldPrice')} <span className="text-danger">*</span>
                 </Form.Label>
-                <Form.Control
-                  type="number"
-                  min="0"
-                  step="0.01"
+                <NumericInput
+                  allowDecimal
                   value={form.price}
                   onChange={setField('price')}
                   required
@@ -90,10 +89,7 @@ function PlanModal({ show, onHide, onSave, initialData, saving, saveError, t }) 
                 <Form.Label className="fw-semibold">
                   {t('adminSubscriptionPlansPage.modal.fieldDuration')} <span className="text-danger">*</span>
                 </Form.Label>
-                <Form.Control
-                  type="number"
-                  min="1"
-                  max="120"
+                <NumericInput
                   value={form.durationMonths}
                   onChange={setField('durationMonths')}
                   required

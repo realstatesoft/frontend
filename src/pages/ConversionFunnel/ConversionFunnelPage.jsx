@@ -15,6 +15,7 @@ import Button from '../../components/common/Button/Button';
 import useConversionFunnel from '../../hooks/useConversionFunnel';
 import { formatCurrency } from '../../utils/formatters';
 import styles from './ConversionFunnelPage.module.scss';
+import NumericInput from '../../components/common/NumericInput';
 
 const PROPERTY_TYPES = ['HOUSE', 'APARTMENT', 'LAND', 'OFFICE', 'WAREHOUSE', 'FARM'];
 
@@ -238,10 +239,10 @@ export default function ConversionFunnelPage() {
         </div>
         <div className={styles.filterGroup}>
           <label htmlFor="cf-loc">{t('filters.location')}</label>
-          <input
+          <NumericInput
+            plainInput
             id="cf-loc"
             className={styles.filterInput}
-            type="number"
             placeholder={t('filters.locationPlaceholder')}
             value={form.locationId}
             onChange={(ev) => setForm((s) => ({ ...s, locationId: ev.target.value }))}
@@ -265,24 +266,22 @@ export default function ConversionFunnelPage() {
         </div>
         <div className={styles.filterGroup}>
           <label htmlFor="cf-minp">{t('filters.minPrice')}</label>
-          <input
+          <NumericInput
+            plainInput
+            allowDecimal
             id="cf-minp"
             className={styles.filterInput}
-            type="number"
-            step="any"
-            min="0"
             value={form.minPrice}
             onChange={(ev) => setForm((s) => ({ ...s, minPrice: ev.target.value }))}
           />
         </div>
         <div className={styles.filterGroup}>
           <label htmlFor="cf-maxp">{t('filters.maxPrice')}</label>
-          <input
+          <NumericInput
+            plainInput
+            allowDecimal
             id="cf-maxp"
             className={styles.filterInput}
-            type="number"
-            step="any"
-            min="0"
             value={form.maxPrice}
             onChange={(ev) => setForm((s) => ({ ...s, maxPrice: ev.target.value }))}
           />

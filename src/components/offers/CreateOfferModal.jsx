@@ -27,6 +27,11 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
 
   const handleAmountChange = (e) => {
     const rawValue = e.target.value;
+    // Enforce 20-digit limit (ignoring thousands and decimal separators)
+    const digitsOnly = rawValue.replace(/\D/g, "");
+    if (digitsOnly.length > 20) {
+      return;
+    }
     const formatted = formatPrice(rawValue);
     setDisplayAmount(formatted);
   };

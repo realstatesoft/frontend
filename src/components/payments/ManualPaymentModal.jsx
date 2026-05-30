@@ -5,6 +5,7 @@ import Button from '../common/Button/Button';
 import Swal from 'sweetalert2';
 import useFormatters from '../../hooks/useFormatters';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import NumericInput from '../common/NumericInput';
 
 const PAYMENT_METHODS = [
   { value: 'CASH', label: 'Efectivo' },
@@ -137,9 +138,8 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
 
           <Form.Group className="mb-3">
             <Form.Label>Monto pagado *</Form.Label>
-            <Form.Control
-              type="number"
-              step="0.01"
+            <NumericInput
+              allowDecimal
               name="amount"
               value={formData.amount}
               onChange={(e) => { handleChange(e); clearFieldError('amount'); }}

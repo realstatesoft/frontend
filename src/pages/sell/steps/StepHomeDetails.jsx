@@ -1,5 +1,6 @@
 import React from "react";
 import { Dash, Plus, ArrowLeft, ArrowRight } from "react-bootstrap-icons";
+import NumericInput from "../../../components/common/NumericInput";
 
 function Counter({ label, value, onChange, min = 0, max = 20 }) {
   return (
@@ -40,30 +41,32 @@ export default function StepHomeDetails({ form, set, nextStep, prevStep }) {
 
       <div className="sell-wizard__form-group">
         <label className="sell-wizard__label">Superficie total (m²)</label>
-        <input
-          type="number"
+        <NumericInput
+          plainInput
           className="sell-wizard__input"
           placeholder="Ej: 450"
           value={form.surfaceArea}
           onChange={(e) => set("surfaceArea", e.target.value)}
+          allowDecimal
         />
       </div>
 
       <div className="sell-wizard__form-group">
         <label className="sell-wizard__label">Superficie construida (m²)</label>
-        <input
-          type="number"
+        <NumericInput
+          plainInput
           className="sell-wizard__input"
           placeholder="Ej: 320"
           value={form.builtArea}
           onChange={(e) => set("builtArea", e.target.value)}
+          allowDecimal
         />
       </div>
 
       <div className="sell-wizard__form-group">
         <label className="sell-wizard__label">Año de construcción</label>
-        <input
-          type="number"
+        <NumericInput
+          plainInput
           className="sell-wizard__input"
           placeholder="Ej: 2015"
           value={form.yearBuilt}
