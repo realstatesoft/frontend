@@ -136,31 +136,34 @@ const Properties = () => {
                               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                             >
                               <div className="position-relative">
-                                <Badge
-                                  className="position-absolute top-0 start-0 m-3 px-3 py-2"
-                                  style={{
-                                    backgroundColor: getStatusColor(property.status),
-                                    borderRadius: "20px",
-                                    fontSize: "0.75rem",
-                                    zIndex: 2,
-                                  }}
+                                <div
+                                  className="position-absolute top-0 start-0 d-flex flex-wrap gap-1 p-3 w-100"
+                                  style={{ zIndex: 2 }}
                                 >
-                                  {getStatusLabel(property.status)}
-                                </Badge>
-                                {property.highlighted && (
                                   <Badge
-                                    className="position-absolute top-0 end-0 m-3 d-flex align-items-center gap-1"
+                                    className="px-3 py-2"
                                     style={{
-                                      background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                                      backgroundColor: getStatusColor(property.status),
                                       borderRadius: "20px",
                                       fontSize: "0.75rem",
-                                      padding: "6px 12px",
-                                      zIndex: 2,
                                     }}
                                   >
-                                    <StarFill size={10} aria-hidden="true" /> Destacada
+                                    {getStatusLabel(property.status)}
                                   </Badge>
-                                )}
+                                  {property.highlighted && (
+                                    <Badge
+                                      className="d-flex align-items-center gap-1"
+                                      style={{
+                                        background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                                        borderRadius: "20px",
+                                        fontSize: "0.75rem",
+                                        padding: "6px 12px",
+                                      }}
+                                    >
+                                      <StarFill size={10} aria-hidden="true" /> Destacada
+                                    </Badge>
+                                  )}
+                                </div>
                                 <Card.Img
                                   variant="top"
                                   src={

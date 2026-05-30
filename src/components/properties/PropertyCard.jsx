@@ -68,31 +68,37 @@ export default function PropertyCard({
         >
             {/* Imagen con badge de estado y botón favorito */}
             <div className="position-relative">
-                <Badge
-                    className="position-absolute top-0 start-0 m-2 px-3 py-2"
+                <div
+                    className="position-absolute top-0 start-0 d-flex flex-wrap gap-1 p-2"
                     style={{
-                        backgroundColor: STATUS_COLORS[property.status] ?? "#555",
-                        borderRadius: "20px",
-                        fontSize: "0.72rem",
                         zIndex: 2,
+                        maxWidth: "calc(100% - 50px)",
                     }}
                 >
-                    {tag}
-                </Badge>
-                {property.highlighted && (
                     <Badge
-                        className="position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1"
+                        className="px-3 py-2"
                         style={{
-                            background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                            backgroundColor: STATUS_COLORS[property.status] ?? "#555",
                             borderRadius: "20px",
-                            fontSize: "0.7rem",
-                            padding: "5px 10px",
-                            zIndex: 2,
+                            fontSize: "0.72rem",
                         }}
                     >
-                        <StarFill size={10} /> Destacada
+                        {tag}
                     </Badge>
-                )}
+                    {property.highlighted && (
+                        <Badge
+                            className="d-flex align-items-center gap-1"
+                            style={{
+                                background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                                borderRadius: "20px",
+                                fontSize: "0.7rem",
+                                padding: "5px 10px",
+                            }}
+                        >
+                            <StarFill size={10} aria-hidden="true" /> Destacada
+                        </Badge>
+                    )}
+                </div>
                 <FavoriteToggleButton
                     isFavorite={isFavorite}
                     loading={isFavoriteLoading}
