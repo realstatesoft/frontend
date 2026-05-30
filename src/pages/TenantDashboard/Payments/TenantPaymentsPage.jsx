@@ -45,7 +45,7 @@ export default function TenantPaymentsPage() {
     if (payingId) return;
     const confirm = await Swal.fire({
       title: 'Confirmar pago',
-      text: `¿Deseas pagar ${formatCurrency(inst.balance ?? inst.totalAmount ?? 0)} por la cuota ${inst.installmentNumber}?`,
+      text: `¿Deseas pagar ${formatCurrency(inst.balance ?? inst.totalAmount ?? 0, inst.currency)} por la cuota ${inst.installmentNumber}?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, pagar',
@@ -171,7 +171,7 @@ export default function TenantPaymentsPage() {
         <div className={styles.headerStats}>
           <div className={styles.statItem}>
             <span className={styles.statLabel}>Total Pagado (12 meses)</span>
-            <span className={styles.statValue}>{formatCurrency(data?.totalPaidYear || 0)}</span>
+            <span className={styles.statValue}>{formatCurrency(data?.totalPaidYear || 0, data?.installments?.[0]?.currency)}</span>
           </div>
           <div className={styles.statItem}>
             <span className={styles.statLabel}>Cuotas al Día</span>
@@ -241,7 +241,7 @@ export default function TenantPaymentsPage() {
                   <p>Vencimiento: {formatDate(inst.dueDate)}</p>
                 </div>
                 <div className={styles.installmentAmount}>
-                  <h4>{formatCurrency(inst.totalAmount)}</h4>
+                  <h4>{formatCurrency(inst.totalAmount, inst.currency)}</h4>
                   <div className={styles.badges}>
                     <Badge variant={STATUS_VARIANTS[inst.status]}>{STATUS_LABELS[inst.status] || inst.status}</Badge>
                     {inst.status !== 'PAID' && (
@@ -260,7 +260,7 @@ export default function TenantPaymentsPage() {
                     <div key={idx} className={styles.paymentRow}>
                       <span className={styles.paymentDate}>{formatDate(payment.date)}</span>
                       <span className={styles.paymentMethod}>{payment.method}</span>
-                      <span className={styles.paymentAmt}>{formatCurrency(payment.amount)}</span>
+                      <span className={styles.paymentAmt}>{formatCurrency(payment.amount, payment.currency)}</span>
                       
                       {payment.id && (
                         <Button
