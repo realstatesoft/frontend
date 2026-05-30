@@ -48,7 +48,7 @@ export default function MyPropertyCard({ property }) {
         >
             <Card.Body className="p-4 d-flex flex-column align-items-center">
                 {/* Badges: estado + destacada */}
-                <div className="w-100 d-flex justify-content-start align-items-center gap-2 mb-2">
+                <div className="w-100 d-flex flex-wrap justify-content-start align-items-center gap-2 mb-2">
                     <Badge
                         style={{
                             backgroundColor: tagColors[tag] ?? "#555",
