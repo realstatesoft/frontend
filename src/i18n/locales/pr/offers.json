@@ -15,6 +15,7 @@
     "sending": "Enviando...",
     "invalidAmountTitle": "Erro",
     "invalidAmount": "Por favor, informe um valor válido maior que 0",
+    "amountLimitError": "O valor não deve exceder o limite de 15 dígitos",
     "updateSuccessTitle": "Oferta atualizada!",
     "updateSuccessText": "Sua proposta foi modificada com sucesso.",
     "createSuccessTitle": "Oferta enviada!",
