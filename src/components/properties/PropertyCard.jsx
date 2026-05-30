@@ -95,7 +95,7 @@ export default function PropertyCard({
                                 padding: "5px 10px",
                             }}
                         >
-                            <StarFill size={10} /> Destacada
+                            <StarFill size={10} aria-hidden="true" /> Destacada
                         </Badge>
                     )}
                 </div>

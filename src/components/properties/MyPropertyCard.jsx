@@ -71,7 +71,7 @@ export default function MyPropertyCard({ property }) {
                                 gap: "4px",
                             }}
                         >
-                            <StarFill size={10} /> Destacada
+                            <StarFill size={10} aria-hidden="true" /> Destacada
                         </Badge>
                     )}
                 </div>
@@ -163,7 +163,7 @@ export default function MyPropertyCard({ property }) {
                         className="d-flex align-items-center gap-1 text-center"
                         style={{ fontSize: "0.78rem", fontWeight: 600 }}
                     >
-                        <StarFill size={13} /> Destacada{(() => {
+                        <StarFill size={13} aria-hidden="true" /> Destacada{(() => {
                             if (!property.highlightedUntil) return " hasta fecha desconocida";
                             const d = new Date(property.highlightedUntil);
                             return isNaN(d.getTime()) ? " hasta fecha desconocida" : ` hasta el ${d.toLocaleDateString()}`;

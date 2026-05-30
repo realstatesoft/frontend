@@ -13,6 +13,7 @@ jobs:
   sonarqube:
     name: Build and Analyze
     runs-on: ubuntu-latest
+    if: ${{ secrets.SONAR_TOKEN != '' }}
     
     # Seguridad: Principio de menor privilegio
     permissions:
@@ -26,9 +27,7 @@ jobs:
           persist-credentials: false
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@9db616954e7d4d4453531633519128f73e7d58a5 # v6.0.0
         env:
-          # Pasamos la URL directamente, asegurándonos de incluir https://
-          SONAR_HOST_URL: "https://sonaropenroof.duckdns.org"
-          # El token sigue oculto, pero debes asegurarte de que exista en los secretos de Dependabot
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

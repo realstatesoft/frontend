@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => ({
           if (/node_modules\/(react|react-dom|react-router|react-router-dom)\//.test(normalizedId)) return 'vendor-react';
 
           // UI Framework
-          if (/bootstrap|react-bootstrap/.test(normalizedId)) return 'vendor-bootstrap';
+          if (/\b(?:react-)?bootstrap(?!\-icons)\b/.test(normalizedId)) return 'vendor-bootstrap';
 
           // Animations (heavy, route-level lazy chunks)
           if (normalizedId.includes('framer-motion')) return 'vendor-animation';
