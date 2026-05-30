@@ -495,8 +495,8 @@ export function useShowProperty() {
   const propertyTypeLabel = property?.propertyType ? PROPERTY_TYPE_LABELS[property.propertyType] ?? property.propertyType : "";
   const mapUrl =
     property?.lat != null && property?.lng != null
-      ? `https://maps.google.com/maps?q=${property.lat},${property.lng}&output=embed`
-      : "https://maps.google.com/maps?q=Encarnaci%C3%B3n,+Paraguay&output=embed";
+      ? `https://www.google.com/maps?q=${property.lat},${property.lng}&z=15&output=embed`
+      : "https://www.google.com/maps?q=Encarnaci%C3%B3n,+Paraguay&z=15&output=embed";
 
   return {
     property,
