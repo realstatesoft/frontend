@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
 
-  // SOLUCIÓN 1: Evitar que choquen las dos versiones de three.js
+  // Keep singleton dependencies deduped across lazy chunks.
   resolve: {
     dedupe: ['three', 'react', 'react-dom'],
   },
@@ -33,53 +33,50 @@ export default defineConfig(({ mode }) => ({
     cssMinify: true,
     cssCodeSplit: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (!id.includes('node_modules')) return;
+          const normalizedId = id.replaceAll('\\', '/');
+          if (!normalizedId.includes('node_modules')) return;
 
           // Core React — always loaded
-          if (/react\/|react-dom\/|react-router/.test(id)) return 'vendor-react';
-          // Core React — always loaded
-          if (/react\/|react-dom\/|react-router/.test(id)) return 'vendor-react';
+          if (/node_modules\/(react|react-dom|react-router|react-router-dom)\//.test(normalizedId)) return 'vendor-react';
 
           // UI Framework
-          if (/bootstrap|react-bootstrap/.test(id)) return 'vendor-bootstrap';
+          if (/bootstrap|react-bootstrap/.test(normalizedId)) return 'vendor-bootstrap';
 
-          // Animations
-          if (id.includes('framer-motion')) return 'vendor-react';
+          // Animations (heavy, route-level lazy chunks)
+          if (normalizedId.includes('framer-motion')) return 'vendor-animation';
 
-          // Maps (heavy, lazy loaded)
-          if (/leaflet|react-leaflet/.test(id)) return 'vendor-react';
+          // Maps (heavy, route-level lazy chunks)
+          if (/leaflet|react-leaflet/.test(normalizedId)) return 'vendor-maps';
 
-          // Charts (heavy, lazy loaded) — necesita React, va junto
-          if (/recharts|d3-/.test(id)) return 'vendor-react';
+          // Charts (heavy, route-level lazy chunks)
+          if (/recharts|d3-/.test(normalizedId)) return 'vendor-charts';
 
           // 360 / 3D viewers (heavy, lazy loaded)
-          if (/photo-sphere|three|model-viewer/.test(id)) return 'vendor-3d';
+          if (normalizedId.includes('@photo-sphere-viewer')) return 'vendor-photo-sphere';
+          if (normalizedId.includes('@google/model-viewer')) return 'vendor-model-viewer';
+          if (/node_modules\/three\//.test(normalizedId)) return 'vendor-three';
 
           // Rich text editor (lazy loaded)
-          if (/tiptap|prosemirror|@tiptap/.test(id)) return 'vendor-editor';
+          if (/tiptap|prosemirror|@tiptap/.test(normalizedId)) return 'vendor-editor';
 
           // Calendar (lazy loaded)
-          if (id.includes('fullcalendar')) return 'vendor-calendar';
+          if (normalizedId.includes('fullcalendar')) return 'vendor-calendar';
 
           // Icons
-          if (/react-icons|react-bootstrap-icons|bootstrap-icons/.test(id)) return 'vendor-icons';
+          if (/react-icons|react-bootstrap-icons|bootstrap-icons/.test(normalizedId)) return 'vendor-icons';
 
           // State & Data fetching
-          if (/tanstack|zustand|axios|zod/.test(id)) return 'vendor-data';
+          if (/tanstack|zustand|axios|zod/.test(normalizedId)) return 'vendor-data';
 
           // i18n — va junto con react porque react-i18next necesita React en el mismo chunk
-          if (/i18next|react-i18next/.test(id)) return 'vendor-react';
+          if (/i18next|react-i18next/.test(normalizedId)) return 'vendor-react';
 
           // Swiper
-          if (id.includes('swiper')) return 'vendor-swiper';
-
-          // SOLUCIÓN 2: Eliminamos el "return 'vendor-misc';"
-          // Al no forzar un archivo genérico, Rollup separa las dependencias
-          // cruzadas automáticamente y se elimina el error "Circular chunk".
+          if (normalizedId.includes('swiper')) return 'vendor-swiper';
         }
       }
     }
