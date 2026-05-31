@@ -447,7 +447,16 @@ export default function ContractCreatePage() {
     const valid = validate({
       propertyId: { value: form.propertyId, label: "Propiedad", required: true },
       buyerId: { value: form.buyerId, label: "Comprador/Inquilino", required: true },
-      amount: { value: form.amount && parseFloat(form.amount) > 0 ? form.amount : "", label: "Monto", required: true },
+      amount: { 
+        value: form.amount, 
+        label: "Monto", 
+        required: true,
+        custom: (val) => {
+          const num = parseFloat(val);
+          return !isNaN(num) && num > 0;
+        },
+        customMessage: "El monto debe ser mayor a 0"
+      },
       startDate: { value: form.startDate, label: "Fecha de inicio", required: true },
     });
     if (!valid) return;
