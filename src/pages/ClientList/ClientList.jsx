@@ -283,6 +283,7 @@ export default function ClientList() {
                                             <Form.Control
                                                 type="date"
                                                 value={filters.createdAtFrom || ""}
+                                                max={filters.createdAtTo || new Date().toLocaleDateString('en-CA')}
                                                 onChange={(e) => handleFilterChange("createdAtFrom", e.target.value)}
                                             />
                                         </Col>
@@ -293,6 +294,8 @@ export default function ClientList() {
                                             <Form.Control
                                                 type="date"
                                                 value={filters.createdAtTo || ""}
+                                                min={filters.createdAtFrom || undefined}
+                                                max={new Date().toLocaleDateString('en-CA')}
                                                 onChange={(e) => handleFilterChange("createdAtTo", e.target.value)}
                                             />
                                         </Col>

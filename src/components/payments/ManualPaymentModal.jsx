@@ -75,6 +75,12 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
     });
     if (!valid) return;
 
+    const today = new Date().toLocaleDateString('en-CA');
+    if (formData.paymentDate > today) {
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'La fecha de pago no puede ser futura', 'error'));
+      return;
+    }
+
     const amount = parseFloat(formData.amount);
     const selected = pendingInstallments.find(i => String(i.id) === formData.installmentId);
     const maxAmount = selected?.balance || selected?.totalAmount || 0;
@@ -156,6 +162,8 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
               type="date"
               name="paymentDate"
               value={formData.paymentDate}
+              max={new Date().toLocaleDateString('en-CA')}
+              min={new Date(new Date().getFullYear() - 10, 0, 1).toLocaleDateString('en-CA')}
               onChange={(e) => { handleChange(e); clearFieldError('paymentDate'); }}
               className={fieldErrors.paymentDate ? 'field-error' : ''}
             />

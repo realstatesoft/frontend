@@ -105,6 +105,14 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!visit?.id) return;
+    
+    const selectedDate = formData.counterProposedAt.split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toLocaleDateString('en-CA');
+    if (selectedDate < tomorrow) {
+       import('sweetalert2').then(Swal => Swal.default.fire({ icon: 'error', title: 'Error', text: 'La fecha sugerida debe ser a partir de mañana.' }));
+       return;
+    }
+
     onSave(visit.id, {
       counterProposedAt: formData.counterProposedAt,
       counterProposeMessage: formData.counterProposeMessage || null,
@@ -140,6 +148,7 @@ const SuggestTimeModal = ({ show, onHide, visit, onSave }) => {
                 type="date"
                 name="datePart"
                 value={formData.counterProposedAt ? formData.counterProposedAt.split('T')[0] : ''}
+                min={new Date(Date.now() + 86400000).toLocaleDateString('en-CA')}
                 onChange={(e) => {
                   const date = e.target.value;
                   setFormData(prev => ({ ...prev, counterProposedAt: date }));

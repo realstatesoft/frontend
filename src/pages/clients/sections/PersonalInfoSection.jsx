@@ -4,6 +4,9 @@ import {
   FormLabel,
 } from "../../../components/properties/FormComponents";
 
+const TODAY = new Date().toLocaleDateString('en-CA');
+const MIN_BIRTH_DATE = new Date(new Date().getFullYear() - 120, 0, 1).toLocaleDateString('en-CA');
+
 const ESTADO_CIVIL_OPTIONS = [
   "Soltero/a",
   "Casado/a",
@@ -58,6 +61,8 @@ export function PersonalInfoSection({ form, set, fieldErrors = {} }) {
             <Form.Control
               type="date"
               value={form.birthDate}
+              min={MIN_BIRTH_DATE}
+              max={TODAY}
               onChange={set("birthDate")}
             />
           </Form.Group>

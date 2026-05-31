@@ -47,9 +47,15 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
     // Pre-fill date when opened from a day cell
     useEffect(() => {
         if (show) {
+            let d = initialDate ? new Date(initialDate) : new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (d < today) {
+                d = today;
+            }
             setForm(prev => ({
                 ...INITIAL_FORM,
-                date: initialDate ? toDateInput(initialDate) : toDateInput(new Date()),
+                date: toDateInput(d),
             }));
             setError(null);
         }
@@ -73,6 +79,12 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
             eventType: { value: form.eventType, label: t('fields.type'), required: true },
         });
         if (!valid) return;
+
+        const todayStr = new Date().toLocaleDateString('en-CA');
+        if (form.date < todayStr) {
+            setError(t('La fecha del evento no puede ser en el pasado.'));
+            return;
+        }
 
         const startsAt = toISOLocal(form.date, form.startTime);
         const endsAt   = toISOLocal(form.date, form.endTime);
@@ -148,6 +160,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 type="date"
                                 name="date"
                                 value={form.date}
+                                min={new Date().toLocaleDateString('en-CA')}
                                 onChange={handleChange}
                                 disabled={loading}
                                 className={fieldErrors.date ? 'field-error' : ''}

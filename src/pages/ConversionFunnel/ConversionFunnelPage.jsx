@@ -163,6 +163,15 @@ export default function ConversionFunnelPage() {
 
   const submitFilters = (e) => {
     e?.preventDefault();
+    if (form.from > form.to) {
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'La fecha "Desde" no puede ser mayor a "Hasta".', 'error'));
+      return;
+    }
+    const today = ymdLocal();
+    if (form.from > today || form.to > today) {
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'Las fechas no pueden ser futuras.', 'error'));
+      return;
+    }
     setApplied({ ...form });
     setTopPage(0);
   };
@@ -209,6 +218,7 @@ export default function ConversionFunnelPage() {
             className={styles.filterInput}
             type="date"
             value={form.from}
+            max={form.to || ymdLocal()}
             onChange={(ev) => setForm((s) => ({ ...s, from: ev.target.value }))}
             required
           />
@@ -220,6 +230,8 @@ export default function ConversionFunnelPage() {
             className={styles.filterInput}
             type="date"
             value={form.to}
+            min={form.from || undefined}
+            max={ymdLocal()}
             onChange={(ev) => setForm((s) => ({ ...s, to: ev.target.value }))}
             required
           />
