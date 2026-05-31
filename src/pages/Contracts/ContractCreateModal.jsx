@@ -151,6 +151,11 @@ export default function ContractCreateModal({ onClose }) {
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
 
+    if (form.endDate && form.startDate && form.endDate < form.startDate) {
+      Swal.fire({ icon: 'error', title: 'Fechas inválidas', text: 'La fecha fin no puede ser anterior a la fecha de inicio.' });
+      return;
+    }
+
     const payload = {
       propertyId:                  parseInt(form.propertyId, 10) || null,
       contractType:                form.contractType,
@@ -442,6 +447,7 @@ export default function ContractCreateModal({ onClose }) {
                     name="endDate"
                     className={styles.form__input}
                     value={form.endDate}
+                    min={form.startDate || undefined}
                     onChange={handleChange}
                   />
                 </div>

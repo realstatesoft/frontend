@@ -228,6 +228,11 @@ export default function ContractEditPage() {
     });
     if (!valid) return;
 
+    if (form.endDate && form.startDate && form.endDate < form.startDate) {
+      import('sweetalert2').then(Swal => Swal.default.fire({ icon: 'error', title: 'Fechas inválidas', text: 'La fecha fin no puede ser anterior a la fecha de inicio.' }));
+      return;
+    }
+
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
 
@@ -526,6 +531,7 @@ export default function ContractEditPage() {
                   name="endDate"
                   className={styles.form__input}
                   value={form.endDate}
+                  min={form.startDate || undefined}
                   onChange={handleChange}
                 />
               </div>
