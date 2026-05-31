@@ -1,15 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Modal, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import { Send } from 'react-bootstrap-icons';
+import { Modal, Form, Button, Alert, Spinner, InputGroup } from 'react-bootstrap';
+import { Check } from 'react-bootstrap-icons';
 import reservationApi from '../../../services/reservations/reservationApi';
-import { formatCurrency } from '../../../utils/formatters';
 import styles from './ReserveModal.module.scss';
 import { useTranslation } from 'react-i18next';
 import { useFormValidation } from '../../../hooks/useFormValidation';
 import NumericInput from '../../common/NumericInput';
+import useCurrencyStore from '../../../store/useCurrencyStore';
+import useFormatters from '../../../hooks/useFormatters';
+
+const CURRENCY_SYMBOL = {
+  PYG: '₲',
+  USD: '$',
+  BRL: 'R$',
+};
 
 export default function ReserveModal({ show, property, defaultPercent, onClose, onCreated }) {
   const { t } = useTranslation('reservations');
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+  const currencySymbol = CURRENCY_SYMBOL[selectedCurrency] ?? '$';
+  const { formatCurrency } = useFormatters();
   const initialAmount = property
     ? Number(((Number(property.price) || 0) * (Number(defaultPercent) || 0) / 100).toFixed(2))
     : 0;
@@ -69,13 +79,16 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
           </p>
           <Form.Group className="mb-3" controlId="reserveAmount">
             <Form.Label>{t('modal.amount')}</Form.Label>
-            <NumericInput
-              allowDecimal
-              value={amount}
-              onChange={(e) => { setAmount(e.target.value); clearFieldError('amount'); }}
-              className={fieldErrors.amount ? 'field-error' : ''}
-              isInvalid={!!fieldErrors.amount}
-            />
+            <InputGroup>
+              <InputGroup.Text className={styles.currencyPrefix}>{currencySymbol}</InputGroup.Text>
+              <NumericInput
+                allowDecimal
+                value={amount}
+                onChange={(e) => { setAmount(e.target.value); clearFieldError('amount'); }}
+                className={fieldErrors.amount ? 'field-error' : ''}
+                isInvalid={!!fieldErrors.amount}
+              />
+            </InputGroup>
             {fieldErrors.amount && <div className="field-error-msg">{fieldErrors.amount}</div>}
             <div className={styles.infoBox}>
               <span className={styles.infoLabel}>{t('modal.suggestion', { percent: defaultPercent })}</span>
@@ -98,14 +111,14 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
           </Form.Group>
           {error && <Alert variant="danger" role="alert">{error}</Alert>}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onClose} disabled={submitting}>
+        <Modal.Footer className="d-flex justify-content-end gap-2">
+          <Button variant="outline-secondary" onClick={onClose} disabled={submitting}>
             {t('modal.cancel')}
           </Button>
           <Button variant="primary" type="submit" disabled={submitting} className={styles.submitBtn}>
             {submitting
               ? <><Spinner size="sm" animation="border" className="me-2" />{t('modal.submitting')}</>
-              : <><Send size={14} />{t('modal.submit')}</>}
+              : <><Check size={16} className="me-1" />{t('modal.submit')}</>}
           </Button>
         </Modal.Footer>
       </Form>
