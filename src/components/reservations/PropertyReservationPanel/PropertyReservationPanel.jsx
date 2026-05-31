@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap-icons';
 import Swal from 'sweetalert2';
 import reservationApi from '../../../services/reservations/reservationApi';
-import { formatCurrency, formatDate } from '../../../utils/formatters';
+import useFormatters from '../../../hooks/useFormatters';
 import { statusLabel } from '../../../utils/reservationStatus';
 import ReserveModal from '../ReserveModal/ReserveModal';
 import styles from './PropertyReservationPanel.module.scss';
@@ -24,6 +24,7 @@ const STATUS_BG = {
 
 export default function PropertyReservationPanel({ property, currentUser, defaultPercent }) {
   const { t } = useTranslation('reservations');
+  const { formatCurrency, formatDate } = useFormatters();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -338,8 +338,9 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setSystem((p) => ({ ...p, defaultCurrency: e.target.value }))}
                   className={styles.input}
                 >
-                  <option value="PYG">PYG — Guaraní paraguayo</option>
-                  <option value="USD">USD — Dólar estadounidense</option>
+                  <option value="PYG">₲ PYG — Guaraní paraguayo</option>
+                  <option value="USD">$ USD — Dólar estadounidense</option>
+                  <option value="BRL">R$ BRL — Real brasileño</option>
                 </Form.Select>
               </Form.Group>
               <SaveButton saving={savingSystem} t={t} />

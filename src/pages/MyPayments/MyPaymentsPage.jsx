@@ -7,7 +7,7 @@ import { ArrowLeft, CreditCard2Front } from 'react-bootstrap-icons';
 import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import useMyPayments from '../../hooks/useMyPayments';
-import { formatCurrency, formatDateTime } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { buildPageItems, PAGE_ELLIPSIS } from '../../utils/pagination';
 import styles from './MyPaymentsPage.module.scss';
 
@@ -38,6 +38,7 @@ const STATUS_LABEL = {
 
 export default function MyPaymentsPage() {
   const navigate = useNavigate();
+  const { formatCurrency, formatDateTime } = useFormatters();
   const {
     items, loading, error,
     statusFilter, handleStatusChange,

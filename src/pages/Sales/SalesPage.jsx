@@ -9,7 +9,7 @@ import {
   CONTRACT_STATUS_LABELS,
   CONTRACT_STATUS_COLORS,
 } from '../../constants/contractConstants';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import styles from './SalesPage.module.scss';
 
 const ROLE_LABELS = {
@@ -38,6 +38,7 @@ export default function SalesPage() {
   const { data: salesRes, isLoading } = useSales();
   const { data: summaryRes } = useSalesSummary();
   const [filter, setFilter] = useState('');
+  const { formatCurrency, formatDate } = useFormatters();
 
   const sales = salesRes?.data ?? [];
   const summary = summaryRes?.data ?? {};

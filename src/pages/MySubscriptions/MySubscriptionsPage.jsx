@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import subscriptionApi from '../../services/subscriptions/subscriptionApi';
-import { formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { buildPageItems, PAGE_ELLIPSIS } from '../../utils/pagination';
 import styles from './MySubscriptionsPage.module.scss';
 
@@ -23,7 +23,7 @@ function safeStatusKey(status) {
   return `mySubscriptionsPage.status${status.charAt(0) + status.slice(1).toLowerCase()}`;
 }
 
-function ActiveSubscriptionCard({ subscription, onCancel, t }) {
+function ActiveSubscriptionCard({ subscription, onCancel, t, formatDate }) {
   const isPending = subscription.status === 'PENDING';
   const statusKey = safeStatusKey(subscription.status);
   const badgeVariant = STATUS_VARIANT[subscription.status] ?? 'secondary';
@@ -109,6 +109,7 @@ function CancelModal({ show, onHide, onConfirm, cancelling, error, t }) {
 export default function MySubscriptionsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
+  const { formatDate } = useFormatters();
 
   const [activeSubscription, setActiveSubscription] = useState(null);
   const [loadingActive, setLoadingActive] = useState(true);

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircleFill, XCircle, FileEarmarkText } from 'react-bootstrap-icons';
 import Swal from 'sweetalert2';
 import reservationApi from '../../services/reservations/reservationApi';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { statusLabel } from '../../utils/reservationStatus';
 import Footer from '../../components/Landing/Footer';
 import styles from './OwnerReservationsPage.module.scss';
@@ -42,6 +42,7 @@ export default function OwnerReservationsPage() {
   const [status, setStatus]   = useState('');
   const [page, setPage]       = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { formatCurrency, formatDate } = useFormatters();
 
   const load = useCallback(async (currentPage, currentStatus) => {
     setLoading(true);
