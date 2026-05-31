@@ -19,6 +19,7 @@
     "amount": "Monto de reserva",
     "notes": "Notas (opcional)",
     "suggestion": "Sugerencia: {{percent}}% del precio publicado.",
+    "cancel": "Cancelar",
     "submit": "Confirmar",
     "submitting": "Enviando...",
     "invalidAmount": "El monto debe ser mayor a cero.",

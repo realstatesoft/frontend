@@ -19,6 +19,7 @@
     "amount": "Reservation amount",
     "notes": "Notes (optional)",
     "suggestion": "Suggestion: {{percent}}% of the listed price.",
+    "cancel": "Cancel",
     "submit": "Confirm",
     "submitting": "Sending...",
     "invalidAmount": "The amount must be greater than zero.",
