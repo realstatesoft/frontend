@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Modal, Form, Spinner } from 'react-bootstrap';
 import { FiSave, FiX } from 'react-icons/fi';
 import Button from '../common/Button/Button';
@@ -17,6 +17,14 @@ const PAYMENT_METHODS = [
 export default function ManualPaymentModal({ show, onHide, installments, onSave, initialInstallmentId }) {
   const { formatCurrency } = useFormatters();
   const pendingInstallments = installments?.filter(i => ['PENDING', 'OVERDUE', 'PARTIAL'].includes(i.status)) || [];
+
+  // Memoized date boundaries (computed once on mount)
+  const maxDateIso = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  // Business rule: payments cannot be recorded more than 10 years in the past
+  const minDateIso = useMemo(
+    () => new Date(new Date().getFullYear() - 10, 0, 1).toISOString().slice(0, 10),
+    []
+  );
 
   const initialFormState = {
     installmentId: '',
@@ -75,9 +83,9 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
     });
     if (!valid) return;
 
-    const today = new Date().toLocaleDateString('en-CA');
+    const today = maxDateIso;
     if (formData.paymentDate > today) {
-      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'La fecha de pago no puede ser futura', 'error'));
+      Swal.fire('Error', 'La fecha de pago no puede ser futura', 'error');
       return;
     }
 
@@ -162,8 +170,8 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
               type="date"
               name="paymentDate"
               value={formData.paymentDate}
-              max={new Date().toLocaleDateString('en-CA')}
-              min={new Date(new Date().getFullYear() - 10, 0, 1).toLocaleDateString('en-CA')}
+              max={maxDateIso}
+              min={minDateIso}
               onChange={(e) => { handleChange(e); clearFieldError('paymentDate'); }}
               className={fieldErrors.paymentDate ? 'field-error' : ''}
             />

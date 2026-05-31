@@ -152,7 +152,7 @@ export default function ContractCreateModal({ onClose }) {
     if (err) { setCommissionError(err); return; }
 
     if (form.endDate && form.startDate && form.endDate < form.startDate) {
-      import('sweetalert2').then(Swal => Swal.default.fire({ icon: 'error', title: 'Fechas inválidas', text: 'La fecha fin no puede ser anterior a la fecha de inicio.' }));
+      Swal.fire({ icon: 'error', title: 'Fechas inválidas', text: 'La fecha fin no puede ser anterior a la fecha de inicio.' });
       return;
     }
 

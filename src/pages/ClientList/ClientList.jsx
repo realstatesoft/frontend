@@ -283,8 +283,14 @@ export default function ClientList() {
                                             <Form.Control
                                                 type="date"
                                                 value={filters.createdAtFrom || ""}
-                                                max={filters.createdAtTo || new Date().toLocaleDateString('en-CA')}
-                                                onChange={(e) => handleFilterChange("createdAtFrom", e.target.value)}
+                                                max={filters.createdAtTo || new Date().toISOString().slice(0, 10)}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    const today = new Date().toISOString().slice(0, 10);
+                                                    if (val > today) return;
+                                                    if (filters.createdAtTo && val > filters.createdAtTo) return;
+                                                    handleFilterChange("createdAtFrom", val);
+                                                }}
                                             />
                                         </Col>
                                         <Col md={3}>
@@ -295,8 +301,14 @@ export default function ClientList() {
                                                 type="date"
                                                 value={filters.createdAtTo || ""}
                                                 min={filters.createdAtFrom || undefined}
-                                                max={new Date().toLocaleDateString('en-CA')}
-                                                onChange={(e) => handleFilterChange("createdAtTo", e.target.value)}
+                                                max={new Date().toISOString().slice(0, 10)}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    const today = new Date().toISOString().slice(0, 10);
+                                                    if (val > today) return;
+                                                    if (filters.createdAtFrom && val < filters.createdAtFrom) return;
+                                                    handleFilterChange("createdAtTo", val);
+                                                }}
                                             />
                                         </Col>
                                     </Row>

@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import EventItem from './EventItem';
 
 export default function DayCell({ day, isCurrentMonth, events, onDayClick, onEventClick }) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const isPast = day < today;
+    const today = useMemo(() => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }, []);
 
-    const getBgColor = (hovered = false) => {
+    const isPast = useMemo(() => day < today, [day, today]);
+
+    const getBgColor = useMemo(() => (hovered = false) => {
         if (isPast) return '#f0f0f0';
         if (!isCurrentMonth) return hovered ? '#ece9e4' : '#f8fafc';
         return hovered ? '#f0ede8' : '#ffffff';
-    };
+    }, [isPast, isCurrentMonth]);
 
     return (
         <div 
