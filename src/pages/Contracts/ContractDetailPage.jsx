@@ -15,7 +15,7 @@ import {
   CONTRACT_STATUS_COLORS 
 } from '../../constants/contractConstants';
 import Badge from '../../components/common/Badge/Badge';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import ContractSignModal from './ContractSignModal';
 import contractApi from '../../services/contracts/contractApi';
 import styles from './ContractDetailPage.module.scss';
@@ -47,6 +47,7 @@ export default function ContractDetailPage() {
   const { data: signaturesRes, isLoading: loadingSigs, refetch: refetchSigs } = useContractSignatures(id);
   const downloadMutation = useDownloadContract();
   const updateStatus = useUpdateContractStatus();
+  const { formatCurrency, formatDate } = useFormatters();
   
   const contract = contractRes;
   const signatures = signaturesRes ?? [];

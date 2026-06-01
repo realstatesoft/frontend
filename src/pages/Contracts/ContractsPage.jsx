@@ -25,7 +25,7 @@ import {
   CONTRACT_STATUS,
   ALLOWED_STATUS_TRANSITIONS,
 } from '../../constants/contractConstants';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import ContractDetailModal from './ContractDetailModal';
 import ContractStatusModal from './ContractStatusModal';
 import ContractSignModal from './ContractSignModal';
@@ -42,6 +42,7 @@ const TABS_ALL = [
 const SIGNABLE_STATUSES = new Set(['SENT', 'PARTIALLY_SIGNED']);
 
 export default function ContractsPage() {
+  const { formatCurrency, formatDate } = useFormatters();
   const [activeTab, setActiveTab]       = useState('seller');
   const [filterType, setFilterType]     = useState('');
   const [filterStatus, setFilterStatus] = useState('');

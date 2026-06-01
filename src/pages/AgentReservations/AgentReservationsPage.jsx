@@ -6,8 +6,8 @@ import { CheckCircleFill, XCircle } from 'react-bootstrap-icons';
 import Swal from 'sweetalert2';
 import reservationApi from '../../services/reservations/reservationApi';
 import NewConversationModal from '../../components/messages/NewConversationModal';
-import { formatCurrency, formatDate } from '../../utils/formatters';
 import { statusLabel } from '../../utils/reservationStatus';
+import useFormatters from '../../hooks/useFormatters';
 import styles from './AgentReservationsPage.module.scss';
 
 const STATUS_OPTIONS = [
@@ -42,6 +42,7 @@ export default function AgentReservationsPage() {
   const [status, setStatus]   = useState('');
   const [page, setPage]       = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { formatCurrency, formatDate } = useFormatters();
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedBuyer, setSelectedBuyer] = useState(null);
 

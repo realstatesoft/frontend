@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiSend, FiPlus } from 'react-icons/fi';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
-import { formatTime } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import Button from '../../components/common/Button/Button';
 import NewConversationModal from '../../components/messages/NewConversationModal';
 import styles from './MessagesPage.module.scss';
 
 function InboxList({ conversations, activeId, onSelect }) {
+  const { formatTime } = useFormatters();
   return (
     <div className={styles.inbox}>
       <div className={styles.inbox__header}>Conversaciones</div>
@@ -42,6 +43,7 @@ function InboxList({ conversations, activeId, onSelect }) {
 function ConversationPanel({ conversation }) {
   const [message, setMessage] = useState('');
   const { data: response } = useMessages(conversation?.id);
+  const { formatTime } = useFormatters();
   const messages = response?.data || [];
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
