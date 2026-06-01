@@ -77,7 +77,7 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
 
     const valid = validate({
       installmentId: { value: formData.installmentId, label: "Cuota", required: true },
-      amount: { value: formData.amount && parseFloat(formData.amount) > 0 ? formData.amount : "", label: "Monto", required: true },
+      amount: { value: formData.amount, label: "Monto", required: true },
       paymentDate: { value: formData.paymentDate, label: "Fecha de pago", required: true },
       method: { value: formData.method, label: "Método de pago", required: true },
     });
