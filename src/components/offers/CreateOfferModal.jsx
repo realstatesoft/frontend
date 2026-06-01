@@ -27,9 +27,9 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
 
   const handleAmountChange = (e) => {
     const rawValue = e.target.value;
-    // Enforce 20-digit limit (ignoring thousands and decimal separators)
+    // Enforce 15-digit limit (ignoring thousands and decimal separators)
     const digitsOnly = rawValue.replace(/\D/g, "");
-    if (digitsOnly.length > 20) {
+    if (digitsOnly.length > 15) {
       return;
     }
     const formatted = formatPrice(rawValue);
@@ -40,9 +40,25 @@ export default function CreateOfferModal({ show, onHide, property, onSuccess, of
     e.preventDefault();
     
     const numericAmount = parseFloat(parsePriceInput(displayAmount));
+    const maxLimit = 999999999999999; // 15 digits
     
+    const isAmountEmpty = !displayAmount || !displayAmount.trim();
+    let customMessage = t('modal.invalidAmount') || "Por favor ingresa un monto válido mayor a 0";
+    if (numericAmount > maxLimit) {
+      customMessage = t('modal.amountLimitError') || "El monto no debe superar el límite de 15 dígitos";
+    }
+
     const valid = validate({
-      amount: { value: numericAmount && numericAmount > 0 ? String(numericAmount) : "", label: t('modal.amountLabel'), required: true },
+      amount: { 
+        value: isAmountEmpty ? "" : (isNaN(numericAmount) ? "invalid" : String(numericAmount)), 
+        label: t('modal.amountLabel'), 
+        required: true,
+        custom: (val) => {
+          const num = parseFloat(val);
+          return !isNaN(num) && num > 0 && num <= maxLimit;
+        },
+        customMessage: customMessage
+      },
     });
     if (!valid) return;
 

@@ -224,7 +224,16 @@ export default function ContractEditPage() {
   const handleSubmit = async (sendAfterSave = false) => {
     if (!form) return;
     const valid = validate({
-      amount: { value: form.amount && parseFloat(form.amount) > 0 ? form.amount : "", label: "Monto", required: true },
+      amount: { 
+        value: form.amount, 
+        label: "Monto", 
+        required: true,
+        custom: (val) => {
+          const num = parseFloat(val);
+          return !isNaN(num) && num > 0;
+        },
+        customMessage: "El monto debe ser mayor a 0"
+      },
     });
     if (!valid) return;
 

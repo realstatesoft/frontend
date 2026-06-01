@@ -54,7 +54,11 @@ export default function StepContact({ form, set, nextStep, prevStep }) {
           className={`sell-wizard__input ${fieldErrors.phone ? 'field-error' : ''}`}
           placeholder="+595 981 123 456"
           value={form.phone}
-          onChange={(e) => { set("phone", e.target.value); clearFieldError("phone"); }}
+          onChange={(e) => {
+            const cleaned = e.target.value.replace(/[^\d\s+\-()+]/g, "");
+            set("phone", cleaned);
+            clearFieldError("phone");
+          }}
         />
         {fieldErrors.phone && <div className="field-error-msg">{fieldErrors.phone}</div>}
       </div>
@@ -87,7 +91,7 @@ export default function StepContact({ form, set, nextStep, prevStep }) {
             const valid = validate({
               firstName: { value: form.firstName, label: "Nombre", required: true, minLength: 2 },
               lastName: { value: form.lastName, label: "Apellido", required: true, minLength: 2 },
-              phone: { value: form.phone, label: "Teléfono", required: true, minLength: 8 },
+              phone: { value: form.phone, label: "Teléfono", required: true, minLength: 8, pattern: { value: /^[+\d][\d\s()\-+]*$/, message: "Teléfono inválido: solo números, +, - y espacios" } },
             });
             if (!valid) return;
             nextStep();
