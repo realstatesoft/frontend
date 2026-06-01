@@ -12,7 +12,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import Badge from '../../components/common/Badge/Badge';
 import Button from '../../components/common/Button/Button';
-import { fetchFunnelData } from '../../services/conversionFunnelApi';
 import useFormatters from '../../hooks/useFormatters';
 import useConversionFunnel from '../../hooks/useConversionFunnel';
 import styles from './ConversionFunnelPage.module.scss';
@@ -86,8 +85,6 @@ export default function ConversionFunnelPage() {
   const [form, setForm] = useState(defaultForm);
   const [applied, setApplied] = useState(defaultForm);
   const [topPage, setTopPage] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { formatCurrency } = useFormatters();
 
   const funnelFilters = useMemo(

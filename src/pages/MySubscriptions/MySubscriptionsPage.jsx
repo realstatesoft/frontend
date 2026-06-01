@@ -217,7 +217,7 @@ export default function MySubscriptionsPage() {
           </div>
         ) : displayedActive ? (
           <div className="mb-4">
-            <ActiveSubscriptionCard subscription={displayedActive} onCancel={openCancel} t={t} />
+            <ActiveSubscriptionCard subscription={displayedActive} onCancel={openCancel} t={t} formatDate={formatDate} />
           </div>
         ) : (
           <Alert variant="info" className="mb-4 d-flex align-items-center gap-2">

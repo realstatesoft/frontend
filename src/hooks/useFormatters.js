@@ -24,8 +24,9 @@ export default function useFormatters() {
 
   const formatCurrency = useCallback((amount, baseCurrencyOverride) => {
     const targetCurrency = selectedCurrency || DEFAULT_CURRENCY;
-    const baseCurrency = baseCurrencyOverride || 'PYG';
+    const baseCurrency = baseCurrencyOverride || DEFAULT_CURRENCY;
     let value = amount ?? 0;
+    let currencyToDisplay = targetCurrency;
     
     if (baseCurrency !== targetCurrency && exchangeRates) {
       const payload = exchangeRates?.data ?? exchangeRates ?? null;
@@ -37,20 +38,31 @@ export default function useFormatters() {
       const targetRate = Number(targetRateObj?.sellRate);
       const baseRate = Number(baseRateObj?.sellRate);
 
+      let appliedConversion = false;
+
       if (baseCurrency === 'PYG' && targetRate > 0) {
         value = value / targetRate;
+        appliedConversion = true;
       } else if (targetCurrency === 'PYG' && baseRate > 0) {
         value = value * baseRate;
+        appliedConversion = true;
       } else if (baseRate > 0 && targetRate > 0) {
         value = (value * baseRate) / targetRate;
+        appliedConversion = true;
       }
+
+      if (!appliedConversion) {
+        currencyToDisplay = baseCurrency;
+      }
+    } else if (baseCurrency !== targetCurrency) {
+      currencyToDisplay = baseCurrency;
     }
 
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: targetCurrency,
-      minimumFractionDigits: targetCurrency === 'PYG' ? 0 : 2,
-      maximumFractionDigits: targetCurrency === 'PYG' ? 0 : 2,
+      currency: currencyToDisplay,
+      minimumFractionDigits: currencyToDisplay === 'PYG' ? 0 : 2,
+      maximumFractionDigits: currencyToDisplay === 'PYG' ? 0 : 2,
     }).format(value);
   }, [locale, selectedCurrency, exchangeRates]);
 

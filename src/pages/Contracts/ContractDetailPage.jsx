@@ -47,7 +47,6 @@ export default function ContractDetailPage() {
   const { data: signaturesRes, isLoading: loadingSigs, refetch: refetchSigs } = useContractSignatures(id);
   const downloadMutation = useDownloadContract();
   const updateStatus = useUpdateContractStatus();
-  const [signStatus, setSignStatus] = useState(null);
   const { formatCurrency, formatDate } = useFormatters();
   
   const contract = contractRes;

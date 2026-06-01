@@ -42,8 +42,6 @@ const TABS_ALL = [
 const SIGNABLE_STATUSES = new Set(['SENT', 'PARTIALLY_SIGNED']);
 
 export default function ContractsPage() {
-  const [sortField, setSortField] = useState('createdAt');
-  const [sortDir, setSortDir]     = useState('DESC');
   const { formatCurrency, formatDate } = useFormatters();
   const [activeTab, setActiveTab]       = useState('seller');
   const [filterType, setFilterType]     = useState('');
