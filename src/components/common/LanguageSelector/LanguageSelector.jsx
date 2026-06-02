@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { LANGUAGE_META, DEFAULT_LANGUAGE } from '../../../i18n/constants';
 import { normalizeLanguage, writeStoredLanguage } from '../../../i18n/storage';
 import styles from './LanguageSelector.module.scss';
+import flagEs from '../../../assets/flags/es.svg';
+import flagEn from '../../../assets/flags/en.svg';
+import flagPt from '../../../assets/flags/pt.svg';
+
+const FLAG_MAP = { es: flagEs, en: flagEn, pr: flagPt };
 
 const OPTIONS = ['es', 'en', 'pr'];
 
@@ -51,7 +56,7 @@ export default function LanguageSelector({ variant = 'light', className = '' }) 
         aria-label={t('language.label')}
         aria-expanded={open}
       >
-        <span className={styles.languageSelector__flag} aria-hidden="true">{currentMeta.flag}</span>
+        <img className={styles.languageSelector__flag} src={FLAG_MAP[currentLanguage] ?? flagEs} alt="" width="20" height="14" aria-hidden="true" />
         <span>{currentMeta.code}</span>
       </button>
 
@@ -69,7 +74,7 @@ export default function LanguageSelector({ variant = 'light', className = '' }) 
               role="menuitemradio"
               aria-checked={code === currentLanguage}
             >
-              <span className={styles.languageSelector__itemFlag} aria-hidden="true">{meta.flag}</span>
+              <img className={styles.languageSelector__itemFlag} src={FLAG_MAP[code] ?? flagEs} alt="" width="22" height="15" aria-hidden="true" />
               <span className={styles.languageSelector__itemLabel}>{t(`language.${code}`)}</span>
             </button>
           ))}
