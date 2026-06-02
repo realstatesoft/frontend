@@ -196,8 +196,8 @@
   flex-direction: column;
   gap: 1.5rem;
   position: sticky;
-  top: calc(var(--topbar-height, 64px) + 110px);
-  max-height: calc(100vh - var(--topbar-height, 64px) - 130px);
+  top: calc(var(--topbar-height, 64px) + var(--subheader-height, 90px) + 1rem);
+  max-height: calc(100vh - var(--topbar-height, 64px) - var(--subheader-height, 90px) - 2rem);
   overflow-y: auto;
   scrollbar-width: none;
 
@@ -213,8 +213,7 @@
   }
 }
 
-/* Ya no se usa pero se mantiene por si hay referencias externas */
-.stickyCard {}
+
 
 .progressContainer {
   padding: 1.5rem;
