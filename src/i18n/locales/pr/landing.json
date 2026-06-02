@@ -70,6 +70,9 @@
     "sell": "Vender",
     "rights": "© 2026 OpenRoof. Todos os direitos reservados."
   },
+  "featured": {
+    "title": "Imóveis em Destaque"
+  },
   "status": {
     "available": "Disponível",
     "sold": "Vendido",

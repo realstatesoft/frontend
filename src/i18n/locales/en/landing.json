@@ -70,6 +70,9 @@
     "sell": "Sell",
     "rights": "© 2026 OpenRoof. All rights reserved."
   },
+  "featured": {
+    "title": "Featured Properties"
+  },
   "status": {
     "available": "Available",
     "sold": "Sold",
