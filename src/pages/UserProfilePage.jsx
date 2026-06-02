@@ -26,7 +26,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleFileChange(e) {
+  async function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
     const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -38,9 +38,41 @@ function EditProfileModal({ profile, onClose, onSaved }) {
       setError("La imagen no puede superar 5 MB.");
       return;
     }
-    setError(null);
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+
+    try {
+      const bitmap = await createImageBitmap(file);
+      const canvas = document.createElement("canvas");
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("No se pudo procesar la imagen.");
+      }
+      ctx.drawImage(bitmap, 0, 0);
+      bitmap.close();
+
+      const safeBlob = await new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error("No se pudo generar la vista previa."));
+            return;
+          }
+          resolve(blob);
+        }, "image/png");
+      });
+
+      const nextPreviewUrl = URL.createObjectURL(safeBlob);
+      setError(null);
+      setSelectedFile(file);
+      setPreviewUrl((prev) => {
+        if (prev && prev.startsWith("blob:")) {
+          URL.revokeObjectURL(prev);
+        }
+        return nextPreviewUrl;
+      });
+    } catch {
+      setError("No se pudo procesar la imagen seleccionada.");
+    }
   }
 
   // Cleanup blob URL on unmount
