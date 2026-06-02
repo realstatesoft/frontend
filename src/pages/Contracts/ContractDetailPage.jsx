@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiEdit3, FiPenTool, FiDownload, FiCheckCircle, FiClock } from 'react-icons/fi';
 import { 
@@ -42,6 +42,22 @@ export default function ContractDetailPage() {
   const { user } = useAuth();
   const [isSignModalOpen, setIsSignModalOpen] = useState(false);
   const [activatingLease, setActivatingLease] = useState(false);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        document.documentElement.style.setProperty('--subheader-height', `${entry.target.offsetHeight}px`);
+      }
+    });
+    resizeObserver.observe(headerRef.current);
+    
+    return () => {
+      resizeObserver.disconnect();
+      document.documentElement.style.removeProperty('--subheader-height');
+    };
+  }, []);
 
   const { data: contractRes, isLoading: loadingContract, refetch: refetchContract } = useContractDetail(id);
   const { data: signaturesRes, isLoading: loadingSigs, refetch: refetchSigs } = useContractSignatures(id);
@@ -132,7 +148,7 @@ export default function ContractDetailPage() {
   return (
     <div className={styles.page}>
       {/* Header Fijo */}
-      <header className={styles.header}>
+      <header className={styles.header} ref={headerRef}>
         <div className={styles.header__content}>
           <button 
             className={styles.btnBack} 
@@ -268,7 +284,7 @@ export default function ContractDetailPage() {
 
           {/* SIDEBAR - ESTADO DE FIRMAS */}
           <aside className={styles.sidebar}>
-            <div className={`${styles.card} ${styles.stickyCard}`}>
+            <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h2 className={styles.cardTitle}>Estado de Firmas</h2>
               </div>
