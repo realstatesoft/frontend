@@ -7,10 +7,16 @@
   background: white;
   border-bottom: 1px solid var(--grey-200, #e2e8f0);
   padding: 1.5rem 2rem;
+  margin: calc(var(--spacing-xl, 32px) * -1) calc(var(--spacing-xl, 32px) * -1) 2rem calc(var(--spacing-xl, 32px) * -1);
   position: sticky;
-  top: 0;
+  top: var(--topbar-height, 64px);
   z-index: 10;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 768px) {
+    margin: calc(var(--spacing-md, 16px) * -1) calc(var(--spacing-md, 16px) * -1) 1.5rem calc(var(--spacing-md, 16px) * -1);
+    padding: 1rem 1.5rem;
+  }
 
   &__content {
     max-width: 1400px;
@@ -50,6 +56,7 @@
   display: grid;
   grid-template-columns: 1fr 340px;
   gap: 2rem;
+  align-items: start;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
@@ -188,12 +195,26 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  position: sticky;
+  top: calc(var(--topbar-height, 64px) + 110px);
+  max-height: calc(100vh - var(--topbar-height, 64px) - 130px);
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* En pantallas pequeñas donde el sidebar pasa abajo, no es sticky */
+  @media (max-width: 1024px) {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 
-.stickyCard {
-  position: sticky;
-  top: 6.5rem;
-}
+/* Ya no se usa pero se mantiene por si hay referencias externas */
+.stickyCard {}
 
 .progressContainer {
   padding: 1.5rem;
