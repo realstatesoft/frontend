@@ -6,39 +6,11 @@ import { useTranslation } from "react-i18next";
 import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 import propertyService from "../../services/propertyService";
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "SOLD":
-    case "RENTED":
-    case "RESERVED":
-      return "#d32f2f";
-    case "PENDING":
-      return "#f57c00";
-    default:
-      return "#388e3c";
-  }
-};
-
 const Properties = () => {
   const { t } = useTranslation("landing");
   const { formatPrice } = usePropertyPriceDisplay(0);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "SOLD":
-        return t("status.sold");
-      case "RENTED":
-        return "Alquilado";
-      case "RESERVED":
-        return t("status.reserved");
-      case "PENDING":
-        return "Pendiente";
-      default:
-        return t("status.available");
-    }
-  };
 
   useEffect(() => {
     const fetchFeatured = async () => {
