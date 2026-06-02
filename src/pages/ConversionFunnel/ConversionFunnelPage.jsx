@@ -12,9 +12,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import Badge from '../../components/common/Badge/Badge';
 import Button from '../../components/common/Button/Button';
+import useFormatters from '../../hooks/useFormatters';
 import useConversionFunnel from '../../hooks/useConversionFunnel';
-import { formatCurrency } from '../../utils/formatters';
 import styles from './ConversionFunnelPage.module.scss';
+import NumericInput from '../../components/common/NumericInput';
 
 const PROPERTY_TYPES = ['HOUSE', 'APARTMENT', 'LAND', 'OFFICE', 'WAREHOUSE', 'FARM'];
 
@@ -84,6 +85,7 @@ export default function ConversionFunnelPage() {
   const [form, setForm] = useState(defaultForm);
   const [applied, setApplied] = useState(defaultForm);
   const [topPage, setTopPage] = useState(0);
+  const { formatCurrency } = useFormatters();
 
   const funnelFilters = useMemo(
     () => ({
@@ -162,6 +164,15 @@ export default function ConversionFunnelPage() {
 
   const submitFilters = (e) => {
     e?.preventDefault();
+    if (form.from > form.to) {
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'La fecha "Desde" no puede ser mayor a "Hasta".', 'error'));
+      return;
+    }
+    const today = ymdLocal();
+    if (form.from > today || form.to > today) {
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'Las fechas no pueden ser futuras.', 'error'));
+      return;
+    }
     setApplied({ ...form });
     setTopPage(0);
   };
@@ -208,6 +219,7 @@ export default function ConversionFunnelPage() {
             className={styles.filterInput}
             type="date"
             value={form.from}
+            max={form.to || ymdLocal()}
             onChange={(ev) => setForm((s) => ({ ...s, from: ev.target.value }))}
             required
           />
@@ -219,6 +231,8 @@ export default function ConversionFunnelPage() {
             className={styles.filterInput}
             type="date"
             value={form.to}
+            min={form.from || undefined}
+            max={ymdLocal()}
             onChange={(ev) => setForm((s) => ({ ...s, to: ev.target.value }))}
             required
           />
@@ -238,10 +252,10 @@ export default function ConversionFunnelPage() {
         </div>
         <div className={styles.filterGroup}>
           <label htmlFor="cf-loc">{t('filters.location')}</label>
-          <input
+          <NumericInput
+            plainInput
             id="cf-loc"
             className={styles.filterInput}
-            type="number"
             placeholder={t('filters.locationPlaceholder')}
             value={form.locationId}
             onChange={(ev) => setForm((s) => ({ ...s, locationId: ev.target.value }))}
@@ -265,24 +279,22 @@ export default function ConversionFunnelPage() {
         </div>
         <div className={styles.filterGroup}>
           <label htmlFor="cf-minp">{t('filters.minPrice')}</label>
-          <input
+          <NumericInput
+            plainInput
+            allowDecimal
             id="cf-minp"
             className={styles.filterInput}
-            type="number"
-            step="any"
-            min="0"
             value={form.minPrice}
             onChange={(ev) => setForm((s) => ({ ...s, minPrice: ev.target.value }))}
           />
         </div>
         <div className={styles.filterGroup}>
           <label htmlFor="cf-maxp">{t('filters.maxPrice')}</label>
-          <input
+          <NumericInput
+            plainInput
+            allowDecimal
             id="cf-maxp"
             className={styles.filterInput}
-            type="number"
-            step="any"
-            min="0"
             value={form.maxPrice}
             onChange={(ev) => setForm((s) => ({ ...s, maxPrice: ev.target.value }))}
           />

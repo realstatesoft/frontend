@@ -8,6 +8,7 @@ import {
   ArrowRight,
 } from "react-bootstrap-icons";
 import { useFormValidation } from "../../../hooks/useFormValidation";
+import NumericInput from "../../../components/common/NumericInput";
 
 function YesNoButtons({ value, onChange }) {
   return (
@@ -103,12 +104,13 @@ export default function StepFeatures({ form, set, nextStep, prevStep }) {
       {form.hasBasement && (
         <div className="sell-wizard__form-group">
           <label className="sell-wizard__label">Superficie del sótano (m²)</label>
-          <input
-            type="number"
+          <NumericInput
+            plainInput
             className="sell-wizard__input"
             placeholder="Ej: 50"
             value={form.basementArea}
             onChange={(e) => set("basementArea", e.target.value)}
+            allowDecimal
           />
         </div>
       )}

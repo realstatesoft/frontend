@@ -58,4 +58,13 @@ describe('useTourStore', () => {
     expect(state.tourId).toBe(null);
     expect(state.steps).toEqual([]);
   });
+
+  it('sets localStorage key on startTour and keeps it set on endTour', () => {
+    localStorage.clear();
+    act(() => useTourStore.getState().startTour('agent', STEPS));
+    expect(localStorage.getItem('openroof_tour_seen_agent')).toBe('true');
+
+    act(() => useTourStore.getState().endTour());
+    expect(localStorage.getItem('openroof_tour_seen_agent')).toBe('true');
+  });
 });

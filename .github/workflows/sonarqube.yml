@@ -13,6 +13,7 @@ jobs:
   sonarqube:
     name: Build and Analyze
     runs-on: ubuntu-latest
+    if: ${{ secrets.SONAR_TOKEN != '' }}
     
     # Seguridad: Principio de menor privilegio
     permissions:
@@ -25,8 +26,8 @@ jobs:
           fetch-depth: 0  
           persist-credentials: false
 
-      - name: Ejecutar SonarQube Scanner
-        uses: SonarSource/sonarqube-scan-action@v4
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@9db616954e7d4d4453531633519128f73e7d58a5 # v6.0.0
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

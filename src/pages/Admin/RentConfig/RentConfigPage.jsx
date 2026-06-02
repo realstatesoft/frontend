@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import rentService from '../../../services/rentService';
 import styles from './RentConfigPage.module.scss';
+import NumericInput from '../../../components/common/NumericInput';
 
 export default function RentConfigPage() {
   const [loading, setLoading] = useState(true);
@@ -104,10 +105,7 @@ export default function RentConfigPage() {
               <Form.Label className={styles.label}>
                 Meses de depósito
               </Form.Label>
-              <Form.Control
-                type="number"
-                min="1"
-                max="12"
+              <NumericInput
                 value={depositMonths}
                 onChange={handleDepositChange}
                 className={styles.input}
@@ -121,10 +119,8 @@ export default function RentConfigPage() {
               <Form.Label className={styles.label}>
                 Porcentaje de comisión (%)
               </Form.Label>
-              <Form.Control
-                type="number"
-                min="0"
-                max="100"
+              <NumericInput
+                allowDecimal
                 value={commissionPercent}
                 onChange={handleCommissionChange}
                 className={styles.input}

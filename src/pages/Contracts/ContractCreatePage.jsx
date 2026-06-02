@@ -26,6 +26,7 @@ import { htmlToPlainText, hasMeaningfulHtmlContent, plainTextToTipTapHtml } from
 import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import NumericInput from '../../components/common/NumericInput';
 
 /* ─── Formulario inicial ─────────────────────────────────────────────────────── */
 
@@ -446,10 +447,24 @@ export default function ContractCreatePage() {
     const valid = validate({
       propertyId: { value: form.propertyId, label: "Propiedad", required: true },
       buyerId: { value: form.buyerId, label: "Comprador/Inquilino", required: true },
-      amount: { value: form.amount && parseFloat(form.amount) > 0 ? form.amount : "", label: "Monto", required: true },
+      amount: { 
+        value: form.amount, 
+        label: "Monto", 
+        required: true,
+        custom: (val) => {
+          const num = parseFloat(val);
+          return !isNaN(num) && num > 0;
+        },
+        customMessage: "El monto debe ser mayor a 0"
+      },
       startDate: { value: form.startDate, label: "Fecha de inicio", required: true },
     });
     if (!valid) return;
+
+    if (form.endDate && form.startDate && form.endDate < form.startDate) {
+      import('sweetalert2').then(Swal => Swal.default.fire({ icon: 'error', title: 'Fechas inválidas', text: 'La fecha fin no puede ser anterior a la fecha de inicio.' }));
+      return;
+    }
 
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
@@ -774,32 +789,28 @@ export default function ContractCreatePage() {
                     <label className={styles.form__label} htmlFor="cc-comm">
                       Total comisión
                     </label>
-                    <input
+                    <NumericInput
+                      plainInput
+                      allowDecimal
                       id="cc-comm"
-                      type="number"
                       name="commissionPct"
                       className={styles.form__input}
                       value={form.commissionPct}
                       onChange={handleChange}
-                      min="0"
-                      max="100"
-                      step="0.01"
                     />
                   </div>
                   <div className={styles.form__row}>
                     <label className={styles.form__label} htmlFor="cc-comm-listing">
                       Agente listador
                     </label>
-                    <input
+                    <NumericInput
+                      plainInput
+                      allowDecimal
                       id="cc-comm-listing"
-                      type="number"
                       name="listingAgentCommissionPct"
                       className={styles.form__input}
                       value={form.listingAgentCommissionPct}
                       onChange={handleChange}
-                      min="0"
-                      max="100"
-                      step="0.01"
                       disabled={!form.listingAgentId}
                     />
                   </div>
@@ -807,16 +818,14 @@ export default function ContractCreatePage() {
                     <label className={styles.form__label} htmlFor="cc-comm-buyer">
                       Agente comprador
                     </label>
-                    <input
+                    <NumericInput
+                      plainInput
+                      allowDecimal
                       id="cc-comm-buyer"
-                      type="number"
                       name="buyerAgentCommissionPct"
                       className={styles.form__input}
                       value={form.buyerAgentCommissionPct}
                       onChange={handleChange}
-                      min="0"
-                      max="100"
-                      step="0.01"
                       disabled={!form.buyerAgentId}
                     />
                   </div>
@@ -872,6 +881,7 @@ export default function ContractCreatePage() {
                   name="endDate"
                   className={styles.form__input}
                   value={form.endDate}
+                  min={form.startDate || undefined}
                   onChange={handleChange}
                 />
               </div>

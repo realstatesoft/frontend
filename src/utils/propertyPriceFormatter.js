@@ -47,7 +47,12 @@ function getSellRate(exchangeRates, currencyCode) {
 function formatForeignAmount(amount, currencyCode) {
   const normalizedCurrency = normalizeCurrency(currencyCode);
   if (!normalizedCurrency || normalizedCurrency === DEFAULT_CURRENCY) {
-    return formatPrice(amount);
+    return new Intl.NumberFormat('es-PY', {
+      style: 'currency',
+      currency: 'PYG',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   }
 
   const locale = FOREIGN_LOCALE_BY_CURRENCY[normalizedCurrency] ?? 'en-US';

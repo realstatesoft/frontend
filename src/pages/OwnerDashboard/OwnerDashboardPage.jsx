@@ -10,7 +10,7 @@ import useOwnerOverview from '../../hooks/useOwnerOverview';
 import { OWNER_TOUR_STEPS } from '../../data/tourSteps';
 import { useAutoStartTour } from '../../hooks/useAutoStartTour';
 import styles from './OwnerDashboardPage.module.scss';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { useNavigate } from 'react-router-dom';
 import ContractSignModal from '../Contracts/ContractSignModal';
 import Swal from 'sweetalert2';
@@ -21,6 +21,7 @@ export default function OwnerDashboardPage() {
   const { data: response, isLoading, refetch } = useOwnerOverview();
   const navigate = useNavigate();
   const [signContract, setSignContract] = useState(null);
+  const { formatCurrency, formatDate } = useFormatters();
   const { formatPrice } = usePropertyPriceDisplay(0);
 
   const { stats = {}, recentProperties = [], urgentContracts = [], pendingVisits = [] } = response || {};

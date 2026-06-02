@@ -41,10 +41,10 @@ export default function PropertiesGrid({
                 (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
             );
 
-    if (loading) {
+    if (loading && properties.length === 0) {
         return (
-            <Container className="py-5 text-center">
-                <Spinner animation="border" variant="primary" />
+            <Container className="py-5 text-center" style={{ minHeight: "300px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <Spinner animation="border" variant="primary" role="status" />
                 <p className="text-muted mt-3">{t("results.loading")}</p>
             </Container>
         );
@@ -77,35 +77,52 @@ export default function PropertiesGrid({
         );
     }
 
+    const gridStyle = loading
+        ? { opacity: 0.6, pointerEvents: "none", transition: "opacity 0.2s ease" }
+        : { transition: "opacity 0.2s ease" };
 
     return (
-        <Container className="pt-4 pb-2">
-            <p className="text-muted mb-3" style={{ fontSize: "0.875rem" }}>
-                {t("results.showing", { count: paginated.length })}
-            </p>
+        <Container className="pt-4 pb-2 position-relative">
+            {loading && (
+                <div
+                    className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                    style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.4)",
+                        zIndex: 10,
+                        minHeight: "200px"
+                    }}
+                >
+                    <Spinner animation="border" variant="primary" role="status" />
+                </div>
+            )}
+            <div style={gridStyle}>
+                <p className="text-muted mb-3" style={{ fontSize: "0.875rem" }}>
+                    {t("results.showing", { count: paginated.length })}
+                </p>
 
-            <Row className="g-4">
-                {paginated.map((property) => (
-                    <Col key={property.id} xs={12} sm={6} xl={6}>
-                        <PropertyCard
-                            property={property}
-                            isFavorite={favoriteIds.includes(property.id)}
-                            isFavoriteLoading={togglingIds.includes(property.id)}
-                            canToggleFavorite={canToggleFavorite}
-                            onToggleFavorite={onToggleFavorite}
-                            isCompared={comparedPropertyIds.includes(property.id)}
-                            onToggleCompare={onToggleCompare}
-                            compareDisabled={compareLimitReached}
-                        />
-                    </Col>
-                ))}
-            </Row>
+                <Row className="g-4">
+                    {paginated.map((property) => (
+                        <Col key={property.id} xs={12} sm={6} xl={6}>
+                            <PropertyCard
+                                property={property}
+                                isFavorite={favoriteIds.includes(property.id)}
+                                isFavoriteLoading={togglingIds.includes(property.id)}
+                                canToggleFavorite={canToggleFavorite}
+                                onToggleFavorite={onToggleFavorite}
+                                isCompared={comparedPropertyIds.includes(property.id)}
+                                onToggleCompare={onToggleCompare}
+                                compareDisabled={compareLimitReached}
+                            />
+                        </Col>
+                    ))}
+                </Row>
 
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-            />
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                />
+            </div>
         </Container>
     );
 }

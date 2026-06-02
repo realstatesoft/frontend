@@ -28,6 +28,16 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
   font-weight: 600;
+}
+
+.footer {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+}
+
+.currencyPrefix {
+  color: #6c757d;
+  margin-right: 4px;
 }

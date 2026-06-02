@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import useAppointments from '../../../hooks/useAppointments';
+import useFormatters from '../../../hooks/useFormatters';
 import { APPOINTMENT_COLORS } from '../../../utils/constants';
-import { formatDateTime } from '../../../utils/formatters';
 import styles from './UpcomingAppointments.module.scss';
 
 export default function UpcomingAppointments() {
   const { t } = useTranslation('dashboard');
   const { data: response, isLoading } = useAppointments();
+  const { formatDateTime } = useFormatters();
   const appointments = response?.data || [];
 
   if (isLoading) {

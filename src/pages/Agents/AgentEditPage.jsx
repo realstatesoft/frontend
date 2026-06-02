@@ -11,6 +11,7 @@ import {
   IoTrashOutline,
   IoAddOutline,
 } from "react-icons/io5";
+import NumericInput from "../../components/common/NumericInput";
 import "./AgentEditPage.scss";
 
 const SOCIAL_PLATFORMS = [
@@ -316,15 +317,12 @@ export default function AgentEditPage() {
                 <label htmlFor="edit-experienceYears" className="form-label">
                   Años de Experiencia
                 </label>
-                <input
+                <NumericInput
                   id="edit-experienceYears"
                   name="experienceYears"
-                  type="number"
-                  className="form-control edit-input"
+                  className="edit-input"
                   value={form.experienceYears}
                   onChange={handleExperienceChange}
-                  min={0}
-                  max={80}
                 />
               </div>
             </div>

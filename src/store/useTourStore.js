@@ -11,6 +11,9 @@ const useTourStore = create((set, get) => ({
     if (!Array.isArray(steps) || steps.length === 0) {
       return;
     }
+    if (tourId) {
+      localStorage.setItem(TOUR_STORAGE_KEY(tourId), 'true');
+    }
     set({ isActive: true, tourId, steps, currentStep: 0 });
   },
 
@@ -29,10 +32,6 @@ const useTourStore = create((set, get) => ({
   },
 
   endTour: () => {
-    const { tourId } = get();
-    if (tourId) {
-      localStorage.setItem(TOUR_STORAGE_KEY(tourId), 'true');
-    }
     set({ isActive: false, tourId: null, steps: [], currentStep: 0 });
   },
 }));

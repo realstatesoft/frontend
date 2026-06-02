@@ -3,6 +3,7 @@ import { Trash3 } from "react-bootstrap-icons";
 import { FormSectionTitle, FormLabel, FormMultiSelect } from "../../../components/properties/FormComponents";
 import { INTERIOR_FEATURE_OPTIONS } from "../../../constants/propertyEnums";
 import { getFloorOptionsForCount, DIMENSION_OPTIONS } from "../../../constants/createPropertyConstants";
+import NumericInput from "../../../components/common/NumericInput";
 
 function RoomCard({ room, index, onRemove, updateRoom, floorsCount }) {
   const allowed = getFloorOptionsForCount(floorsCount);
@@ -108,10 +109,7 @@ export function InteriorAndRoomsSection({
         <Col md={3}>
           <Form.Group>
             <FormLabel>Cantidad de plantas</FormLabel>
-            <Form.Control
-              type="number"
-              min="1"
-              max="10"
+            <NumericInput
               value={form.floorsCount}
               onChange={setFloorsCount}
               placeholder="2"
@@ -125,9 +123,7 @@ export function InteriorAndRoomsSection({
         <Col md={3}>
           <Form.Group>
             <FormLabel required>Cantidad de dormitorios</FormLabel>
-            <Form.Control
-              type="number"
-              min="0"
+            <NumericInput
               value={form.bedrooms}
               onChange={setBedrooms}
               placeholder="2"
@@ -141,9 +137,7 @@ export function InteriorAndRoomsSection({
         <Col md={3}>
           <Form.Group>
             <FormLabel required>Cantidad de medios baños</FormLabel>
-            <Form.Control
-              type="number"
-              min="0"
+            <NumericInput
               value={form.halfBathrooms}
               onChange={setHalfBathrooms}
               placeholder="1"
@@ -157,9 +151,7 @@ export function InteriorAndRoomsSection({
         <Col md={3}>
           <Form.Group>
             <FormLabel required>Cantidad de baños completos</FormLabel>
-            <Form.Control
-              type="number"
-              min="0"
+            <NumericInput
               value={form.fullBathrooms}
               onChange={setFullBathrooms}
               placeholder="1"
