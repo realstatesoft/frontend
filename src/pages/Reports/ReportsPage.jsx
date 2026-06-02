@@ -1,3 +1,4 @@
+import { Spinner } from 'react-bootstrap';
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -20,7 +21,11 @@ export default function ReportsPage() {
   const pieData = report.propertyByType || [];
   const trendData = report.monthlyTrend || [];
 
-  if (isLoading) return <p>{t('loading')}</p>;
+  if (isLoading) return (
+    <div className="d-flex justify-content-center align-items-center py-5">
+      <Spinner animation="border" variant="primary" />
+    </div>
+  );
 
   return (
     <div className={styles.page}>

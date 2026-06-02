@@ -528,9 +528,8 @@ export default function OfferManagementPage() {
         </div>
 
         {loading ? (
-          <div className={styles.offersPage__loading}>
-            <Spinner animation="grow" variant="primary" />
-            <p>Cargando propuestas...</p>
+          <div className="d-flex justify-content-center align-items-center py-5">
+            <Spinner animation="border" variant="primary" />
           </div>
         ) : (
           <Card className={styles.offersPage__card}>
