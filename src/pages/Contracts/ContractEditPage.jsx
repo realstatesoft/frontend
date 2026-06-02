@@ -16,6 +16,7 @@ import { useAuth } from '../../hooks/useAuth';
 import ContractTemplateRichEditor from '../../components/admin/ContractTemplateRichEditor';
 import styles from './ContractCreatePage.module.scss';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import NumericInput from '../../components/common/NumericInput';
 
 export default function ContractEditPage() {
   const { id } = useParams();
@@ -223,9 +224,23 @@ export default function ContractEditPage() {
   const handleSubmit = async (sendAfterSave = false) => {
     if (!form) return;
     const valid = validate({
-      amount: { value: form.amount && parseFloat(form.amount) > 0 ? form.amount : "", label: "Monto", required: true },
+      amount: { 
+        value: form.amount, 
+        label: "Monto", 
+        required: true,
+        custom: (val) => {
+          const num = parseFloat(val);
+          return !isNaN(num) && num > 0;
+        },
+        customMessage: "El monto debe ser mayor a 0"
+      },
     });
     if (!valid) return;
+
+    if (form.endDate && form.startDate && form.endDate < form.startDate) {
+      import('sweetalert2').then(Swal => Swal.default.fire({ icon: 'error', title: 'Fechas inválidas', text: 'La fecha fin no puede ser anterior a la fecha de inicio.' }));
+      return;
+    }
 
     const err = validateCommission(form);
     if (err) { setCommissionError(err); return; }
@@ -460,39 +475,39 @@ export default function ContractEditPage() {
             <div className={styles.form__grid3}>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="ce-comm">Total comisión</label>
-                <input
+                <NumericInput
+                  plainInput
+                  allowDecimal
                   id="ce-comm"
-                  type="number"
                   name="commissionPct"
                   className={styles.form__input}
                   value={form.commissionPct}
                   onChange={handleChange}
-                  min="0" max="100" step="0.01"
                 />
               </div>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="ce-comm-listing">Agente listador</label>
-                <input
+                <NumericInput
+                  plainInput
+                  allowDecimal
                   id="ce-comm-listing"
-                  type="number"
                   name="listingAgentCommissionPct"
                   className={styles.form__input}
                   value={form.listingAgentCommissionPct}
                   onChange={handleChange}
-                  min="0" max="100" step="0.01"
                   disabled={!form.listingAgentId}
                 />
               </div>
               <div className={styles.form__row}>
                 <label className={styles.form__label} htmlFor="ce-comm-buyer">Agente comprador</label>
-                <input
+                <NumericInput
+                  plainInput
+                  allowDecimal
                   id="ce-comm-buyer"
-                  type="number"
                   name="buyerAgentCommissionPct"
                   className={styles.form__input}
                   value={form.buyerAgentCommissionPct}
                   onChange={handleChange}
-                  min="0" max="100" step="0.01"
                   disabled={!form.buyerAgentId}
                 />
               </div>
@@ -525,6 +540,7 @@ export default function ContractEditPage() {
                   name="endDate"
                   className={styles.form__input}
                   value={form.endDate}
+                  min={form.startDate || undefined}
                   onChange={handleChange}
                 />
               </div>

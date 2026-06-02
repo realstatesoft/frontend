@@ -158,7 +158,11 @@ function CustomNavbar() {
                 queryFn: async () => {
                   const res = await propertyApi.getAll({ page: 0, size: 12, category: "SALE" });
                   const pageData = res?.data ? (res.data.data ?? res.data) : { content: [], totalPages: 0, totalElements: 0 };
-                  return { properties: pageData.content ?? [], totalPages: Number(pageData.totalPages ?? 0), totalElements: Number(pageData.totalElements ?? 0) };
+                  return {
+                    properties: pageData.content ?? [],
+                    totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? (pageData.content ? Math.ceil(pageData.content.length / 12) : 0)),
+                    totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? (pageData.content ? pageData.content.length : 0)),
+                  };
                 },
                 staleTime: 5 * 60 * 1000,
               });
@@ -166,7 +170,21 @@ function CustomNavbar() {
               {t('buy') || 'Comprar'}
             </Nav.Link>
             
-            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Alquiler" }}>
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Alquiler" }} onMouseEnter={() => {
+              queryClient.prefetchQuery({
+                queryKey: ["properties", { page: 1, size: 12, search: "", propertyType: undefined, category: "RENT", status: undefined, availability: undefined, minPrice: undefined, maxPrice: undefined, minBedrooms: undefined, minBathrooms: undefined }],
+                queryFn: async () => {
+                  const res = await propertyApi.getAll({ page: 0, size: 12, category: "RENT" });
+                  const pageData = res?.data ? (res.data.data ?? res.data) : { content: [], totalPages: 0, totalElements: 0 };
+                  return {
+                    properties: pageData.content ?? [],
+                    totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? (pageData.content ? Math.ceil(pageData.content.length / 12) : 0)),
+                    totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? (pageData.content ? pageData.content.length : 0)),
+                  };
+                },
+                staleTime: 5 * 60 * 1000,
+              });
+            }}>
               {t('rent') || 'Alquilar'}
             </Nav.Link>
 
@@ -222,12 +240,12 @@ function CustomNavbar() {
               {isAuthenticated ? (
                 /* ── Usuario logueado ─────────────────────────── */
                 <>
-                  {/* Seccion 1: navegacion personal */}
+                  {/* Seccion 1: principal */}
                   <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Person size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
                   </Link>
-                  <Link to={getOffersLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoCashOutline size={16} style={{ flexShrink: 0 }} /> {t('myOffers')}
+                  <Link to="/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard', 'Mi dashboard')}
                   </Link>
                   <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <HouseDoor size={16} style={{ flexShrink: 0 }} /> {t('myProperties')}
@@ -235,36 +253,11 @@ function CustomNavbar() {
                   <Link to="/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoBookmarkOutline size={16} style={{ flexShrink: 0 }} /> {t('myReservations')}
                   </Link>
-                  <Link to="/my-subscriptions" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoStarOutline size={16} style={{ flexShrink: 0 }} /> {t('mySubscriptions') || 'Mis suscripciones'}
-                  </Link>
-                  {hasPublishedProperties && user?.role?.toUpperCase() === 'USER' && (
-                    <Link to="/owner/reservations" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
+                  {!isAgent && (
+                    <Link to="/mis-agentes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      <IoBriefcase size={16} style={{ flexShrink: 0 }} /> Mis agentes
                     </Link>
                   )}
-                  <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <Trash size={14} style={{ flexShrink: 0 }} /> {t('trash')}
-                  </Link>
-                  <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <Heart size={16} style={{ flexShrink: 0 }} /> {t('favorites')}
-                  </Link>
-                  <Link to="/preferences" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoOptionsOutline size={16} style={{ flexShrink: 0 }} /> {t('preferences')}
-                  </Link>
-                  {user?.role?.toUpperCase() === 'USER' && (
-                    <>
-                      <Link to="/tenant/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardTenant', 'Panel Inquilino')}
-                      </Link>
-                      {(user.isOwner || hasPublishedProperties) && (
-                        <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                          <IoHome size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
-                        </Link>
-                      )}
-                    </>
-                  )}
-
                   {!isAgent && !isAdmin && (
                     <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
@@ -275,42 +268,10 @@ function CustomNavbar() {
                       )}
                     </Link>
                   )}
-                  {user?.role?.toUpperCase() === "ADMIN" && (
+                  {isAdmin && (
                     <Link to={ADMIN_ROUTES.DASHBOARD} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('adminPanel')}
                     </Link>
-                  )}
-
-                  {isAgent && (
-                    <>
-                      {hasPublishedProperties && (
-                        <Link to="/agent/reservas" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                          <IoCalendarOutline size={16} style={{ flexShrink: 0 }} /> {t('receivedReservations')}
-                        </Link>
-                      )}
-                      <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> {t('agenda')}
-                      </Link>
-                      <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard')}
-                      </Link>
-                    </>
-                  )}
-
-                  {isAdmin && (
-                    <>
-                      <Link to="/admin/notifications" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoNotificationsOutline size={16} style={{ flexShrink: 0 }} /> {t('notifications')}
-                        {unreadCount > 0 && (
-                          <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
-                            {unreadCount}
-                          </span>
-                        )}
-                      </Link>
-                      <Link to="/admin/approval" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                        <IoCheckmarkDoneOutline size={16} style={{ flexShrink: 0 }} /> {t('propertyApproval')}
-                      </Link>
-                    </>
                   )}
 
                   <hr className="profile-dropdown-divider" />

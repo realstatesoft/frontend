@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Modal, Form, Spinner } from 'react-bootstrap';
 import { FiSave, FiX } from 'react-icons/fi';
 import Button from '../common/Button/Button';
 import Swal from 'sweetalert2';
 import useFormatters from '../../hooks/useFormatters';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import NumericInput from '../common/NumericInput';
 
 const PAYMENT_METHODS = [
   { value: 'CASH', label: 'Efectivo' },
@@ -16,6 +17,14 @@ const PAYMENT_METHODS = [
 export default function ManualPaymentModal({ show, onHide, installments, onSave, initialInstallmentId }) {
   const { formatCurrency } = useFormatters();
   const pendingInstallments = installments?.filter(i => ['PENDING', 'OVERDUE', 'PARTIAL'].includes(i.status)) || [];
+
+  // Memoized date boundaries (computed once on mount)
+  const maxDateIso = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  // Business rule: payments cannot be recorded more than 10 years in the past
+  const minDateIso = useMemo(
+    () => new Date(new Date().getFullYear() - 10, 0, 1).toISOString().slice(0, 10),
+    []
+  );
 
   const initialFormState = {
     installmentId: '',
@@ -68,11 +77,17 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
 
     const valid = validate({
       installmentId: { value: formData.installmentId, label: "Cuota", required: true },
-      amount: { value: formData.amount && parseFloat(formData.amount) > 0 ? formData.amount : "", label: "Monto", required: true },
+      amount: { value: formData.amount, label: "Monto", required: true },
       paymentDate: { value: formData.paymentDate, label: "Fecha de pago", required: true },
       method: { value: formData.method, label: "Método de pago", required: true },
     });
     if (!valid) return;
+
+    const today = maxDateIso;
+    if (formData.paymentDate > today) {
+      Swal.fire('Error', 'La fecha de pago no puede ser futura', 'error');
+      return;
+    }
 
     const amount = parseFloat(formData.amount);
     const selected = pendingInstallments.find(i => String(i.id) === formData.installmentId);
@@ -137,9 +152,8 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
 
           <Form.Group className="mb-3">
             <Form.Label>Monto pagado *</Form.Label>
-            <Form.Control
-              type="number"
-              step="0.01"
+            <NumericInput
+              allowDecimal
               name="amount"
               value={formData.amount}
               onChange={(e) => { handleChange(e); clearFieldError('amount'); }}
@@ -156,6 +170,8 @@ export default function ManualPaymentModal({ show, onHide, installments, onSave,
               type="date"
               name="paymentDate"
               value={formData.paymentDate}
+              max={maxDateIso}
+              min={minDateIso}
               onChange={(e) => { handleChange(e); clearFieldError('paymentDate'); }}
               className={fieldErrors.paymentDate ? 'field-error' : ''}
             />

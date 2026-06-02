@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Cookies from 'js-cookie';
-import { 
+import {
   getAccessToken, setAccessToken, removeAccessToken,
-  getRefreshToken, setRefreshToken, removeRefreshToken,
   getUserInfo, setUserInfo, removeUserInfo,
   clearSession
 } from './authToken';
@@ -44,27 +43,6 @@ describe('authToken utils', () => {
     });
   });
 
-  describe('RefreshToken', () => {
-    it('gets refresh token from cookies', () => {
-      Cookies.get.mockReturnValue('refresh-token');
-      expect(getRefreshToken()).toBe('refresh-token');
-    });
-
-    it('sets refresh token with 7 days expiration', () => {
-      setRefreshToken('refresh-token');
-      expect(Cookies.set).toHaveBeenCalledWith(
-        'refreshToken', 
-        'refresh-token', 
-        expect.objectContaining({ expires: 7 })
-      );
-    });
-
-    it('removes refresh token cookie', () => {
-      removeRefreshToken();
-      expect(Cookies.remove).toHaveBeenCalledWith('refreshToken', expect.any(Object));
-    });
-  });
-
   describe('UserInfo (localStorage)', () => {
     it('gets UserInfo from localStorage parsed', () => {
       const user = { id: 1, name: 'Test' };
@@ -95,10 +73,10 @@ describe('authToken utils', () => {
   });
 
   describe('clearSession', () => {
-    it('calls all removal functions', () => {
+    it('removes access token and userInfo', () => {
       clearSession();
       expect(Cookies.remove).toHaveBeenCalledWith('accessToken', expect.any(Object));
-      expect(Cookies.remove).toHaveBeenCalledWith('refreshToken', expect.any(Object));
+      expect(Cookies.remove).not.toHaveBeenCalledWith('refreshToken', expect.any(Object));
       expect(localStorage.getItem('userInfo')).toBeNull();
     });
   });

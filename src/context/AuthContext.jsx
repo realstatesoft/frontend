@@ -2,12 +2,9 @@ import { createContext, useState, useCallback } from "react";
 import {
   getAccessToken,
   setAccessToken,
-  getRefreshToken,
-  setRefreshToken,
   getUserInfo,
   setUserInfo,
   clearSession,
-  removeAccessToken,
 } from "../utils/authToken";
 import api from "../services/api";
 import { getUserPreferences } from "../services/preferencesService";
@@ -40,23 +37,19 @@ export function AuthProvider({ children }) {
 
   /**
    * Llamar con el response del login/register.
-   * Espera: { accessToken, refreshToken, email, role, id, agentProfileId }
+   * Espera: { accessToken, email, role, id, agentProfileId }
    */
   function login(responseData) {
-    const { accessToken, refreshToken, email, role, id, agentProfileId } = responseData ?? {};
+    const { accessToken, email, role, id, agentProfileId } = responseData ?? {};
 
     if (!accessToken || typeof accessToken !== "string") {
       throw new Error("login(): accessToken inválido o ausente en el response");
-    }
-    if (!refreshToken || typeof refreshToken !== "string") {
-      throw new Error("login(): refreshToken inválido o ausente en el response");
     }
 
     // Integramos agentProfileId (de la rama OR-42-Contratos)
     const userInfo = { email, role, userId: id, agentProfileId: agentProfileId ?? null };
 
     setAccessToken(accessToken);
-    setRefreshToken(refreshToken);
     setUserInfo(userInfo);
 
     setToken(accessToken);

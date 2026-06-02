@@ -1,9 +1,7 @@
 import axios from "axios";
 import {
   getAccessToken,
-  getRefreshToken,
   setAccessToken,
-  setRefreshToken,
   clearSession,
 } from "../utils/authToken";
 
@@ -11,6 +9,7 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -71,13 +70,6 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      // No hay refresh token → cerrar sesión y redirigir al login preservando la ruta actual
-      redirectToLogin();
-      return Promise.reject(error);
-    }
-
     // Si ya hay un refresh en curso, encolar la request
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
@@ -92,17 +84,14 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      // POST /auth/refresh-token con el refreshToken actual
-      const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, {
-        refreshToken,
+      // POST /auth/refresh-token — la cookie HttpOnly la adjunta el navegador automáticamente
+      const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, null, {
+        withCredentials: true,
       });
 
       const newAccessToken = data.data.accessToken;
-      const newRefreshToken = data.data.refreshToken;
 
-      // Guardar los nuevos tokens
       setAccessToken(newAccessToken);
-      setRefreshToken(newRefreshToken);
 
       // Desencolar las requests en espera
       processQueue(null, newAccessToken);

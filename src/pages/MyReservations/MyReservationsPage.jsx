@@ -5,7 +5,7 @@ import { ArrowLeft, Eye, XCircle } from 'react-bootstrap-icons';
 import Swal from 'sweetalert2';
 import CustomNavbar from '../../components/Landing/Navbar';
 import reservationApi from '../../services/reservations/reservationApi';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { statusLabel } from '../../utils/reservationStatus';
 import styles from './MyReservationsPage.module.scss';
 
@@ -42,6 +42,7 @@ export default function MyReservationsPage() {
   const [status, setStatus]   = useState('');
   const [page, setPage]       = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { formatCurrency, formatDate } = useFormatters();
 
   const load = useCallback(async (currentPage, currentStatus) => {
     setLoading(true);

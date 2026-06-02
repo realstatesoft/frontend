@@ -1,8 +1,10 @@
 import { Row, Col, Form } from "react-bootstrap";
+import { useMemo } from "react";
 import {
   FormSectionTitle,
   FormLabel,
 } from "../../../components/properties/FormComponents";
+
 
 const ESTADO_CIVIL_OPTIONS = [
   "Soltero/a",
@@ -12,6 +14,11 @@ const ESTADO_CIVIL_OPTIONS = [
 ];
 
 export function PersonalInfoSection({ form, set, fieldErrors = {} }) {
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const minBirthDate = useMemo(
+    () => new Date(new Date().getFullYear() - 120, 0, 1).toISOString().slice(0, 10),
+    []
+  );
   return (
     <>
       <FormSectionTitle title="Información Personal" />
@@ -58,6 +65,8 @@ export function PersonalInfoSection({ form, set, fieldErrors = {} }) {
             <Form.Control
               type="date"
               value={form.birthDate}
+              min={minBirthDate}
+              max={today}
               onChange={set("birthDate")}
             />
           </Form.Group>

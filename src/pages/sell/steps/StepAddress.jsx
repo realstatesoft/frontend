@@ -172,6 +172,7 @@ export default function StepAddress({ form, set, nextStep }) {
         <button
           type="button"
           className="sell-wizard__btn sell-wizard__btn--next"
+          disabled={!form.address?.trim() || !form.propertyType || !mapCoords}
           onClick={() => {
             const valid = validate({
               address: { value: form.address, label: "Dirección", required: true },

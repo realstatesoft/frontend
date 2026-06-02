@@ -15,6 +15,7 @@
     "sending": "Sending...",
     "invalidAmountTitle": "Error",
     "invalidAmount": "Please enter a valid amount greater than 0",
+    "amountLimitError": "The amount must not exceed the 15-digit limit",
     "updateSuccessTitle": "Offer updated!",
     "updateSuccessText": "Your proposal has been updated successfully.",
     "createSuccessTitle": "Offer sent!",

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 import { FiCreditCard, FiCheckCircle, FiClock, FiDownload, FiAlertTriangle, FiFileText } from 'react-icons/fi';
 import { useTenantPayments } from '../../../hooks/useTenantPayments';
 import useFormatters from '../../../hooks/useFormatters';
@@ -25,6 +26,12 @@ const STATUS_LABELS = {
   PARTIAL: 'Pago Parcial',
 };
 
+const buildPdfFilename = (prefix, installmentNumber, date) => {
+  const cuota = String(installmentNumber ?? 'cuota').replace(/[^a-zA-Z0-9_-]+/g, '-');
+  const fecha = String(date ?? new Date().toISOString().slice(0, 10)).slice(0, 10);
+  return `${prefix}-${cuota}-${fecha}.pdf`;
+};
+
 export default function TenantPaymentsPage() {
   const { t } = useTranslation('tenant');
   const navigate = useNavigate();
@@ -38,7 +45,7 @@ export default function TenantPaymentsPage() {
     if (payingId) return;
     const confirm = await Swal.fire({
       title: 'Confirmar pago',
-      text: `¿Deseas pagar ${formatCurrency(inst.balance ?? inst.totalAmount ?? 0)} por la cuota ${inst.installmentNumber}?`,
+      text: `¿Deseas pagar ${formatCurrency(inst.balance ?? inst.totalAmount ?? 0, inst.currency)} por la cuota ${inst.installmentNumber}?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, pagar',
@@ -69,54 +76,62 @@ export default function TenantPaymentsPage() {
     }
   };
 
-  const handleDownloadReceipt = async (paymentId, installmentNumber, dateStr) => {
+  const handleDownloadReceipt = async (payment, installmentNumber, dateStr) => {
+    const paymentId = payment.id;
     setDownloading(`receipt-${paymentId}`);
-    const filename = `receipt-${installmentNumber}-${dateStr}.pdf`;
-    const res = await downloadPdf(`/rentals/payments/${paymentId}/receipt-url`, filename);
+    try {
+      const filename = buildPdfFilename('recibo', installmentNumber, dateStr);
+      const res = await downloadPdf(payment.receiptUrl || `/tenant/payments/${paymentId}/receipt.pdf`, filename);
 
-    if (!res.success) {
-      if (res.status === 404) {
-        Swal.fire({
-          icon: 'info',
-          title: 'En proceso',
-          text: res.message,
-          timer: 3000,
-          showConfirmButton: false,
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo descargar el recibo.',
-        });
+      if (!res.success) {
+        if (res.status === 202) {
+          Swal.fire({
+            icon: 'info',
+            title: 'PDF en generación',
+            text: res.message,
+            timer: 3000,
+            showConfirmButton: false,
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo descargar el recibo.',
+          });
+        }
       }
+    } finally {
+      setDownloading(null);
     }
-    setDownloading(null);
   };
 
-  const handleDownloadInvoice = async (installmentId, installmentNumber, dateStr) => {
+  const handleDownloadInvoice = async (inst) => {
+    const installmentId = inst.id;
     setDownloading(`invoice-${installmentId}`);
-    const filename = `invoice-${installmentNumber}-${dateStr}.pdf`;
-    const res = await downloadPdf(`/rentals/installments/${installmentId}/invoice-url`, filename);
+    try {
+      const filename = buildPdfFilename('factura', inst.installmentNumber, inst.dueDate);
+      const res = await downloadPdf(inst.invoiceUrl || `/tenant/payments/installments/${installmentId}/invoice.pdf`, filename);
 
-    if (!res.success) {
-      if (res.status === 404) {
-        Swal.fire({
-          icon: 'info',
-          title: 'En proceso',
-          text: res.message,
-          timer: 3000,
-          showConfirmButton: false,
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo descargar la factura.',
-        });
+      if (!res.success) {
+        if (res.status === 202) {
+          Swal.fire({
+            icon: 'info',
+            title: 'PDF en generación',
+            text: res.message,
+            timer: 3000,
+            showConfirmButton: false,
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo descargar la factura.',
+          });
+        }
       }
+    } finally {
+      setDownloading(null);
     }
-    setDownloading(null);
   };
 
   if (isLoading && !data) return <div className={styles.loading}>Cargando...</div>;
@@ -156,7 +171,7 @@ export default function TenantPaymentsPage() {
         <div className={styles.headerStats}>
           <div className={styles.statItem}>
             <span className={styles.statLabel}>Total Pagado (12 meses)</span>
-            <span className={styles.statValue}>{formatCurrency(data?.totalPaidYear || 0)}</span>
+            <span className={styles.statValue}>{formatCurrency(data?.totalPaidYear || 0, data?.installments?.[0]?.currency)}</span>
           </div>
           <div className={styles.statItem}>
             <span className={styles.statLabel}>Cuotas al Día</span>
@@ -226,7 +241,7 @@ export default function TenantPaymentsPage() {
                   <p>Vencimiento: {formatDate(inst.dueDate)}</p>
                 </div>
                 <div className={styles.installmentAmount}>
-                  <h4>{formatCurrency(inst.totalAmount)}</h4>
+                  <h4>{formatCurrency(inst.totalAmount, inst.currency)}</h4>
                   <div className={styles.badges}>
                     <Badge variant={STATUS_VARIANTS[inst.status]}>{STATUS_LABELS[inst.status] || inst.status}</Badge>
                     {inst.status !== 'PAID' && (
@@ -245,16 +260,17 @@ export default function TenantPaymentsPage() {
                     <div key={idx} className={styles.paymentRow}>
                       <span className={styles.paymentDate}>{formatDate(payment.date)}</span>
                       <span className={styles.paymentMethod}>{payment.method}</span>
-                      <span className={styles.paymentAmt}>{formatCurrency(payment.amount)}</span>
+                      <span className={styles.paymentAmt}>{formatCurrency(payment.amount, payment.currency)}</span>
                       
                       {payment.id && (
                         <Button
                           variant="secondary"
                           size="sm"
                           disabled={downloading === `receipt-${payment.id}`}
-                          onClick={() => handleDownloadReceipt(payment.id, inst.installmentNumber, formatDate(payment.date))}
+                          onClick={() => handleDownloadReceipt(payment, inst.installmentNumber, payment.date)}
                         >
-                          <FiDownload /> {downloading === `receipt-${payment.id}` ? '...' : 'Recibo'}
+                          {downloading === `receipt-${payment.id}` ? <Spinner animation="border" size="sm" /> : <FiDownload />}
+                          Recibo
                         </Button>
                       )}
                     </div>
@@ -268,9 +284,10 @@ export default function TenantPaymentsPage() {
                         variant="secondary"
                         size="sm"
                         disabled={downloading === `invoice-${inst.id}`}
-                        onClick={() => handleDownloadInvoice(inst.id, inst.installmentNumber, formatDate(inst.dueDate))}
+                        onClick={() => handleDownloadInvoice(inst)}
                       >
-                        <FiFileText /> {downloading === `invoice-${inst.id}` ? 'Descargando...' : 'Descargar Factura'}
+                        {downloading === `invoice-${inst.id}` ? <Spinner animation="border" size="sm" /> : <FiFileText />}
+                        Descargar Factura
                       </Button>
                     </div>
                   )}

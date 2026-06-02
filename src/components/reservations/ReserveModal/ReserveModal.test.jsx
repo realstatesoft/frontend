@@ -28,7 +28,7 @@ describe('ReserveModal', () => {
 
   it('pre-fills amount from price * defaultPercent', () => {
     render(<ReserveModal show property={property} defaultPercent={1} onClose={() => {}} onCreated={() => {}} />);
-    expect(screen.getByLabelText(/monto/i)).toHaveValue(1000);
+    expect(screen.getByLabelText(/monto/i)).toHaveValue('1000');
   });
 
   it('shows the amount formatted as MXN currency below the input', () => {

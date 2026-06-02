@@ -10,7 +10,7 @@ import useOwnerOverview from '../../hooks/useOwnerOverview';
 import { OWNER_TOUR_STEPS } from '../../data/tourSteps';
 import { useAutoStartTour } from '../../hooks/useAutoStartTour';
 import styles from './OwnerDashboardPage.module.scss';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { useNavigate } from 'react-router-dom';
 import ContractSignModal from '../Contracts/ContractSignModal';
 import Swal from 'sweetalert2';
@@ -21,6 +21,7 @@ export default function OwnerDashboardPage() {
   const { data: response, isLoading, refetch } = useOwnerOverview();
   const navigate = useNavigate();
   const [signContract, setSignContract] = useState(null);
+  const { formatCurrency, formatDate } = useFormatters();
   const { formatPrice } = usePropertyPriceDisplay(0);
 
   const { stats = {}, recentProperties = [], urgentContracts = [], pendingVisits = [] } = response || {};
@@ -107,7 +108,7 @@ export default function OwnerDashboardPage() {
           value={formatCurrency(stats.totalEarnings?.value ?? 0)}
           icon={<FiDollarSign />}
           colorAccent="info"
-          hint={t('contractHint')}
+          stacked
         />
       </div>
 
@@ -135,7 +136,9 @@ export default function OwnerDashboardPage() {
                   {prop.mainImageUrl ? (
                     <img src={prop.mainImageUrl} alt={prop.title} className={styles.list_item_img} />
                   ) : (
-                    <div className={`${styles.list_item_img} ${styles['list_item_img--placeholder']}`} />
+                    <div className={`${styles.list_item_img} ${styles['list_item_img--placeholder']}`}>
+                      <FiHome size={20} />
+                    </div>
                   )}
                   <div className={styles.list_item_info}>
                     <span className={styles.list_item_title}>{prop.title}</span>

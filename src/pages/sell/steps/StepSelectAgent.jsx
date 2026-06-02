@@ -11,12 +11,16 @@ import {
 } from "react-bootstrap-icons";
 import { getSuggestedAgents } from "../../../services/agents/agentApi";
 import { createLeadFromWizard } from "../../../services/leads/leadApi";
+import ReviewForm from "../../../components/Agents/ReviewForm";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [reviewModalAgent, setReviewModalAgent] = useState(null);
 
   // Capture sessionStorage value synchronously on first render (before effects)
   // This prevents React Strict Mode double-execution from losing the data.
@@ -237,6 +241,30 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
                         "Contactar"
                       )}
                     </button>
+
+                    {isAuthenticated && user?.role !== 'AGENT' && !user?.agentProfileId && user?.agentProfileId !== agent.id && (
+                      <button
+                        type="button"
+                        className="agent-card__contact-btn"
+                        style={{
+                          background: "none",
+                          border: "1px solid #f0a500",
+                          color: "#f0a500",
+                          fontSize: "0.85rem",
+                          marginTop: "0.5rem",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          width: "100%",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setReviewModalAgent({ id: agent.id, name: agent.userName });
+                        }}
+                      >
+                        ★ Dejar reseña
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -326,6 +354,14 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
           {submitting ? "Procesando..." : <>Finalizar <CheckLg /></>}
         </button>
       </div>
+
+      <ReviewForm
+        show={!!reviewModalAgent}
+        onHide={() => setReviewModalAgent(null)}
+        agentId={reviewModalAgent?.id}
+        agentName={reviewModalAgent?.name}
+        onSaved={() => setReviewModalAgent(null)}
+      />
     </div>
   );
 }

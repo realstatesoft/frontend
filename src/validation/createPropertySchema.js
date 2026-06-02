@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const MAX_PRICE = 9999999999.99;
+
 const defaultMessages = {
   titleRequired: "El título es obligatorio",
   titleTooLong: "El título no puede exceder 255 caracteres",
@@ -7,6 +9,7 @@ const defaultMessages = {
   addressTooLong: "La dirección no puede exceder 500 caracteres",
   priceRequired: "El precio es obligatorio",
   pricePositive: "El precio debe ser mayor a 0",
+  priceMaxExceeded: `El precio no puede superar 9.999.999.999,99`,
   propertyTypeRequired: "El tipo de propiedad es obligatorio",
 };
 
@@ -32,7 +35,11 @@ export function createPropertySchema(t = (key) => defaultMessages[key] ?? key) {
       .refine((v) => {
         const n = Number(v);
         return !isNaN(n) && n > 0;
-      }, t("pricePositive")),
+      }, t("pricePositive"))
+      .refine((v) => {
+        const n = Number(v);
+        return isNaN(n) || n <= MAX_PRICE;
+      }, t("priceMaxExceeded")),
 
     propertyType: z.string().min(1, t("propertyTypeRequired")),
 

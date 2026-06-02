@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Button, Form, Row, Col, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { createEvent } from '../../services/agents/agentAgendaService';
@@ -43,14 +43,21 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
     const [loading, setLoading] = useState(false);
     const [error, setError]     = useState(null);
     const { fieldErrors, validate, clearFieldError } = useFormValidation();
+    const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
     // Pre-fill date when opened from a day cell
     useEffect(() => {
         if (show) {
-            setForm(prev => ({
+            let d = initialDate ? new Date(initialDate) : new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (d < today) {
+                d = today;
+            }
+            setForm({
                 ...INITIAL_FORM,
-                date: initialDate ? toDateInput(initialDate) : toDateInput(new Date()),
-            }));
+                date: toDateInput(d),
+            });
             setError(null);
         }
     }, [show, initialDate]);
@@ -73,6 +80,12 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
             eventType: { value: form.eventType, label: t('fields.type'), required: true },
         });
         if (!valid) return;
+
+        const todayCheck = todayStr;
+        if (form.date < todayCheck) {
+            setError(t('La fecha del evento no puede ser en el pasado.'));
+            return;
+        }
 
         const startsAt = toISOLocal(form.date, form.startTime);
         const endsAt   = toISOLocal(form.date, form.endTime);
@@ -148,6 +161,7 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                                 type="date"
                                 name="date"
                                 value={form.date}
+                                min={todayStr}
                                 onChange={handleChange}
                                 disabled={loading}
                                 className={fieldErrors.date ? 'field-error' : ''}

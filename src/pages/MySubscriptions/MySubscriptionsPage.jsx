@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import subscriptionApi from '../../services/subscriptions/subscriptionApi';
-import { formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { buildPageItems, PAGE_ELLIPSIS } from '../../utils/pagination';
 import styles from './MySubscriptionsPage.module.scss';
 
@@ -23,7 +23,7 @@ function safeStatusKey(status) {
   return `mySubscriptionsPage.status${status.charAt(0) + status.slice(1).toLowerCase()}`;
 }
 
-function ActiveSubscriptionCard({ subscription, onCancel, t }) {
+function ActiveSubscriptionCard({ subscription, onCancel, t, formatDate }) {
   const isPending = subscription.status === 'PENDING';
   const statusKey = safeStatusKey(subscription.status);
   const badgeVariant = STATUS_VARIANT[subscription.status] ?? 'secondary';
@@ -106,9 +106,10 @@ function CancelModal({ show, onHide, onConfirm, cancelling, error, t }) {
   );
 }
 
-export default function MySubscriptionsPage() {
+export default function MySubscriptionsPage({ hideNavbar = false }) {
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
+  const { formatDate } = useFormatters();
 
   const [activeSubscription, setActiveSubscription] = useState(null);
   const [loadingActive, setLoadingActive] = useState(true);
@@ -189,7 +190,7 @@ export default function MySubscriptionsPage() {
 
   return (
     <>
-      <CustomNavbar />
+      {!hideNavbar && <CustomNavbar />}
       <Container className={styles.container}>
         <div className="d-flex align-items-center gap-2 mb-4">
           <Button
@@ -216,7 +217,7 @@ export default function MySubscriptionsPage() {
           </div>
         ) : displayedActive ? (
           <div className="mb-4">
-            <ActiveSubscriptionCard subscription={displayedActive} onCancel={openCancel} t={t} />
+            <ActiveSubscriptionCard subscription={displayedActive} onCancel={openCancel} t={t} formatDate={formatDate} />
           </div>
         ) : (
           <Alert variant="info" className="mb-4 d-flex align-items-center gap-2">
@@ -295,7 +296,7 @@ export default function MySubscriptionsPage() {
           </>
         )}
       </Container>
-      <Footer />
+      {!hideNavbar && <Footer />}
 
       <CancelModal
         show={cancelModal.open}
