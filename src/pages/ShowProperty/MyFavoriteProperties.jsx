@@ -8,7 +8,7 @@ import useMyFavoriteProperties from "../../hooks/useMyFavoriteProperties";
 import { useAuth } from "../../hooks/useAuth";
 import { PROPERTY_STATUS_OPTIONS } from "../../constants/propertyEnums";
 
-export default function MyFavoriteProperties() {
+export default function MyFavoriteProperties({ hideNavbar = false }) {
   const { isAuthenticated } = useAuth();
   const [status, setStatus] = useState("");
   const {
@@ -29,7 +29,7 @@ export default function MyFavoriteProperties() {
   if (!isAuthenticated) {
     return (
       <>
-        <CustomNavbar />
+        {!hideNavbar && <CustomNavbar />}
         <Container className="py-5">
           <Alert variant="info" className="text-center">
             <p className="mb-3">Debes iniciar sesión para ver tus favoritos.</p>
@@ -44,7 +44,7 @@ export default function MyFavoriteProperties() {
 
   return (
     <>
-      <CustomNavbar />
+      {!hideNavbar && <CustomNavbar />}
 
       <Container className="py-5">
         {/* Título y subtítulo */}

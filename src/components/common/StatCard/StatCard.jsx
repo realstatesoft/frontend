@@ -6,7 +6,7 @@ function formatTrendPercent(trend) {
   return Number(v.toFixed(2));
 }
 
-export default function StatCard({ label, value, subtitle, trend, icon, colorAccent = 'accent', hint }) {
+export default function StatCard({ label, value, subtitle, trend, icon, colorAccent = 'accent', hint, stacked = false }) {
   let trendClass = styles['statCard__trend--neutral'];
   let trendSymbol = '→';
 
@@ -20,6 +20,31 @@ export default function StatCard({ label, value, subtitle, trend, icon, colorAcc
 
   const formattedTrend =
     trend === undefined || trend === null ? null : formatTrendPercent(trend);
+
+  if (stacked) {
+    return (
+      <div className={styles.statCard}>
+        <div className={styles.statCard__header}>
+          <span className={styles.statCard__label}>{label}</span>
+          {icon && (
+            <div className={`${styles.statCard__icon} ${styles[`statCard__icon--${colorAccent}`]}`}>
+              {icon}
+            </div>
+          )}
+        </div>
+        <div className={styles.statCard__body} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+          <span className={styles.statCard__value} style={{ fontSize: '1.5rem', overflow: 'visible', textOverflow: 'clip', whiteSpace: 'normal', wordBreak: 'break-word' }}>{value}</span>
+          {subtitle ? <span className={styles.statCard__subtitle}>{subtitle}</span> : null}
+          {formattedTrend !== null && (
+            <span className={`${styles.statCard__trend} ${trendClass}`}>
+              {trendSymbol} {formattedTrend}%
+            </span>
+          )}
+          {hint ? <span className={styles.statCard__hint}>{hint}</span> : null}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.statCard}>

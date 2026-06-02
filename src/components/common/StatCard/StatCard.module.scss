@@ -78,6 +78,10 @@
   font-weight: 700;
   color: var(--color-text-primary);
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .statCard__subtitle {

@@ -5,7 +5,7 @@ import TrashPropertyCard from "../../components/properties/TrashPropertyCard";
 import Navbar from "../../components/Landing/Navbar";
 import ConfirmDialog from "../../components/commons/ConfirmDialog";
 
-export default function PropertiesTrashCan() {
+export default function PropertiesTrashCan({ hideNavbar = false }) {
     const {
         properties,
         loading, 
@@ -21,7 +21,7 @@ export default function PropertiesTrashCan() {
 
     return (
         <>
-            <Navbar />
+            {!hideNavbar && <Navbar />}
 
             <Container className="py-5">
                 <ConfirmDialog

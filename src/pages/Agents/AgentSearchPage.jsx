@@ -14,6 +14,8 @@ import {
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
 import agentApi from "../../services/agents/agentApi";
+import ReviewForm from "../../components/Agents/ReviewForm";
+import { useAuth } from "../../hooks/useAuth";
 import "./AgentSearchPage.scss";
 
 const PAGE_SIZE = 10;
@@ -21,6 +23,7 @@ const PAGE_SIZE = 10;
 export default function AgentSearchPage() {
   const navigate = useNavigate();
   const { t } = useTranslation("agents");
+  const { isAuthenticated, user } = useAuth();
 
   // Server data
   const [agents, setAgents]               = useState([]);
@@ -44,6 +47,8 @@ export default function AgentSearchPage() {
     specialty: "",
     minRating: "",
   });
+
+  const [reviewModalAgent, setReviewModalAgent] = useState(null);
 
   // ── Load specialties once ────────────────────────
   useEffect(() => {
@@ -309,7 +314,14 @@ export default function AgentSearchPage() {
                   </div>
 
                   <div className="card-info">
-                    <h3 className="card-name">{agent.userName}</h3>
+                    <h3
+                      className="card-name"
+                      style={{ cursor: "pointer", color: "#1a56db" }}
+                      onClick={() => navigate(`/agents/${agent.id}`)}
+                      title={t("search.viewProfile")}
+                    >
+                      {agent.userName}
+                    </h3>
                     <div className="card-details">
                       <span>{agent.companyName || t("search.companyFallback")}</span>
                       <span>{t(agent.experienceYears === 1 ? "search.years_one" : "search.years", { count: agent.experienceYears || 0 })}</span>
@@ -340,6 +352,26 @@ export default function AgentSearchPage() {
                         onClick={() => handleContactar(agent)}
                       >
                         {t("search.contact")}
+                      </button>
+                    )}
+                    {isAuthenticated && user?.role !== 'AGENT' && !user?.agentProfileId && user?.agentProfileId !== agent.id && (
+                      <button
+                        type="button"
+                        className="btn-review"
+                        onClick={() => setReviewModalAgent({ id: agent.id, name: agent.userName })}
+                        style={{
+                          marginTop: "0.5rem",
+                          background: "none",
+                          border: "1px solid #f0a500",
+                          color: "#f0a500",
+                          borderRadius: "6px",
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.85rem",
+                          cursor: "pointer",
+                          width: "100%",
+                        }}
+                      >
+                        ★ {t("review.buttonLeave")}
                       </button>
                     )}
                   </div>
@@ -408,6 +440,14 @@ export default function AgentSearchPage() {
       </div>
 
       <Footer />
+
+      <ReviewForm
+        show={!!reviewModalAgent}
+        onHide={() => setReviewModalAgent(null)}
+        agentId={reviewModalAgent?.id}
+        agentName={reviewModalAgent?.name}
+        onSaved={() => setReviewModalAgent(null)}
+      />
     </div>
   );
 }

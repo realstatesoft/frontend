@@ -3,9 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiBell, FiHome, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
 import { CiUser } from 'react-icons/ci';
-import { IoHomeOutline, IoSettingsOutline, IoLogOutOutline, IoCalendarClearOutline, IoSpeedometerOutline, IoCashOutline, IoChatbubblesOutline, IoPersonOutline, IoBriefcaseOutline, IoShieldOutline } from 'react-icons/io5';
-import { MdFavoriteBorder } from 'react-icons/md';
-import { FaRegTrashAlt } from 'react-icons/fa';
+import { IoSettingsOutline, IoLogOutOutline, IoSpeedometerOutline, IoChatbubblesOutline, IoShieldOutline } from 'react-icons/io5';
 import { useAuth } from '../../../hooks/useAuth';
 import { useUnreadMessagesCount } from '../../../hooks/useMessagesData';
 import useUIStore from '../../../store/useUIStore';
@@ -56,17 +54,23 @@ export default function Topbar({ extraActions }) {
     sidebarCollapsed && styles['topbar--collapsed'],
   ].filter(Boolean).join(' ');
 
-  const getOffersLink = () => {
-    if (user?.role === 'AGENT') return '/agent/ofertas';
-    if (user?.role === 'OWNER') return '/owner/ofertas';
-    return '/ofertas';
-  };
-
   const getDashboardLink = () => {
     if (user?.role === 'USER') return '/owner/dashboard';
     if (user?.role === 'AGENT') return '/agent/dashboard';
     if (user?.role === 'ADMIN') return '/admin/dashboard';
     return '/dashboard';
+  };
+
+  const getSettingsLink = () => {
+    if (user?.role === 'AGENT') return '/agent/settings';
+    if (user?.role === 'ADMIN') return '/admin/settings';
+    return '/owner/settings';
+  };
+
+  const getMessagesLink = () => {
+    if (user?.role === 'AGENT') return '/agent/mensajes';
+    if (user?.role === 'USER' || user?.role === 'OWNER') return '/owner/mensajes';
+    return '/mensajes';
   };
 
   return (
@@ -112,7 +116,7 @@ export default function Topbar({ extraActions }) {
 
         {isAuthenticated && (
           <Link
-            to={user?.role === 'AGENT' ? '/agent/mensajes' : user?.role === 'USER' || user?.role === 'OWNER' ? '/owner/mensajes' : '/mensajes'}
+            to={getMessagesLink()}
             className={styles.topbar__iconBtn}
             aria-label="Mensajes"
           >
@@ -139,48 +143,27 @@ export default function Topbar({ extraActions }) {
               <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <CiUser size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
               </Link>
-              <Link to={getOffersLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                <IoCashOutline size={16} style={{ flexShrink: 0 }} /> {t('myOffers')}
+              <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard', 'Mi dashboard')}
               </Link>
-              <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                <IoHomeOutline size={16} style={{ flexShrink: 0 }} /> {t('myProperties')}
-              </Link>
-              <Link to="/trashcan" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                <FaRegTrashAlt size={14} style={{ flexShrink: 0 }} /> {t('trash')}
-              </Link>
-              <Link to="/properties/favorites" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                <MdFavoriteBorder size={16} style={{ flexShrink: 0 }} /> {t('favorites')}
-              </Link>
-              {(user?.role === 'USER' || user?.role === 'OWNER') && (
-                <>
-                  <Link to="/tenant/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoHomeOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardTenant', 'Panel Inquilino')}
-                  </Link>
-                  <Link to="/owner/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                    <IoPersonOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardOwner', 'Panel Propietario')}
-                  </Link>
-                </>
-
-              )}
-              {user?.role === 'AGENT' && (
-                <Link to="/agent/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                  <IoBriefcaseOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAgent', 'Panel Agente')}
+              {user?.role !== 'ADMIN' && (
+                <Link to={getMessagesLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
+                  {messagesUnread > 0 && (
+                    <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
+                      {Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}
+                    </span>
+                  )}
                 </Link>
-
               )}
               {user?.role === 'ADMIN' && (
                 <Link to="/admin/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                  <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboardAdmin', 'Panel Admin')}
+                  <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('adminPanel')}
                 </Link>
+              )}
 
-              )}
-              {user?.role === 'AGENT' && (
-                <Link to="/agent/agenda" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                  <IoCalendarClearOutline size={16} style={{ flexShrink: 0 }} /> {t('agenda')}
-                </Link>
-              )}
               <hr className="profile-dropdown-divider" />
-              <Link to="#" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <Link to={getSettingsLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <IoSettingsOutline size={16} style={{ flexShrink: 0 }} /> {t('settings')}
               </Link>
               <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
