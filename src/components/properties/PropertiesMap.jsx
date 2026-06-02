@@ -7,6 +7,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { Link } from "react-router-dom";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
+import DrawAreaControl from "./DrawAreaControl";
 
 const DEFAULT_CENTER = [-27.3369, -55.8668];
 const DEFAULT_ZOOM = 12;
@@ -48,7 +49,7 @@ function formatStat(value, t, key) {
   return t(`map.stats.${key}`, { count: value });
 }
 
-export default function PropertiesMap({ properties = [], isSplit = false }) {
+export default function PropertiesMap({ properties = [], isSplit = false, drawMode = false, onAreaDrawn, onAreaCleared }) {
   const { t } = useTranslation("properties");
   const { formatPrice } = usePropertyPriceDisplay(0);
 
@@ -116,6 +117,9 @@ export default function PropertiesMap({ properties = [], isSplit = false }) {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <MapBoundsController points={points} />
+          {drawMode && onAreaDrawn && onAreaCleared && (
+            <DrawAreaControl onAreaDrawn={onAreaDrawn} onAreaCleared={onAreaCleared} />
+          )}
           {points.map((point) => (
             <Marker key={point.id} position={point.position}>
               <Popup>

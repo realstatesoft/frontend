@@ -14,7 +14,8 @@ import propertyApi from "../services/properties/propertyApi";
  * @param {number} opts.minPrice       - Precio mínimo en PYG
  * @param {number} opts.maxPrice       - Precio máximo en PYG
  * @param {number} opts.minBedrooms    - Cantidad mínima de dormitorios
- * @param {number} opts.minBathrooms   - Cantidad mínima de baños
+ * @param {object} opts.minBathrooms   - Cantidad mínima de baños
+ * @param {object} [opts.geoFilter]     - Filtro geoespacial { type: 'polygon', polygon } | { type: 'circle', circleLat, circleLng, circleRadiusMeters }
  * @returns {{ properties, loading, error, totalPages, totalElements, refetch }}
  */
 export default function useProperties({
@@ -29,11 +30,12 @@ export default function useProperties({
     maxPrice,
     minBedrooms,
     minBathrooms,
+    geoFilter,
 } = {}) {
     const { data, isLoading: loading, isFetching, error: queryError, refetch } = useQuery({
         queryKey: [
             "properties",
-            { page, size, search, propertyType, category, status, availability, minPrice, maxPrice, minBedrooms, minBathrooms }
+            { page, size, search, propertyType, category, status, availability, minPrice, maxPrice, minBedrooms, minBathrooms, geoFilter }
         ],
         queryFn: async () => {
             const springPage = Math.max(page - 1, 0);
@@ -47,6 +49,14 @@ export default function useProperties({
             if (maxPrice !== undefined && maxPrice !== null) params.maxPrice = maxPrice;
             if (minBedrooms !== undefined && minBedrooms !== null) params.minBedrooms = minBedrooms;
             if (minBathrooms !== undefined && minBathrooms !== null) params.minBathrooms = minBathrooms;
+
+            if (geoFilter?.type === 'polygon' && geoFilter.polygon) {
+                params.polygon = JSON.stringify(geoFilter.polygon);
+            } else if (geoFilter?.type === 'circle' && geoFilter.circleLat != null) {
+                params.circleLat = geoFilter.circleLat;
+                params.circleLng = geoFilter.circleLng;
+                params.circleRadius = geoFilter.circleRadiusMeters;
+            }
 
             let res;
             if (search.trim()) {

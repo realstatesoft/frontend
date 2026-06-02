@@ -42,6 +42,7 @@ export default function PropertiesPage() {
     const [minBathrooms, setMinBathrooms] = useState(locationState.minBathrooms ?? "");
     const [currentPage, setCurrentPage] = useState(1);
     const [bannerDismissed, setBannerDismissed] = useState(false);
+    const [drawnArea, setDrawnArea] = useState(null);
     const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
     const { data: exchangeRates } = useExchangeRates({ enabled: true, staleTime: 10 * 60 * 1000, retry: 1 });
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -111,11 +112,15 @@ export default function PropertiesPage() {
         maxPrice: convertedPriceFilters.maxPrice,
         minBedrooms: minBedrooms ? Number(minBedrooms) : undefined,
         minBathrooms: minBathrooms ? Number(minBathrooms) : undefined,
+        geoFilter: drawnArea,
     });
     const { favoriteIds, togglingIds, isAuthenticated, toggleFavorite } = useFavoriteProperties();
 
     // Al cambiar cualquier filtro volvemos a la página 1
     const resetPage = () => setCurrentPage(1);
+
+    const handleAreaDrawn = (area) => { setDrawnArea(area); setCurrentPage(1); };
+    const handleAreaCleared = () => { setDrawnArea(null); setCurrentPage(1); };
 
     const handleSearch = (val) => { setSearch(val); resetPage(); };
     const handleType = (val) => { setTypeFilter(val); resetPage(); };
@@ -174,7 +179,24 @@ export default function PropertiesPage() {
                 {/* Lado del Mapa (Izquierda) - Sticky */}
                 <div className="d-none d-lg-block col-lg-6 p-3" style={{ position: "sticky", top: 0, height: "100vh" }}>
                     <div className="h-100 w-100 position-relative" style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 24px 50px rgba(15, 23, 42, 0.1)" }}>
-                        <LazyPropertiesMap properties={properties || []} isSplit={true} />
+                        <LazyPropertiesMap
+                            properties={properties || []}
+                            isSplit={true}
+                            drawMode={true}
+                            onAreaDrawn={handleAreaDrawn}
+                            onAreaCleared={handleAreaCleared}
+                        />
+
+                        {/* Botón flotante "Limpiar área" */}
+                        {drawnArea && (
+                            <button
+                                onClick={handleAreaCleared}
+                                className="position-absolute btn btn-sm btn-light border shadow-sm"
+                                style={{ top: 12, right: 12, zIndex: 1001 }}
+                            >
+                                ✕ Limpiar área
+                            </button>
+                        )}
                         
                         {/* Overlay semi-transparente cuando está cargando pero ya hay mapa */}
                         {loading && (
@@ -206,7 +228,23 @@ export default function PropertiesPage() {
                     {/* Mapa en móvil */}
                     <div className="d-block d-lg-none px-3 mb-4">
                         <div className="position-relative" style={{ height: "300px", borderRadius: "24px", overflow: "hidden", boxShadow: "0 24px 50px rgba(15, 23, 42, 0.1)" }}>
-                            <LazyPropertiesMap properties={properties || []} isSplit={true} />
+                            <LazyPropertiesMap
+                                properties={properties || []}
+                                isSplit={true}
+                                drawMode={true}
+                                onAreaDrawn={handleAreaDrawn}
+                                onAreaCleared={handleAreaCleared}
+                            />
+
+                            {drawnArea && (
+                                <button
+                                    onClick={handleAreaCleared}
+                                    className="position-absolute btn btn-sm btn-light border shadow-sm"
+                                    style={{ top: 8, right: 8, zIndex: 1001 }}
+                                >
+                                    ✕ Limpiar área
+                                </button>
+                            )}
                             
                             {loading && (
                                 <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(255,255,255,0.6)", zIndex: 1000 }}>
