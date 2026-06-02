@@ -29,8 +29,9 @@ function EditProfileModal({ profile, onClose, onSaved }) {
   function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setError("Solo se permiten imágenes (JPEG, PNG, WebP).");
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError("Solo se permiten imágenes (JPEG, PNG, WebP, GIF).");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -56,22 +57,22 @@ function EditProfileModal({ profile, onClose, onSaved }) {
     setSaving(true);
     setError(null);
     try {
-      let updatedProfile;
+      let avatarData = null;
 
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
-        const { data: avatarRes } = await api.post("/users/me/avatar", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        updatedProfile = avatarRes.data;
+        const { data: avatarRes } = await api.post("/users/me/avatar", formData);
+        avatarData = avatarRes.data;
       }
 
       const { data: profileRes } = await api.put("/users/me", {
         name: form.name,
         phone: form.phone,
       });
-      updatedProfile = profileRes.data;
+      const updatedProfile = avatarData
+        ? { ...profileRes.data, avatarUrl: profileRes.data.avatarUrl ?? avatarData.avatarUrl }
+        : profileRes.data;
 
       onSaved(updatedProfile);
     } catch {
@@ -134,7 +135,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
                   {selectedFile ? "Cambiar imagen" : "Subir foto"}
                 </button>
                 <span className="uedit-avatar-upload__hint">
-                  {selectedFile ? selectedFile.name : "JPEG, PNG, WebP — máx. 5 MB"}
+                  {selectedFile ? selectedFile.name : "JPEG, PNG, WebP, GIF — máx. 5 MB"}
                 </span>
               </div>
               <input
