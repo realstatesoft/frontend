@@ -21,7 +21,7 @@ export default function AgentProfilePage() {
     setLoading(true);
     setError(null);
 
-    const agentId = user?.userId || user?.id;
+    const agentId = user?.agentProfileId || user?.userId || user?.id;
     if (!agentId) {
        setLoading(false);
        return;
@@ -50,7 +50,7 @@ export default function AgentProfilePage() {
     };
   }, [user]);
 
-  const agentIdLocal = user?.userId || user?.id;
+  const agentIdLocal = user?.agentProfileId || user?.userId || user?.id;
   if (!agentIdLocal) {
     return (
       <Container className="py-5 bg-light min-vh-100 d-flex align-items-center justify-content-center">

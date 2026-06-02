@@ -364,7 +364,7 @@
     }
 }
 
-// Preview de avatar
+// Preview / Upload de avatar
 .uedit-avatar-preview {
     margin-top: 0.4rem;
 
@@ -374,6 +374,90 @@
         border-radius: 50%;
         object-fit: cover;
         border: 2px solid $border-color-soft;
+    }
+}
+
+.uedit-avatar-upload {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.25rem;
+
+    &__circle {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: $input-bg-light;
+        border: 2px solid $border-color-soft;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        color: $text-muted;
+        transition: border-color 0.2s ease;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        &:hover {
+            border-color: $primary;
+
+            .uedit-avatar-upload__overlay {
+                opacity: 1;
+            }
+        }
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        border-radius: 50%;
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    &__btn {
+        background: transparent;
+        border: 1px solid $primary;
+        color: $primary;
+        border-radius: 50px;
+        padding: 0.35rem 1rem;
+        font-size: 0.82rem;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+        align-self: flex-start;
+
+        &:hover {
+            background: $primary;
+            color: #fff;
+        }
+    }
+
+    &__hint {
+        font-size: 0.76rem;
+        color: $text-muted;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 
