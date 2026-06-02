@@ -114,6 +114,21 @@ export default function PropertiesPage() {
         minBathrooms: minBathrooms ? Number(minBathrooms) : undefined,
         geoFilter: drawnArea,
     });
+
+    // Query separada para el mapa: trae todos los que cumplen el filtro (sin paginar)
+    const { properties: mapProperties } = useProperties({
+        page: 1,
+        size: 500,
+        search: debouncedSearch,
+        propertyType: backendType,
+        category: backendCategory,
+        availability: backendAvailability,
+        minPrice: convertedPriceFilters.minPrice,
+        maxPrice: convertedPriceFilters.maxPrice,
+        minBedrooms: minBedrooms ? Number(minBedrooms) : undefined,
+        minBathrooms: minBathrooms ? Number(minBathrooms) : undefined,
+        geoFilter: drawnArea,
+    });
     const { favoriteIds, togglingIds, isAuthenticated, toggleFavorite } = useFavoriteProperties();
 
     // Al cambiar cualquier filtro volvemos a la página 1
@@ -140,6 +155,7 @@ export default function PropertiesPage() {
         setMaxPrice("");
         setMinBedrooms("");
         setMinBathrooms("");
+        setDrawnArea(null);
         setCurrentPage(1);
     };
 
@@ -180,11 +196,12 @@ export default function PropertiesPage() {
                 <div className="d-none d-lg-block col-lg-6 p-3" style={{ position: "sticky", top: 0, height: "100vh" }}>
                     <div className="h-100 w-100 position-relative" style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 24px 50px rgba(15, 23, 42, 0.1)" }}>
                         <LazyPropertiesMap
-                            properties={properties || []}
+                            properties={mapProperties || []}
                             isSplit={true}
                             drawMode={true}
                             onAreaDrawn={handleAreaDrawn}
                             onAreaCleared={handleAreaCleared}
+                            drawActive={drawnArea}
                         />
 
                         {/* Botón flotante "Limpiar área" */}
@@ -229,11 +246,12 @@ export default function PropertiesPage() {
                     <div className="d-block d-lg-none px-3 mb-4">
                         <div className="position-relative" style={{ height: "300px", borderRadius: "24px", overflow: "hidden", boxShadow: "0 24px 50px rgba(15, 23, 42, 0.1)" }}>
                             <LazyPropertiesMap
-                                properties={properties || []}
+                                properties={mapProperties || []}
                                 isSplit={true}
                                 drawMode={true}
                                 onAreaDrawn={handleAreaDrawn}
                                 onAreaCleared={handleAreaCleared}
+                                drawActive={drawnArea}
                             />
 
                             {drawnArea && (

@@ -11,18 +11,28 @@ import 'leaflet-draw';
  * @param {object}   props
  * @param {function} props.onAreaDrawn   - Callback({ type, polygon? | circleLat?, circleLng?, circleRadiusMeters? })
  * @param {function} props.onAreaCleared - Callback() cuando se elimina el área
+ * @param {any}      props.clearSignal   - Cuando es null/falsy, limpia los layers dibujados
  */
-export default function DrawAreaControl({ onAreaDrawn, onAreaCleared }) {
+export default function DrawAreaControl({ onAreaDrawn, onAreaCleared, clearSignal }) {
   const map = useMap();
 
   // Usar refs para evitar re-registrar handlers al recibir nuevas instancias de callback
   const onAreaDrawnRef = useRef(onAreaDrawn);
   const onAreaClearedRef = useRef(onAreaCleared);
+  const drawnItemsRef = useRef(null);
   useEffect(() => { onAreaDrawnRef.current = onAreaDrawn; }, [onAreaDrawn]);
   useEffect(() => { onAreaClearedRef.current = onAreaCleared; }, [onAreaCleared]);
 
+  // Limpiar layers visualmente cuando el padre resetea drawnArea a null
+  useEffect(() => {
+    if (!clearSignal && drawnItemsRef.current) {
+      drawnItemsRef.current.clearLayers();
+    }
+  }, [clearSignal]);
+
   useEffect(() => {
     const drawnItems = new L.FeatureGroup();
+    drawnItemsRef.current = drawnItems;
     map.addLayer(drawnItems);
 
     const drawControl = new L.Control.Draw({
@@ -75,6 +85,7 @@ export default function DrawAreaControl({ onAreaDrawn, onAreaCleared }) {
       map.off(L.Draw.Event.DELETED, handleDeleted);
       map.removeControl(drawControl);
       map.removeLayer(drawnItems);
+      drawnItemsRef.current = null;
     };
   }, [map]);
 

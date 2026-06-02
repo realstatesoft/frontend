@@ -49,7 +49,7 @@ function formatStat(value, t, key) {
   return t(`map.stats.${key}`, { count: value });
 }
 
-export default function PropertiesMap({ properties = [], isSplit = false, drawMode = false, onAreaDrawn, onAreaCleared }) {
+export default function PropertiesMap({ properties = [], isSplit = false, drawMode = false, onAreaDrawn, onAreaCleared, drawActive }) {
   const { t } = useTranslation("properties");
   const { formatPrice } = usePropertyPriceDisplay(0);
 
@@ -118,7 +118,7 @@ export default function PropertiesMap({ properties = [], isSplit = false, drawMo
           />
           <MapBoundsController points={points} />
           {drawMode && onAreaDrawn && onAreaCleared && (
-            <DrawAreaControl onAreaDrawn={onAreaDrawn} onAreaCleared={onAreaCleared} />
+            <DrawAreaControl onAreaDrawn={onAreaDrawn} onAreaCleared={onAreaCleared} clearSignal={drawActive} />
           )}
           {points.map((point) => (
             <Marker key={point.id} position={point.position}>
