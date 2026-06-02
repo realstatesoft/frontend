@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Button, Spinner, Alert } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { IoOptionsOutline } from 'react-icons/io5';
 import settingsService from '../../services/settingsService';
 import styles from './UserSettingsPage.module.scss';
 
@@ -114,8 +116,19 @@ export default function UserSettingsPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Configuración</h2>
-        <p className={styles.subtitle}>Personaliza tus notificaciones y preferencias de privacidad.</p>
+        <div className="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h2 className={styles.title}>Configuración</h2>
+            <p className={styles.subtitle}>Personaliza tus notificaciones y preferencias de privacidad.</p>
+          </div>
+          <Link
+            to="/preferences"
+            className="btn btn-outline-secondary d-flex align-items-center gap-2"
+            style={{ borderRadius: 8, fontSize: '0.9rem', fontWeight: 500 }}
+          >
+            <IoOptionsOutline size={16} /> Preferencias
+          </Link>
+        </div>
       </div>
 
       {loadError && <Alert variant="danger" className="mb-4">{loadError}</Alert>}

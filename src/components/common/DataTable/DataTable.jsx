@@ -56,36 +56,38 @@ export default function DataTable({
         )}
       </div>
 
-      <table className={styles.dataTable__table}>
-        <thead>
-          <tr>
-            {columns.map((col) => (
-              <th key={col.key} className={styles.dataTable__th}>
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.length === 0 ? (
+      <div className={styles.dataTable__tableWrapper}>
+        <table className={styles.dataTable__table}>
+          <thead>
             <tr>
-              <td colSpan={columns.length} className={styles.dataTable__empty}>
-                {emptyMessage}
-              </td>
+              {columns.map((col) => (
+                <th key={col.key} className={styles.dataTable__th}>
+                  {col.label}
+                </th>
+              ))}
             </tr>
-          ) : (
-            data.map((row, idx) => (
-              <tr key={rowKey ? rowKey(row) : `row-${row.id || idx}-${idx}`} className={styles.dataTable__row}>
-                {columns.map((col) => (
-                  <td key={col.key} className={styles.dataTable__td}>
-                    {col.render ? col.render(row[col.key], row) : row[col.key]}
-                  </td>
-                ))}
+          </thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className={styles.dataTable__empty}>
+                  {emptyMessage}
+                </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              data.map((row, idx) => (
+                <tr key={rowKey ? rowKey(row) : `row-${row.id || idx}-${idx}`} className={styles.dataTable__row}>
+                  {columns.map((col) => (
+                    <td key={col.key} className={styles.dataTable__td}>
+                      {col.render ? col.render(row[col.key], row) : row[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

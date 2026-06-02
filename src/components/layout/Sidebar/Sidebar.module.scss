@@ -67,10 +67,16 @@
 }
 
 .sidebar__logo {
-  @include flex-between;
-  padding: var(--spacing-lg) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
+  height: var(--topbar-height);
   min-height: var(--topbar-height);
+  max-height: var(--topbar-height);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .sidebar__logo-brand {
@@ -101,8 +107,11 @@
 }
 
 .sidebar__logo-img {
-  height: 106px;
+  height: 100%;
   width: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
 }
 
 .sidebar__nav {
@@ -134,8 +143,8 @@
   font-size: 0.875rem;
   font-weight: 500;
   transition: var(--transition-base);
-  white-space: nowrap;
   cursor: pointer;
+  min-width: 0;
 
   &:hover {
     background: var(--color-bg-surface-hover);
@@ -161,6 +170,9 @@
 
 .sidebar__itemLabel {
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
   transition: opacity 0.2s ease;
 }
 
@@ -207,4 +219,18 @@
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
   text-transform: uppercase;
+  flex-shrink: 0;
+  min-width: 52px;
+  text-align: center;
+}
+
+/* Destacar items con pill (switcher de paneles) */
+.sidebar__item:has(.sidebar__pill) {
+  border: 1px dashed var(--color-border);
+  background: color-mix(in srgb, var(--color-accent) 4%, transparent);
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    border-color: var(--color-accent);
+  }
 }

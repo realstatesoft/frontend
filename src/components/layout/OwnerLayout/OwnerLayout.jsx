@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import {
-  FiGrid, FiHome, FiEye, FiMessageSquare, FiDollarSign, FiFileText, FiSettings
+  FiGrid, FiHome, FiEye, FiMessageSquare, FiDollarSign, FiFileText, FiSettings,
+  FiStar, FiHeart, FiTrash2, FiUsers, FiRepeat
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -30,6 +31,7 @@ export default function OwnerLayout() {
   ].filter(Boolean).join(' ');
 
   const OWNER_NAV_ITEMS = [
+    { to: '/tenant/dashboard', icon: <FiUsers style={{ color: '#10b981' }} />, label: t('layouts.owner.tenantDashboard', 'Panel Inquilino'), badgeLabel: 'Cambiar' },
     { section: t('sidebar.sectionMain', 'PRINCIPAL') },
     { to: OWNER_ROUTES.DASHBOARD, icon: <FiGrid />, label: t('layouts.owner.dashboard', 'Mi Panel') },
     { to: OWNER_ROUTES.PROPERTIES, icon: <FiHome />, label: t('layouts.owner.properties', 'Mis Propiedades') },
@@ -38,6 +40,10 @@ export default function OwnerLayout() {
     { to: OWNER_ROUTES.OFFERS, icon: <FiDollarSign />, label: t('layouts.owner.offers', 'Ofertas') },
     { to: OWNER_ROUTES.RESERVATIONS, icon: <FiFileText />, label: t('layouts.owner.reservations', 'Reservas Recibidas') },
     { to: OWNER_ROUTES.CONTRACTS, icon: <FiFileText />, label: t('layouts.owner.contracts', 'Mis Contratos') },
+    { section: t('sidebar.sectionPersonal', 'PERSONAL') },
+    { to: '/owner/subscriptions', icon: <FiStar />, label: t('layouts.owner.subscriptions', 'Mis Suscripciones') },
+    { to: '/owner/favorites', icon: <FiHeart />, label: t('layouts.owner.favorites', 'Favoritos') },
+    { to: '/owner/trashcan', icon: <FiTrash2 />, label: t('layouts.owner.trash', 'Papelera') },
     { section: t('sidebar.sectionCommunication', 'COMUNICACIÓN') },
     { to: OWNER_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: t('layouts.owner.messages', 'Mensajes'), showBadge: true },
     { to: OWNER_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.owner.settings', 'Configuración') },

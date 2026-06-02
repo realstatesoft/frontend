@@ -106,7 +106,7 @@ function CancelModal({ show, onHide, onConfirm, cancelling, error, t }) {
   );
 }
 
-export default function MySubscriptionsPage() {
+export default function MySubscriptionsPage({ hideNavbar = false }) {
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
   const { formatDate } = useFormatters();
@@ -190,7 +190,7 @@ export default function MySubscriptionsPage() {
 
   return (
     <>
-      <CustomNavbar />
+      {!hideNavbar && <CustomNavbar />}
       <Container className={styles.container}>
         <div className="d-flex align-items-center gap-2 mb-4">
           <Button
@@ -296,7 +296,7 @@ export default function MySubscriptionsPage() {
           </>
         )}
       </Container>
-      <Footer />
+      {!hideNavbar && <Footer />}
 
       <CancelModal
         show={cancelModal.open}

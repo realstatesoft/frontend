@@ -6,39 +6,11 @@ import { useTranslation } from "react-i18next";
 import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 import propertyService from "../../services/propertyService";
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "SOLD":
-    case "RENTED":
-    case "RESERVED":
-      return "#d32f2f";
-    case "PENDING":
-      return "#f57c00";
-    default:
-      return "#388e3c";
-  }
-};
-
 const Properties = () => {
   const { t } = useTranslation("landing");
   const { formatPrice } = usePropertyPriceDisplay(0);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "SOLD":
-        return t("status.sold");
-      case "RENTED":
-        return "Alquilado";
-      case "RESERVED":
-        return t("status.reserved");
-      case "PENDING":
-        return "Pendiente";
-      default:
-        return t("status.available");
-    }
-  };
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -63,8 +35,6 @@ const Properties = () => {
 
   return (
     <>
-      <div className="text-center py-4" style={{ backgroundColor: "#fff" }}></div>
-
       <div
         id="projects"
         style={{
@@ -74,6 +44,11 @@ const Properties = () => {
         }}
       >
         <Container className="py-5">
+          <div className="text-center mx-auto mb-4" style={{ maxWidth: 650 }}>
+            <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
+              {t("featured.title")}
+            </h3>
+          </div>
           <style>{`
             .custom-carousel .carousel-item {
               transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -136,34 +111,6 @@ const Properties = () => {
                               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                             >
                               <div className="position-relative">
-                                <div
-                                  className="position-absolute top-0 start-0 d-flex flex-wrap gap-1 p-3 w-100"
-                                  style={{ zIndex: 2 }}
-                                >
-                                  <Badge
-                                    className="px-3 py-2"
-                                    style={{
-                                      backgroundColor: getStatusColor(property.status),
-                                      borderRadius: "20px",
-                                      fontSize: "0.75rem",
-                                    }}
-                                  >
-                                    {getStatusLabel(property.status)}
-                                  </Badge>
-                                  {property.highlighted && (
-                                    <Badge
-                                      className="d-flex align-items-center gap-1"
-                                      style={{
-                                        background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                                        borderRadius: "20px",
-                                        fontSize: "0.75rem",
-                                        padding: "6px 12px",
-                                      }}
-                                    >
-                                      <StarFill size={10} aria-hidden="true" /> Destacada
-                                    </Badge>
-                                  )}
-                                </div>
                                 <Card.Img
                                   variant="top"
                                   src={

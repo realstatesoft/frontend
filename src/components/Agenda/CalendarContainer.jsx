@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container } from 'react-bootstrap';
+import { Button, Container, Spinner } from 'react-bootstrap';
 import { ChevronLeft, ChevronRight } from 'react-bootstrap-icons';
 import CalendarGrid from './CalendarGrid';
 import CreateEventModal from './CreateEventModal';
@@ -119,7 +119,9 @@ export default function CalendarContainer() {
 
             {/* Calendar Grid */}
             {isLoading ? (
-                <div className="text-center p-5 text-muted">Cargando agenda...</div>
+                <div className="d-flex justify-content-center align-items-center py-5">
+                    <Spinner animation="border" variant="primary" />
+                </div>
             ) : (
                 <CalendarGrid
                     currentDate={currentDate}
