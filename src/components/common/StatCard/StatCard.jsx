@@ -40,6 +40,7 @@ export default function StatCard({ label, value, subtitle, trend, icon, colorAcc
               {trendSymbol} {formattedTrend}%
             </span>
           )}
+          {hint ? <span className={styles.statCard__hint}>{hint}</span> : null}
         </div>
       </div>
     );

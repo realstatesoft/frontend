@@ -242,7 +242,7 @@ export default function StepSelectAgent({ form, set, prevStep, onFinish }) {
                       )}
                     </button>
 
-                    {isAuthenticated && user?.agentProfileId !== agent.id && (
+                    {isAuthenticated && user?.role !== 'AGENT' && !user?.agentProfileId && user?.agentProfileId !== agent.id && (
                       <button
                         type="button"
                         className="agent-card__contact-btn"

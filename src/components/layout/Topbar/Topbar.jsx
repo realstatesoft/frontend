@@ -67,6 +67,12 @@ export default function Topbar({ extraActions }) {
     return '/owner/settings';
   };
 
+  const getMessagesLink = () => {
+    if (user?.role === 'AGENT') return '/agent/mensajes';
+    if (user?.role === 'USER' || user?.role === 'OWNER') return '/owner/mensajes';
+    return '/mensajes';
+  };
+
   return (
     <header className={topbarClass}>
       <div className={styles.topbar__left}>
@@ -110,7 +116,7 @@ export default function Topbar({ extraActions }) {
 
         {isAuthenticated && (
           <Link
-            to={user?.role === 'AGENT' ? '/agent/mensajes' : user?.role === 'USER' || user?.role === 'OWNER' ? '/owner/mensajes' : '/mensajes'}
+            to={getMessagesLink()}
             className={styles.topbar__iconBtn}
             aria-label="Mensajes"
           >
@@ -140,8 +146,8 @@ export default function Topbar({ extraActions }) {
               <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard', 'Mi dashboard')}
               </Link>
-              {user?.role !== 'AGENT' && user?.role !== 'ADMIN' && (
-                <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+              {user?.role !== 'ADMIN' && (
+                <Link to={getMessagesLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
                   {messagesUnread > 0 && (
                     <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>

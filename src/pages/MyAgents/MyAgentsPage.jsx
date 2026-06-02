@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Container, Spinner, Alert, Card, Row, Col, Button } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
 import CustomNavbar from "../../components/Landing/Navbar";
@@ -44,7 +44,7 @@ export default function MyAgentsPage() {
         {!isLoading && !error && agents.length === 0 && (
           <Alert variant="info">
             Aún no tienes agentes asociados. Puedes buscar agentes en{" "}
-            <a href="/AgentSearch" className="fw-semibold">nuestro directorio</a>.
+            <Link to="/AgentSearch" className="fw-semibold">nuestro directorio</Link>.
           </Alert>
         )}
 

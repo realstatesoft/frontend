@@ -138,7 +138,11 @@ export default function AppRouter() {
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
-                <Route path="/mis-agentes" element={<MyAgentsPage />} />
+                <Route path="/mis-agentes" element={
+                    <ProtectedRoute requiredRole={["USER", "OWNER", "ADMIN"]}>
+                        <MyAgentsPage />
+                    </ProtectedRoute>
+                } />
                 <Route path="/contratos/nuevo" element={<ContractCreatePage />} />
                 <Route path="/clientes" element={<ClientList />} />
                 <Route path="/clientes/registrar" element={<RegisterClient />} />

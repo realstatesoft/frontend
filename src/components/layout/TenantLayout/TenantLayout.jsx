@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import {
-  FiGrid, FiHome, FiCreditCard, FiTool, FiMessageSquare, FiSettings, FiFileText,
+  FiGrid, FiCreditCard, FiTool, FiMessageSquare, FiSettings, FiFileText,
   FiHeart, FiSliders, FiHome as FiHomeOutline, FiRepeat
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';

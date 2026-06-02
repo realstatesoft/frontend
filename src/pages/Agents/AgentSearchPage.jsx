@@ -354,7 +354,7 @@ export default function AgentSearchPage() {
                         {t("search.contact")}
                       </button>
                     )}
-                    {isAuthenticated && user?.agentProfileId !== agent.id && (
+                    {isAuthenticated && user?.role !== 'AGENT' && !user?.agentProfileId && user?.agentProfileId !== agent.id && (
                       <button
                         type="button"
                         className="btn-review"

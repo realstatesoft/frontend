@@ -234,7 +234,7 @@ export default function SuggestedAgents({
                         Ver perfil y reseñas →
                       </Button>
 
-                      {isAuthenticated && user?.agentProfileId !== agent.id && (
+                      {isAuthenticated && user?.role !== 'AGENT' && !user?.agentProfileId && user?.agentProfileId !== agent.id && (
                         <Button
                           variant="link"
                           size="sm"

@@ -137,7 +137,7 @@ export default function OwnerDashboardPage() {
                     <img src={prop.mainImageUrl} alt={prop.title} className={styles.list_item_img} />
                   ) : (
                     <div className={`${styles.list_item_img} ${styles['list_item_img--placeholder']}`}>
-                      <FiHome size={20} color="#999" />
+                      <FiHome size={20} />
                     </div>
                   )}
                   <div className={styles.list_item_info}>
