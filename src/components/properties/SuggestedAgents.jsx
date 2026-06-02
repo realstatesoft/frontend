@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, Button, Spinner, Badge, Row, Col, Alert } from "react-bootstrap";
 import { getSuggestedAgents } from "../../services/agents/agentApi";
 import { PROPERTY_TYPE, CATEGORY } from "../../constants/propertyEnums";
+import ReviewForm from "../Agents/ReviewForm";
+import { useAuth } from "../../hooks/useAuth";
 
 /**
  * Componente para mostrar y seleccionar agentes sugeridos.
@@ -25,6 +28,9 @@ export default function SuggestedAgents({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showSelector, setShowSelector] = useState(false);
+  const [reviewModalAgent, setReviewModalAgent] = useState(null);
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
 
   const fetchAgents = useCallback(async () => {
     setLoading(true);
@@ -215,6 +221,33 @@ export default function SuggestedAgents({
                           </div>
                         )}
                       </div>
+
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="p-0 mt-2 text-decoration-none"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/agents/${agent.id}`);
+                        }}
+                      >
+                        Ver perfil y reseñas →
+                      </Button>
+
+                      {isAuthenticated && user?.agentProfileId !== agent.id && (
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="p-0 mt-1 text-decoration-none"
+                          style={{ color: "#f0a500" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setReviewModalAgent({ id: agent.id, name: agent.userName });
+                          }}
+                        >
+                          ★ Dejar reseña
+                        </Button>
+                      )}
                     </Card.Body>
                   </Card>
                 </Col>
@@ -232,6 +265,14 @@ export default function SuggestedAgents({
           )}
         </div>
       )}
+
+      <ReviewForm
+        show={!!reviewModalAgent}
+        onHide={() => setReviewModalAgent(null)}
+        agentId={reviewModalAgent?.id}
+        agentName={reviewModalAgent?.name}
+        onSaved={() => setReviewModalAgent(null)}
+      />
     </div>
   );
 }

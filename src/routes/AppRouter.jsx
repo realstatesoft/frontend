@@ -93,6 +93,7 @@ const SubscriptionPlansPage = lazy(() => import("../pages/Subscriptions/Subscrip
 const MySubscriptionsPage = lazy(() => import("../pages/MySubscriptions/MySubscriptionsPage"));
 const AgentSettingsPage = lazy(() => import("../pages/AgentSettings/AgentSettingsPage"));
 const UserSettingsPage = lazy(() => import("../pages/UserSettings/UserSettingsPage"));
+const MyAgentsPage = lazy(() => import("../pages/MyAgents/MyAgentsPage"));
 
 // ─── Suspense fallback ──────────────────────────────────────────────────────
 function PageLoader() {
@@ -137,6 +138,7 @@ export default function AppRouter() {
                 <Route path="/trashcan" element={<PropertiesTrashCan />} />
                 <Route path="/visit-requests" element={<VisitRequests />} />
                 <Route path="/property-management" element={<PropertyManagementOptions />} />
+                <Route path="/mis-agentes" element={<MyAgentsPage />} />
                 <Route path="/contratos/nuevo" element={<ContractCreatePage />} />
                 <Route path="/clientes" element={<ClientList />} />
                 <Route path="/clientes/registrar" element={<RegisterClient />} />
@@ -199,6 +201,9 @@ export default function AppRouter() {
                     <Route path="contratos/:id" element={<ContractDetailPage />} />
                     <Route path="contratos/:id/pagos" element={<LeasePaymentsPage />} />
                     <Route path="reservations" element={<OwnerReservationsPage />} />
+                    <Route path="subscriptions" element={<MySubscriptionsPage hideNavbar={true} />} />
+                    <Route path="favorites" element={<MyFavoriteProperties hideNavbar={true} />} />
+                    <Route path="trashcan" element={<PropertiesTrashCan hideNavbar={true} />} />
                     <Route path="settings" element={<UserSettingsPage />} />
                 </Route>
             </Route>
