@@ -1,22 +1,37 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import EventItem from './EventItem';
 
 export default function DayCell({ day, isCurrentMonth, events, onDayClick, onEventClick }) {
+    const today = useMemo(() => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }, []);
+
+    const isPast = useMemo(() => day < today, [day, today]);
+
+    const getBgColor = useMemo(() => (hovered = false) => {
+        if (isPast) return '#f0f0f0';
+        if (!isCurrentMonth) return hovered ? '#ece9e4' : '#f8fafc';
+        return hovered ? '#f0ede8' : '#ffffff';
+    }, [isPast, isCurrentMonth]);
+
     return (
         <div 
             className={`border border-soft p-2 d-flex flex-column`}
             style={{ 
                 minHeight: '120px', 
-                backgroundColor: isCurrentMonth ? '#ffffff' : '#f8fafc',
-                color: isCurrentMonth ? '#1a1a1a' : '#6c757d',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
+                backgroundColor: getBgColor(),
+                color: isPast ? '#b0b0b0' : (isCurrentMonth ? '#1a1a1a' : '#6c757d'),
+                cursor: isPast ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.2s',
+                opacity: isPast ? 0.6 : 1,
             }}
-            onClick={() => onDayClick && onDayClick(day)}
-            onMouseEnter={(e) => isCurrentMonth && (e.currentTarget.style.backgroundColor = '#f0ede8')}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isCurrentMonth ? '#ffffff' : '#f8fafc'}
+            onClick={() => !isPast && onDayClick && onDayClick(day)}
+            onMouseEnter={(e) => !isPast && (e.currentTarget.style.backgroundColor = getBgColor(true))}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = getBgColor(false))}
         >
-            <div className="fw-medium mb-1">
+            <div className="fw-medium mb-1" style={{ color: isPast ? '#b0b0b0' : 'inherit' }}>
                 {day.getDate()}
             </div>
             

@@ -40,7 +40,15 @@ const PRIORITY_LABELS = {
 
 function getTicketImages(ticket) {
   if (Array.isArray(ticket?.images)) {
-    return ticket.images.filter(Boolean);
+    return ticket.images.filter(src => {
+      if (!src) return false;
+      try {
+        const url = new URL(src);
+        return ['blob:', 'http:', 'https:'].includes(url.protocol);
+      } catch (e) {
+        return false;
+      }
+    });
   }
   return [];
 }

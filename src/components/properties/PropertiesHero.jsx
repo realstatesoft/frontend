@@ -6,6 +6,7 @@ import { PROPERTY_TYPE_OPTIONS, AVAILABILITY_OPTIONS } from "../../constants/pro
 import SaveSearchModal from "./SaveSearchModal";
 import { searchPreferencesApi } from "../../services/search/searchPreferencesApi";
 import { useAuth } from "../../hooks/useAuth";
+import NumericInput from "../common/NumericInput";
 
 /**
  * PropertiesHero — barra de filtros estilo pill (inspirada en Zillow).
@@ -90,8 +91,8 @@ export default function PropertiesHero({
         fetchSavedSearches();
     };
 
-    const advancedActiveCount = [availability, minPrice, maxPrice, minBedrooms, minBathrooms].filter(Boolean).length;
-    const hasAnyFilter = !!(search || category || typeFilter || advancedActiveCount);
+    const advancedActiveCount = [availability, minPrice, maxPrice, minBathrooms].filter(Boolean).length;
+    const hasAnyFilter = !!(search || category || typeFilter || minBedrooms || advancedActiveCount);
     const priceRangeNote =
         activePriceCurrency === "PYG"
             ? "Los filtros de precio se envían en PYG."
@@ -226,7 +227,7 @@ export default function PropertiesHero({
                     {hasAnyFilter && (
                         <>
                             <div className="filter-bar__divider" />
-                            <button className="filter-bar__clear" onClick={onClear} title={t("search.clearFilters")} type="button">
+                            <button className="filter-bar__clear" onClick={() => { setShowAdvanced(false); onClear(); }} title={t("search.clearFilters")} type="button">
                                 ✕
                             </button>
                             <div className="filter-bar__divider" />
@@ -263,13 +264,12 @@ export default function PropertiesHero({
                                     <span className="filter-bar__panel-label">
                                         {t("search.minPrice")} ({activePriceCurrency})
                                     </span>
-                                    <Form.Control
-                                        type="number"
+                                    <NumericInput
                                         size="sm"
                                         placeholder={`0 ${activePriceCurrency}`}
-                                        min={0}
                                         value={minPrice}
                                         onChange={(e) => onMinPriceChange(e.target.value)}
+                                        allowDecimal
                                     />
                                 </Col>
 
@@ -277,13 +277,12 @@ export default function PropertiesHero({
                                     <span className="filter-bar__panel-label">
                                         {t("search.maxPrice")} ({activePriceCurrency})
                                     </span>
-                                    <Form.Control
-                                        type="number"
+                                    <NumericInput
                                         size="sm"
                                         placeholder={`${t("search.noLimit")} (${activePriceCurrency})`}
-                                        min={0}
                                         value={maxPrice}
                                         onChange={(e) => onMaxPriceChange(e.target.value)}
+                                        allowDecimal
                                     />
                                 </Col>
 

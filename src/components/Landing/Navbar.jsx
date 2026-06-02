@@ -158,7 +158,11 @@ function CustomNavbar() {
                 queryFn: async () => {
                   const res = await propertyApi.getAll({ page: 0, size: 12, category: "SALE" });
                   const pageData = res?.data ? (res.data.data ?? res.data) : { content: [], totalPages: 0, totalElements: 0 };
-                  return { properties: pageData.content ?? [], totalPages: Number(pageData.totalPages ?? 0), totalElements: Number(pageData.totalElements ?? 0) };
+                  return {
+                    properties: pageData.content ?? [],
+                    totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? (pageData.content ? Math.ceil(pageData.content.length / 12) : 0)),
+                    totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? (pageData.content ? pageData.content.length : 0)),
+                  };
                 },
                 staleTime: 5 * 60 * 1000,
               });
@@ -166,7 +170,21 @@ function CustomNavbar() {
               {t('buy') || 'Comprar'}
             </Nav.Link>
             
-            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Alquiler" }}>
+            <Nav.Link as={Link} to="/properties" state={{ saleRent: "Alquiler" }} onMouseEnter={() => {
+              queryClient.prefetchQuery({
+                queryKey: ["properties", { page: 1, size: 12, search: "", propertyType: undefined, category: "RENT", status: undefined, availability: undefined, minPrice: undefined, maxPrice: undefined, minBedrooms: undefined, minBathrooms: undefined }],
+                queryFn: async () => {
+                  const res = await propertyApi.getAll({ page: 0, size: 12, category: "RENT" });
+                  const pageData = res?.data ? (res.data.data ?? res.data) : { content: [], totalPages: 0, totalElements: 0 };
+                  return {
+                    properties: pageData.content ?? [],
+                    totalPages: Number(pageData.page?.totalPages ?? pageData.totalPages ?? (pageData.content ? Math.ceil(pageData.content.length / 12) : 0)),
+                    totalElements: Number(pageData.page?.totalElements ?? pageData.totalElements ?? (pageData.content ? pageData.content.length : 0)),
+                  };
+                },
+                staleTime: 5 * 60 * 1000,
+              });
+            }}>
               {t('rent') || 'Alquilar'}
             </Nav.Link>
 

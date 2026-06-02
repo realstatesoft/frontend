@@ -58,7 +58,7 @@ export default function TenantLeasePage() {
     );
   }
 
-  const leases = data?.content;
+  const leases = data?.content || (Array.isArray(data) ? data : []);
 
   if (!leases || leases.length === 0) {
     return (

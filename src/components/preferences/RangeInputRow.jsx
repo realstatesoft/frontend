@@ -1,3 +1,5 @@
+import NumericInput from "../common/NumericInput";
+
 /**
  * RangeInputRow — fila con inputs numéricos de mínimo y máximo.
  *
@@ -31,12 +33,12 @@ export default function RangeInputRow({
           <label htmlFor={`range-${fieldName}-min`} className="pref-range__sublabel">
             Mínimo
           </label>
-          <input
+          <NumericInput
+            plainInput
+            allowDecimal
             id={`range-${fieldName}-min`}
-            type="number"
             className="pref-range__input"
             placeholder="0"
-            min={0}
             value={minValue ?? ""}
             onChange={(e) => onMinChange(e.target.value)}
           />
@@ -48,12 +50,12 @@ export default function RangeInputRow({
           <label htmlFor={`range-${fieldName}-max`} className="pref-range__sublabel">
             Máximo
           </label>
-          <input
+          <NumericInput
+            plainInput
+            allowDecimal
             id={`range-${fieldName}-max`}
-            type="number"
             className="pref-range__input"
             placeholder="Sin límite"
-            min={0}
             value={maxValue ?? ""}
             onChange={(e) => onMaxChange(e.target.value)}
           />

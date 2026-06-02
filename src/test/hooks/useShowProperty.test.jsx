@@ -18,6 +18,7 @@ vi.mock('../../services/properties/propertyApi', () => ({
     registerView: vi.fn(),
     getViewCount: vi.fn(),
     registerRecentView: vi.fn().mockResolvedValue(undefined),
+    getRecentProperties: vi.fn().mockResolvedValue({ data: { success: true, data: [] } }),
   },
 }));
 

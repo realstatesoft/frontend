@@ -3,6 +3,7 @@ import { Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import settingsService from '../../services/settingsService';
 import styles from './AgentSettingsPage.module.scss';
+import NumericInput from '../../components/common/NumericInput';
 
 function SettingsSection({ title, description, children }) {
   return (
@@ -179,10 +180,7 @@ export default function AgentSettingsPage() {
         >
           <Form.Group controlId="workRadiusKm">
             <Form.Label className={styles.label}>{t('settings.zone.label')}</Form.Label>
-            <Form.Control
-              type="number"
-              min="1"
-              max="500"
+            <NumericInput
               placeholder={t('settings.zone.placeholder')}
               value={settings.workRadiusKm}
               disabled={Boolean(loadError)}

@@ -81,7 +81,7 @@ export default function TenantDashboardPage() {
             {nextInstallment ? formatDate(nextInstallment.dueDate) : '--/--/----'}
           </div>
           <div className={styles.summaryCard__sub}>
-            {nextInstallment ? formatCurrency(nextInstallment.balance) : '$ 0'}
+            {nextInstallment ? formatCurrency(nextInstallment.balance, nextInstallment.currency) : '$ 0'}
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export default function TenantDashboardPage() {
 
           </div>
           <div className={styles.summaryCard__value}>
-            {formatCurrency(totalPaidLastYear)}
+            {formatCurrency(totalPaidLastYear, activeLeases?.[0]?.currency)}
           </div>
           <div className={styles.summaryCard__sub}>{t('tenantDashboard.totalPaidPeriod', 'En los últimos 12 meses')}</div>
 
@@ -167,7 +167,7 @@ export default function TenantDashboardPage() {
               </div>
               <div className={styles.propertyCard__rent}>
                 <label>{t('tenant.property.monthlyRent', 'Renta mensual')}</label>
-                <span>{formatCurrency(lease.monthlyRent)}</span>
+                <span>{formatCurrency(lease.monthlyRent, lease.currency)}</span>
               </div>
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function TenantDashboardPage() {
               </div>
 
               <div className={styles.listItem__side}>
-                <div className={styles.listItem__amount}>{formatCurrency(inst.totalAmount)}</div>
+                <div className={styles.listItem__amount}>{formatCurrency(inst.totalAmount, inst.currency)}</div>
                 {inst.status === 'PAID' ? (
                   <span className={`${styles.statusBadge} ${styles['statusBadge--paid']}`}>
                     <FiCheckCircle /> {t('paid', 'Pagado')}

@@ -6,13 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { FiTrendingUp, FiHome, FiClock, FiPercent } from 'react-icons/fi';
 import StatCard from '../../components/common/StatCard/StatCard';
 import useReports from '../../hooks/useReports';
-import { formatCurrency } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import styles from './ReportsPage.module.scss';
 
 const PIE_COLORS = ['#2563eb', '#22c55e', '#f59e0b', '#0ea5e9', '#ef4444'];
 
 export default function ReportsPage() {
   const { t } = useTranslation('reports');
+  const { formatCurrency } = useFormatters();
   const { data: response, isLoading } = useReports();
   const report = response?.data || {};
   const metrics = report.marketMetrics || {};

@@ -4,7 +4,7 @@ import {
   CONTRACT_STATUS_COLORS,
 } from '../../constants/contractConstants';
 import Badge from '../../components/common/Badge/Badge';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { useContractSignatures } from '../../hooks/useContracts';
 import styles from './ContractsPage.module.scss';
 
@@ -24,6 +24,7 @@ const TYPE_LABELS = {
 export default function ContractDetailModal({ contract: c, onClose }) {
   const { data: signaturesRes, isLoading: loadingSigs } = useContractSignatures(c?.id);
   const signatures = signaturesRes?.data ?? [];
+  const { formatCurrency, formatDate } = useFormatters();
 
   if (!c) return null;
 

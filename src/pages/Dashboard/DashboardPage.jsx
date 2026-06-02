@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { FiUsers, FiShoppingBag, FiMapPin, FiDollarSign } from 'react-icons/fi';
 import StatCard from '../../components/common/StatCard/StatCard';
+import useFormatters from '../../hooks/useFormatters';
 import QuickActions from '../../components/widgets/QuickActions/QuickActions';
 import SalesPerformanceChart from '../../components/widgets/SalesPerformanceChart/SalesPerformanceChart';
 import UpcomingAppointments from '../../components/widgets/UpcomingAppointments/UpcomingAppointments';
 import useAgentStats from '../../hooks/useAgentStats';
-import { formatCurrency } from '../../utils/formatters';
 import { AGENT_TOUR_STEPS } from '../../data/tourSteps';
 import { useAutoStartTour } from '../../hooks/useAutoStartTour';
 import styles from './DashboardPage.module.scss';
@@ -13,6 +13,7 @@ import styles from './DashboardPage.module.scss';
 export default function DashboardPage() {
   const { t } = useTranslation('dashboard');
   const { data: response } = useAgentStats();
+  const { formatCurrency } = useFormatters();
   const stats = response?.data || {};
 
   useAutoStartTour('agent', AGENT_TOUR_STEPS, 400);

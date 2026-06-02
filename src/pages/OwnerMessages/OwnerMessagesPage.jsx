@@ -3,13 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiSend, FiUser, FiPlus } from 'react-icons/fi';
 import { useConversations, useMessages, useSendMessage, useMarkAsRead } from '../../hooks/useMessagesData';
-import { formatTime } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import Button from '../../components/common/Button/Button';
 import NewConversationModal from '../../components/messages/NewConversationModal';
 import styles from './OwnerMessagesPage.module.scss';
 
 function InboxList({ conversations, activeId, onSelect }) {
   const { t } = useTranslation('owner');
+  const { formatTime } = useFormatters();
   return (
     <div className={styles.inbox}>
       <div className={styles.inbox__header}>{t('messages.inbox')}</div>
@@ -52,6 +53,7 @@ function ConversationPanel({ conversation }) {
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
   const { t } = useTranslation('owner');
+  const { formatTime } = useFormatters();
 
   const handleSend = async (e) => {
     e.preventDefault();

@@ -38,6 +38,7 @@ export default function PropertyContactCard({ property }) {
   const isOwner = isAuthenticated && user?.userId === property?.ownerId;
   const isAgent = isAuthenticated && user?.agentProfileId && effectiveAgentProfileId && user.agentProfileId === effectiveAgentProfileId;
   const hideOfferButton = isOwner || isAgent;
+  const hideMessageButton = isOwner || isAgent;
 
   const handleAction = (callback) => {
     if (!isAuthenticated) {
@@ -193,24 +194,28 @@ export default function PropertyContactCard({ property }) {
           {hasAgent ? t("contactCard.contactAgent") : t("contactCard.contactOwner")}
         </Button>
 
-        <Button
-          variant="outline-primary"
-          className="w-100 mb-2"
-          style={{ borderRadius: "8px" }}
-          onClick={() => handleAction(() => setShowMessageModal(true))}
-        >
-          <FiMessageSquare className="me-2" />
-          {t("contactCard.sendMessage")}
-        </Button>
+        {!hideMessageButton && (
+          <Button
+            variant="outline-primary"
+            className="w-100 mb-2"
+            style={{ borderRadius: "8px" }}
+            onClick={() => handleAction(() => setShowMessageModal(true))}
+          >
+            <FiMessageSquare className="me-2" />
+            {t("contactCard.sendMessage")}
+          </Button>
+        )}
 
-        <Button
-          variant="dark"
-          className="w-100 mb-2"
-          style={{ borderRadius: "8px" }}
-          onClick={() => handleAction(() => setShowVisitModal(true))}
-        >
-          {t("contactCard.scheduleVisit")}
-        </Button>
+        {!isOwner && (
+          <Button
+            variant="dark"
+            className="w-100 mb-2"
+            style={{ borderRadius: "8px" }}
+            onClick={() => handleAction(() => setShowVisitModal(true))}
+          >
+            {t("contactCard.scheduleVisit")}
+          </Button>
+        )}
 
         {!hideOfferButton && (
           <Button
@@ -224,40 +229,44 @@ export default function PropertyContactCard({ property }) {
         )}
       </div>
 
-      <CreateVisitModal
-        show={showVisitModal}
-        onHide={() => setShowVisitModal(false)}
-        property={property}
-        agentId={property?.agentId}
-        onSuccess={() =>
-          Swal.fire({
-            icon: "success",
-            title: t("contactCard.visitSuccessTitle"),
-            text: t("contactCard.visitSuccessText"),
-            timer: 2000,
-            showConfirmButton: false,
-          })
-        }
-      />
+      {!isOwner && (
+        <CreateVisitModal
+          show={showVisitModal}
+          onHide={() => setShowVisitModal(false)}
+          property={property}
+          agentId={property?.agentId}
+          onSuccess={() =>
+            Swal.fire({
+              icon: "success",
+              title: t("contactCard.visitSuccessTitle"),
+              text: t("contactCard.visitSuccessText"),
+              timer: 2000,
+              showConfirmButton: false,
+            })
+          }
+        />
+      )}
 
-      <NewConversationModal
-        isOpen={showMessageModal}
-        onClose={() => setShowMessageModal(false)}
-        preSelectedAgent={{
-          id: agent?.userId || agent?.id || property?.ownerId,
-          name: name,
-          email: agent?.userEmail || agent?.email || property?.ownerEmail,
-        }}
-        onSuccess={() => {
-          Swal.fire({
-            icon: "success",
-            title: t("contactCard.messageSuccessTitle"),
-            text: t("contactCard.messageSuccessText"),
-            timer: 2000,
-            showConfirmButton: false,
-          });
-        }}
-      />
+      {!hideMessageButton && (
+        <NewConversationModal
+          isOpen={showMessageModal}
+          onClose={() => setShowMessageModal(false)}
+          preSelectedAgent={{
+            id: agent?.userId || agent?.id || property?.ownerId,
+            name: name,
+            email: agent?.userEmail || agent?.email || property?.ownerEmail,
+          }}
+          onSuccess={() => {
+            Swal.fire({
+              icon: "success",
+              title: t("contactCard.messageSuccessTitle"),
+              text: t("contactCard.messageSuccessText"),
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          }}
+        />
+      )}
       <CreateOfferModal
         show={showOfferModal}
         onHide={() => setShowOfferModal(false)}

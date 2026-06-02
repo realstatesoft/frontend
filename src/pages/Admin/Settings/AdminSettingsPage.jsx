@@ -4,6 +4,7 @@ import { FiPercent, FiCalendar, FiImage, FiGlobe } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import settingsService from '../../../services/settingsService';
 import styles from './AdminSettingsPage.module.scss';
+import NumericInput from '../../../components/common/NumericInput';
 
 function SectionAlert({ error, success }) {
   if (!error && !success) return null;
@@ -202,11 +203,8 @@ export default function AdminSettingsPage() {
                 <Col md={4}>
                   <Form.Group className="mb-3" controlId="saleCommissionPercent">
                     <Form.Label className={styles.label}>{t('settings.commissions.salePercent')}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.01"
+                    <NumericInput
+                      allowDecimal
                       value={commissions.saleCommissionPercent}
                       onChange={(e) =>
                         setCommissions((p) => ({ ...p, saleCommissionPercent: e.target.value }))
@@ -218,11 +216,8 @@ export default function AdminSettingsPage() {
                 <Col md={4}>
                   <Form.Group className="mb-3" controlId="rentCommissionPercent">
                     <Form.Label className={styles.label}>{t('settings.commissions.rentPercent')}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.01"
+                    <NumericInput
+                      allowDecimal
                       value={commissions.rentCommissionPercent}
                       onChange={(e) =>
                         setCommissions((p) => ({ ...p, rentCommissionPercent: e.target.value }))
@@ -234,10 +229,7 @@ export default function AdminSettingsPage() {
                 <Col md={4}>
                   <Form.Group className="mb-3" controlId="rentDepositMonths">
                     <Form.Label className={styles.label}>{t('settings.commissions.depositMonths')}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      min="1"
-                      max="12"
+                    <NumericInput
                       value={commissions.rentDepositMonths}
                       onChange={(e) =>
                         setCommissions((p) => ({ ...p, rentDepositMonths: e.target.value }))
@@ -269,10 +261,7 @@ export default function AdminSettingsPage() {
                 <Col md={6}>
                   <Form.Group className="mb-3" controlId="ttlHours">
                     <Form.Label className={styles.label}>{t('settings.reservations.ttlHours')}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      min="1"
-                      max="720"
+                    <NumericInput
                       value={reservations.ttlHours}
                       onChange={(e) =>
                         setReservations((p) => ({ ...p, ttlHours: e.target.value }))
@@ -285,11 +274,8 @@ export default function AdminSettingsPage() {
                 <Col md={6}>
                   <Form.Group className="mb-3" controlId="depositPercent">
                     <Form.Label className={styles.label}>{t('settings.reservations.depositPercent')}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      min="0.01"
-                      max="100"
-                      step="0.01"
+                    <NumericInput
+                      allowDecimal
                       value={reservations.depositPercent}
                       onChange={(e) =>
                         setReservations((p) => ({ ...p, depositPercent: e.target.value }))
@@ -319,10 +305,7 @@ export default function AdminSettingsPage() {
             <Form onSubmit={handleSaveProperties}>
               <Form.Group className="mb-3" controlId="maxImages" style={{ maxWidth: 280 }}>
                 <Form.Label className={styles.label}>{t('settings.properties.maxImages')}</Form.Label>
-                <Form.Control
-                  type="number"
-                  min="1"
-                  max="50"
+                <NumericInput
                   value={properties.maxImages}
                   onChange={(e) =>
                     setProperties((p) => ({ ...p, maxImages: e.target.value }))
@@ -355,8 +338,9 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setSystem((p) => ({ ...p, defaultCurrency: e.target.value }))}
                   className={styles.input}
                 >
-                  <option value="PYG">PYG — Guaraní paraguayo</option>
-                  <option value="USD">USD — Dólar estadounidense</option>
+                  <option value="PYG">{t('settings.system.currencyOptions.PYG', '₲ PYG — Guaraní paraguayo')}</option>
+                  <option value="USD">{t('settings.system.currencyOptions.USD', '$ USD — Dólar estadounidense')}</option>
+                  <option value="BRL">{t('settings.system.currencyOptions.BRL', 'R$ BRL — Real brasileño')}</option>
                 </Form.Select>
               </Form.Group>
               <SaveButton saving={savingSystem} t={t} />

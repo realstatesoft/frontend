@@ -4,9 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircleFill, XCircle, FileEarmarkText } from 'react-bootstrap-icons';
 import Swal from 'sweetalert2';
 import reservationApi from '../../services/reservations/reservationApi';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import useFormatters from '../../hooks/useFormatters';
 import { statusLabel } from '../../utils/reservationStatus';
-import CustomNavbar from '../../components/Landing/Navbar';
 import Footer from '../../components/Landing/Footer';
 import styles from './OwnerReservationsPage.module.scss';
 
@@ -43,6 +42,7 @@ export default function OwnerReservationsPage() {
   const [status, setStatus]   = useState('');
   const [page, setPage]       = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { formatCurrency, formatDate } = useFormatters();
 
   const load = useCallback(async (currentPage, currentStatus) => {
     setLoading(true);
@@ -66,10 +66,11 @@ export default function OwnerReservationsPage() {
   const handleConfirm = async (id) => {
     try {
       await reservationApi.confirm(id);
-      load(page, status);
     } catch {
       setError('No se pudo confirmar la reserva.');
+      return;
     }
+    await load(page, status);
   };
 
   const handleReject = async (id, isActive) => {
@@ -85,7 +86,7 @@ export default function OwnerReservationsPage() {
     if (!isConfirmed) return;
     try {
       await reservationApi.cancel(id, { reason: reason ?? '' });
-      load(page, status);
+      await load(page, status);
     } catch {
       setError('No se pudo procesar la acción.');
     }
@@ -103,7 +104,6 @@ export default function OwnerReservationsPage() {
 
   return (
     <>
-      <CustomNavbar />
       <Container className={`${styles.container} py-5`}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <ArrowLeft size={16} /> Volver atrás

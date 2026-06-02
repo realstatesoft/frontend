@@ -7,6 +7,7 @@ import {
   FLOOR_OPTIONS,
   ROOF_OPTIONS,
 } from "../../../constants/createPropertyConstants";
+import NumericInput from "../../../components/common/NumericInput";
 
 export function ConstructionSection({ form, set }) {
   return (
@@ -17,7 +18,7 @@ export function ConstructionSection({ form, set }) {
         <Col md={3}>
           <Form.Group>
             <FormLabel>Año de Construcción</FormLabel>
-            <Form.Control value={form.year} onChange={set("year")} placeholder="2010" />
+            <NumericInput value={form.year} onChange={set("year")} placeholder="2010" />
           </Form.Group>
         </Col>
         <Col md={3}>
@@ -76,9 +77,7 @@ export function ConstructionSection({ form, set }) {
         <Col md={4}>
           <Form.Group>
             <FormLabel>Nº Espacios de Estacionamiento</FormLabel>
-            <Form.Control
-              type="number"
-              min="0"
+            <NumericInput
               value={form.parkingSpaces}
               onChange={set("parkingSpaces")}
               placeholder="2"

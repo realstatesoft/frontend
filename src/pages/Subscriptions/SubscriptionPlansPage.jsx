@@ -8,20 +8,13 @@ import Footer from '../../components/Landing/Footer';
 import subscriptionApi from '../../services/subscriptions/subscriptionApi';
 import { buildPaymentUrl } from '../../services/payments/buildPaymentUrl';
 import { useAuth } from '../../hooks/useAuth';
+import useFormatters from '../../hooks/useFormatters';
 import styles from './SubscriptionPlansPage.module.scss';
-
-function formatPrice(price) {
-  return new Intl.NumberFormat('es-PY', {
-    style: 'currency',
-    currency: 'PYG',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 
 export default function SubscriptionPlansPage() {
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
+  const { formatCurrency } = useFormatters();
   const { isAuthenticated } = useAuth();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,7 +126,7 @@ export default function SubscriptionPlansPage() {
                         <p className={styles.planDesc}>{plan.description}</p>
                       )}
                       <div className={styles.priceBlock}>
-                        <span className={styles.price}>{formatPrice(plan.price)}</span>
+                        <span className={styles.price}>{formatCurrency(plan.price)}</span>
                         <span className={styles.period}>{durationLabel(plan.durationMonths)}</span>
                       </div>
                       <div className={styles.planMeta}>

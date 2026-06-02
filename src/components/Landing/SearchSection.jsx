@@ -27,25 +27,20 @@ const SearchSection = () => {
       if (parts[1]) maxPrice = parts[1];
     }
 
-    let availability = "";
-    if (activeTab === "comprar") availability = "Venta";
-    else if (activeTab === "alquilar") availability = "Alquiler";
+    let saleRentValue = "";
+    if (activeTab === "comprar") saleRentValue = "Venta";
+    else if (activeTab === "alquilar") saleRentValue = "Alquiler";
 
     let minBedrooms = bedrooms === "4+" ? "4" : bedrooms;
-
-    let typeFilter = "";
-    if (type === "Casa") typeFilter = "HOUSE";
-    else if (type === "Departamento") typeFilter = "APARTMENT";
-    else if (type === "Terreno") typeFilter = "LAND";
 
     navigate("/properties", {
       state: {
         search: locationStr,
-        typeFilter,
+        typeFilter: type || null,
         minBedrooms,
         minPrice,
         maxPrice,
-        availability
+        saleRent: saleRentValue
       }
     });
   };
