@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { StarFill, Search, GraphUpArrow } from 'react-bootstrap-icons';
 import { buildPaymentUrl } from '../../services/payments/buildPaymentUrl';
 import { useTranslation } from 'react-i18next';
+import { LuStar } from "react-icons/lu";
 import styles from './HighlightPropertyModal.module.scss';
 
 // TO-DO: configurar precios y planes desde la config del admin
@@ -112,7 +113,9 @@ export default function HighlightPropertyModal({ property, show, onHide }) {
                             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); setSelectedPlanId(plan.id); } }}
                         >
                             {plan.popular && (
-                                <span className={styles.popularBadge}>{t('highlightModal.plans.popular')}</span>
+                                <span className={styles.popularBadge}>
+                                    <LuStar size={12} className="me-1" /> {t('highlightModal.plans.popular')}
+                                </span>
                             )}
                             <p className={styles.planLabel}>{t(`highlightModal.plans.${plan.id}.label`)}</p>
                             <p className={styles.planPrice}>{formatGs(plan.price)}</p>

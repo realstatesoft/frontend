@@ -1,25 +1,58 @@
 import React from 'react';
-import { Card, Row, Col, Badge, Button, Stack } from 'react-bootstrap';
+import { Card, Row, Col, Badge, Button, Stack, Dropdown, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import {
   EnvelopeFill,
   TelephoneFill,
   BriefcaseFill,
   ChevronDown,
-  SendFill
+  PencilSquare
 } from 'react-bootstrap-icons';
 import { FiMessageSquare } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 import NewConversationModal from '../messages/NewConversationModal';
+import clientApi from '../../services/clients/clientApi';
 import {
   CLIENT_PRIORITY_LABELS,
   CLIENT_STATUS_LABELS,
   FIGMA_COLORS
 } from '../../constants/clientConstants';
 
-const ProfileHeader = ({ client }) => {
+const ProfileHeader = ({ client, onClientUpdate }) => {
   const navigate = useNavigate();
   const [showMessageModal, setShowMessageModal] = React.useState(false);
+  const [isUpdating, setIsUpdating] = React.useState(false);
+
+  const handleUpdate = async (field, value) => {
+    if (client[field] === value) return;
+    setIsUpdating(true);
+    try {
+      if (client.isExternal) {
+        await clientApi.updateExternalClientProfile(client.id, { [field]: value });
+      } else {
+        await clientApi.updateClientProfile(client.id, { [field]: value });
+      }
+      if (onClientUpdate) {
+        await onClientUpdate({ silent: true });
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Actualizado',
+        text: 'Se han guardado los cambios.',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al actualizar el cliente.',
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const preSelectedAgent = React.useMemo(() => {
     if (!client) return null;
@@ -36,121 +69,213 @@ const ProfileHeader = ({ client }) => {
   const statusLabel = CLIENT_STATUS_LABELS[client.status] || client.status;
 
   const buttonActionStyle = {
-    borderRadius: '2rem',
-    padding: '0.5rem 1.5rem',
-    border: '1px solid #dee2e6',
+    borderRadius: '999px',
+    padding: '0.6rem 1.2rem',
+    border: '1px solid #e2e8f0',
     backgroundColor: '#fff',
-    color: '#212529',
-    fontWeight: '500',
+    color: '#0f172a',
+    fontWeight: '600',
+    fontSize: '0.85rem',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    minWidth: '140px',
-    boxShadow: 'none'
+    gap: '0.4rem',
+    transition: 'all 0.2s cubic-bezier(0.23, 1, 0.32, 1)',
+    cursor: 'pointer'
+  };
+
+  const dropdownMenuStyle = {
+    borderRadius: '16px',
+    border: '1px solid #e2e8f0',
+    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+    padding: '0.5rem',
+    minWidth: '180px',
+    animation: 'dropdownFadeIn 0.2s var(--ease-out)',
+    zIndex: 1050
+  };
+
+  const dropdownItemStyle = {
+    borderRadius: '10px',
+    padding: '0.6rem 1rem',
+    fontSize: '0.85rem',
+    fontWeight: '500',
+    color: '#475569',
+    transition: 'all 0.15s ease',
+    marginBottom: '2px'
   };
 
   return (
-    <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: '1.5rem', overflow: 'hidden' }}>
-      <Card.Body className="p-4 p-md-5">
-        <Row className="align-items-center">
+    <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: '24px', animation: 'fadeInDown 0.8s var(--ease-out) both' }}>
+      <style>
+        {`
+          @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .custom-dropdown-item:hover {
+            background-color: #f1f5f9 !important;
+            color: #2563eb !important;
+          }
+          .custom-dropdown-item.active {
+            background-color: #2563eb !important;
+            color: white !important;
+          }
+          /* Ajuste para evitar parpadeos de Popper.js */
+          .dropdown-menu[data-popper-placement] {
+            margin: 0 !important;
+          }
+          /* Ocultar flecha por defecto de Bootstrap para evitar duplicidad */
+          .dropdown-toggle::after {
+            display: none !important;
+          }
+        `}
+      </style>
+      <Card.Body className="p-4">
+        <Row className="align-items-center g-4">
+          {/* Avatar Area */}
           <Col xs="auto">
-            {/* Avatar - Silueta Default */}
             <div
               style={{
-                width: '120px',
-                height: '120px',
+                width: '100px',
+                height: '100px',
                 borderRadius: '50%',
-                backgroundColor: FIGMA_COLORS.deepDark,
+                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                overflow: 'hidden'
+                boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.2)',
+                transition: 'transform 0.2s ease'
               }}
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="white"
-                style={{ width: '80%', height: '80%', marginTop: 'auto' }}
-              >
+              <svg viewBox="0 0 24 24" fill="white" style={{ width: '60%', height: '60%' }}>
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
             </div>
           </Col>
+
+          {/* Info Area */}
           <Col>
-            <Stack direction="horizontal" gap={3} className="align-items-baseline mb-2">
-              <h1 className="fw-bold mb-0" style={{ color: FIGMA_COLORS.deepDark }}>{client.userName}</h1>
+            <div className="d-flex align-items-center gap-3 mb-2">
+              <h1 className="fw-bold mb-0" style={{ color: '#0f172a', fontSize: '2rem', letterSpacing: '-0.02em' }}>
+                {client.userName}
+              </h1>
               {client.isExternal && (
-                <Badge
-                  bg="none"
-                  style={{
-                    backgroundColor: FIGMA_COLORS.paleBlueBg,
-                    color: FIGMA_COLORS.paleBlueText,
-                    fontWeight: '600',
-                    fontSize: '0.85rem'
-                  }}
-                  className="px-3 py-2 rounded-pill border-0"
-                >
-                  Externo
-                </Badge>
+                <Badge bg="primary" className="rounded-pill px-2 py-1" style={{ fontSize: '0.65rem', fontWeight: '800' }}>EXTERNO</Badge>
               )}
-            </Stack>
+            </div>
 
-            <Stack direction="horizontal" gap={2} className="mb-4">
-              <Badge
-                bg="none"
-                style={{ backgroundColor: FIGMA_COLORS.paleGreenBg, color: FIGMA_COLORS.paleGreenText }}
-                className="px-3 py-2 rounded-pill border-0 fw-bold"
-              >
+            <div className="d-flex gap-3 mb-3">
+              <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.875rem', fontWeight: '600', color: '#0f172a' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }}></span>
                 {statusLabel}
-              </Badge>
-              <Badge
-                bg="none"
-                style={{ backgroundColor: FIGMA_COLORS.paleRedBg, color: FIGMA_COLORS.paleRedText }}
-                className="px-3 py-2 rounded-pill border-0 fw-bold"
-              >
+              </div>
+              <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.875rem', fontWeight: '600', color: '#0f172a' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></span>
                 Prioridad: {priorityLabel}
-              </Badge>
-            </Stack>
+              </div>
+            </div>
 
-            <div className="text-muted d-flex flex-wrap gap-4" style={{ fontSize: '0.9rem' }}>
-              <span className="d-flex align-items-center">
-                <EnvelopeFill className="me-2" style={{ color: FIGMA_COLORS.deepDark, opacity: 0.7 }} />
-                {client.userEmail}
-              </span>
-              <span className="d-flex align-items-center">
-                <TelephoneFill className="me-2" style={{ color: FIGMA_COLORS.deepDark, opacity: 0.7 }} />
-                {client.userPhone || 'No especificado'}
-              </span>
-              <span className="d-flex align-items-center">
-                <BriefcaseFill className="me-2" style={{ color: FIGMA_COLORS.deepDark, opacity: 0.7 }} />
-                {client.occupation || 'No especificada'}
-              </span>
+            <div className="text-muted d-flex flex-wrap gap-3 small fw-medium">
+              <span className="d-flex align-items-center gap-1"><EnvelopeFill className="opacity-50" /> {client.userEmail}</span>
+              <span className="d-flex align-items-center gap-1"><TelephoneFill className="opacity-50" /> {client.userPhone || 'N/A'}</span>
+              <span className="d-flex align-items-center gap-1"><BriefcaseFill className="opacity-50" /> {client.occupation || 'N/A'}</span>
             </div>
           </Col>
-          <Col xs="auto" className="d-flex gap-3 align-self-start mt-3 mt-md-0">
-            <button style={buttonActionStyle} className="btn shadow-none">
-              {statusLabel || 'Desconocido'} <ChevronDown className="ms-2" size={14} />
-            </button>
-            <button style={buttonActionStyle} className="btn shadow-none">
-              {priorityLabel || 'Desconocida'} <ChevronDown className="ms-2" size={14} />
-            </button>
-            <Button
-              variant="outline-primary"
-              className="rounded-pill px-4 d-flex align-items-center"
-              onClick={() => setShowMessageModal(true)}
-            >
-              <FiMessageSquare className="me-2" />
-              Mensaje
-            </Button>
-            <Button
-              variant="primary"
-              className="rounded-pill px-4 d-flex align-items-center border-0"
-              style={{ backgroundColor: '#0D6EFD' }}
-              onClick={() => navigate(`/clientes/${client.id}/editar`)}
-            >
-              <SendFill className="me-2" style={{ transform: 'rotate(45deg)', fontSize: '0.8rem' }} />
-              Editar
-            </Button>
+
+          {/* Actions Area */}
+          <Col lg="auto">
+            <div className="d-flex flex-wrap gap-2 justify-content-lg-end">
+                <Dropdown>
+                  <Dropdown.Toggle 
+                    as="button"
+                    style={buttonActionStyle} 
+                    className="btn shadow-sm"
+                    disabled={isUpdating}
+                  >
+                      {isUpdating ? <Spinner size="sm" animation="border" /> : statusLabel} <ChevronDown size={12} />
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu 
+                    style={dropdownMenuStyle}
+                    popperConfig={{
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, 8],
+                          },
+                        },
+                      ],
+                    }}
+                  >
+                    {Object.entries(CLIENT_STATUS_LABELS).map(([val, label]) => (
+                      <Dropdown.Item 
+                        key={val} 
+                        onClick={() => handleUpdate('status', val)} 
+                        active={client.status === val}
+                        style={dropdownItemStyle}
+                        className="custom-dropdown-item"
+                      >
+                        {label}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+
+                <Dropdown>
+                  <Dropdown.Toggle 
+                    as="button"
+                    style={buttonActionStyle} 
+                    className="btn shadow-sm"
+                    disabled={isUpdating}
+                  >
+                      {isUpdating ? <Spinner size="sm" animation="border" /> : priorityLabel} <ChevronDown size={12} />
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu 
+                    style={dropdownMenuStyle}
+                    popperConfig={{
+                      modifiers: [
+                        {
+                          name: 'offset',
+                          options: {
+                            offset: [0, 8],
+                          },
+                        },
+                      ],
+                    }}
+                  >
+                    {Object.entries(CLIENT_PRIORITY_LABELS).map(([val, label]) => (
+                      <Dropdown.Item 
+                        key={val} 
+                        onClick={() => handleUpdate('priority', val)} 
+                        active={client.priority === val}
+                        style={dropdownItemStyle}
+                        className="custom-dropdown-item"
+                      >
+                        {label}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+                <Button
+                    variant="outline-primary"
+                    className="rounded-pill px-4 fw-bold border-2 d-flex align-items-center gap-2"
+                    style={{ transition: 'all 0.2s ease' }}
+                    onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.96)'}
+                    onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    onClick={() => setShowMessageModal(true)}
+                >
+                    <FiMessageSquare /> Mensaje
+                </Button>
+                <Button
+                    variant="primary"
+                    className="rounded-pill px-4 fw-bold border-0 shadow-md d-flex align-items-center gap-2"
+                    style={{ background: '#2563eb', transition: 'all 0.2s ease' }}
+                    onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.96)'}
+                    onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    onClick={() => navigate(`/clientes/${client.id}/editar`)}
+                >
+                    <PencilSquare style={{ fontSize: '0.9rem' }} /> Editar Perfil
+                </Button>
+            </div>
           </Col>
         </Row>
       </Card.Body>

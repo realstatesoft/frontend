@@ -1,10 +1,12 @@
 // Nav link hover
 .nav-link {
-    transition: color 0.2s ease;
-    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+    color: $text-muted;
 
     &:hover {
-        color: var(--primary, #1a56db) !important;
+        color: $primary !important;
+        transform: translateY(-1px);
     }
 }
 
@@ -13,130 +15,113 @@
     position: relative;
     display: flex;
     align-items: center;
-    margin-right: 0.75rem;
+    margin-right: $space-2;
 }
 
 .profile-avatar-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    border: 2px solid transparent;
-    background: transparent;
-    color: #444;
+    border: 2px solid $border-color-soft;
+    background: $light;
+    color: $text-dark;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-        background: rgba(26, 86, 219, 0.08);
-        border-color: rgba(26, 86, 219, 0.35);
-        color: var(--primary, #1a56db);
+        background: $primary;
+        color: #fff;
+        border-color: $primary;
+        box-shadow: $shadow-md;
     }
 
     &:focus-visible {
-        outline: 2px solid var(--primary, #1a56db);
+        outline: 2px solid $primary;
         outline-offset: 2px;
     }
 }
 
 .profile-dropdown-menu {
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 12px);
     right: 0;
-    min-width: 210px;
+    min-width: 240px;
     background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    padding: 0.5rem 0;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+    padding: $space-2 0;
     z-index: 1050;
-    animation: dropdown-fade-in 0.15s ease;
+    border: 1px solid $border-color-soft;
+    transform-origin: top right;
+    animation: dropdown-fade-in 0.3s var(--ease-out);
 }
 
 @keyframes dropdown-fade-in {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .profile-dropdown-item {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: $space-3;
     width: 100%;
-    padding: 0.55rem 1.1rem;
-    font-size: 0.875rem;
-    color: #333;
+    padding: $space-2 $space-4;
+    font-size: 0.9rem;
+    color: $text-dark;
     text-decoration: none;
     background: none;
     border: none;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-    border-radius: 0;
-
-    span { font-size: 1rem; }
+    transition: all 0.2s var(--ease-out);
 
     &:hover {
-        background: rgba(26, 86, 219, 0.07);
-        color: var(--primary, #1a56db);
-        text-decoration: none;
+        background: $light;
+        color: $primary;
+        padding-left: $space-5;
+    }
+
+    &:active {
+        transform: scale(0.98);
     }
 }
 
 .profile-dropdown-logout {
-    color: #dc3545;
+    color: $danger;
+    font-weight: 600;
     &:hover {
-        background: rgba(220, 53, 69, 0.07);
-        color: #dc3545;
+        background: rgba($danger, 0.05);
+        color: $danger;
     }
 }
 
 .profile-dropdown-divider {
-    margin: 0.35rem 0;
-    border-color: #eee;
-}
-
-// Foto de perfil circular dentro del boton de avatar
-.profile-avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
+    margin: $space-2 0;
+    border-top: 1px solid $border-color-soft;
 }
 
 .navbar-dashboard-pill {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    height: 38px;
-    padding: 0 1.25rem;
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    gap: $space-2;
+    height: 40px;
+    padding: 0 $space-4;
+    background: $primary;
     border-radius: 999px;
     color: #fff;
     text-decoration: none;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    margin-right: 0.5rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-    white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: $shadow-soft;
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+        box-shadow: $shadow-md;
         color: #fff;
-        text-decoration: none;
-    }
-
-    &:active {
-        transform: translateY(0);
-    }
-
-    @media (max-width: 991px) {
-        padding: 0 0.75rem;
-        
-        .navbar-dashboard-pill-text {
-            display: none;
-        }
+        background: $primary-dark;
     }
 }

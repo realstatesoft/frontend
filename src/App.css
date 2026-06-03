@@ -1,23 +1,50 @@
+/* Emil Kowalski - Design Engineering Philosophy */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
 }
 
-
-
 /* Section fade-in animation */
 section {
-  animation: fadeInUp 0.6s ease-out;
+  animation: fadeInUp 0.8s var(--ease-out);
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px) scale(0.98);
   }
-
   to {
     opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Button & Interactable feedback */
+button, .btn, .nav-link, .profile-avatar-btn {
+  transition: transform 0.2s var(--ease-out), background 0.2s var(--ease-out), color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+
+button:active, .btn:active {
+  transform: scale(0.96) !important;
+}
+
+/* Navbar entry animation */
+.navbar {
+  animation: slideDown 0.6s var(--ease-out);
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
     transform: translateY(0);
   }
 }

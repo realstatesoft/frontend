@@ -8,11 +8,12 @@
   left: var(--sidebar-width);
   height: var(--topbar-height);
   padding: 0 var(--spacing-xl);
-  background: var(--color-bg-secondary);
-  box-shadow: var(--shadow-sm);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
   border-bottom: 1px solid var(--color-border);
   z-index: 90;
-  transition: left 0.3s ease;
+  transition: left 0.3s var(--ease-out);
 
   &--collapsed {
     left: var(--sidebar-collapsed-width);
@@ -36,10 +37,11 @@
   height: 36px;
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--color-text-primary);
   cursor: pointer;
   transition: var(--transition-base);
+  @include tap-feedback(0.96);
 
   &:hover {
     background: var(--color-bg-surface-hover);
@@ -67,11 +69,12 @@
   padding: 0 var(--spacing-sm);
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--color-text-muted);
   text-decoration: none;
   font-size: 0.875rem;
   transition: var(--transition-base);
+  @include tap-feedback(0.96);
 
   &:hover {
     background: var(--color-bg-surface-hover);
@@ -92,6 +95,21 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+
+  // Animación de entrada escalonada para los hijos
+  > * {
+    animation: fadeInRight 0.5s var(--ease-out) both;
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.05}s;
+      }
+    }
+  }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 .topbar__iconBtn {
@@ -100,45 +118,67 @@
   height: 38px;
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: all 0.3s var(--ease-out);
   position: relative;
+  @include tap-feedback(0.96);
 
   &:hover {
     background: var(--color-bg-surface-hover);
-    color: var(--color-text-primary);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  // Animación sutil para el icono interno al hover
+  &:hover svg {
+    transform: scale(1.1);
+    transition: transform 0.3s var(--ease-out);
   }
 }
 
 .topbar__badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 8px;
-  height: 8px;
+  top: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
   background: var(--color-danger);
   border-radius: 50%;
+  border: 2px solid #fff;
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .topbar__avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--color-accent);
   @include flex-center;
-  color: #fff;
-  font-size: 0.875rem;
+  color: var(--color-bg-primary);
+  font-size: 0.8125rem;
   font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
-  border: none;
+  border: 2px solid transparent;
   padding: 0;
-  transition: var(--transition-base);
+  transition: all 0.3s var(--ease-out);
+  @include tap-feedback(0.96);
 
   &:hover {
-    opacity: 0.85;
+    border-color: var(--color-accent);
+    background: var(--color-accent-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
   }
 }
 
@@ -149,22 +189,23 @@
   padding: 0 var(--spacing-md);
   background: var(--color-accent);
   border: none;
-  border-radius: 999px;
-  color: #fff;
+  border-radius: var(--radius-xl);
+  color: var(--color-bg-primary);
   text-decoration: none;
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition-base);
-  box-shadow: 0 2px 8px rgba(var(--color-accent-rgb, 99 102 241) / 0.35);
+  box-shadow: var(--shadow-sm);
   white-space: nowrap;
+  @include tap-feedback(0.96);
 
   &:hover {
     opacity: 0.88;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(var(--color-accent-rgb, 99 102 241) / 0.45);
+    box-shadow: var(--shadow-md);
     text-decoration: none;
-    color: #fff;
+    color: var(--color-bg-primary);
   }
 }
 

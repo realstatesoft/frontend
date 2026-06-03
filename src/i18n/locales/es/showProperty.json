@@ -62,7 +62,7 @@
       "monthly": { "label": "Mensual" },
       "semester": { "label": "Semestral" },
       "annual": { "label": "Anual" },
-      "popular": "⭐ Más popular",
+      "popular": "Más popular",
       "perMonth": "{{amount}} / mes · {{days}} días",
       "savings": "Ahorrás {{percent}}%"
     },

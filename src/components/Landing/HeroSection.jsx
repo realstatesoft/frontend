@@ -34,14 +34,26 @@ const HeroSection = () => {
                 style={{ zIndex: 2 }}
             >
                 <h1
-                    className="text-white fw-bold mb-3"
-                    style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}
+                    className="text-white fw-bold mb-4"
+                    style={{ 
+                        fontSize: "clamp(2.5rem, 6vw, 4.5rem)", 
+                        letterSpacing: "-0.03em",
+                        lineHeight: 1.1,
+                        animation: "fadeInUp 0.8s var(--ease-out) forwards"
+                    }}
                 >
                     {t("hero.title")}
                 </h1>
                 <p
-                    className="text-white mb-4"
-                    style={{ opacity: 0.85, fontSize: "1.05rem", maxWidth: 600, margin: "0 auto" }}
+                    className="text-white mb-5"
+                    style={{ 
+                        opacity: 0, 
+                        fontSize: "1.25rem", 
+                        maxWidth: 700, 
+                        margin: "0 auto",
+                        lineHeight: 1.6,
+                        animation: "fadeInUp 0.8s var(--ease-out) 0.2s forwards"
+                    }}
                 >
                     {t("hero.subtitle")}
                 </p>

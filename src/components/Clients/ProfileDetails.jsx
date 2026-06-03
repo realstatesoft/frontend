@@ -2,120 +2,134 @@ import React from 'react';
 import { Card, Row, Col, Badge } from 'react-bootstrap';
 import { MARITAL_STATUS_LABELS, FIGMA_COLORS } from '../../constants/clientConstants';
 
+import { IoPersonOutline, IoSearchOutline, IoBedOutline, IoWaterOutline, IoWalletOutline, IoMapOutline, IoPricetagOutline, IoHomeOutline } from "react-icons/io5";
+
 const ProfileDetails = ({ client }) => {
   if (!client) return null;
 
   const personalInfo = [
     { label: 'Nombre', value: client.userName?.split(' ')[0] || '-' },
     { label: 'Apellido', value: client.userName?.split(' ').slice(1).join(' ') || '-' },
-    { label: 'Fecha de Nacimiento', value: client.birthDate || '-' },
+    { label: 'Ocupación', value: client.occupation || 'N/A' },
     { label: 'Estado Civil', value: MARITAL_STATUS_LABELS[client.maritalStatus] || client.maritalStatus || '-' },
-    { label: 'Ocupación', value: client.occupation || 'No especificada' },
-    { label: 'Ingresos Anuales', value: typeof client.annualIncome === 'number' ? `$ ${client.annualIncome.toLocaleString()}` : '-' },
-    { label: 'Dirección', value: client.address || '-' },
-    { label: 'Canal de Origen', value: client.sourceChannel || '-' },
+    { label: 'Ingresos', value: client.annualIncome ? `$${(client.annualIncome / 1000).toFixed(0)}k/año` : 'N/A' },
+    { label: 'Origen', value: client.sourceChannel || 'Directo' },
   ];
 
-  const tagStyle = (bgColor, textColor) => ({
-    backgroundColor: bgColor,
-    color: textColor,
+  const tagStyle = (color) => ({
+    backgroundColor: `rgba(${color}, 0.1)`,
+    color: `rgb(${color})`,
     fontWeight: '600',
-    fontSize: '0.85rem',
-    border: 'none'
+    fontSize: '0.75rem',
+    border: 'none',
+    padding: '0.4rem 0.8rem',
+    borderRadius: '8px',
+    letterSpacing: '0.01em'
   });
 
+  const colorMap = {
+    green: '16, 185, 129',
+    purple: '139, 92, 246',
+    pink: '236, 72, 153',
+    blue: '37, 99, 235'
+  };
+
   return (
-    <Card className="border-0 shadow-sm" style={{ borderRadius: '1.5rem' }}>
+    <Card className="border-0 shadow-sm" style={{ borderRadius: '24px', overflow: 'hidden', animation: 'fadeInUp 0.8s var(--ease-out) 0.2s both' }}>
       <Card.Body className="p-4 p-md-5">
-        <Row>
+        <Row className="g-5">
           {/* Información Personal */}
-          <Col md={6} className="border-end pe-md-5">
-            <h4 className="fw-bold mb-4" style={{ color: FIGMA_COLORS.deepDark }}>Información Personal</h4>
+          <Col lg={6}>
+            <div className="d-flex align-items-center gap-3 mb-4">
+                <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)' }}>
+                    <IoPersonOutline size={22} />
+                </div>
+                <h4 className="fw-bold mb-0" style={{ color: '#0f172a', fontSize: '1.25rem' }}>Información Personal</h4>
+            </div>
             <Row className="g-4">
               {personalInfo.map((info, idx) => (
                 <Col key={idx} xs={6}>
-                  <div className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>{info.label}</div>
-                  <div className="text-muted" style={{ fontSize: '0.9rem' }}>{info.value}</div>
+                  <div className="fw-bold mb-1" style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{info.label}</div>
+                  <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: '500' }}>{info.value}</div>
                 </Col>
               ))}
             </Row>
           </Col>
 
           {/* Preferencias de Búsqueda */}
-          <Col md={6} className="ps-md-5">
-            <h4 className="fw-bold mb-4" style={{ color: FIGMA_COLORS.deepDark }}>Preferencias de Búsqueda</h4>
-            
-            <div className="mb-4">
-              <div className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Rango de Presupuesto</div>
-              <div style={{ color: FIGMA_COLORS.deepDark, fontSize: '1rem', fontWeight: '400' }}>
-                {typeof client.minBudget === 'number' ? `$ ${client.minBudget.toLocaleString()}` : '-'} - {typeof client.maxBudget === 'number' ? `$ ${client.maxBudget.toLocaleString()}` : '-'}
-              </div>
+          <Col lg={6}>
+            <div className="d-flex align-items-center gap-3 mb-4">
+                <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
+                    <IoSearchOutline size={22} />
+                </div>
+                <h4 className="fw-bold mb-0" style={{ color: '#0f172a', fontSize: '1.25rem' }}>Preferencias de Búsqueda</h4>
             </div>
-
-            <Row className="mb-4">
-              <Col xs={6}>
-                <div className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Habitaciones</div>
-                <div style={{ color: FIGMA_COLORS.deepDark, fontSize: '1rem', fontWeight: '400' }}>
-                  {client.minBedrooms ?? '-'} - {client.maxBedrooms ?? '-'}
+            
+            <Row className="g-4 mb-4">
+              <Col xs={12}>
+                <div className="d-flex align-items-center gap-2 mb-2">
+                    <IoWalletOutline className="text-muted" />
+                    <span className="fw-bold" style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Rango de Presupuesto</span>
+                </div>
+                <div style={{ color: '#0f172a', fontSize: '1.1rem', fontWeight: '700' }}>
+                    {client.minBudget ? `$${client.minBudget.toLocaleString()}` : '—'} - {client.maxBudget ? `$${client.maxBudget.toLocaleString()}` : '—'}
                 </div>
               </Col>
               <Col xs={6}>
-                <div className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Baños</div>
-                <div style={{ color: FIGMA_COLORS.deepDark, fontSize: '1rem', fontWeight: '400' }}>
-                  {client.minBathrooms ?? '-'} - {client.maxBathrooms ?? '-'}
+                <div className="d-flex align-items-center gap-2 mb-2">
+                    <IoBedOutline className="text-muted" />
+                    <span className="fw-bold" style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Habitaciones</span>
                 </div>
+                <div style={{ color: '#0f172a', fontSize: '1rem', fontWeight: '600' }}>{client.minBedrooms ?? '-'} a {client.maxBedrooms ?? '-'}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="d-flex align-items-center gap-2 mb-2">
+                    <IoWaterOutline className="text-muted" />
+                    <span className="fw-bold" style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Baños</span>
+                </div>
+                <div style={{ color: '#0f172a', fontSize: '1rem', fontWeight: '600' }}>{client.minBathrooms ?? '-'} a {client.maxBathrooms ?? '-'}</div>
               </Col>
             </Row>
 
             <div className="mb-4">
-              <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Tipos de propiedad</div>
+              <div className="d-flex align-items-center gap-2 mb-2">
+                  <IoHomeOutline className="text-muted" />
+                  <span className="fw-bold" style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Tipos de propiedad</span>
+              </div>
               <div className="d-flex flex-wrap gap-2">
-                {client.preferredPropertyTypes && client.preferredPropertyTypes.length > 0 ? (
+                {client.preferredPropertyTypes?.length > 0 ? (
                   client.preferredPropertyTypes.map((tag, i) => (
-                    <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.paleGreenBg, FIGMA_COLORS.paleGreenText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
+                    <Badge key={i} bg="none" style={tagStyle(colorMap.green)}>{tag}</Badge>
                   ))
-                ) : (
-                  <span className="text-muted">-</span>
-                )}
+                ) : <span className="text-muted small">No especificado</span>}
               </div>
             </div>
 
             <div className="mb-4">
-              <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Áreas preferidas</div>
+              <div className="d-flex align-items-center gap-2 mb-2">
+                  <IoMapOutline className="text-muted" />
+                  <span className="fw-bold" style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Áreas preferidas</span>
+              </div>
               <div className="d-flex flex-wrap gap-2">
-                {client.preferredAreas && client.preferredAreas.length > 0 ? (
+                {client.preferredAreas?.length > 0 ? (
                   client.preferredAreas.map((tag, i) => (
-                    <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.palePurpleBg, FIGMA_COLORS.palePurpleText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
+                    <Badge key={i} bg="none" style={tagStyle(colorMap.purple)}>{tag}</Badge>
                   ))
-                ) : (
-                  <span className="text-muted">-</span>
-                )}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Características deseadas</div>
-              <div className="d-flex flex-wrap gap-2">
-                {client.desiredFeatures && client.desiredFeatures.length > 0 ? (
-                  client.desiredFeatures.map((tag, i) => (
-                    <Badge key={i} bg="none" style={tagStyle(FIGMA_COLORS.palePinkBg, FIGMA_COLORS.palePinkText)} className="px-3 py-2 rounded-pill">{tag}</Badge>
-                  ))
-                ) : (
-                  <span className="text-muted">-</span>
-                )}
+                ) : <span className="text-muted small">No especificado</span>}
               </div>
             </div>
 
             <div>
-              <div className="fw-bold mb-2" style={{ fontSize: '0.9rem', color: FIGMA_COLORS.deepDark }}>Etiquetas</div>
+              <div className="d-flex align-items-center gap-2 mb-2">
+                  <IoPricetagOutline className="text-muted" />
+                  <span className="fw-bold" style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase' }}>Etiquetas</span>
+              </div>
               <div className="d-flex flex-wrap gap-2">
-                {client.tags && client.tags.length > 0 ? (
+                {client.tags?.length > 0 ? (
                   client.tags.map((tag, i) => (
-                    <Badge key={i} bg="none" style={{ backgroundColor: '#F5F5F5', color: '#616161', fontWeight: '500' }} className="px-3 py-2 rounded-pill border fw-normal">{tag}</Badge>
+                    <Badge key={i} bg="none" style={{ backgroundColor: '#f1f5f9', color: '#475569', fontWeight: '600', fontSize: '0.7rem' }}>{tag}</Badge>
                   ))
-                ) : (
-                  <span className="text-muted">-</span>
-                )}
+                ) : <span className="text-muted small">Sin etiquetas</span>}
               </div>
             </div>
           </Col>

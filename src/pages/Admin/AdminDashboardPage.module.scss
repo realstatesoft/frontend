@@ -1,8 +1,9 @@
+@use "../../styles/variables" as *;
 @use "../../styles/mixins" as *;
 
 .page {
   min-height: 100vh;
-  background: var(--color-bg-primary, #f8fafc);
+  background: var(--color-bg-primary, $light);
 }
 
 .main {
@@ -98,9 +99,9 @@
   align-items: flex-start;
   gap: var(--spacing-md, 16px);
   padding: 12px 14px;
-  background: var(--color-bg-surface, #fff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: var(--radius-sm, 8px);
+  background: var(--color-bg-surface, $light);
+  border: 1px solid var(--color-border, $border-color-soft);
+  border-radius: $radius-md;
   text-decoration: none;
   color: inherit;
   transition: var(--transition-base, all 0.25s ease);
@@ -108,10 +109,11 @@
   width: 100%;
   cursor: pointer;
   font: inherit;
+  @include tap-feedback(0.96);
 
   &:hover:not(:disabled) {
-    border-color: var(--color-accent, #2563eb);
-    background: color-mix(in srgb, var(--color-accent, #2563eb) 6%, transparent);
+    border-color: var(--color-accent, $primary);
+    background: color-mix(in srgb, var(--color-accent, $primary) 6%, transparent);
   }
 
   &:disabled {
@@ -236,16 +238,17 @@
 .attentionCard {
   display: block;
   padding: 14px 16px;
-  border-radius: var(--radius-sm, 8px);
-  border: 1px solid var(--color-border, #e2e8f0);
-  background: var(--color-bg-surface, #fff);
+  border-radius: $radius-md;
+  border: 1px solid var(--color-border, $border-color-soft);
+  background: var(--color-bg-surface, $light);
   text-decoration: none;
   color: inherit;
   transition: var(--transition-base, all 0.25s ease);
+  @include tap-feedback(0.96);
 
   &:hover {
-    border-color: var(--color-accent, #2563eb);
-    background: color-mix(in srgb, var(--color-accent, #2563eb) 5%, transparent);
+    border-color: var(--color-accent, $primary);
+    background: color-mix(in srgb, var(--color-accent, $primary) 5%, transparent);
   }
 }
 

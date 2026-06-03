@@ -174,22 +174,22 @@ describe('ContractDetailModal', () => {
     expect(roleSpan).toBeTruthy();
   });
 
-  it('muestra ✅ para firmas completadas', () => {
+  it('muestra icono de firmado para firmas completadas', () => {
     useContractSignatures.mockReturnValue({
       data: { data: [makeSig({ signed: true })] },
       isLoading: false,
     });
     renderModal();
-    expect(screen.getByText('✅')).toBeInTheDocument();
+    expect(screen.getByLabelText('Firmado')).toBeInTheDocument();
   });
 
-  it('muestra ⏳ para firmas pendientes', () => {
+  it('muestra icono de pendiente para firmas pendientes', () => {
     useContractSignatures.mockReturnValue({
       data: { data: [makeSig({ signed: false })] },
       isLoading: false,
     });
     renderModal();
-    expect(screen.getByText('⏳')).toBeInTheDocument();
+    expect(screen.getByLabelText('Pendiente')).toBeInTheDocument();
   });
 
   it('muestra "Pendiente de firma" para firmas sin completar', () => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Container, Carousel, Card, Row, Col, Badge, Spinner } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
+import { LuBedDouble, LuBath, LuMaximize, LuMapPin } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 import propertyService from "../../services/propertyService";
@@ -130,10 +131,10 @@ const Properties = () => {
                                 </h5>
 
                                 <p
-                                  className="text-muted mb-2 text-truncate"
+                                  className="text-muted mb-2 text-truncate d-flex align-items-center gap-1"
                                   style={{ fontSize: "0.85rem" }}
                                 >
-                                  📍 {property.locationName || property.address || "Sin ubicación"}
+                                  <LuMapPin size={14} className="text-primary" /> {property.locationName || property.address || "Sin ubicación"}
                                 </p>
 
                                 <hr className="my-2" />
@@ -142,9 +143,9 @@ const Properties = () => {
                                   className="d-flex justify-content-between text-muted"
                                   style={{ fontSize: "0.85rem" }}
                                 >
-                                  <span>🛏 {property.bedrooms || 0}</span>
-                                  <span>🚿 {property.bathrooms || 0}</span>
-                                  <span>📐 {property.surfaceArea || 0} m²</span>
+                                  <span className="d-flex align-items-center gap-1"><LuBedDouble size={14} /> {property.bedrooms || 0}</span>
+                                  <span className="d-flex align-items-center gap-1"><LuBath size={14} /> {property.bathrooms || 0}</span>
+                                  <span className="d-flex align-items-center gap-1"><LuMaximize size={14} /> {property.surfaceArea || 0} m²</span>
                                 </div>
                               </Card.Body>
                             </Card>

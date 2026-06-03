@@ -1,44 +1,46 @@
 .dashboard-text {
   &-h1 {
-    font-size: 1.75rem;
+    font-size: 2rem; // Aumentado de 1.75rem
     font-weight: 700;
-    color: var(--color-text-primary);
-    line-height: 1.3;
+    color: var(--color-text-primary, $text-dark);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
   &-h2 {
-    font-size: 1.375rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
+    font-size: 1.5rem; // Aumentado de 1.375rem
+    font-weight: 700;
+    color: var(--color-text-primary, $text-dark);
     line-height: 1.3;
+    letter-spacing: -0.01em;
   }
 
   &-h3 {
-    font-size: 1.125rem;
+    font-size: 1.25rem; // Aumentado de 1.125rem
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--color-text-primary, $text-dark);
     line-height: 1.4;
   }
 
   &-body {
-    font-size: 0.9375rem;
+    font-size: 1rem; // Aumentado de 0.9375rem para estándar web
     font-weight: 400;
-    color: var(--color-text-secondary);
-    line-height: 1.5;
+    color: var(--color-text-secondary, $text-muted);
+    line-height: 1.6; // Mayor interlineado para lectura
   }
 
   &-small {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 400;
-    color: var(--color-text-muted);
-    line-height: 1.4;
+    color: var(--color-text-muted, $text-light-muted);
+    line-height: 1.5;
   }
 
   &-label {
     font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-text-muted);
+    font-weight: 600;
+    color: var(--color-text-muted, $text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
   }
 }

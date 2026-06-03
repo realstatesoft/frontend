@@ -343,7 +343,12 @@ export default function SignUp() {
 
   return (
     <div className="signup-page">
-      <Container style={{ maxWidth: currentStep === 3 ? 800 : 500 }}>
+      <Container 
+        style={{ 
+            maxWidth: currentStep === 3 ? 800 : 500,
+            animation: 'fadeInUp 0.8s var(--ease-out) both'
+        }}
+      >
         <Card className="signup-card">
           <div className="logo-container">
             <img src={logo} alt="Logo" className="logo-img" />

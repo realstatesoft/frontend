@@ -1,12 +1,16 @@
 // Property card animations
 .property-card {
-    border-radius: 15px;
+    border-radius: $radius-lg;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
 
     &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        transform: translateY(-10px);
+        box-shadow: $shadow-lg;
+    }
+
+    &:active {
+        transform: translateY(-10px) scale(0.98);
     }
 }
 

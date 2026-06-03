@@ -1,5 +1,6 @@
 import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { LuSearchX } from "react-icons/lu";
 import PropertyCard from "./PropertyCard";
 import Pagination from "./Pagination";
 
@@ -65,12 +66,28 @@ export default function PropertiesGrid({
 
     if (properties.length === 0) {
         return (
-            <Container className="py-5 text-center">
-                <div style={{ fontSize: "3rem" }}>🏚️</div>
-                <p className="text-muted mt-3">
+            <Container className="py-5 text-center d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "400px" }}>
+                <div 
+                    className="mb-4 d-flex align-items-center justify-content-center"
+                    style={{ 
+                        width: "80px", 
+                        height: "80px", 
+                        borderRadius: "24px", 
+                        backgroundColor: "var(--light, #f8fafc)",
+                        color: "var(--text-muted, #94a3b8)"
+                    }}
+                >
+                    <LuSearchX size={40} />
+                </div>
+                <h4 className="fw-bold mb-2">{t("results.emptyTitle", { defaultValue: "No encontramos resultados" })}</h4>
+                <p className="text-muted mb-4" style={{ maxWidth: "300px" }}>
                     {t("results.empty")}
                 </p>
-                <Button variant="outline-secondary" onClick={onClear}>
+                <Button 
+                    variant="primary" 
+                    onClick={onClear}
+                    style={{ borderRadius: "12px", padding: "10px 24px", fontWeight: "600" }}
+                >
                     {t("search.clearFilters")}
                 </Button>
             </Container>
@@ -101,8 +118,15 @@ export default function PropertiesGrid({
                 </p>
 
                 <Row className="g-4">
-                    {paginated.map((property) => (
-                        <Col key={property.id} xs={12} sm={6} xl={6}>
+                    {paginated.map((property, index) => (
+                        <Col 
+                            key={property.id} 
+                            xs={12} sm={6} xl={6} xxl={4}
+                            style={{ 
+                                animation: `fadeInUp 0.8s var(--ease-out) ${index * 0.05}s forwards`,
+                                opacity: 0
+                            }}
+                        >
                             <PropertyCard
                                 property={property}
                                 isFavorite={favoriteIds.includes(property.id)}

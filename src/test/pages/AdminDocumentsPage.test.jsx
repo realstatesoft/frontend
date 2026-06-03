@@ -192,8 +192,8 @@ describe('AdminDocumentsPage KYC', () => {
       });
       // Verifica que SweetAlert de éxito también se mostró
       expect(Swal.fire).toHaveBeenCalledWith(
-        'Aprobado ✅',
-        'El documento fue verificado.',
+        'Aprobado',
+        'El documento fue verificado correctamente.',
         'success'
       );
     });

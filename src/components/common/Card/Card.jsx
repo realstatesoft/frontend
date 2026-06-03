@@ -17,7 +17,12 @@ export default function Card({
   ].filter(Boolean).join(' ');
 
   return (
-    <div className={classes}>
+    <div 
+      className={classes}
+      style={{
+        animation: 'fadeInUp 0.6s var(--ease-out) both'
+      }}
+    >
       {(title || headerRight) && (
         <div className={styles.card__header}>
           <div>

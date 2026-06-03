@@ -17,6 +17,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
+import { LuTriangleAlert } from "react-icons/lu";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -257,8 +258,8 @@ export default function ShowProperty() {
                   placement="right"
                   overlay={<Tooltip>Esta propiedad no aparecerá en el inicio porque su visibilidad es "{visibility.label}". Cámbiala a "Público".</Tooltip>}
                 >
-                  <Badge bg="danger" className="d-flex align-items-center ms-2" style={{ borderRadius: "20px" }}>
-                    ⚠️ Visibilidad Restringida
+                  <Badge bg="danger" className="d-flex align-items-center gap-1 ms-2" style={{ borderRadius: "20px" }}>
+                    <LuTriangleAlert size={14} /> Visibilidad Restringida
                   </Badge>
                 </OverlayTrigger>
               )}

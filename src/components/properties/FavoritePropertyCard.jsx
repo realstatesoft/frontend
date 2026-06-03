@@ -1,6 +1,7 @@
 import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Share } from "react-bootstrap-icons";
+import { LuBedDouble, LuBath, LuMaximize, LuMapPin } from "react-icons/lu";
 import { FAVORITE_STATUS_LABELS, FAVORITE_BADGE_STYLES } from "../../data/propertiesData";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import FavoriteToggleButton from "./FavoriteToggleButton";
@@ -86,13 +87,13 @@ export default function FavoritePropertyCard({
             {price.label || "—"}
           </span>
         </div>
-        <p className="text-muted mb-2" style={{ fontSize: "0.82rem" }}>
-          📍 {address}
+        <p className="text-muted mb-2 d-flex align-items-center gap-1" style={{ fontSize: "0.82rem" }}>
+          <LuMapPin className="text-primary" /> {address}
         </p>
         <div className="d-flex gap-3 text-muted mb-3" style={{ fontSize: "0.82rem" }}>
-          <span>{bedrooms} hab</span>
-          <span>{bathrooms} baños</span>
-          <span>{area} m²</span>
+          <span className="d-flex align-items-center gap-1"><LuBedDouble /> {bedrooms} hab</span>
+          <span className="d-flex align-items-center gap-1"><LuBath /> {bathrooms} baños</span>
+          <span className="d-flex align-items-center gap-1"><LuMaximize /> {area} m²</span>
         </div>
 
         {showAgentMeta && (
