@@ -67,6 +67,11 @@ export default function Topbar({ extraActions }) {
     return '/owner/settings';
   };
 
+  const getProfileLink = () => {
+    if (user?.role === 'AGENT') return '/agent/perfil';
+    return '/profile';
+  };
+
   const getMessagesLink = () => {
     if (user?.role === 'AGENT') return '/agent/mensajes';
     if (user?.role === 'USER' || user?.role === 'OWNER') return '/owner/mensajes';
@@ -140,7 +145,7 @@ export default function Topbar({ extraActions }) {
 
           {dropdownOpen && (
             <div className="profile-dropdown-menu">
-              <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <Link to={getProfileLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <CiUser size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
               </Link>
               <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
