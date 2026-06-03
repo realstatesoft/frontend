@@ -36,6 +36,11 @@ function sanitizeAvatarUrl(url) {
   }
 }
 
+function getAvatarInitials(name) {
+  const sanitizedName = typeof name === "string" ? name.replace(/[^\p{L}\p{N}\s]/gu, "").trim() : "";
+  return (sanitizedName || "AG").slice(0, 2).toUpperCase();
+}
+
 export default function AgentEditPage() {
   const { t } = useTranslation("agent");
   const { id } = useParams();
@@ -304,6 +309,10 @@ export default function AgentEditPage() {
   const name = agent.userName || "Agente Inmobiliario";
   const email = agent.userEmail || "Sin registro";
   const avatarUrl = sanitizeAvatarUrl(avatarPreviewUrl || agent.userAvatarUrl);
+  const avatarInitials = getAvatarInitials(name);
+  const avatarBackgroundStyle = avatarUrl
+    ? { backgroundImage: `url(${JSON.stringify(avatarUrl)})` }
+    : undefined;
 
   // ── Main render ───────────────────────────────────────────────
   return (
@@ -364,10 +373,14 @@ export default function AgentEditPage() {
                 onClick={() => avatarInputRef.current?.click()}
                 aria-label="Cambiar foto de perfil"
               >
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt={name} />
+                {avatarBackgroundStyle ? (
+                  <span
+                    className="avatar-editor__image"
+                    style={avatarBackgroundStyle}
+                    aria-hidden="true"
+                  />
                 ) : (
-                  <span>{name.slice(0, 2).toUpperCase()}</span>
+                  <span>{avatarInitials}</span>
                 )}
                 <span className="avatar-editor__overlay">
                   <IoCameraOutline size={18} />
