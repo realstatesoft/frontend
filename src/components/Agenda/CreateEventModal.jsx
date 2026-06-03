@@ -47,7 +47,10 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
     const maxDateStr = useMemo(() => {
         const d = new Date();
         d.setFullYear(d.getFullYear() + 1);
-        return d.toISOString().slice(0, 10);
+        const yyyy = d.getFullYear();
+        const mm   = String(d.getMonth() + 1).padStart(2, '0');
+        const dd   = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
     }, []);
 
     // Pre-fill date when opened from a day cell
@@ -87,11 +90,11 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
         if (!valid) return;
 
         if (form.date < todayStr) {
-            setError('La fecha del evento no puede ser en el pasado.');
+            setError(t('errors.datePast'));
             return;
         }
         if (form.date > maxDateStr) {
-            setError('La fecha del evento no puede ser mayor a 1 año desde hoy.');
+            setError(t('errors.dateTooFar'));
             return;
         }
 

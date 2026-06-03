@@ -9,11 +9,11 @@ export default function DayCell({ day, isCurrentMonth, events, onDayClick, onEve
     }, []);
 
     const maxDate = useMemo(() => {
-        const d = new Date();
+        const d = new Date(today);
         d.setFullYear(d.getFullYear() + 1);
         d.setHours(23, 59, 59, 999);
         return d;
-    }, []);
+    }, [today]);
 
     const isPast       = useMemo(() => day < today,   [day, today]);
     const isBeyondMax  = useMemo(() => day > maxDate, [day, maxDate]);
