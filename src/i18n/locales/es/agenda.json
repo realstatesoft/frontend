@@ -28,6 +28,8 @@
   "saving": "Guardando...",
   "errors": {
     "endAfterStart": "La hora de fin debe ser posterior a la hora de inicio.",
-    "createFailed": "Error al crear el evento. Intente nuevamente."
+    "createFailed": "Error al crear el evento. Intente nuevamente.",
+    "datePast": "La fecha del evento no puede ser en el pasado.",
+    "dateTooFar": "La fecha del evento no puede ser mayor a 1 año desde hoy."
   }
 }
