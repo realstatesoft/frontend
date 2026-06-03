@@ -31,6 +31,12 @@ const buildReceiptFilename = (installmentNumber, date) => {
   return `receipt-${cuota}-${fecha}.pdf`;
 };
 
+const buildInvoiceFilename = (installmentNumber, date) => {
+  const cuota = String(installmentNumber ?? 'cuota').replace(/[^a-zA-Z0-9_-]+/g, '-');
+  const fecha = String(date ?? new Date().toISOString().slice(0, 10)).slice(0, 10);
+  return `factura-${cuota}-${fecha}.pdf`;
+};
+
 export default function LeasePaymentsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -72,6 +78,26 @@ export default function LeasePaymentsPage() {
           Swal.fire({ icon: 'info', title: 'PDF en generación', text: res.message, timer: 3000, showConfirmButton: false });
         } else {
           Swal.fire('Error', 'No se pudo descargar el recibo.', 'error');
+        }
+      }
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  const handleDownloadInvoice = async (installmentId, installmentNumber, date) => {
+    setDownloading(`invoice-${installmentId}`);
+    try {
+      const res = await downloadPdf(
+        `/rentals/installments/${installmentId}/invoice.pdf`,
+        buildInvoiceFilename(installmentNumber, date)
+      );
+
+      if (!res.success) {
+        if (res.status === 202) {
+          Swal.fire({ icon: 'info', title: 'PDF en generación', text: res.message, timer: 3000, showConfirmButton: false });
+        } else {
+          Swal.fire('Error', 'No se pudo descargar la factura.', 'error');
         }
       }
     } finally {
@@ -175,6 +201,17 @@ export default function LeasePaymentsPage() {
                     {['PENDING', 'OVERDUE', 'PARTIAL'].includes(inst.status) && (
                       <Button size="sm" onClick={() => { setSelectedInstallmentId(inst.id); setShowPaymentModal(true); }}>
                         Pagar
+                      </Button>
+                    )}
+                    {inst.status === 'PAID' && (
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        disabled={downloading === `invoice-${inst.id}`}
+                        onClick={() => handleDownloadInvoice(inst.id, inst.installmentNumber, inst.dueDate)}
+                      >
+                        {downloading === `invoice-${inst.id}` ? <Spinner animation="border" size="sm" /> : <FiDownload />}
+                        Factura
                       </Button>
                     )}
                     {inst.status === 'PAID' && inst.payments?.map((payment) => payment.id && (
