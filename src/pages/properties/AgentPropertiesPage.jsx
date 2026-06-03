@@ -69,6 +69,7 @@ export default function AgentPropertiesPage() {
 
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
+  const [acceptingAssignmentId, setAcceptingAssignmentId] = useState(null);
 
   const fetchPendingRequests = useCallback(async () => {
     setLoadingRequests(true);
@@ -76,7 +77,8 @@ export default function AgentPropertiesPage() {
       const res = await propertyApi.getMyAssignments();
       const all = res.data?.data ?? res.data ?? [];
       setPendingRequests(all.filter((a) => a.status === 'PENDING'));
-    } catch {
+    } catch (err) {
+      console.error("Error al cargar solicitudes pendientes:", err);
       setPendingRequests([]);
     } finally {
       setLoadingRequests(false);
@@ -96,6 +98,7 @@ export default function AgentPropertiesPage() {
       cancelButtonText: 'Cancelar',
     });
     if (!confirm.isConfirmed) return;
+    setAcceptingAssignmentId(assignmentId);
     try {
       await propertyApi.acceptAssignment(assignmentId);
       Swal.fire({ icon: 'success', title: 'Asignación aceptada', timer: 1500, showConfirmButton: false });
@@ -103,6 +106,8 @@ export default function AgentPropertiesPage() {
       queryClient.invalidateQueries({ queryKey: ['agentProperties'] });
     } catch {
       Swal.fire({ icon: 'error', title: 'Error al aceptar' });
+    } finally {
+      setAcceptingAssignmentId(null);
     }
   }
 
@@ -205,8 +210,13 @@ export default function AgentPropertiesPage() {
                 <small className="text-muted">Propietario: {req.ownerName}</small>
               </div>
               <div className="d-flex gap-2">
-                <Button size="sm" variant="success" onClick={() => handleAccept(req.id)}>
-                  Aceptar
+                <Button
+                  size="sm"
+                  variant="success"
+                  onClick={() => handleAccept(req.id)}
+                  disabled={acceptingAssignmentId === req.id}
+                >
+                  {acceptingAssignmentId === req.id ? 'Aceptando…' : 'Aceptar'}
                 </Button>
                 <Button size="sm" variant="danger" onClick={() => handleReject(req.id)}>
                   Rechazar

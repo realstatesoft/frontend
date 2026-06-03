@@ -110,9 +110,11 @@ export default function AssignmentSection({ propertyId, isOwner }) {
                   {"★".repeat(Math.round(agentRating))} {agentRating.toFixed(1)} ({agentReviewCount ?? 0} reseñas)
                 </small>
               )}
-              <Button size="sm" variant="outline-primary" as={Link} to={`/agents/${agentProfileId}`}>
-                Ver perfil
-              </Button>
+              {agentProfileId ? (
+                <Button size="sm" variant="outline-primary" as={Link} to={`/agents/${agentProfileId}`}>
+                  Ver perfil
+                </Button>
+              ) : null}
             </div>
           )}
 

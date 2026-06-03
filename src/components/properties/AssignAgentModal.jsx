@@ -92,7 +92,7 @@ export default function AssignAgentModal({ propertyId, show, onHide, onAssigned 
         onClick={() => setSelectedAgentId(agentId)}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => { if (e.key === "Enter") setSelectedAgentId(agentId); }}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); setSelectedAgentId(agentId); } }}
         style={{ cursor: "pointer", marginBottom: 6 }}
       >
         {avatar ? (
