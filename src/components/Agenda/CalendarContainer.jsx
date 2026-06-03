@@ -18,6 +18,14 @@ export default function CalendarContainer() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
+    // Límites de navegación
+    const today = new Date();
+    const maxNavDate = new Date(today.getFullYear() + 1, today.getMonth(), 1);
+    const minNavDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    const currentMonthStart = new Date(year, month, 1);
+    const canGoPrev = currentMonthStart > minNavDate;
+    const canGoNext = new Date(year, month + 1, 1) <= maxNavDate;
+
     const monthName = currentDate.toLocaleString('es-ES', { month: 'long' });
     const capitalizedMonthName = monthName.charAt(0).toUpperCase() + monthName.slice(1);
 
@@ -44,11 +52,11 @@ export default function CalendarContainer() {
     };
 
     const handlePrevMonth = () => {
-        setCurrentDate(new Date(year, month - 1, 1));
+        if (canGoPrev) setCurrentDate(new Date(year, month - 1, 1));
     };
 
     const handleNextMonth = () => {
-        setCurrentDate(new Date(year, month + 1, 1));
+        if (canGoNext) setCurrentDate(new Date(year, month + 1, 1));
     };
 
     // Open modal without a pre-selected date
@@ -105,13 +113,25 @@ export default function CalendarContainer() {
             {/* Navigation controls */}
             <div className="d-flex justify-content-between align-items-center bg-white p-3 radius-md shadow-soft mb-3">
                 <div className="d-flex align-items-center gap-2">
-                    <Button variant="light" className="p-2 border-soft radius-sm d-flex align-items-center" onClick={handlePrevMonth}>
+                    <Button
+                        variant="light"
+                        className="p-2 border-soft radius-sm d-flex align-items-center"
+                        onClick={handlePrevMonth}
+                        disabled={!canGoPrev}
+                        title={!canGoPrev ? 'No puedes navegar al pasado' : undefined}
+                    >
                         <ChevronLeft />
                     </Button>
                     <div className="fw-semibold px-3 text-center" style={{ minWidth: '150px' }}>
                         {capitalizedMonthName} {year}
                     </div>
-                    <Button variant="light" className="p-2 border-soft radius-sm d-flex align-items-center" onClick={handleNextMonth}>
+                    <Button
+                        variant="light"
+                        className="p-2 border-soft radius-sm d-flex align-items-center"
+                        onClick={handleNextMonth}
+                        disabled={!canGoNext}
+                        title={!canGoNext ? 'No puedes agendar eventos con más de 1 año de anticipación' : undefined}
+                    >
                         <ChevronRight />
                     </Button>
                 </div>

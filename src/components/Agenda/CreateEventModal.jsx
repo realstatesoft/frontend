@@ -44,6 +44,11 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
     const [error, setError]     = useState(null);
     const { fieldErrors, validate, clearFieldError } = useFormValidation();
     const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+    const maxDateStr = useMemo(() => {
+        const d = new Date();
+        d.setFullYear(d.getFullYear() + 1);
+        return d.toISOString().slice(0, 10);
+    }, []);
 
     // Pre-fill date when opened from a day cell
     useEffect(() => {
@@ -81,9 +86,12 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
         });
         if (!valid) return;
 
-        const todayCheck = todayStr;
-        if (form.date < todayCheck) {
-            setError(t('La fecha del evento no puede ser en el pasado.'));
+        if (form.date < todayStr) {
+            setError('La fecha del evento no puede ser en el pasado.');
+            return;
+        }
+        if (form.date > maxDateStr) {
+            setError('La fecha del evento no puede ser mayor a 1 año desde hoy.');
             return;
         }
 
@@ -154,14 +162,16 @@ export default function CreateEventModal({ show, onHide, initialDate, onSuccess 
                         </Col>
 
                         <Col xs={6} md={3}>
-                            <Form.Label className="small fw-semibold text-secondary mb-1">
-                                {t('fields.date')} <span className="text-danger">*</span>
+                            <Form.Label className="small fw-semibold text-secondary mb-1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                <span>{t('fields.date')} <span className="text-danger">*</span></span>
+                                <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 400 }}>Máx. {maxDateStr}</span>
                             </Form.Label>
                             <Form.Control
                                 type="date"
                                 name="date"
                                 value={form.date}
                                 min={todayStr}
+                                max={maxDateStr}
                                 onChange={handleChange}
                                 disabled={loading}
                                 className={fieldErrors.date ? 'field-error' : ''}
