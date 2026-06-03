@@ -135,7 +135,8 @@ function CustomNavbar() {
     if (role === 'AGENT') return '/agent/dashboard';
     if (role === 'ADMIN') return ADMIN_ROUTES.DASHBOARD;
     if (role === 'USER' || role === 'OWNER') return '/owner/dashboard';
-    return '/dashboard';
+    if (role === 'TENANT') return '/tenant/dashboard';
+    return '/';
   };
 
   const getMessagesLink = () => {

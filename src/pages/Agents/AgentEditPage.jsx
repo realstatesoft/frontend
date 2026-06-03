@@ -23,6 +23,19 @@ const SOCIAL_PLATFORMS = [
   { value: "TIKTOK", label: "TikTok" },
 ];
 
+function sanitizeAvatarUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  if (url.startsWith("blob:")) return url;
+
+  try {
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+    const parsed = new URL(url, baseUrl);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function AgentEditPage() {
   const { t } = useTranslation("agent");
   const { id } = useParams();
@@ -187,14 +200,26 @@ export default function AgentEditPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const clearSelectedAvatar = () => {
+      setSelectedAvatarFile(null);
+      setAvatarPreviewUrl((prev) => {
+        if (prev?.startsWith("blob:")) {
+          URL.revokeObjectURL(prev);
+        }
+        return agent?.userAvatarUrl || null;
+      });
+    };
+
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
     if (!allowedTypes.includes(file.type)) {
+      clearSelectedAvatar();
       setSaveError("Solo se permiten imagenes JPEG, PNG, WebP o GIF.");
       e.target.value = "";
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
+      clearSelectedAvatar();
       setSaveError("La imagen no puede superar 5 MB.");
       e.target.value = "";
       return;
@@ -278,7 +303,7 @@ export default function AgentEditPage() {
 
   const name = agent.userName || "Agente Inmobiliario";
   const email = agent.userEmail || "Sin registro";
-  const avatarUrl = avatarPreviewUrl || agent.userAvatarUrl || null;
+  const avatarUrl = sanitizeAvatarUrl(avatarPreviewUrl || agent.userAvatarUrl);
 
   // ── Main render ───────────────────────────────────────────────
   return (
