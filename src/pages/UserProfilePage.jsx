@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
+import userApi from "../services/users/userApi";
 import CustomNavbar from "../components/Landing/Navbar";
 import Footer from "../components/Landing/Footer";
 import { CiUser, CiMail, CiPhone } from "react-icons/ci";
@@ -39,40 +40,15 @@ function EditProfileModal({ profile, onClose, onSaved }) {
       return;
     }
 
-    try {
-      const bitmap = await createImageBitmap(file);
-      const canvas = document.createElement("canvas");
-      canvas.width = bitmap.width;
-      canvas.height = bitmap.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        throw new Error("No se pudo procesar la imagen.");
+    const nextPreviewUrl = URL.createObjectURL(file);
+    setError(null);
+    setSelectedFile(file);
+    setPreviewUrl((prev) => {
+      if (prev && prev.startsWith("blob:")) {
+        URL.revokeObjectURL(prev);
       }
-      ctx.drawImage(bitmap, 0, 0);
-      bitmap.close();
-
-      const safeBlob = await new Promise((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            reject(new Error("No se pudo generar la vista previa."));
-            return;
-          }
-          resolve(blob);
-        }, "image/png");
-      });
-
-      const nextPreviewUrl = URL.createObjectURL(safeBlob);
-      setError(null);
-      setSelectedFile(file);
-      setPreviewUrl((prev) => {
-        if (prev && prev.startsWith("blob:")) {
-          URL.revokeObjectURL(prev);
-        }
-        return nextPreviewUrl;
-      });
-    } catch {
-      setError("No se pudo procesar la imagen seleccionada.");
-    }
+      return nextPreviewUrl;
+    });
   }
 
   // Cleanup blob URL on unmount
@@ -92,10 +68,7 @@ function EditProfileModal({ profile, onClose, onSaved }) {
       let avatarData = null;
 
       if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        const { data: avatarRes } = await api.post("/users/me/avatar", formData);
-        avatarData = avatarRes.data;
+        avatarData = await userApi.uploadAvatar(selectedFile);
       }
 
       const { data: profileRes } = await api.put("/users/me", {
