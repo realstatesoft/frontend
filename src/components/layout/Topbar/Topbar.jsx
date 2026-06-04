@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiBell, FiHome, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
+import { FiBell, FiHome, FiMenu } from 'react-icons/fi';
 import { CiUser } from 'react-icons/ci';
 import { IoSettingsOutline, IoLogOutOutline, IoSpeedometerOutline, IoChatbubblesOutline, IoShieldOutline } from 'react-icons/io5';
 import { useAuth } from '../../../hooks/useAuth';
@@ -12,7 +12,7 @@ import CurrencySelector from '../../common/CurrencySelector';
 import styles from './Topbar.module.scss';
 
 export default function Topbar({ extraActions }) {
-  const { sidebarCollapsed, toggleSidebar, darkMode, toggleDarkMode } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar } = useUIStore();
  
   const { t } = useTranslation('navigation');
   const { user, logout, isAuthenticated } = useAuth();
@@ -104,26 +104,18 @@ export default function Topbar({ extraActions }) {
         {extraActions}
         <LanguageSelector variant="dark" />
         <CurrencySelector variant="dark" />
-        <button
-          type="button"
-          className={styles.topbar__iconBtn}
-          onClick={toggleDarkMode}
-          aria-label={darkMode ? t('theme.light') : t('theme.dark')}
-        >
-          {darkMode ? <FiSun /> : <FiMoon />}
-        </button>
-        <button
-          type="button"
-          className={styles.topbar__iconBtn}
-          onClick={() => {
-            if (user?.role === 'ADMIN') navigate('/admin/notifications');
-            else navigate('/admin/notifications');
-          }}
-          aria-label={t('notifications')}
-        >
-          <FiBell />
-          <span className={styles.topbar__badge} />
-        </button>
+
+        {user?.role === 'ADMIN' && (
+          <button
+            type="button"
+            className={styles.topbar__iconBtn}
+            onClick={() => navigate('/admin/notifications')}
+            aria-label={t('notifications')}
+          >
+            <FiBell />
+            <span className={styles.topbar__badge} />
+          </button>
+        )}
 
         {isAuthenticated && (
           <Link
