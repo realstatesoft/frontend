@@ -176,7 +176,7 @@ export default function PropertyCard({
                         disabled={compareDisabled && !isCompared}
                         onClick={() => onToggleCompare?.(property)}
                     >
-                        {isCompared ? "Quitar" : "Comparar"}
+                        {isCompared ? t("card.compareRemove") : t("card.compareAdd")}
                     </Button>
                 </div>
             </Card.Footer>

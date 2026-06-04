@@ -79,7 +79,7 @@ export default function PropertiesGrid({
                 >
                     <LuSearchX size={40} />
                 </div>
-                <h4 className="fw-bold mb-2">{t("results.emptyTitle", { defaultValue: "No encontramos resultados" })}</h4>
+                <h4 className="fw-bold mb-2">{t("results.emptyTitle")}</h4>
                 <p className="text-muted mb-4" style={{ maxWidth: "300px" }}>
                     {t("results.empty")}
                 </p>

@@ -108,7 +108,7 @@ const ClientProfileInline = ({ show, onHide, clientId, type = "AGENT" }) => {
             <div className="mb-4">
               <ProfileDetails client={client} />
             </div>
-            <ClientInteractionsPanel client={client} clientId={clientId} />
+            <ClientInteractionsPanel client={client} clientId={clientId} onRefreshClient={fetchClient} />
           </>
         ) : (
           <p className="text-muted text-center py-5">No se ha cargado el cliente.</p>

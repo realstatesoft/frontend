@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
@@ -7,11 +6,13 @@ import { useAuth } from "../../hooks/useAuth";
 import agentApi from "../../services/agents/agentApi";
 import {
   IoArrowBack,
+  IoCameraOutline,
   IoCheckmarkOutline,
   IoTrashOutline,
   IoAddOutline,
 } from "react-icons/io5";
 import NumericInput from "../../components/common/NumericInput";
+import userApi from "../../services/users/userApi";
 import "./AgentEditPage.scss";
 
 const SOCIAL_PLATFORMS = [
@@ -22,12 +23,31 @@ const SOCIAL_PLATFORMS = [
   { value: "TIKTOK", label: "TikTok" },
 ];
 
+function sanitizeAvatarUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  if (url.startsWith("blob:")) return url;
+
+  try {
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+    const parsed = new URL(url, baseUrl);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function getAvatarInitials(name) {
+  const sanitizedName = typeof name === "string" ? name.replace(/[^\p{L}\p{N}\s]/gu, "").trim() : "";
+  return (sanitizedName || "AG").slice(0, 2).toUpperCase();
+}
+
 export default function AgentEditPage() {
   const { t } = useTranslation("agent");
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const redirectTimerRef = useRef(null);
+  const avatarInputRef = useRef(null);
 
   // ── Resolve authenticated user ID ────────────────────────────
   const authenticatedId = user?.userId || user?.id;
@@ -66,6 +86,8 @@ export default function AgentEditPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState(null);
 
   // ── Load agent + specialties catalog ──────────────────────────
   useEffect(() => {
@@ -106,6 +128,8 @@ export default function AgentEditPage() {
               }))
             : [],
         });
+        setSelectedAvatarFile(null);
+        setAvatarPreviewUrl(agentData.userAvatarUrl || null);
 
         setLoading(false);
       })
@@ -120,7 +144,15 @@ export default function AgentEditPage() {
     return () => {
       cancelled = true;
     };
-  }, [authenticatedId]);
+  }, [authenticatedId, t]);
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreviewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(avatarPreviewUrl);
+      }
+    };
+  }, [avatarPreviewUrl]);
 
   // ── Handlers ──────────────────────────────────────────────────
   function handleChange(e) {
@@ -169,6 +201,46 @@ export default function AgentEditPage() {
   }
 
   // ── Submit ────────────────────────────────────────────────────
+  function handleAvatarFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const clearSelectedAvatar = () => {
+      setSelectedAvatarFile(null);
+      setAvatarPreviewUrl((prev) => {
+        if (prev?.startsWith("blob:")) {
+          URL.revokeObjectURL(prev);
+        }
+        return agent?.userAvatarUrl || null;
+      });
+    };
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      clearSelectedAvatar();
+      setSaveError("Solo se permiten imagenes JPEG, PNG, WebP o GIF.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      clearSelectedAvatar();
+      setSaveError("La imagen no puede superar 5 MB.");
+      e.target.value = "";
+      return;
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+    setSaveError(null);
+    setSelectedAvatarFile(file);
+    setAvatarPreviewUrl((prev) => {
+      if (prev?.startsWith("blob:")) {
+        URL.revokeObjectURL(prev);
+      }
+      return nextPreviewUrl;
+    });
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setSaving(true);
@@ -176,6 +248,11 @@ export default function AgentEditPage() {
     setSaveSuccess(false);
 
     try {
+      let updatedAvatar = null;
+      if (selectedAvatarFile) {
+        updatedAvatar = await userApi.uploadAvatar(selectedAvatarFile);
+      }
+
       const payload = {
         companyName: form.companyName || null,
         bio: form.bio || null,
@@ -186,6 +263,9 @@ export default function AgentEditPage() {
       };
 
       await agentApi.updateAgent(authenticatedId, payload);
+      if (updatedAvatar?.avatarUrl) {
+        setAgent((prev) => ({ ...prev, userAvatarUrl: updatedAvatar.avatarUrl }));
+      }
       setSaveSuccess(true);
       redirectTimerRef.current = setTimeout(() => {
         navigate("/agent/perfil");
@@ -228,6 +308,11 @@ export default function AgentEditPage() {
 
   const name = agent.userName || "Agente Inmobiliario";
   const email = agent.userEmail || "Sin registro";
+  const avatarUrl = sanitizeAvatarUrl(avatarPreviewUrl || agent.userAvatarUrl);
+  const avatarInitials = getAvatarInitials(name);
+  const avatarBackgroundStyle = avatarUrl
+    ? { backgroundImage: `url(${JSON.stringify(avatarUrl)})` }
+    : undefined;
 
   // ── Main render ───────────────────────────────────────────────
   return (
@@ -276,6 +361,53 @@ export default function AgentEditPage() {
         )}
 
         <form onSubmit={handleSubmit} className="edit-form">
+          <div className="edit-section">
+            <h4 className="section-title">Foto de perfil</h4>
+            <p className="section-hint">
+              Esta imagen se mostrara en tu perfil publico y en tus contactos.
+            </p>
+            <div className="avatar-editor">
+              <button
+                type="button"
+                className="avatar-editor__preview"
+                onClick={() => avatarInputRef.current?.click()}
+                aria-label="Cambiar foto de perfil"
+              >
+                {avatarBackgroundStyle ? (
+                  <span
+                    className="avatar-editor__image"
+                    style={avatarBackgroundStyle}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <span>{avatarInitials}</span>
+                )}
+                <span className="avatar-editor__overlay">
+                  <IoCameraOutline size={18} />
+                </span>
+              </button>
+              <div className="avatar-editor__details">
+                <button
+                  type="button"
+                  className="avatar-editor__button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={saving}
+                >
+                  {selectedAvatarFile ? "Cambiar imagen" : "Subir foto"}
+                </button>
+                <span className="avatar-editor__hint">
+                  {selectedAvatarFile ? selectedAvatarFile.name : "JPEG, PNG, WebP o GIF. Maximo 5 MB."}
+                </span>
+              </div>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="visually-hidden"
+                onChange={handleAvatarFileChange}
+              />
+            </div>
+          </div>
           {/* ── Información Profesional ──────────────────── */}
           <div className="edit-section">
             <h4 className="section-title">Información Profesional</h4>

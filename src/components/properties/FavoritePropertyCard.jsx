@@ -5,6 +5,7 @@ import { LuBedDouble, LuBath, LuMaximize, LuMapPin } from "react-icons/lu";
 import { FAVORITE_STATUS_LABELS, FAVORITE_BADGE_STYLES } from "../../data/propertiesData";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import FavoriteToggleButton from "./FavoriteToggleButton";
+import { useTranslation } from "react-i18next";
 import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 /**
@@ -17,6 +18,7 @@ export default function FavoritePropertyCard({
   onRemoveFavorite,
   removing = false,
 }) {
+  const { t } = useTranslation("properties");
   const tag = FAVORITE_STATUS_LABELS[property.status] ?? property.tag ?? "—";
   const price = usePropertyPriceDisplay(property.price);
   const address = property.address || property.locationName || property.location || "";
@@ -91,8 +93,8 @@ export default function FavoritePropertyCard({
           <LuMapPin className="text-primary" /> {address}
         </p>
         <div className="d-flex gap-3 text-muted mb-3" style={{ fontSize: "0.82rem" }}>
-          <span className="d-flex align-items-center gap-1"><LuBedDouble /> {bedrooms} hab</span>
-          <span className="d-flex align-items-center gap-1"><LuBath /> {bathrooms} baños</span>
+          <span className="d-flex align-items-center gap-1"><LuBedDouble /> {t("card.bedrooms", { count: bedrooms })}</span>
+          <span className="d-flex align-items-center gap-1"><LuBath /> {t("card.bathrooms", { count: bathrooms })}</span>
           <span className="d-flex align-items-center gap-1"><LuMaximize /> {area} m²</span>
         </div>
 

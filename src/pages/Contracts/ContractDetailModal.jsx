@@ -6,7 +6,7 @@ import {
 import Badge from '../../components/common/Badge/Badge';
 import useFormatters from '../../hooks/useFormatters';
 import { useContractSignatures } from '../../hooks/useContracts';
-import { LuCheckCircle, LuClock } from "react-icons/lu";
+import { LuCircleCheck, LuClock } from "react-icons/lu";
 import styles from './ContractsPage.module.scss';
 
 const ROLE_LABELS = {
@@ -137,7 +137,7 @@ export default function ContractDetailModal({ contract: c, onClose }) {
                     >
                       <span className={styles.sign__status}>
                         {sig.signed 
-                          ? <LuCheckCircle className="text-success" size={18} aria-label="Firmado" /> 
+                          ? <LuCircleCheck className="text-success" size={18} aria-label="Firmado" /> 
                           : <LuClock className="text-warning" size={18} aria-label="Pendiente" />
                         }
                       </span>

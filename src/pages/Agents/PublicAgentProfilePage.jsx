@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
-import { ArrowLeft, CheckLg, PencilSquare, Trash } from "react-bootstrap-icons";
+import { ArrowLeft, CheckLg, PencilSquare, Trash, StarFill } from "react-bootstrap-icons";
 import { FiMessageSquare } from "react-icons/fi";
 import Swal from "sweetalert2";
 import CustomNavbar from "../../components/Landing/Navbar";

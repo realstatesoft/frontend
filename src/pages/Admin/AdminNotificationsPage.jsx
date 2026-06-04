@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Spinner, Alert } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import CustomNavbar from '../../components/Landing/Navbar';
-import Footer from '../../components/Landing/Footer';
 import notificationApi from '../../services/notifications/notificationApi';
 import Pagination from '../../components/properties/Pagination';
 import ConfirmDialog from '../../components/commons/ConfirmDialog';
@@ -222,7 +220,6 @@ export default function AdminNotificationsPage() {
 
   return (
     <div className="notifications-page">
-      <CustomNavbar />
 
       <Container className="py-4">
         {/* ── Header ──────────────────────────────────── */}
@@ -403,8 +400,6 @@ export default function AdminNotificationsPage() {
         variant="danger"
         loading={actionLoading}
       />
-
-      <Footer />
     </div>
   );
 }

@@ -8,7 +8,7 @@
   left: var(--sidebar-width);
   height: var(--topbar-height);
   padding: 0 var(--spacing-xl);
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--color-bg-topbar, rgba(255, 255, 255, 0.8));
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow-md);
   border-bottom: 1px solid var(--color-border);
@@ -148,14 +148,14 @@
   height: 10px;
   background: var(--color-danger);
   border-radius: 50%;
-  border: 2px solid #fff;
+  border: 2px solid var(--badge-border-color, #fff);
   animation: pulse-red 2s infinite;
 }
 
 @keyframes pulse-red {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  0%   { transform: scale(1);   box-shadow: 0 0 0 0   color-mix(in srgb, var(--color-danger) 40%, transparent); }
+  70%  { transform: scale(1.1); box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-danger)  0%, transparent); }
+  100% { transform: scale(1);   box-shadow: 0 0 0 0   color-mix(in srgb, var(--color-danger)  0%, transparent); }
 }
 
 .topbar__avatar {

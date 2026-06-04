@@ -144,6 +144,94 @@
   }
 
   // ── Input styles ───────────────────────────────────────────
+  .avatar-editor {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .avatar-editor__preview {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    .avatar-editor__image {
+      width: 100%;
+      height: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    > span:not(.avatar-editor__overlay) {
+      font-size: 1.45rem;
+      font-weight: 700;
+    }
+  }
+
+  .avatar-editor__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .avatar-editor__preview:hover .avatar-editor__overlay {
+    opacity: 1;
+  }
+
+  .avatar-editor__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+
+  .avatar-editor__button {
+    align-self: flex-start;
+    border: 1.5px solid #dbeafe;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 8px;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      border-color: #93c5fd;
+      background: #dbeafe;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .avatar-editor__hint {
+    color: #94a3b8;
+    font-size: 0.84rem;
+    overflow-wrap: anywhere;
+  }
+
   .edit-input,
   .edit-textarea,
   .edit-select {
@@ -363,6 +451,10 @@
       .edit-select {
         flex: 1;
       }
+    }
+
+    .avatar-editor {
+      align-items: flex-start;
     }
 
     .edit-actions {

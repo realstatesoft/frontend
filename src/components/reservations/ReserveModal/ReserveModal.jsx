@@ -15,6 +15,10 @@ const CURRENCY_SYMBOL = {
   BRL: 'R$',
 };
 
+const numberFormatter = new Intl.NumberFormat('es-PY', {
+  maximumFractionDigits: 0,
+});
+
 export default function ReserveModal({ show, property, defaultPercent, onClose, onCreated }) {
   const { t } = useTranslation('reservations');
   const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
@@ -29,6 +33,10 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const { fieldErrors, validate, clearFieldError } = useFormValidation();
+
+  const amountDisplay = amount === 0 || amount === '' || amount == null
+    ? ''
+    : numberFormatter.format(Number(amount) || 0);
 
   useEffect(() => {
     setAmount(initialAmount);
@@ -83,8 +91,14 @@ export default function ReserveModal({ show, property, defaultPercent, onClose, 
               <InputGroup.Text className={styles.currencyPrefix}>{currencySymbol}</InputGroup.Text>
               <NumericInput
                 allowDecimal
-                value={amount}
-                onChange={(e) => { setAmount(e.target.value); clearFieldError('amount'); }}
+                value={amountDisplay}
+                onChange={(e) => {
+                  const raw = e.target.value ?? '';
+                  const digitsOnly = raw.replace(/[^\d]/g, '');
+                  const parsed = digitsOnly === '' ? 0 : Number(digitsOnly);
+                  setAmount(Number.isFinite(parsed) ? parsed : 0);
+                  clearFieldError('amount');
+                }}
                 className={fieldErrors.amount ? 'field-error' : ''}
                 isInvalid={!!fieldErrors.amount}
               />

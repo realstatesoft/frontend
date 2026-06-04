@@ -6,13 +6,10 @@ import {
   BoxArrowInRight,
   BoxArrowRight,
   Gear,
-  Heart,
   HouseDoor,
   Person,
-  Trash,
 } from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
-import useHasPublishedProperties from "../../hooks/useHasPublishedProperties";
 import { CiUser } from "react-icons/ci";
 import {
   IoHomeOutline,
@@ -29,12 +26,10 @@ import {
   IoCheckmarkDoneOutline,
   IoChatbubblesOutline,
   IoCashOutline,
-  IoHome,
   IoBriefcase,
   IoStarOutline,
 } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
-import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
 import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
@@ -67,8 +62,6 @@ function CustomNavbar() {
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
   const isAgent = user?.role?.toUpperCase() === "AGENT";
-
-  const hasPublishedProperties = useHasPublishedProperties();
 
   useEffect(() => {
     const fetchCount = () => {
@@ -124,18 +117,33 @@ function CustomNavbar() {
     navigate("/login");
   }
 
-  const getOffersLink = () => {
-    const role = user?.role?.toUpperCase();
-    if (role === 'AGENT') return '/agent/ofertas';
-    if (role === 'OWNER') return '/owner/ofertas';
-    return '/ofertas';
-  };
-
   const getSettingsLink = () => {
     const role = user?.role?.toUpperCase();
     if (role === 'ADMIN') return '/admin/settings';
     if (role === 'AGENT') return '/agent/settings';
     return '/owner/settings';
+  };
+
+  const getProfileLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'AGENT') return '/agent/perfil';
+    return '/profile';
+  };
+
+  const getDashboardLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'AGENT') return '/agent/dashboard';
+    if (role === 'ADMIN') return ADMIN_ROUTES.DASHBOARD;
+    if (role === 'USER' || role === 'OWNER') return '/owner/dashboard';
+    if (role === 'TENANT') return '/tenant/dashboard';
+    return '/';
+  };
+
+  const getMessagesLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'AGENT') return '/agent/mensajes';
+    if (role === 'USER' || role === 'OWNER') return '/owner/mensajes';
+    return '/mensajes';
   };
 
 
@@ -231,7 +239,7 @@ function CustomNavbar() {
         )}
 
         {isAuthenticated && messagesUnread > 0 && (
-          <Link to="/mensajes" className="navbar-messages-link" aria-label={t('messages')}>
+          <Link to={getMessagesLink()} className="navbar-messages-link" aria-label={t('messages')}>
             <IoChatbubblesOutline size={20} />
             <span className="bell-badge">{Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}</span>
           </Link>
@@ -255,10 +263,10 @@ function CustomNavbar() {
                 /* ── Usuario logueado ─────────────────────────── */
                 <>
                   {/* Seccion 1: principal */}
-                  <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to={getProfileLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Person size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
                   </Link>
-                  <Link to="/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard', 'Mi dashboard')}
                   </Link>
                   <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
@@ -273,7 +281,7 @@ function CustomNavbar() {
                     </Link>
                   )}
                   {!isAgent && !isAdmin && (
-                    <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <Link to={getMessagesLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
                       {messagesUnread > 0 && (
                         <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>
