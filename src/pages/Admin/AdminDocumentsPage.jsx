@@ -412,8 +412,8 @@ export default function AdminDocumentsPage() {
       if (notes) body.notes = notes;
       await api.patch(`/users/documents/${docId}/status`, body);
       Swal.fire(
-        newStatus === "APPROVED" ? "Aprobado ✅" : "Rechazado ❌",
-        newStatus === "APPROVED" ? "El documento fue verificado." : "El documento fue rechazado.",
+        newStatus === "APPROVED" ? "Aprobado" : "Rechazado",
+        newStatus === "APPROVED" ? "El documento fue verificado correctamente." : "El documento fue rechazado.",
         "success"
       );
       await fetchDocuments();

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
-import { ArrowLeft, CheckLg, PencilSquare, Trash } from "react-bootstrap-icons";
+import { ArrowLeft, CheckLg, PencilSquare, Trash, StarFill } from "react-bootstrap-icons";
 import { FiMessageSquare } from "react-icons/fi";
 import Swal from "sweetalert2";
 import CustomNavbar from "../../components/Landing/Navbar";
@@ -366,8 +366,8 @@ export default function PublicAgentProfilePage() {
           {myReview && (
             <div className="my-review-card mb-4 p-3 rounded-3 border border-warning bg-white">
               <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                <span className="fw-bold" style={{ color: "#f0a500" }}>
-                  ⭐ {t("reviews.myReviewTitle")}
+                <span className="fw-bold d-flex align-items-center gap-1" style={{ color: "#f0a500" }}>
+                  <StarFill size={14} /> {t("reviews.myReviewTitle")}
                 </span>
                 <div className="d-flex gap-2">
                   <button

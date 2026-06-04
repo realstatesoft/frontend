@@ -149,11 +149,25 @@ function CustomNavbar() {
 
 
   return (
-    <Navbar expand="lg" className="bg-white border-bottom shadow-sm py-2" style={{ zIndex: 1040, borderRadius: "0 0 24px 24px" }}>
+    <Navbar expand="lg" className="bg-white border-bottom shadow-sm py-3" style={{ zIndex: 1040, borderBottomLeftRadius: "24px", borderBottomRightRadius: "24px" }}>
       <Container fluid className="px-3 px-lg-5">
 
-        <Navbar.Brand as={Link} to="/" className="fw-bold me-4">
-          <img src={Logotipo} alt="OpenRoof" style={{ height: '40px', transform: 'scale(2.3)', transformOrigin: 'left center' }} />
+        <Navbar.Brand as={Link} to="/" className="fw-bold me-4 d-flex align-items-center" style={{ height: '40px', overflow: 'visible' }}>
+          <img 
+            src={Logotipo} 
+            alt="OpenRoof" 
+            style={{ 
+              height: '88px', 
+              width: 'auto', 
+              objectFit: 'contain',
+              marginTop: '2px',
+              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+              transition: 'transform 0.3s var(--ease-out)',
+              zIndex: 1050
+            }} 
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

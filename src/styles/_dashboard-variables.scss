@@ -5,6 +5,7 @@
   --color-bg-secondary: #ffffff;
   --color-bg-surface: #ffffff;
   --color-bg-surface-hover: #f1f5f9;
+  --color-bg-topbar: rgba(255, 255, 255, 0.8);
 
   // Accent (matches app primary blue)
   --color-accent: #2563eb;
@@ -18,27 +19,29 @@
   --color-info: #0ea5e9;
 
   // Text
-  --color-text-primary: #1a1a1a;
+  --color-text-primary: #0f172a; // Tintado azul profundo
   --color-text-secondary: #475569;
   --color-text-muted: #94a3b8;
   --placeholder-icon-color: #94a3b8;
 
   // Borders
-  --color-border: #e2e8f0;
-  --color-border-hover: #cbd5e1;
+  --color-border: #f1f5f9;
+  --color-border-hover: #e2e8f0;
 
   // Radii
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
 
   // Shadows (soft, matching rest of app)
-  --shadow-glass: 0 4px 24px rgba(0, 0, 0, 0.07);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-glass: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
   // Transitions
-  --transition-base: all 0.25s ease;
-  --transition-fast: all 0.15s ease;
+  --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
   // Layout
   --sidebar-width: 260px;

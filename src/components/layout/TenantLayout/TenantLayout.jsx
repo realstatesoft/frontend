@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import {
   FiGrid, FiCreditCard, FiTool, FiMessageSquare, FiSettings, FiFileText,
-  FiHeart, FiSliders, FiHome as FiHomeOutline, FiRepeat
+  FiSliders, FiHome as FiHomeOutline, FiRepeat
 } from 'react-icons/fi';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
@@ -33,8 +33,6 @@ export default function TenantLayout() {
     { to: TENANT_ROUTES.LEASE, icon: <FiFileText />, label: t('layouts.tenant.lease', 'Mi Contrato') },
     { to: TENANT_ROUTES.PAYMENTS, icon: <FiCreditCard />, label: t('layouts.tenant.payments', 'Pagos') },
     { to: TENANT_ROUTES.MAINTENANCE, icon: <FiTool />, label: t('layouts.tenant.maintenance', 'Mantenimiento') },
-    { section: t('sidebar.sectionPersonal', 'PERSONAL') },
-    { to: '/properties/favorites', icon: <FiHeart />, label: t('layouts.tenant.favorites', 'Favoritos') },
     { section: t('sidebar.sectionCommunication', 'COMUNICACIÓN') },
     { to: TENANT_ROUTES.MESSAGES, icon: <FiMessageSquare />, label: t('layouts.tenant.messages', 'Mensajes'), showBadge: true },
     { to: TENANT_ROUTES.SETTINGS, icon: <FiSettings />, label: t('layouts.tenant.settings', 'Configuración') },

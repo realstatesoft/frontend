@@ -159,6 +159,7 @@ export default function AppRouter() {
                     <Route path="lease/:id" element={<TenantLeaseDetailPage />} />
                     <Route path="maintenance" element={<TenantMaintenancePage />} />
                     <Route path="payments" element={<TenantPaymentsPage />} />
+                    <Route path="mensajes" element={<OwnerMessagesPage />} />
                 </Route>
             </Route>
 

@@ -49,15 +49,15 @@ const SearchSection = () => {
     <>
       <div
         ref={headerRef}
-        className="text-center py-4"
+        className="text-center py-5"
         style={{
           backgroundColor: "#fff",
-          transition: "opacity 0.7s ease, transform 0.7s ease",
+          transition: "opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out)",
           opacity: headerVisible ? 1 : 0,
-          transform: headerVisible ? "translateY(0)" : "translateY(-20px)",
+          transform: headerVisible ? "translateY(0)" : "translateY(-30px)",
         }}
         >
-          <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #1f2937)" }}>
+          <h3 className="fw-bold mb-0" style={{ color: "var(--text-dark, #0f172a)", fontSize: "2rem", letterSpacing: "-0.02em" }}>
           {t("search.title")}
         </h3>
       </div>

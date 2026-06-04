@@ -32,7 +32,7 @@ export const TENANT_ROUTES = {
   LEASE: '/tenant/lease',
   PAYMENTS: '/tenant/payments',
   MAINTENANCE: '/tenant/maintenance',
-  MESSAGES: '/tenant/messages',
+  MESSAGES: '/tenant/mensajes',
   SETTINGS: '/tenant/settings',
 };
 

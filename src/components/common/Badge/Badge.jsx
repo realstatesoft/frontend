@@ -9,11 +9,12 @@ const VARIANT_MAP = {
   neutral: styles['badge--neutral'],
 };
 
-export default function Badge({ variant = 'neutral', children }) {
+export default function Badge({ variant = 'neutral', children, showDot = false }) {
   const variantClass = VARIANT_MAP[variant] || VARIANT_MAP.neutral;
 
   return (
     <span className={`${styles.badge} ${variantClass}`}>
+      {showDot && <span className={styles.badge__dot} />}
       {children}
     </span>
   );
