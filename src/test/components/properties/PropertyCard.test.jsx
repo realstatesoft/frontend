@@ -1,6 +1,6 @@
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import { i18n, initializeI18n } from '../../../i18n';
@@ -46,5 +46,34 @@ describe('PropertyCard', () => {
 
     expect(screen.getByText('Aprox. US$ 1,000.00')).toBeInTheDocument();
     expect(mockUsePropertyPriceDisplay).toHaveBeenCalledWith(6360000);
+  });
+
+  it('renders and triggers the compare button', () => {
+    const onToggleCompare = vi.fn();
+
+    render(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <PropertyCard
+            property={{
+              id: 7,
+              title: 'Casa Comparar',
+              status: 'PUBLISHED',
+              propertyType: 'HOUSE',
+              price: 6360000,
+              address: 'Calle 7',
+            }}
+            onToggleFavorite={vi.fn()}
+            onToggleCompare={onToggleCompare}
+          />
+        </MemoryRouter>
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Comparar' }));
+
+    expect(onToggleCompare).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 7, title: 'Casa Comparar' })
+    );
   });
 });

@@ -49,6 +49,9 @@ export default function PropertyCard({
         navigate(`/properties/${property.id}`);
     };
 
+    const compareLabel = isCompared ? t("card.compareRemove") : t("card.compareAdd");
+    const showCompareAction = typeof onToggleCompare === "function";
+
     const handleCompareClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -143,7 +146,7 @@ export default function PropertyCard({
                     )}
                 </div>
 
-                {/* Actions: Favorite & Compare */}
+                {/* Actions: Favorite */}
                 <div className="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2">
                     <FavoriteToggleButton
                         isFavorite={isFavorite}
@@ -151,22 +154,6 @@ export default function PropertyCard({
                         disabled={!canToggleFavorite || !onToggleFavorite}
                         onClick={() => onToggleFavorite(property.id)}
                     />
-                    
-                    <button
-                        onClick={handleCompareClick}
-                        disabled={compareDisabled && !isCompared}
-                        className="d-flex align-items-center justify-content-center rounded-circle border-0 bg-white shadow-sm"
-                        style={{
-                            width: "36px",
-                            height: "36px",
-                            color: isCompared ? "#3b82f6" : "#64748b",
-                            transition: "all 0.2s",
-                            opacity: (compareDisabled && !isCompared) ? 0.5 : 1,
-                        }}
-                        title={isCompared ? t("card.compareRemove") : t("card.compareAdd")}
-                    >
-                        {isCompared ? <DashSquare size={18} /> : <PlusSquare size={18} />}
-                    </button>
                 </div>
             </div>
 
@@ -218,6 +205,28 @@ export default function PropertyCard({
                         </div>
                     </div>
                 </div>
+
+                {showCompareAction && (
+                    <div className="mt-3">
+                        <Button
+                            type="button"
+                            variant={isCompared ? "outline-primary" : "primary"}
+                            className="w-100 d-inline-flex align-items-center justify-content-center gap-2 fw-semibold"
+                            style={{
+                                borderRadius: "12px",
+                                padding: "10px 14px",
+                            }}
+                            onClick={handleCompareClick}
+                            disabled={compareDisabled && !isCompared}
+                            aria-pressed={isCompared}
+                            aria-label={compareLabel}
+                            title={compareLabel}
+                        >
+                            {isCompared ? <DashSquare size={16} /> : <PlusSquare size={16} />}
+                            <span>{compareLabel}</span>
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );
