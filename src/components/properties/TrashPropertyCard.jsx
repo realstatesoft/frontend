@@ -1,5 +1,6 @@
 import { Badge, Button } from "react-bootstrap";
 import { Eye, ArrowCounterclockwise, Trash3, ClockHistory } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 
 /**
@@ -11,8 +12,9 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
     const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
 
     const trashedDate = new Date(property.trashedAt);
-    const diffDays = (new Date() - trashedDate) / (1000 * 60 * 60 * 24);
-    const daysLeft = Math.ceil(TRASH_DAYS - diffDays);
+    const rawDiff = (new Date() - trashedDate) / (1000 * 60 * 60 * 24);
+    const diffDays = Number.isFinite(rawDiff) ? rawDiff : 0;
+    const daysLeft = Math.max(0, Math.ceil(TRASH_DAYS - diffDays));
     const isUrgent = daysLeft <= 3;
 
     return (
@@ -81,8 +83,8 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
                 </h6>
 
                 <div className="text-center mb-4">
-                    <a
-                        href={`/properties/${property.id}`}
+                    <Link
+                        to={`/properties/${property.id}`}
                         className="text-muted d-inline-flex align-items-center gap-2"
                         style={{ fontSize: "0.8rem", textDecoration: "none", transition: "color 0.2s" }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = "#3b82f6")}
@@ -90,7 +92,7 @@ export default function TrashPropertyCard({ property, onRestore, onDelete }) {
                     >
                         <Eye size={14} />
                         Ver ficha completa
-                    </a>
+                    </Link>
                 </div>
 
                 <div className="mt-auto d-flex gap-2">

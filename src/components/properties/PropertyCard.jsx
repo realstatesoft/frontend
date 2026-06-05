@@ -57,8 +57,17 @@ export default function PropertyCard({
 
     return (
         <div
+            role="button"
+            tabIndex={0}
+            aria-label={`Ver propiedad: ${property?.title || "Propiedad"}`}
             className="group h-100 position-relative bg-white"
             onClick={handleCardClick}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleCardClick();
+                }
+            }}
             style={{
                 borderRadius: "20px",
                 overflow: "hidden",

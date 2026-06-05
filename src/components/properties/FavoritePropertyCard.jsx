@@ -1,11 +1,10 @@
-import { Badge, Button } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Share, Calendar3, PersonBadge } from "react-bootstrap-icons";
 import { LuBedDouble, LuBath, LuMaximize, LuMapPin } from "react-icons/lu";
 import { FAVORITE_STATUS_LABELS, FAVORITE_BADGE_STYLES } from "../../data/propertiesData";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import FavoriteToggleButton from "./FavoriteToggleButton";
-import { useTranslation } from "react-i18next";
 import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 /**
@@ -17,7 +16,7 @@ export default function FavoritePropertyCard({
   onRemoveFavorite,
   removing = false,
 }) {
-  const { t } = useTranslation("properties");
+
   const navigate = useNavigate();
   const tag = FAVORITE_STATUS_LABELS[property.status] ?? property.tag ?? "—";
   const price = usePropertyPriceDisplay(property.price);
@@ -33,15 +32,19 @@ export default function FavoritePropertyCard({
     navigate(`/properties/${property.id}`);
   };
 
-  const handleShare = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Logic for sharing could be added here
-  };
+
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
       className="group h-100 position-relative bg-white"
       style={{
         borderRadius: "20px",
@@ -103,13 +106,13 @@ export default function FavoritePropertyCard({
           <h4 className="fw-bold mb-0" style={{ color: "#0f172a", fontSize: "1.15rem" }}>
             {price.label || "—"}
           </h4>
-          <button
-            onClick={handleShare}
-            className="btn btn-link p-0 text-muted hover-primary"
-            style={{ transition: "color 0.2s" }}
+          <span
+            aria-hidden="true"
+            className="text-muted"
+            style={{ lineHeight: 0 }}
           >
             <Share size={18} />
-          </button>
+          </span>
         </div>
 
         <div className="d-flex align-items-center gap-1 mb-3 text-muted" style={{ fontSize: "0.85rem" }}>

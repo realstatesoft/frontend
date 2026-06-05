@@ -65,7 +65,7 @@ export default function PropertiesGrid({
         );
     }
 
-    if (properties.length === 0) {
+    if (!fetching && properties.length === 0) {
         return (
             <Container className="py-5 text-center d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "400px" }}>
                 <div 

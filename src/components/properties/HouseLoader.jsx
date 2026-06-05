@@ -7,7 +7,12 @@ import React from "react";
  */
 export default function HouseLoader() {
     return (
-        <div className="d-flex flex-column align-items-center justify-content-center py-4">
+        <div
+            role="status"
+            aria-live="polite"
+            className="d-flex flex-column align-items-center justify-content-center py-4"
+        >
+            <span className="visually-hidden">Cargando propiedades...</span>
             <style>{`
                 @keyframes house-draw {
                     0% { stroke-dashoffset: 150; opacity: 0; }

@@ -34,7 +34,15 @@ export default function MyPropertyCard({ property }) {
     return (
     <>
         <div
+            role="button"
+            tabIndex={0}
             onClick={handleCardClick}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleCardClick();
+                }
+            }}
             className="group h-100 position-relative bg-white"
             style={{
                 borderRadius: "20px",
