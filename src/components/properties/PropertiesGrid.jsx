@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { LuSearchX } from "react-icons/lu";
 import PropertyCard from "./PropertyCard";
 import Pagination from "./Pagination";
+import HouseLoader from "./HouseLoader";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -13,6 +14,7 @@ export default function PropertiesGrid({
     currentPage,
     onPageChange,
     loading = false,
+    fetching = false,
     error = null,
     totalPages: externalTotalPages,
     favoriteIds = [],
@@ -25,16 +27,15 @@ export default function PropertiesGrid({
 }) {
     const { t } = useTranslation("properties");
     
-    // Calcular totalPages más robustamente. Si el backend nos da un externalTotalPages válido (> 1), usarlo.
-    // Si da 0 o 1, pero sabemos que hay items cargados, podríamos recalcularlo (aunque usualmente el backend es fuente de verdad).
-    // Si no hay externalTotalPages, paginar localmente.
+    // Indica si estamos cargando datos pero ya tenemos algo que mostrar (keepPreviousData)
+    const isNavigating = fetching && !loading && properties.length > 0;
+    
     const hasExternalPagination = externalTotalPages != null && externalTotalPages > 0;
     
     const totalPages = hasExternalPagination 
         ? externalTotalPages 
         : Math.ceil(properties.length / ITEMS_PER_PAGE);
 
-    // Si la paginación es client-side, paginar acá; sino mostrar todo (ya viene paginado)
     const paginated = hasExternalPagination
             ? properties
             : properties.slice(
@@ -94,24 +95,31 @@ export default function PropertiesGrid({
         );
     }
 
-    const gridStyle = loading
-        ? { opacity: 0.6, pointerEvents: "none", transition: "opacity 0.2s ease" }
-        : { transition: "opacity 0.2s ease" };
+    const gridStyle = (loading || isNavigating)
+        ? { opacity: 0.5, pointerEvents: "none", transition: "opacity 0.3s ease" }
+        : { transition: "opacity 0.3s ease" };
 
     return (
-        <Container className="pt-4 pb-2 position-relative">
-            {loading && (
+        <Container className="pt-4 pb-2 position-relative" id="properties-grid-container">
+            {/* Overlay de carga para transiciones suaves entre páginas */}
+            {isNavigating && (
                 <div
-                    className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                    className="position-absolute w-100 h-100 d-flex flex-column align-items-center justify-content-start"
                     style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.4)",
-                        zIndex: 10,
-                        minHeight: "200px"
+                        top: 0,
+                        left: 0,
+                        zIndex: 100,
+                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                        backdropFilter: "blur(8px)",
+                        borderRadius: "24px",
+                        transition: "all 0.3s ease",
+                        paddingTop: "100px" // Posición elevada para visibilidad inmediata
                     }}
                 >
-                    <Spinner animation="border" variant="primary" role="status" />
+                    <HouseLoader />
                 </div>
             )}
+
             <div style={gridStyle}>
                 <p className="text-muted mb-3" style={{ fontSize: "0.875rem" }}>
                     {t("results.showing", { count: paginated.length })}
@@ -145,6 +153,7 @@ export default function PropertiesGrid({
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={onPageChange}
+                    disabled={fetching}
                 />
             </div>
         </Container>

@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
  *   totalPages   — total de páginas
  *   onPageChange — callback(page)
  */
-export default function Pagination({ currentPage, totalPages, onPageChange }) {
+export default function Pagination({ currentPage, totalPages, onPageChange, disabled = false }) {
     const { t } = useTranslation("common");
     if (totalPages <= 1) return null;
 
@@ -68,12 +68,15 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 justifyContent: "center",
                 gap: "6px",
                 padding: "2rem 0 3rem",
+                pointerEvents: disabled ? "none" : "auto",
+                opacity: disabled ? 0.7 : 1,
+                transition: "opacity 0.2s ease"
             }}
         >
             {/* Anterior */}
             <button
-                style={currentPage === 1 ? btnDisabled : btnBase}
-                disabled={currentPage === 1}
+                style={(currentPage === 1 || disabled) ? btnDisabled : btnBase}
+                disabled={currentPage === 1 || disabled}
                 onClick={() => onPageChange(currentPage - 1)}
                 title={t("previous")}
             >
@@ -93,16 +96,17 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                     <button
                         key={item}
                         style={item === currentPage ? btnActive : btnBase}
+                        disabled={disabled}
                         onClick={() => onPageChange(item)}
                         onMouseEnter={(e) => {
-                            if (item !== currentPage)
+                            if (item !== currentPage && !disabled)
                                 Object.assign(e.currentTarget.style, {
                                     background: "#f1f5f9",
                                     borderColor: "#94a3b8",
                                 });
                         }}
                         onMouseLeave={(e) => {
-                            if (item !== currentPage)
+                            if (item !== currentPage && !disabled)
                                 Object.assign(e.currentTarget.style, {
                                     background: "#fff",
                                     borderColor: "#e2e8f0",
@@ -116,8 +120,8 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
 
             {/* Siguiente */}
             <button
-                style={currentPage === totalPages ? btnDisabled : btnBase}
-                disabled={currentPage === totalPages}
+                style={(currentPage === totalPages || disabled) ? btnDisabled : btnBase}
+                disabled={currentPage === totalPages || disabled}
                 onClick={() => onPageChange(currentPage + 1)}
                 title={t("next")}
             >

@@ -1,6 +1,6 @@
-import { Card, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { Share } from "react-bootstrap-icons";
+import { Badge, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { Share, Calendar3, PersonBadge } from "react-bootstrap-icons";
 import { LuBedDouble, LuBath, LuMaximize, LuMapPin } from "react-icons/lu";
 import { FAVORITE_STATUS_LABELS, FAVORITE_BADGE_STYLES } from "../../data/propertiesData";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
@@ -10,8 +10,7 @@ import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
 
 /**
  * FavoritePropertyCard
- * Tarjeta de propiedad para la vista "Propiedades Favoritas".
- * Muestra info del agente, fecha agregada y botón de corazón (favorito).
+ * Tarjeta premium para la vista de favoritos.
  */
 export default function FavoritePropertyCard({
   property,
@@ -19,126 +18,131 @@ export default function FavoritePropertyCard({
   removing = false,
 }) {
   const { t } = useTranslation("properties");
+  const navigate = useNavigate();
   const tag = FAVORITE_STATUS_LABELS[property.status] ?? property.tag ?? "—";
   const price = usePropertyPriceDisplay(property.price);
   const address = property.address || property.locationName || property.location || "";
-  const bedrooms = property.bedrooms ?? "—";
-  const bathrooms = property.bathrooms ?? "—";
-  const area = property.surfaceArea ?? property.area ?? "—";
+  const bedrooms = property.bedrooms ?? 0;
+  const bathrooms = property.bathrooms ?? 0;
+  const area = property.surfaceArea ?? property.area ?? 0;
   const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
   const agentName = property.agentName ?? "—";
-  const agentPhone = property.agentPhone ?? "—";
   const dateAdded = property.dateAdded ?? "—";
-  const showAgentMeta = Boolean(property.agentName || property.agentPhone || property.dateAdded);
+
+  const handleCardClick = () => {
+    navigate(`/properties/${property.id}`);
+  };
+
+  const handleShare = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Logic for sharing could be added here
+  };
 
   return (
-    <Card
-      className="h-100 border-0 shadow-sm rounded-3 overflow-hidden"
-      style={{ transition: "transform 0.2s, box-shadow 0.2s" }}
+    <div
+      onClick={handleCardClick}
+      className="group h-100 position-relative bg-white"
+      style={{
+        borderRadius: "20px",
+        overflow: "hidden",
+        border: "1px solid #f1f5f9",
+        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+        cursor: "pointer",
+        boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+      }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.12)";
+        e.currentTarget.style.boxShadow = "0 20px 25px -5px rgba(0, 0, 0, 0.1)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "";
+        e.currentTarget.style.boxShadow = "0 1px 3px 0 rgba(0, 0, 0, 0.1)";
       }}
     >
-      {/* Imagen con badge de estado y corazón */}
-      <div className="position-relative">
-        <span
-          className="position-absolute top-0 start-0 m-2 px-3 py-1"
-          style={{
-            backgroundColor: FAVORITE_BADGE_STYLES[tag]?.bg ?? "#eceff1",
-            color: FAVORITE_BADGE_STYLES[tag]?.text ?? "#455a64",
-            borderRadius: "999px",
-            fontSize: "0.8rem",
-            fontWeight: 500,
-            zIndex: 2,
-          }}
-        >
-          {tag}
-        </span>
+      {/* Image Section */}
+      <div className="position-relative overflow-hidden" style={{ aspectRatio: "1.5" }}>
+        <img
+          src={image}
+          alt={property?.title}
+          style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.6s ease" }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+          loading="lazy"
+        />
+        
+        <div className="position-absolute top-0 start-0 p-3">
+          <Badge
+            className="border-0 shadow-sm"
+            style={{
+              backgroundColor: FAVORITE_BADGE_STYLES[tag]?.bg ?? "#64748b",
+              color: "#fff",
+              borderRadius: "8px",
+              padding: "6px 12px",
+              fontSize: "0.7rem",
+              fontWeight: "700",
+              textTransform: "uppercase",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            {tag}
+          </Badge>
+        </div>
+
         <FavoriteToggleButton
           isFavorite
           loading={removing}
           disabled={!onRemoveFavorite}
-          ariaLabel="Quitar de favoritos"
           onClick={() => onRemoveFavorite(property.id)}
-        />
-        <Card.Img
-          variant="top"
-          src={image}
-          style={{ height: "200px", objectFit: "cover" }}
-          loading="lazy"
         />
       </div>
 
-      <Card.Body className="px-3 py-3">
-        <div className="d-flex justify-content-between align-items-start gap-2 mb-1">
-          <h6
-            className="fw-bold mb-0"
-            style={{ color: "var(--dark, #1e293b)", fontSize: "1rem", lineHeight: 1.3 }}
-          >
-            {property.title}
-          </h6>
-          <span
-            className="fw-bold flex-shrink-0"
-            style={{ color: "var(--primary, #2563eb)", fontSize: "1rem" }}
-          >
+      {/* Content Section */}
+      <div className="p-4">
+        <div className="d-flex justify-content-between align-items-start mb-2">
+          <h4 className="fw-bold mb-0" style={{ color: "#0f172a", fontSize: "1.15rem" }}>
             {price.label || "—"}
-          </span>
-        </div>
-        <p className="text-muted mb-2 d-flex align-items-center gap-1" style={{ fontSize: "0.82rem" }}>
-          <LuMapPin className="text-primary" /> {address}
-        </p>
-        <div className="d-flex gap-3 text-muted mb-3" style={{ fontSize: "0.82rem" }}>
-          <span className="d-flex align-items-center gap-1"><LuBedDouble /> {t("card.bedrooms", { count: bedrooms })}</span>
-          <span className="d-flex align-items-center gap-1"><LuBath /> {t("card.bathrooms", { count: bathrooms })}</span>
-          <span className="d-flex align-items-center gap-1"><LuMaximize /> {area} m²</span>
-        </div>
-
-        {showAgentMeta && (
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <p className="mb-0 fw-semibold" style={{ fontSize: "0.75rem", color: "#666" }}>
-                Agente
-              </p>
-              <p className="mb-0" style={{ fontSize: "0.85rem" }}>{agentName}</p>
-              <p className="mb-0 text-muted" style={{ fontSize: "0.78rem" }}>{agentPhone}</p>
-            </div>
-            <div className="text-end">
-              <p className="mb-0" style={{ fontSize: "0.75rem", color: "#666" }}>
-                Agregado el
-              </p>
-              <p className="mb-0" style={{ fontSize: "0.85rem" }}>{dateAdded}</p>
-            </div>
-          </div>
-        )}
-
-        <div className="d-flex gap-2 align-items-center">
-          <Button
-            as={Link}
-            to={`/properties/${property.id}`}
-            className="flex-grow-1 rounded-2"
-            style={{
-              background: "var(--primary, #2563eb)",
-              border: "none",
-              fontSize: "0.85rem",
-            }}
-          >
-            Ver Detalles
-          </Button>
-          <Button
-            variant="outline-secondary"
-            className="rounded-2 p-2"
-            style={{ minWidth: 40 }}
-            aria-label="Compartir"
+          </h4>
+          <button
+            onClick={handleShare}
+            className="btn btn-link p-0 text-muted hover-primary"
+            style={{ transition: "color 0.2s" }}
           >
             <Share size={18} />
-          </Button>
+          </button>
         </div>
-      </Card.Body>
-    </Card>
+
+        <div className="d-flex align-items-center gap-1 mb-3 text-muted" style={{ fontSize: "0.85rem" }}>
+          <LuMapPin size={16} className="text-primary flex-shrink-0" style={{ opacity: 0.7 }} />
+          <span className="text-truncate">{address}</span>
+        </div>
+
+        <div className="d-flex justify-content-between text-muted mb-4" style={{ fontSize: "0.85rem" }}>
+          <span className="d-flex align-items-center gap-1"><LuBedDouble size={16} /> {bedrooms}</span>
+          <span className="d-flex align-items-center gap-1"><LuBath size={16} /> {bathrooms}</span>
+          <span className="d-flex align-items-center gap-1"><LuMaximize size={16} /> {area} m²</span>
+        </div>
+
+        {/* Agent & Info Footer */}
+        <div className="pt-3 border-top d-flex justify-content-between align-items-center" style={{ borderColor: "#f1f5f9" }}>
+          <div className="d-flex align-items-center gap-2">
+            <div className="rounded-circle bg-light d-flex align-items-center justify-content-center" style={{ width: 32, height: 32 }}>
+              <PersonBadge size={16} className="text-muted" />
+            </div>
+            <div>
+              <p className="mb-0 fw-bold" style={{ fontSize: "0.75rem", color: "#334155" }}>{agentName}</p>
+              <p className="mb-0 text-muted" style={{ fontSize: "0.65rem" }}>Agente</p>
+            </div>
+          </div>
+          <div className="text-end">
+            <div className="d-flex align-items-center gap-1 text-muted" style={{ fontSize: "0.7rem" }}>
+              <Calendar3 size={12} />
+              <span>{dateAdded}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
+
