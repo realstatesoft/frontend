@@ -8,13 +8,22 @@ export default function DayCell({ day, isCurrentMonth, events, onDayClick, onEve
         return d;
     }, []);
 
-    const isPast = useMemo(() => day < today, [day, today]);
+    const maxDate = useMemo(() => {
+        const d = new Date(today);
+        d.setFullYear(d.getFullYear() + 1);
+        d.setHours(23, 59, 59, 999);
+        return d;
+    }, [today]);
+
+    const isPast       = useMemo(() => day < today,   [day, today]);
+    const isBeyondMax  = useMemo(() => day > maxDate, [day, maxDate]);
+    const isDisabled   = isPast || isBeyondMax;
 
     const getBgColor = useMemo(() => (hovered = false) => {
-        if (isPast) return '#f0f0f0';
+        if (isDisabled) return '#f0f0f0';
         if (!isCurrentMonth) return hovered ? '#ece9e4' : '#f8fafc';
         return hovered ? '#f0ede8' : '#ffffff';
-    }, [isPast, isCurrentMonth]);
+    }, [isDisabled, isCurrentMonth]);
 
     return (
         <div 
@@ -22,16 +31,17 @@ export default function DayCell({ day, isCurrentMonth, events, onDayClick, onEve
             style={{ 
                 minHeight: '120px', 
                 backgroundColor: getBgColor(),
-                color: isPast ? '#b0b0b0' : (isCurrentMonth ? '#1a1a1a' : '#6c757d'),
-                cursor: isPast ? 'not-allowed' : 'pointer',
+                color: isDisabled ? '#b0b0b0' : (isCurrentMonth ? '#1a1a1a' : '#6c757d'),
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.2s',
-                opacity: isPast ? 0.6 : 1,
+                opacity: isDisabled ? 0.55 : 1,
             }}
-            onClick={() => !isPast && onDayClick && onDayClick(day)}
-            onMouseEnter={(e) => !isPast && (e.currentTarget.style.backgroundColor = getBgColor(true))}
+            onClick={() => !isDisabled && onDayClick && onDayClick(day)}
+            onMouseEnter={(e) => !isDisabled && (e.currentTarget.style.backgroundColor = getBgColor(true))}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = getBgColor(false))}
+            title={isBeyondMax ? 'No se pueden agendar eventos con más de 1 año de anticipación' : undefined}
         >
-            <div className="fw-medium mb-1" style={{ color: isPast ? '#b0b0b0' : 'inherit' }}>
+            <div className="fw-medium mb-1" style={{ color: isDisabled ? '#b0b0b0' : 'inherit' }}>
                 {day.getDate()}
             </div>
             

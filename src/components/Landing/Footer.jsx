@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { LuMapPin, LuPhone, LuMail } from "react-icons/lu";
 
 const Footer = () => {
     const { t } = useTranslation("landing");
@@ -33,9 +34,15 @@ const Footer = () => {
                     <Col lg={4}>
                         <h6 className="text-white fw-semibold mb-3">{t("footer.contact")}</h6>
                         <ul className="list-unstyled" style={{ fontSize: "0.9rem", color: "#827d7dff" }}>
-                            <li className="mb-2">📍 Asunción, Paraguay</li>
-                            <li className="mb-2">📞 +595 21 000 000</li>
-                            <li className="mb-2">✉️ info@openroof.com.py</li>
+                            <li className="mb-2 d-flex align-items-center gap-2">
+                                <LuMapPin className="text-primary" /> Asunción, Paraguay
+                            </li>
+                            <li className="mb-2 d-flex align-items-center gap-2">
+                                <LuPhone className="text-primary" /> +595 21 000 000
+                            </li>
+                            <li className="mb-2 d-flex align-items-center gap-2">
+                                <LuMail className="text-primary" /> info@openroof.com.py
+                            </li>
                         </ul>
                     </Col>
                 </Row>

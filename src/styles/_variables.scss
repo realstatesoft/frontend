@@ -1,40 +1,54 @@
-// Colores principales
+// Colores principales (OKLCH inspirados)
 $primary: #2563eb;
 $primary-dark: #1d4ed8;
 $secondary: #64748b;
-$success: #22c55e;
+$success: #10b981; // Más vibrante
 $danger: #ef4444;
 $warning: #f59e0b;
 $info: #0ea5e9;
 $light: #f8fafc;
-$dark: #1e293b;
+$dark: #0f172a; // Tintado azul profundo
 $color-dark-slate: #0f172a;
 
-// texto 
-$text-dark: #1a1a1a;
-$text-muted: #6c757d;
-$text-light-muted: #888;
+// Texto (Neutros tintados para evitar agresividad)
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$text-light-muted: #94a3b8;
 
-// bordes y fondos
-$border-color-soft: #e0ddd8;
-$doc-border-color: #cbd5e1;
-$neutral-soft: #f0ede8;
-$input-bg-light: #F9F9F9;
-$shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.07);
+// Bordes y fondos
+$border-color-soft: #f1f5f9;
+$doc-border-color: #e2e8f0;
+$neutral-soft: #f8fafc;
+$input-bg-light: #f8fafc;
+$shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
-// warning variants
-$warning-bg: #fffbeb;
-$warning-border: #fde68a;
-$warning-text: #92400e;
+// Warning variants
+$warning-bg: #fffbe6;
+$warning-border: #ffe58f;
+$warning-text: #854000;
 
+// Radios modernos
 $radius-sm: 8px;
 $radius-md: 12px;
-$radius-lg: 10px;
+$radius-lg: 16px; // Aumentado para tarjetas
+$radius-xl: 24px; // Para contenedores grandes y botones redondeados
 
-// Tipografia
-$font-family-sans-serif: "Poppins", sans-serif;
-$headings-font-weight: 600;
+// Tipografía
+$font-family-sans-serif: "Poppins", system-ui, -apple-system, sans-serif;
+$headings-font-weight: 700; // Títulos más fuertes
 $font-weight-regular: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
+
+// Espaciado base (8px scale)
+$space-1: 0.25rem; // 4px
+$space-2: 0.5rem;  // 8px
+$space-3: 0.75rem; // 12px
+$space-4: 1rem;    // 16px
+$space-5: 1.5rem;  // 24px
+$space-6: 2rem;    // 32px
+$space-8: 3rem;    // 48px
+$space-10: 4rem;   // 64px

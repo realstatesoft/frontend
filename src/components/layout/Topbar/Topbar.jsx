@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiBell, FiHome, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
+import { FiBell, FiHome, FiMenu } from 'react-icons/fi';
 import { CiUser } from 'react-icons/ci';
 import { IoSettingsOutline, IoLogOutOutline, IoSpeedometerOutline, IoChatbubblesOutline, IoShieldOutline } from 'react-icons/io5';
 import { useAuth } from '../../../hooks/useAuth';
@@ -12,7 +12,7 @@ import CurrencySelector from '../../common/CurrencySelector';
 import styles from './Topbar.module.scss';
 
 export default function Topbar({ extraActions }) {
-  const { sidebarCollapsed, toggleSidebar, darkMode, toggleDarkMode } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar } = useUIStore();
  
   const { t } = useTranslation('navigation');
   const { user, logout, isAuthenticated } = useAuth();
@@ -21,6 +21,7 @@ export default function Topbar({ extraActions }) {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const role = user?.role?.toUpperCase();
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -39,9 +40,9 @@ export default function Topbar({ extraActions }) {
   }
 
   const roleLabel =
-    user?.role === 'AGENT'
+    role === 'AGENT'
       ? t('role.agent')
-      : user?.role === 'ADMIN'
+      : role === 'ADMIN'
         ? t('adminPanel')
         : t('role.owner');
 
@@ -55,21 +56,27 @@ export default function Topbar({ extraActions }) {
   ].filter(Boolean).join(' ');
 
   const getDashboardLink = () => {
-    if (user?.role === 'USER') return '/owner/dashboard';
-    if (user?.role === 'AGENT') return '/agent/dashboard';
-    if (user?.role === 'ADMIN') return '/admin/dashboard';
-    return '/dashboard';
+    if (role === 'USER' || role === 'OWNER') return '/owner/dashboard';
+    if (role === 'AGENT') return '/agent/dashboard';
+    if (role === 'ADMIN') return '/admin/dashboard';
+    if (role === 'TENANT') return '/tenant/dashboard';
+    return '/';
   };
 
   const getSettingsLink = () => {
-    if (user?.role === 'AGENT') return '/agent/settings';
-    if (user?.role === 'ADMIN') return '/admin/settings';
+    if (role === 'AGENT') return '/agent/settings';
+    if (role === 'ADMIN') return '/admin/settings';
     return '/owner/settings';
   };
 
+  const getProfileLink = () => {
+    if (role === 'AGENT') return '/agent/perfil';
+    return '/profile';
+  };
+
   const getMessagesLink = () => {
-    if (user?.role === 'AGENT') return '/agent/mensajes';
-    if (user?.role === 'USER' || user?.role === 'OWNER') return '/owner/mensajes';
+    if (role === 'AGENT') return '/agent/mensajes';
+    if (role === 'USER' || role === 'OWNER') return '/owner/mensajes';
     return '/mensajes';
   };
 
@@ -97,22 +104,18 @@ export default function Topbar({ extraActions }) {
         {extraActions}
         <LanguageSelector variant="dark" />
         <CurrencySelector variant="dark" />
-        <button
-          type="button"
-          className={styles.topbar__iconBtn}
-          onClick={toggleDarkMode}
-          aria-label={darkMode ? t('theme.light') : t('theme.dark')}
-        >
-          {darkMode ? <FiSun /> : <FiMoon />}
-        </button>
-        <button
-          type="button"
-          className={styles.topbar__iconBtn}
-          aria-label={t('notifications')}
-        >
-          <FiBell />
-          <span className={styles.topbar__badge} />
-        </button>
+
+        {user?.role === 'ADMIN' && (
+          <button
+            type="button"
+            className={styles.topbar__iconBtn}
+            onClick={() => navigate('/admin/notifications')}
+            aria-label={t('notifications')}
+          >
+            <FiBell />
+            <span className={styles.topbar__badge} />
+          </button>
+        )}
 
         {isAuthenticated && (
           <Link
@@ -140,13 +143,13 @@ export default function Topbar({ extraActions }) {
 
           {dropdownOpen && (
             <div className="profile-dropdown-menu">
-              <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <Link to={getProfileLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <CiUser size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
               </Link>
               <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                 <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard', 'Mi dashboard')}
               </Link>
-              {user?.role !== 'ADMIN' && (
+              {role !== 'ADMIN' && (
                 <Link to={getMessagesLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
                   {messagesUnread > 0 && (
@@ -156,7 +159,7 @@ export default function Topbar({ extraActions }) {
                   )}
                 </Link>
               )}
-              {user?.role === 'ADMIN' && (
+              {role === 'ADMIN' && (
                 <Link to="/admin/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <IoShieldOutline size={16} style={{ flexShrink: 0 }} /> {t('adminPanel')}
                 </Link>

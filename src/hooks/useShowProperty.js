@@ -61,6 +61,8 @@ export function useShowProperty() {
 
   const [activeFlagCount, setActiveFlagCount] = useState(0);
 
+  const [myAssignments, setMyAssignments] = useState([]);
+
   const { user, isAuthenticated } = useAuth();
   const propertyOwnerId = property?.ownerId ?? property?.userId ?? null;
   const isOwner = isAuthenticated && propertyOwnerId !== null && propertyOwnerId === user?.userId;
@@ -231,6 +233,20 @@ export function useShowProperty() {
       return null;
     });
   }, [id, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated || user?.role?.toUpperCase() !== "AGENT") {
+      setMyAssignments([]);
+      return;
+    }
+    propertyApi
+      .getMyAssignments()
+      .then(({ data }) => {
+        const payload = data?.data ?? data ?? [];
+        setMyAssignments(Array.isArray(payload) ? payload : []);
+      })
+      .catch(() => setMyAssignments([]));
+  }, [isAuthenticated, user?.role, id]);
 
   useEffect(() => {
     fetchProperty();
@@ -535,6 +551,7 @@ export function useShowProperty() {
     activeFlagCount,
     viewCount,
     fetchActiveFlagCount,
-    handleRemoveHighlight
+    handleRemoveHighlight,
+    myAssignments
   };
 }

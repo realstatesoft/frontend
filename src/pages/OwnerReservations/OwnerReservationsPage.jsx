@@ -6,7 +6,6 @@ import Swal from 'sweetalert2';
 import reservationApi from '../../services/reservations/reservationApi';
 import useFormatters from '../../hooks/useFormatters';
 import { statusLabel } from '../../utils/reservationStatus';
-import Footer from '../../components/Landing/Footer';
 import styles from './OwnerReservationsPage.module.scss';
 
 const STATUS_OPTIONS = [
@@ -202,7 +201,6 @@ export default function OwnerReservationsPage() {
           </Pagination>
         )}
       </Container>
-      <Footer />
     </>
   );
 }

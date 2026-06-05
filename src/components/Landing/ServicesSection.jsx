@@ -51,23 +51,23 @@ const ServicesSection = () => {
                             <Link
                                 to={service.to}
                                 state={service.state}
-                                className="p-4 rounded-4 h-100 d-block text-decoration-none"
+                                className="p-4 rounded-4 h-100 d-block text-decoration-none shadow-sm"
                                 style={{
-                                    backgroundColor: "#fafbfc",
-                                    border: "1px solid #f0f0f0",
-                                    transition: `all 0.3s ease, opacity 0.6s ease ${i * 150}ms, transform 0.6s ease ${i * 150}ms`,
+                                    backgroundColor: "#fff",
+                                    border: "1px solid var(--border-color-soft, #f1f5f9)",
+                                    transition: `all 0.4s var(--ease-out), opacity 0.8s var(--ease-out) ${i * 0.1}s, transform 0.8s var(--ease-out) ${i * 0.1}s`,
                                     cursor: "pointer",
                                     opacity: isVisible ? 1 : 0,
-                                    transform: isVisible ? "translateY(0)" : "translateY(40px)",
-                                    color: "black",
+                                    transform: isVisible ? "translateY(0)" : "translateY(30px)",
+                                    color: "var(--text-dark, #0f172a)",
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "translateY(-6px)";
-                                    e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.08)";
+                                    e.currentTarget.style.transform = "translateY(-8px)";
+                                    e.currentTarget.style.boxShadow = "var(--shadow-lg)";
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.transform = "translateY(0)";
-                                    e.currentTarget.style.boxShadow = "none";
+                                    e.currentTarget.style.boxShadow = "var(--shadow-sm)";
                                 }}
                             >
                                 <div

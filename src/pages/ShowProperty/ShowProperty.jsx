@@ -17,6 +17,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CameraVideo, FileText, Whatsapp, Envelope, Link45deg, Pencil, Trash, Star, Share, Flag, Eye } from "react-bootstrap-icons";
+import { LuTriangleAlert } from "react-icons/lu";
 
 import CustomNavbar from "../../components/Landing/Navbar";
 import Footer from "../../components/Landing/Footer";
@@ -31,6 +32,7 @@ import ReportPropertyModal from "../../components/properties/ReportPropertyModal
 import ReportUserModal from "../../components/users/ReportUserModal";
 import HighlightPropertyModal from "../../components/properties/HighlightPropertyModal";
 import PropertyStatusBadge from "../../components/properties/PropertyStatusBadge";
+import AssignmentSection from "../../components/properties/AssignmentSection";
 import PropertyModel3DViewer from "../../components/properties/PropertyModel3DViewer/PropertyModel3DViewer";
 import PropertyVirtualTour from "../../components/properties/PropertyVirtualTour/PropertyVirtualTour";
 import RentCostBreakdown from "../../components/properties/RentCostBreakdown/RentCostBreakdown";
@@ -93,7 +95,8 @@ export default function ShowProperty() {
     viewCount,
     isAuthenticated,
     fetchActiveFlagCount,
-    handleRemoveHighlight
+    handleRemoveHighlight,
+    myAssignments
   } = useShowProperty();
 
   const { user: authUser } = useAuth();
@@ -110,7 +113,7 @@ export default function ShowProperty() {
     canFeature,
     isOwner: isPropertyOwner,
     isAdmin,
-  } = usePropertyPermissions(property);
+  } = usePropertyPermissions(property, myAssignments);
 
   const [tourSubTab, setTourSubTab] = useState(null);
   const [tourConfig, setTourConfig] = useState(null);
@@ -255,8 +258,8 @@ export default function ShowProperty() {
                   placement="right"
                   overlay={<Tooltip>Esta propiedad no aparecerá en el inicio porque su visibilidad es "{visibility.label}". Cámbiala a "Público".</Tooltip>}
                 >
-                  <Badge bg="danger" className="d-flex align-items-center ms-2" style={{ borderRadius: "20px" }}>
-                    ⚠️ Visibilidad Restringida
+                  <Badge bg="danger" className="d-flex align-items-center gap-1 ms-2" style={{ borderRadius: "20px" }}>
+                    <LuTriangleAlert size={14} /> Visibilidad Restringida
                   </Badge>
                 </OverlayTrigger>
               )}
@@ -706,6 +709,10 @@ export default function ShowProperty() {
                     defaultPercent={1}
                   />
                 </div>
+              )}
+
+              {isPropertyOwner && (
+                <AssignmentSection propertyId={property.id} isOwner={isPropertyOwner} />
               )}
 
               <PropertyContactCard property={property} />

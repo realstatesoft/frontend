@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { IoArrowForwardOutline } from "react-icons/io5";
 import { useParams, Navigate, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Container, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../hooks/useAuth";
@@ -98,11 +99,38 @@ const ClientProfilePage = () => {
   }
 
   return (
-    <div className="bg-light min-vh-100" style={{ fontFamily: '"Poppins", sans-serif' }}>
+    <div className="bg-light min-vh-100">
       <CustomNavbar />
-      <Container className="py-5">
-        <p className="text-muted mb-4">Perfil de Cliente (de un Agente)</p>
-        <ProfileHeader client={client} />
+      <Container className="py-5" style={{ animation: 'fadeIn 0.8s var(--ease-out) both' }}>
+        <button 
+            onClick={() => navigate(-1)}
+            className="btn d-inline-flex align-items-center gap-2 mb-4 px-3 py-2"
+            style={{ 
+                background: '#fff', 
+                border: '1px solid var(--border-color-soft, #f1f5f9)', 
+                borderRadius: '999px',
+                color: 'var(--text-muted, #64748b)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                transition: 'all 0.2s var(--ease-out)',
+                boxShadow: 'var(--shadow-sm)'
+            }}
+            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.96)'}
+            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--primary)';
+                e.currentTarget.style.borderColor = 'var(--primary)';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--text-muted)';
+                e.currentTarget.style.borderColor = 'var(--border-color-soft)';
+            }}
+        >
+            <IoArrowForwardOutline style={{ transform: 'rotate(180deg)' }} />
+            Volver
+        </button>
+        
+        <ProfileHeader client={client} onClientUpdate={fetchClient} />
         <ProfileStats client={client} />
         <div className="mb-4">
           <ProfileDetails client={client} />

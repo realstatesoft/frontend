@@ -28,6 +28,8 @@
   "saving": "Saving...",
   "errors": {
     "endAfterStart": "End time must be later than start time.",
-    "createFailed": "Error creating the event. Please try again."
+    "createFailed": "Error creating the event. Please try again.",
+    "datePast": "The event date cannot be in the past.",
+    "dateTooFar": "The event date cannot be more than 1 year from today."
   }
 }

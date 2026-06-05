@@ -6,13 +6,10 @@ import {
   BoxArrowInRight,
   BoxArrowRight,
   Gear,
-  Heart,
   HouseDoor,
   Person,
-  Trash,
 } from "react-bootstrap-icons";
 import { useAuth } from "../../hooks/useAuth";
-import useHasPublishedProperties from "../../hooks/useHasPublishedProperties";
 import { CiUser } from "react-icons/ci";
 import {
   IoHomeOutline,
@@ -29,12 +26,10 @@ import {
   IoCheckmarkDoneOutline,
   IoChatbubblesOutline,
   IoCashOutline,
-  IoHome,
   IoBriefcase,
   IoStarOutline,
 } from "react-icons/io5";
 import { MdFavoriteBorder } from "react-icons/md";
-import { FaRegTrashAlt } from "react-icons/fa";
 import Logotipo from "../../assets/Logotipo.png";
 import { ADMIN_ROUTES } from "../../utils/constants";
 import notificationApi from "../../services/notifications/notificationApi";
@@ -67,8 +62,6 @@ function CustomNavbar() {
   // Normalización de roles para comparaciones case-insensitive
   const isAdmin = user?.role?.toUpperCase() === "ADMIN";
   const isAgent = user?.role?.toUpperCase() === "AGENT";
-
-  const hasPublishedProperties = useHasPublishedProperties();
 
   useEffect(() => {
     const fetchCount = () => {
@@ -124,13 +117,6 @@ function CustomNavbar() {
     navigate("/login");
   }
 
-  const getOffersLink = () => {
-    const role = user?.role?.toUpperCase();
-    if (role === 'AGENT') return '/agent/ofertas';
-    if (role === 'OWNER') return '/owner/ofertas';
-    return '/ofertas';
-  };
-
   const getSettingsLink = () => {
     const role = user?.role?.toUpperCase();
     if (role === 'ADMIN') return '/admin/settings';
@@ -138,14 +124,50 @@ function CustomNavbar() {
     return '/owner/settings';
   };
 
+  const getProfileLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'AGENT') return '/agent/perfil';
+    return '/profile';
+  };
+
+  const getDashboardLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'AGENT') return '/agent/dashboard';
+    if (role === 'ADMIN') return ADMIN_ROUTES.DASHBOARD;
+    if (role === 'USER' || role === 'OWNER') return '/owner/dashboard';
+    if (role === 'TENANT') return '/tenant/dashboard';
+    return '/';
+  };
+
+  const getMessagesLink = () => {
+    const role = user?.role?.toUpperCase();
+    if (role === 'AGENT') return '/agent/mensajes';
+    if (role === 'USER' || role === 'OWNER') return '/owner/mensajes';
+    return '/mensajes';
+  };
+
 
 
   return (
-    <Navbar expand="lg" className="bg-white border-bottom shadow-sm py-2" style={{ zIndex: 1040, borderRadius: "0 0 24px 24px" }}>
+    <Navbar expand="lg" className="bg-white border-bottom shadow-sm py-3" style={{ zIndex: 1040, borderBottomLeftRadius: "24px", borderBottomRightRadius: "24px" }}>
       <Container fluid className="px-3 px-lg-5">
 
-        <Navbar.Brand as={Link} to="/" className="fw-bold me-4">
-          <img src={Logotipo} alt="OpenRoof" style={{ height: '40px', transform: 'scale(2.3)', transformOrigin: 'left center' }} />
+        <Navbar.Brand as={Link} to="/" className="fw-bold me-4 d-flex align-items-center" style={{ height: '40px', overflow: 'visible' }}>
+          <img 
+            src={Logotipo} 
+            alt="OpenRoof" 
+            style={{ 
+              height: '88px', 
+              width: 'auto', 
+              objectFit: 'contain',
+              marginTop: '2px',
+              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+              transition: 'transform 0.3s var(--ease-out)',
+              zIndex: 1050
+            }} 
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -217,7 +239,7 @@ function CustomNavbar() {
         )}
 
         {isAuthenticated && messagesUnread > 0 && (
-          <Link to="/mensajes" className="navbar-messages-link" aria-label={t('messages')}>
+          <Link to={getMessagesLink()} className="navbar-messages-link" aria-label={t('messages')}>
             <IoChatbubblesOutline size={20} />
             <span className="bell-badge">{Number(messagesUnread) > 99 ? '99+' : Number(messagesUnread)}</span>
           </Link>
@@ -241,10 +263,10 @@ function CustomNavbar() {
                 /* ── Usuario logueado ─────────────────────────── */
                 <>
                   {/* Seccion 1: principal */}
-                  <Link to="/profile" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to={getProfileLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <Person size={17} style={{ flexShrink: 0 }} /> {t('myProfile')}
                   </Link>
-                  <Link to="/dashboard" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <Link to={getDashboardLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                     <IoSpeedometerOutline size={16} style={{ flexShrink: 0 }} /> {t('dashboard', 'Mi dashboard')}
                   </Link>
                   <Link to="/properties/me" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
@@ -259,7 +281,7 @@ function CustomNavbar() {
                     </Link>
                   )}
                   {!isAgent && !isAdmin && (
-                    <Link to="/mensajes" className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
+                    <Link to={getMessagesLink()} className="profile-dropdown-item" onClick={() => setDropdownOpen(false)}>
                       <IoChatbubblesOutline size={16} style={{ flexShrink: 0 }} /> {t('messages')}
                       {messagesUnread > 0 && (
                         <span style={{ marginLeft: 'auto', background: 'var(--color-primary)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: '0.72rem', fontWeight: 700 }}>

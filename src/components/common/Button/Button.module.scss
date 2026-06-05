@@ -7,11 +7,16 @@
   font-size: 0.875rem;
   font-weight: 600;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: transform 0.2s var(--ease-out), 
+              background-color 0.2s var(--ease-out), 
+              box-shadow 0.2s var(--ease-out),
+              color 0.2s var(--ease-out),
+              filter 0.2s var(--ease-out);
   white-space: nowrap;
   line-height: 1.4;
+  @include tap-feedback(0.96);
 
   &:disabled {
     opacity: 0.5;
@@ -20,11 +25,12 @@
 
   &--primary {
     background: var(--color-accent);
-    color: #fff;
+    color: var(--color-bg-primary);
 
     &:hover:not(:disabled) {
       background: var(--color-accent-hover);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
   }
 
@@ -36,6 +42,7 @@
     &:hover:not(:disabled) {
       background: var(--color-bg-surface-hover);
       border-color: var(--color-border-hover);
+      transform: translateY(-1px);
     }
   }
 

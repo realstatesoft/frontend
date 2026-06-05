@@ -5,6 +5,11 @@
 }
 
 :root {
+  // Emil Kowalski - Design Engineering Philosophy
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
   // Fuerza la variable CSS de Bootstrap a usar Poppins,
   // así todos sus componentes (inputs, selects, botones, etc.) heredan la misma fuente.
   --bs-body-font-family: #{$font-family-sans-serif};
@@ -22,6 +27,16 @@ body {
   background-color: #f8fafc;
   color: #1e293b;
   text-align: left;
+  overflow-x: hidden;
+}
+
+/* Base interactive elements animations */
+a, button, [role="button"], .nav-link {
+  transition: all 0.2s var(--ease-out);
+}
+
+.nav-link:active, .btn:active {
+  transform: scale(0.96) !important;
 }
 
 

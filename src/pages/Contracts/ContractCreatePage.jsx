@@ -7,8 +7,6 @@ import propertyApi from '../../services/properties/propertyApi';
 import { searchClients } from '../../services/clients/clientApi';
 import { getAllAgents } from '../../services/agents/agentApi';
 import PriceInput from '../../components/commons/PriceInput';
-import CustomNavbar from '../../components/Landing/Navbar';
-import Footer from '../../components/Landing/Footer';
 import { 
   useCreateContract, 
   useUpdateContract,
@@ -973,15 +971,11 @@ export default function ContractCreatePage() {
 
   if (isPublicContractsFlow) {
     return (
-      <>
-        <CustomNavbar />
-        <div className={styles.pageShell}>
-          <Container className={styles.pageShell__container}>
-            {pageContent}
-          </Container>
-        </div>
-        <Footer />
-      </>
+      <div className={styles.pageShell}>
+        <Container className={styles.pageShell__container}>
+          {pageContent}
+        </Container>
+      </div>
     );
   }
 

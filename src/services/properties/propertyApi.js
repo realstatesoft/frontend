@@ -43,6 +43,25 @@ const propertyApi = {
 
   getRecentProperties: () => api.get("/users/me/recent-properties"),
 
+  /** Estado de asignación de una propiedad (owner) */
+  getAssignmentStatus: (propertyId) => api.get(`/properties/${propertyId}/assignment-status`),
+
+  /** Asignar agente a una propiedad (owner) */
+  assignAgent: (propertyId, agentProfileId) =>
+    api.post(`/properties/${propertyId}/assignments`, { agentProfileId }),
+
+  /** Revocar asignación (owner) */
+  revokeAssignment: (assignmentId) =>
+    api.put(`/assignments/${assignmentId}/revoke`),
+
+  /** Aceptar asignación (agent) */
+  acceptAssignment: (assignmentId) =>
+    api.put(`/assignments/${assignmentId}/accept`),
+
+  /** Rechazar asignación (agent) */
+  rejectAssignment: (assignmentId) =>
+    api.put(`/assignments/${assignmentId}/reject`),
+
   /** Propiedades asignadas al agente autenticado (solo AGENT) */
   getMyAssignments: () => api.get("/assignments/me"),
 

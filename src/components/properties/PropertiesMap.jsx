@@ -3,10 +3,12 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo } from "react";
 import { Alert } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { LuBedDouble, LuBath, LuMaximize } from "react-icons/lu";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { Link } from "react-router-dom";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 import usePropertyPriceDisplay from "../../hooks/usePropertyPriceDisplay";
+import DrawAreaControl from "./DrawAreaControl";
 
 const DEFAULT_CENTER = [-27.3369, -55.8668];
 const DEFAULT_ZOOM = 12;
@@ -48,7 +50,7 @@ function formatStat(value, t, key) {
   return t(`map.stats.${key}`, { count: value });
 }
 
-export default function PropertiesMap({ properties = [], isSplit = false }) {
+export default function PropertiesMap({ properties = [], isSplit = false, drawMode = false, onAreaDrawn, onAreaCleared, drawActive }) {
   const { t } = useTranslation("properties");
   const { formatPrice } = usePropertyPriceDisplay(0);
 
@@ -116,6 +118,9 @@ export default function PropertiesMap({ properties = [], isSplit = false }) {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <MapBoundsController points={points} />
+          {drawMode && onAreaDrawn && onAreaCleared && (
+            <DrawAreaControl onAreaDrawn={onAreaDrawn} onAreaCleared={onAreaCleared} clearSignal={drawActive} />
+          )}
           {points.map((point) => (
             <Marker key={point.id} position={point.position}>
               <Popup>
@@ -129,10 +134,10 @@ export default function PropertiesMap({ properties = [], isSplit = false }) {
                   <p className="properties-map-popup__price mb-1">{point.price}</p>
                   <p className="properties-map-popup__type mb-1">{point.type}</p>
                   <p className="properties-map-popup__address mb-2">{point.address}</p>
-                  <div className="properties-map-popup__stats">
-                    <span>🛏 {formatStat(point.bedrooms, t, "bedrooms")}</span>
-                    <span>🚿 {formatStat(point.bathrooms, t, "bathrooms")}</span>
-                    <span>📐 {formatStat(point.area, t, "area")}</span>
+                  <div className="properties-map-popup__stats d-flex gap-2">
+                    <span className="d-flex align-items-center gap-1"><LuBedDouble size={14} /> {formatStat(point.bedrooms, t, "bedrooms")}</span>
+                    <span className="d-flex align-items-center gap-1"><LuBath size={14} /> {formatStat(point.bathrooms, t, "bathrooms")}</span>
+                    <span className="d-flex align-items-center gap-1"><LuMaximize size={14} /> {formatStat(point.area, t, "area")}</span>
                   </div>
                   <Link to={`/properties/${point.id}`} className="properties-map-popup__link">
                     {t("map.details")}

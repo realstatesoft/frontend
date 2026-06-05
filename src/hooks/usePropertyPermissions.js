@@ -42,7 +42,7 @@ export function usePropertyPermissions(property, propertyAssignments = null) {
   // Usa las asignaciones que se pasen por parámetro o que vengan en el objeto property
   const assignments = propertyAssignments || property?.propertyAssignments || [];
   const hasAssignment = assignments.some(
-    a => a.userId === user.userId && a.propertyId === property?.id
+    a => a.agentUserId === user.userId && a.propertyId === property?.id
   );
 
   const canAct = isOwner || isAdmin || hasAssignment;

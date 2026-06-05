@@ -1,3 +1,30 @@
+@mixin tap-feedback($scale: 0.97) {
+  transition: transform 0.2s var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+  &:active {
+    transform: scale($scale);
+  }
+}
+
+@mixin stagger-fade-in($count: 10, $delay: 50ms) {
+  opacity: 0;
+  animation: fadeInUp 0.8s var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)) forwards;
+  
+  @for $i from 1 through $count {
+    &:nth-child(#{$i}) {
+      animation-delay: $i * $delay;
+    }
+  }
+}
+
+@mixin hover-lift {
+  transition: transform 0.3s var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)), 
+              box-shadow 0.3s var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
 @mixin glass-card {
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border);

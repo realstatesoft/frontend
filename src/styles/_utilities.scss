@@ -176,45 +176,20 @@
    text-align: right;
 }
 
-.p-1 {
-   padding: 4px;
-}
+.p-1 { padding: $space-1; }
+.p-2 { padding: $space-2; }
+.p-3 { padding: $space-3; }
+.p-4 { padding: $space-5; } // Salto a 24px
+.p-5 { padding: $space-6; } // Salto a 32px
 
-.p-2 {
-   padding: 8px;
-}
+.m-1 { margin: $space-1; }
+.m-2 { margin: $space-2; }
+.m-3 { margin: $space-3; }
+.m-4 { margin: $space-5; }
+.m-5 { margin: $space-6; }
 
-.p-3 {
-   padding: 12px;
-}
-
-.p-4 {
-   padding: 16px;
-}
-
-.p-5 {
-   padding: 20px;
-}
-
-.m-1 {
-   margin: 4px;
-}
-
-.m-2 {
-   margin: 8px;
-}
-
-.m-3 {
-   margin: 12px;
-}
-
-.m-4 {
-   margin: 16px;
-}
-
-.m-5 {
-   margin: 20px;
-}
+.py-section { padding-top: $space-10; padding-bottom: $space-10; }
+.gap-section { gap: $space-5; }
 
 /* Formulario crear propiedad: fondo gris claro en inputs y selects */
 .create-property-form .form-control,
