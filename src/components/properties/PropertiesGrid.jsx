@@ -125,7 +125,7 @@ export default function PropertiesGrid({
                     {t("results.showing", { count: paginated.length })}
                 </p>
 
-                <Row className="g-4">
+                <Row id="properties-cards-start" className="g-4">
                     {paginated.map((property, index) => (
                         <Col 
                             key={property.id} 
