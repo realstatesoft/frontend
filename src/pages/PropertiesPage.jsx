@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ArrowUp } from "react-bootstrap-icons";
@@ -146,6 +146,20 @@ export default function PropertiesPage() {
     const handleMinBedrooms = (val) => { setMinBedrooms(val); resetPage(); };
     const handleMinBathrooms = (val) => { setMinBathrooms(val); resetPage(); };
 
+    const scrollToCardsStart = useCallback(() => {
+        window.requestAnimationFrame(() => {
+            const cardsElement =
+                document.getElementById("properties-cards-start") ??
+                document.getElementById("properties-grid-container");
+
+            if (!cardsElement) return;
+
+            const yOffset = -100;
+            const y = cardsElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+        });
+    }, []);
+
     const handleClear = () => {
         setSearch("");
         setTypeFilter("");
@@ -291,12 +305,7 @@ export default function PropertiesPage() {
                             onToggleCompare={toggleComparedProperty}
                             onPageChange={(page) => {
                                 setCurrentPage(page);
-                                const gridElement = document.getElementById("properties-grid-container");
-                                if (gridElement) {
-                                    const yOffset = -120; // Espacio extra para asegurar visibilidad del título
-                                    const y = gridElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                    window.scrollTo({ top: y, behavior: "auto" });
-                                }
+                                scrollToCardsStart();
                             }}
                         />
                     </div>
