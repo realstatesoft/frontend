@@ -57,7 +57,7 @@ export async function getVisitRequestsByProperty(propertyId) {
 // ─── ACTIONS ──────────────────────────────────────────────────
 
 /**
- * Aceptar una solicitud de visita (AGENT).
+ * Aceptar una solicitud de visita (OWNER/AGENT).
  * PUT /visit-requests/{id}/accept
  */
 export async function acceptVisitRequest(id) {
@@ -66,7 +66,7 @@ export async function acceptVisitRequest(id) {
 }
 
 /**
- * Rechazar una solicitud de visita (AGENT).
+ * Rechazar una solicitud de visita (OWNER/AGENT).
  * PUT /visit-requests/{id}/reject
  */
 export async function rejectVisitRequest(id) {
@@ -75,7 +75,7 @@ export async function rejectVisitRequest(id) {
 }
 
 /**
- * Proponer un nuevo horario (AGENT).
+ * Proponer un nuevo horario (OWNER/AGENT).
  * PUT /visit-requests/{id}/counter-propose
  * @param {number} id
  * @param {{ counterProposedAt: string, counterProposeMessage?: string }} data
