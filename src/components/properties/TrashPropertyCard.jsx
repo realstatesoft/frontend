@@ -1,112 +1,121 @@
-import { Card, Button } from "react-bootstrap";
-import { Eye, ArrowCounterclockwise, Trash3 } from "react-bootstrap-icons";
+import { Badge, Button } from "react-bootstrap";
+import { Eye, ArrowCounterclockwise, Trash3, ClockHistory } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
 import PLACEHOLDER_IMAGE from "../../assets/placeholder_img.png";
 
 /**
  * TrashPropertyCard
- * Tarjeta de propiedad en la papelera.
- * Props: property { id, title, image, daysLeft }
- *        onRestore(id), onDelete(id)
+ * Tarjeta premium para propiedades en la papelera.
  */
 export default function TrashPropertyCard({ property, onRestore, onDelete }) {
     const TRASH_DAYS = 10;
     const image = property.primaryImageUrl || property.image || PLACEHOLDER_IMAGE;
 
     const trashedDate = new Date(property.trashedAt);
-    const diffDays = (new Date() - trashedDate) / (1000 * 60 * 60 * 24);
-    const daysLeft = Math.ceil(TRASH_DAYS - diffDays);
+    const rawDiff = (new Date() - trashedDate) / (1000 * 60 * 60 * 24);
+    const diffDays = Number.isFinite(rawDiff) ? rawDiff : 0;
+    const daysLeft = Math.max(0, Math.ceil(TRASH_DAYS - diffDays));
     const isUrgent = daysLeft <= 3;
 
     return (
-        <Card
-            className="h-100 border-0 shadow-sm rounded-4 overflow-hidden"
-            style={{ transition: "transform 0.2s, box-shadow 0.2s" }}
+        <div
+            className="group h-100 position-relative bg-white"
+            style={{
+                borderRadius: "20px",
+                overflow: "hidden",
+                border: "1px solid #f1f5f9",
+                transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+            }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.12)";
+                e.currentTarget.style.boxShadow = "0 20px 25px -5px rgba(0, 0, 0, 0.1)";
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "";
+                e.currentTarget.style.boxShadow = "0 1px 3px 0 rgba(0, 0, 0, 0.1)";
             }}
         >
-            {/* Imagen con overlay de "eliminada" */}
-            <div className="position-relative">
-                <Card.Img
-                    variant="top"
+            {/* Image Section */}
+            <div className="position-relative overflow-hidden" style={{ aspectRatio: "1.6" }}>
+                <img
                     src={image}
-                    style={{ height: "195px", objectFit: "cover" }}
+                    alt={property.title}
+                    style={{ 
+                        width: "100%", 
+                        height: "100%", 
+                        objectFit: "cover", 
+                        filter: "grayscale(40%) opacity(0.8)",
+                        transition: "all 0.4s ease" 
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.filter = "grayscale(0%) opacity(1)";
+                        e.currentTarget.style.transform = "scale(1.05)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.filter = "grayscale(40%) opacity(0.8)";
+                        e.currentTarget.style.transform = "scale(1)";
+                    }}
                     loading="lazy"
                 />
-               
-                <div
-                    className="position-absolute top-0 start-0 w-100 h-100"
-                    style={{ background: "rgba(30,41,59,0.18)" }}
-                />
+                
+                <div className="position-absolute top-0 end-0 p-3">
+                    <Badge
+                        className="border-0 shadow-sm"
+                        style={{
+                            backgroundColor: isUrgent ? "#ef4444" : "#64748b",
+                            borderRadius: "8px",
+                            padding: "6px 12px",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            backdropFilter: "blur(4px)",
+                        }}
+                    >
+                        {daysLeft} {daysLeft === 1 ? "DÍA" : "DÍAS"} RESTANTES
+                    </Badge>
+                </div>
             </div>
 
-            <Card.Body className="px-3 py-3">
-                {/* Título */}
-                <h6
-                    className="fw-semibold mb-3 text-center"
-                    style={{ color: "var(--dark, #1e293b)", fontSize: "0.92rem", lineHeight: 1.3 }}
-                >
+            {/* Content Section */}
+            <div className="p-4 d-flex flex-column h-100">
+                <h6 className="fw-bold mb-3 text-center text-truncate" style={{ color: "#0f172a", fontSize: "0.95rem" }}>
                     {property.title}
                 </h6>
 
-                {/* Link ver ficha */}
-                <div className="text-center mb-3">
-                    <a
-                        href={`properties/${property.id}` ?? "#"}
-                        className="text-muted d-inline-flex align-items-center gap-1"
-                        style={{ fontSize: "0.78rem", textDecoration: "none" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary, #2563eb)")}
+                <div className="text-center mb-4">
+                    <Link
+                        to={`/properties/${property.id}`}
+                        className="text-muted d-inline-flex align-items-center gap-2"
+                        style={{ fontSize: "0.8rem", textDecoration: "none", transition: "color 0.2s" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#3b82f6")}
                         onMouseLeave={(e) => (e.currentTarget.style.color = "")}
                     >
-                        <Eye size={13} />
-                        Ver ficha de propiedad
-                    </a>
+                        <Eye size={14} />
+                        Ver ficha completa
+                    </Link>
                 </div>
 
-                {/* Botones Restaurar / Eliminar */}
-                <div className="d-flex gap-2 mb-2">
+                <div className="mt-auto d-flex gap-2">
                     <Button
-                        size="sm"
                         variant="outline-primary"
-                        className="flex-fill rounded-pill d-flex align-items-center justify-content-center gap-1"
-                        style={{ fontSize: "0.8rem", borderColor: "var(--primary, #2563eb)", color: "var(--primary, #2563eb)" }}
+                        className="flex-fill py-2 d-flex align-items-center justify-content-center gap-2 border-2"
+                        style={{ fontSize: "0.8rem", borderRadius: "12px", fontWeight: "700" }}
                         onClick={() => onRestore?.(property)}
                     >
-                        <ArrowCounterclockwise size={13} />
-                        Restaurar
+                        <ArrowCounterclockwise size={14} />
+                        RESTAURAR
                     </Button>
                     <Button
-                        size="sm"
-                        className="flex-fill rounded-pill d-flex align-items-center justify-content-center gap-1"
-                        style={{
-                            fontSize: "0.8rem",
-                            background: "var(--danger, #ef4444)",
-                            border: "none",
-                        }}
+                        variant="danger"
+                        className="flex-fill py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                        style={{ fontSize: "0.8rem", borderRadius: "12px", fontWeight: "700", background: "#ef4444", border: "none" }}
                         onClick={() => onDelete?.(property)}
                     >
-                        <Trash3 size={13} />
-                        Eliminar
+                        <Trash3 size={14} />
+                        ELIMINAR
                     </Button>
                 </div>
-
-                {/* Días restantes */}
-                <p
-                    className="text-center mb-0"
-                    style={{
-                        fontSize: "0.75rem",
-                        color: isUrgent ? "var(--danger, #ef4444)" : "var(--secondary, #64748b)",
-                        fontWeight: isUrgent ? 600 : 400,
-                    }}
-                >
-                    Se eliminará en {daysLeft} {daysLeft === 1 ? "día" : "días"}
-                </p>
-            </Card.Body>
-        </Card>
+            </div>
+        </div>
     );
 }

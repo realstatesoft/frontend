@@ -101,7 +101,7 @@ export default function PropertiesPage() {
         return probe?.convertedAmount != null;
     }, [selectedCurrency, exchangeRates]);
 
-    const { properties, loading, error, totalPages, totalElements, refetch } = useProperties({
+    const { properties, loading, fetching, error, totalPages, totalElements, refetch } = useProperties({
         page: currentPage,
         size: PAGE_SIZE,
         search: debouncedSearch,
@@ -280,6 +280,7 @@ export default function PropertiesPage() {
                             currentPage={currentPage}
                             totalPages={totalPages}
                             loading={loading}
+                            fetching={fetching}
                             error={error}
                             favoriteIds={favoriteIds}
                             togglingIds={togglingIds}
@@ -290,7 +291,12 @@ export default function PropertiesPage() {
                             onToggleCompare={toggleComparedProperty}
                             onPageChange={(page) => {
                                 setCurrentPage(page);
-                                window.scrollTo({ top: 0, behavior: "smooth" });
+                                const gridElement = document.getElementById("properties-grid-container");
+                                if (gridElement) {
+                                    const yOffset = -120; // Espacio extra para asegurar visibilidad del título
+                                    const y = gridElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                    window.scrollTo({ top: y, behavior: "auto" });
+                                }
                             }}
                         />
                     </div>
