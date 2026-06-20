@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   Container,
   Table,
@@ -9,12 +9,17 @@ import {
   Badge,
   Nav,
   Alert,
+  Form,
+  Modal,
+  InputGroup,
+  Dropdown,
 } from 'react-bootstrap';
+import { FiChevronDown, FiFlag, FiCheckCircle, FiAlertTriangle, FiBarChart2, FiSearch } from 'react-icons/fi';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import propertyFlagsApi from '../../../services/propertyFlagsApi';
+import propertyService from '../../../services/propertyService';
 import userReportsApi from '../../../services/userReportsApi';
-import ResolveFlagModal from './ResolveFlagModal';
 import SuspendUserModal from '../../../components/users/SuspendUserModal';
 import { formatTimeAgo } from '../../../utils/dateFormat';
 
@@ -52,6 +57,342 @@ function truncate(str, max = 80) {
   return str.length > max ? str.slice(0, max) + '…' : str;
 }
 
+const FLAG_STATUS_OPTIONS = [
+  { value: 'ACTIVE', label: 'Activos' },
+  { value: 'RESOLVED', label: 'Resueltos' },
+  { value: 'ALL', label: 'Todos' },
+];
+
+const FLAG_TYPE_OPTIONS = [
+  { value: '', label: 'Todos' },
+  { value: 'FRAUD', label: 'Fraude' },
+  { value: 'ILLEGAL', label: 'Ilegal' },
+  { value: 'SPAM', label: 'Spam' },
+];
+
+const STATUS_LABELS = {
+  ACTIVE: 'Activa',
+  RESOLVED: 'Resuelta',
+};
+
+const STATUS_STYLE = {
+  ACTIVE: { bg: '#dcfce7', color: '#15803d' },
+  RESOLVED: { bg: '#dbeafe', color: '#2563eb' },
+};
+
+function getFlagStatus(flag) {
+  return flag?.resolvedAt ? 'RESOLVED' : 'ACTIVE';
+}
+
+function buildPropertyLabel(property) {
+  if (!property) return '—';
+  return property.title ? `#${property.id} · ${property.title}` : `#${property.id}`;
+}
+
+function getEmptyFlagsMessage({ statusFilter, filterType, query }) {
+  const hasExtraFilters = Boolean(filterType || query.trim());
+
+  if (hasExtraFilters) {
+    return "No hay reportes que coincidan con los filtros.";
+  }
+
+  if (statusFilter === 'RESOLVED') {
+    return "No hay reportes resueltos.";
+  }
+
+  if (statusFilter === 'ALL') {
+    return "No hay reportes.";
+  }
+
+  return "No hay reportes pendientes.";
+}
+
+function MetricCard({ icon: Icon, value, label, bg, color }) {
+  return (
+    <div
+      style={{
+        background: bg,
+        borderRadius: 18,
+        padding: '18px 22px',
+        minHeight: 96,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 16,
+        boxShadow: '0 10px 24px rgba(15, 23, 42, 0.06)',
+      }}
+    >
+      <div
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: 16,
+          display: 'grid',
+          placeItems: 'center',
+          background: 'rgba(255,255,255,0.6)',
+          color,
+          fontSize: 24,
+        }}
+      >
+        <Icon />
+      </div>
+      <div className="d-flex flex-column">
+        <div style={{ fontSize: 30, lineHeight: 1, fontWeight: 700, color }}>{value}</div>
+        <div style={{ fontSize: 18, lineHeight: 1.2, color }}>{label}</div>
+      </div>
+    </div>
+  );
+}
+
+function FlagDetailModal({ flag, property, loadingProperty, onClose, onResolve }) {
+  if (!flag) return null;
+
+  const flagTypeLabels = {
+    FRAUD: 'Fraude',
+    ILLEGAL: 'Ilegal',
+    SPAM: 'Spam',
+  };
+
+  return (
+    <Modal show={!!flag} onHide={onClose} centered size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title>Detalle del reporte #{flag.id}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="p-3 bg-light rounded mb-3">
+          <div className="d-flex flex-wrap gap-2 align-items-center mb-2">
+            <Badge bg="secondary">{flagTypeLabels[flag.flagType] || flag.flagType}</Badge>
+            <Badge bg={getFlagStatus(flag) === 'ACTIVE' ? 'warning' : 'success'} text={getFlagStatus(flag) === 'ACTIVE' ? 'dark' : 'light'}>
+              {getFlagStatus(flag) === 'ACTIVE' ? 'Activo' : 'Resuelto'}
+            </Badge>
+          </div>
+          <p className="mb-1"><strong>Motivo:</strong> {flag.reason}</p>
+          <p className="mb-1"><strong>Propiedad:</strong> {loadingProperty ? 'Cargando...' : buildPropertyLabel(property)}</p>
+          <p className="mb-1"><strong>Reportado por:</strong> {flag.reportedByUsername || '—'}</p>
+          <p className="mb-1"><strong>Fecha de creación:</strong> {formatTimeAgo(flag.createdAt) || '—'}</p>
+          <p className="mb-0"><strong>Estado:</strong> {getFlagStatus(flag) === 'ACTIVE' ? 'Pendiente' : 'Resuelto'}</p>
+        </div>
+
+        {flag.resolutionNotes ? (
+          <div className="mb-3">
+            <strong>Notas de resolución</strong>
+            <p className="text-muted mb-0">{flag.resolutionNotes}</p>
+          </div>
+        ) : null}
+
+        <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+          <Link to={`/properties/${flag.propertyId}`} className="btn btn-outline-primary">
+            Ver detalle de propiedad
+          </Link>
+          {getFlagStatus(flag) === 'ACTIVE' ? (
+            <Button variant="primary" onClick={onResolve}>
+              Marcar como resuelto
+            </Button>
+          ) : null}
+        </div>
+      </Modal.Body>
+    </Modal>
+  );
+}
+
+function FlagCard({ flag, onOpenDetail, onOpenResolve }) {
+  const status = getFlagStatus(flag);
+  const statusStyle = STATUS_STYLE[status];
+  const hasResolution = Boolean(flag.resolutionNotes);
+
+  return (
+    <div
+      style={{
+        borderRadius: 18,
+        background: '#fff',
+        border: '1px solid rgba(148, 163, 184, 0.18)',
+        boxShadow: '0 12px 28px rgba(15, 23, 42, 0.08)',
+        padding: 18,
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        gap: 18,
+      }}
+    >
+        <div className="d-flex gap-3">
+        <div
+          style={{
+            width: 90,
+            minWidth: 90,
+            height: 90,
+            borderRadius: 14,
+            background: 'linear-gradient(135deg, #c7d2fe, #f8fafc)',
+            display: 'grid',
+            placeItems: 'center',
+            color: '#4f46e5',
+            fontSize: 34,
+            overflow: 'hidden',
+          }}
+        >
+          <FiFlag />
+        </div>
+
+        <div className="d-flex flex-column gap-1" style={{ flex: 1 }}>
+          <div className="d-flex align-items-center gap-2 flex-wrap">
+            <h4 className="mb-0" style={{ fontSize: 22, fontWeight: 700 }}>
+              Propiedad #{flag.propertyId}
+            </h4>
+            <span
+              style={{
+                marginLeft: 'auto',
+                padding: '6px 14px',
+                borderRadius: 999,
+                background: statusStyle.bg,
+                color: statusStyle.color,
+                fontWeight: 600,
+                fontSize: 13,
+                minWidth: 92,
+                textAlign: 'center',
+              }}
+            >
+              {STATUS_LABELS[status]}
+            </span>
+          </div>
+
+          <div className="text-muted" style={{ fontSize: 15 }}>
+            {`Propiedad #${flag.propertyId}`}
+          </div>
+
+          <div className="d-flex flex-wrap gap-3 mt-1" style={{ fontSize: 13, color: '#475569' }}>
+            <span><strong>Tipo:</strong> {FLAG_TYPE_LABELS[flag.flagType] || flag.flagType}</span>
+            <span><strong>Reportado por:</strong> {flag.reportedByUsername || '—'}</span>
+            <span><strong>Fecha:</strong> {flag.createdAt ? formatTimeAgo(flag.createdAt) : '—'}</span>
+          </div>
+
+          <div style={{ fontSize: 15, marginTop: 4 }}>
+            <strong>Motivo:</strong> {flag.reason}
+          </div>
+
+          {hasResolution ? (
+            <div
+              style={{
+                marginTop: 12,
+                padding: '14px 16px',
+                background: '#fef3c7',
+                borderRadius: 12,
+                color: '#92400e',
+              }}
+            >
+              <strong style={{ display: 'block', marginBottom: 4 }}>Notas de resolución</strong>
+              <div>{flag.resolutionNotes}</div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="d-flex flex-column justify-content-between align-items-end gap-3" style={{ minWidth: 220 }}>
+        <div className="d-flex flex-column gap-2 align-items-end">
+          <Button
+            variant="outline-primary"
+            style={{ borderRadius: 12, minWidth: 122 }}
+            onClick={() => onOpenDetail(flag)}
+          >
+            Ver detalle
+          </Button>
+          {status === 'ACTIVE' ? (
+            <Button
+              variant="success"
+              style={{ borderRadius: 12, minWidth: 122 }}
+              onClick={() => onOpenResolve(flag)}
+            >
+              Resolver
+            </Button>
+          ) : null}
+        </div>
+
+        <Link
+          to={`/properties/${flag.propertyId}`}
+          className="text-decoration-none"
+          style={{ color: '#2563eb', fontWeight: 600 }}
+        >
+          Ver propiedad
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function ResolveFlagConfirmModal({ flag, isOpen, onClose, onSuccess }) {
+  const [resolutionNotes, setResolutionNotes] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) {
+      setResolutionNotes('');
+      setError('');
+      setLoading(false);
+    }
+  }, [isOpen]);
+
+  if (!flag) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!resolutionNotes.trim()) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      await propertyFlagsApi.resolveFlag(flag.id, { resolutionNotes: resolutionNotes.trim() });
+      onSuccess?.(flag.id);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Ocurrió un error al resolver el reporte.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal show={isOpen} onHide={onClose} centered size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title>Marcar como resuelto</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="p-3 bg-light rounded mb-3">
+          <p className="mb-1"><strong>Reporte:</strong> #{flag.id}</p>
+          <p className="mb-1"><strong>Propiedad:</strong> #{flag.propertyId}</p>
+          <p className="mb-0"><strong>Motivo:</strong> {flag.reason}</p>
+        </div>
+
+        <p className="text-muted">
+          Confirmá la resolución y agregá una nota breve para dejar trazabilidad de la acción.
+        </p>
+
+        <Form onSubmit={handleSubmit}>
+          {error ? <Alert variant="danger">{error}</Alert> : null}
+
+          <Form.Group className="mb-3">
+            <Form.Label>Notas de resolución</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={4}
+              value={resolutionNotes}
+              onChange={(e) => setResolutionNotes(e.target.value)}
+              placeholder="Ej.: Se revisó el contenido, no se detectó incumplimiento adicional y el caso se cerró."
+              disabled={loading}
+              required
+            />
+          </Form.Group>
+
+          <div className="d-flex justify-content-end gap-2">
+            <Button variant="secondary" onClick={onClose} disabled={loading}>
+              Cancelar
+            </Button>
+            <Button type="submit" variant="primary" disabled={!resolutionNotes.trim() || loading}>
+              {loading ? 'Resolviendo...' : 'Confirmar resolución'}
+            </Button>
+          </div>
+        </Form>
+      </Modal.Body>
+    </Modal>
+  );
+}
+
 // ─── Tab: Reportes de propiedades ─────────────────────────────────────────────
 
 function PropertyFlagsTab() {
@@ -60,31 +401,202 @@ function PropertyFlagsTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedFlag, setSelectedFlag] = useState(null);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [propertyLoading, setPropertyLoading] = useState(false);
+  const [resolveFlagTarget, setResolveFlagTarget] = useState(null);
+  const [filterType, setFilterType] = useState('');
+  const [filterStatus, setFilterStatus] = useState('ACTIVE');
+  const [sortOrder, setSortOrder] = useState('DESC');
+  const [query, setQuery] = useState('');
 
   const fetchFlags = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await propertyFlagsApi.getAllActiveFlags();
+      const data = await propertyFlagsApi.getAllFlags({ status: 'ALL' });
       setFlags(data?.data || data || []);
     } catch {
       setError(t('flags.propertyLoadError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filterStatus]);
 
   useEffect(() => {
     fetchFlags();
   }, [fetchFlags]);
 
+  useEffect(() => {
+    let alive = true;
+
+    async function loadProperty() {
+      if (!selectedFlag?.propertyId) {
+        setSelectedProperty(null);
+        return;
+      }
+
+      setPropertyLoading(true);
+      try {
+        const res = await propertyService.getById(selectedFlag.propertyId);
+        if (!alive) return;
+        setSelectedProperty(res?.data || res || null);
+      } catch {
+        if (alive) setSelectedProperty(null);
+      } finally {
+        if (alive) setPropertyLoading(false);
+      }
+    }
+
+    loadProperty();
+
+    return () => {
+      alive = false;
+    };
+  }, [selectedFlag?.propertyId]);
+
+  const visibleFlags = useMemo(() => {
+    const search = query.trim().toLowerCase();
+
+    return flags
+      .filter((flag) => (filterType ? flag.flagType === filterType : true))
+      .filter((flag) => {
+        if (filterStatus === 'ALL') return true;
+        return getFlagStatus(flag) === filterStatus;
+      })
+      .filter((flag) => {
+        if (!search) return true;
+        return [
+          flag.reason,
+          flag.reportedByUsername,
+          String(flag.id),
+          String(flag.propertyId),
+          flag.flagType,
+        ]
+          .filter(Boolean)
+          .some((value) => value.toLowerCase().includes(search));
+      })
+      .sort((a, b) => {
+        const aDate = new Date(a.createdAt).getTime();
+        const bDate = new Date(b.createdAt).getTime();
+        return sortOrder === 'DESC' ? bDate - aDate : aDate - bDate;
+      });
+  }, [flags, filterType, filterStatus, query, sortOrder]);
+
+  const activeCount = useMemo(() => flags.filter((flag) => getFlagStatus(flag) === 'ACTIVE').length, [flags]);
+  const resolvedCount = useMemo(() => flags.filter((flag) => getFlagStatus(flag) === 'RESOLVED').length, [flags]);
+  const fraudCount = useMemo(() => flags.filter((flag) => flag.flagType === 'FRAUD').length, [flags]);
+  const totalCount = flags.length;
+
   const handleResolveSuccess = (flagId) => {
     setFlags((prev) => prev.filter((f) => f.id !== flagId));
     setSelectedFlag(null);
+    setResolveFlagTarget(null);
+    setSelectedProperty(null);
+  };
+
+  const handleOpenDetail = (flag) => {
+    setSelectedFlag(flag);
+  };
+
+  const handleOpenResolve = (flag) => {
+    setResolveFlagTarget(flag);
   };
 
   return (
     <>
+      <div
+        style={{
+          borderRadius: 24,
+          padding: '32px 30px',
+          background:
+            'linear-gradient(90deg, rgba(203, 235, 247, 0.95), rgba(255, 247, 214, 0.95) 55%, rgba(255, 224, 198, 0.95))',
+          boxShadow: '0 14px 30px rgba(15, 23, 42, 0.08)',
+          marginBottom: 28,
+        }}
+      >
+        <h2 className="mb-2" style={{ fontSize: 52, fontWeight: 800, letterSpacing: -1 }}>
+          Moderación de Propiedades
+        </h2>
+        <p className="mb-0" style={{ fontSize: 18, color: '#334155' }}>
+          Gestioná y moderá todos los reportes recibidos sobre propiedades del sistema.
+        </p>
+      </div>
+
+      <div className="row g-3 mb-4">
+        <div className="col-12 col-md-6 col-xl-3">
+          <MetricCard icon={FiFlag} value={activeCount} label="Activas" bg="#e8f6e8" color="#15803d" />
+        </div>
+        <div className="col-12 col-md-6 col-xl-3">
+          <MetricCard icon={FiCheckCircle} value={resolvedCount} label="Resueltas" bg="#dbeafe" color="#2563eb" />
+        </div>
+        <div className="col-12 col-md-6 col-xl-3">
+          <MetricCard icon={FiAlertTriangle} value={fraudCount} label="Fraude" bg="#fee2e2" color="#dc2626" />
+        </div>
+        <div className="col-12 col-md-6 col-xl-3">
+          <MetricCard icon={FiBarChart2} value={totalCount} label="Reportes" bg="#eff6ff" color="#3b82f6" />
+        </div>
+      </div>
+
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <Dropdown>
+          <Dropdown.Toggle
+            variant="light"
+            style={{
+              border: 'none',
+              boxShadow: 'none',
+              background: 'transparent',
+              padding: 0,
+              fontSize: 24,
+              fontWeight: 800,
+              color: '#0f172a',
+            }}
+          >
+            <span className="me-2">
+              {filterStatus === 'ACTIVE' ? 'Pendientes' : filterStatus === 'RESOLVED' ? 'Resueltas' : 'Todos'}
+            </span>
+            <FiChevronDown size={22} />
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {FLAG_STATUS_OPTIONS.map((opt) => (
+              <Dropdown.Item key={opt.value} onClick={() => setFilterStatus(opt.value)}>
+                {opt.label}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+
+        <div className="d-flex flex-wrap gap-2">
+          <Form.Select value={filterType} onChange={(e) => setFilterType(e.target.value)} style={{ minWidth: 150 }}>
+            {FLAG_TYPE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </Form.Select>
+          <Form.Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ minWidth: 180 }}>
+            <option value="DESC">Más recientes primero</option>
+            <option value="ASC">Más antiguos primero</option>
+          </Form.Select>
+        </div>
+      </div>
+
+      <InputGroup className="mb-4" style={{ borderRadius: 18, overflow: 'hidden', boxShadow: '0 10px 24px rgba(15, 23, 42, 0.06)' }}>
+        <InputGroup.Text style={{ background: '#fff', border: 'none' }}>
+          <FiSearch />
+        </InputGroup.Text>
+        <Form.Control
+          placeholder="Buscar por motivo, usuario, ID de flag o propiedad"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{ border: 'none', padding: '14px 16px' }}
+        />
+        {query ? (
+          <Button variant="outline-secondary" onClick={() => setQuery('')}>
+            Limpiar
+          </Button>
+        ) : null}
+      </InputGroup>
+
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
@@ -92,75 +604,40 @@ function PropertyFlagsTab() {
         </div>
       ) : error ? (
         <Alert variant="danger">{error}</Alert>
-      ) : flags.length === 0 ? (
+      ) : visibleFlags.length === 0 ? (
         <div className="text-center py-5 bg-light rounded shadow-sm">
-          <p className="text-muted mb-0 fs-5 mt-2">{t('flags.empty')}</p>
+          <p className="text-muted mb-0 fs-5 mt-2">
+            {getEmptyFlagsMessage({ statusFilter: filterStatus, filterType, query })}
+          </p>
         </div>
       ) : (
-        <div className="table-responsive bg-white rounded shadow-sm">
-          <Table hover className="mb-0 align-middle">
-            <thead className="bg-light">
-              <tr>
-                <th className="px-3">ID</th>
-                <th>{t('flags.table.property')}</th>
-                <th>{t('flags.table.type')}</th>
-                <th>{t('flags.table.reason')}</th>
-                <th>{t('flags.table.reportedBy')}</th>
-                <th>{t('flags.table.date')}</th>
-                <th className="text-end px-3">{t('flags.table.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {flags.map((flag) => (
-                <tr key={flag.id}>
-                  <td className="px-3 text-muted">#{flag.id}</td>
-                  <td>
-                    <Link to={`/properties/${flag.propertyId}`} className="text-decoration-none">
-                      {t('flags.viewProperty')}
-                    </Link>
-                  </td>
-                  <td>
-                    <Badge
-                      bg={
-                        flag.flagType === 'FRAUD'
-                          ? 'danger'
-                          : flag.flagType === 'ILLEGAL'
-                          ? 'dark'
-                          : 'warning'
-                      }
-                      text={flag.flagType === 'SPAM' ? 'dark' : 'light'}
-                    >
-                      {FLAG_TYPE_LABELS(t)[flag.flagType] || flag.flagType}
-                    </Badge>
-                  </td>
-                  <td>
-                    <OverlayTrigger placement="top" overlay={<Tooltip>{flag.reason}</Tooltip>}>
-                      <span
-                        className="d-inline-block text-truncate"
-                        style={{ maxWidth: '250px', cursor: 'help' }}
-                      >
-                        {flag.reason}
-                      </span>
-                    </OverlayTrigger>
-                  </td>
-                  <td>{flag.reportedByUsername}</td>
-                  <td>{flag.createdAt ? formatTimeAgo(flag.createdAt) : '—'}</td>
-                  <td className="text-end px-3">
-                    <Button variant="primary" size="sm" onClick={() => setSelectedFlag(flag)}>
-                      Resolver
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+        <div className="d-flex flex-column gap-4">
+          {visibleFlags.map((flag) => (
+            <FlagCard
+              key={flag.id}
+              flag={flag}
+              onOpenDetail={handleOpenDetail}
+              onOpenResolve={handleOpenResolve}
+            />
+          ))}
         </div>
       )}
 
-      <ResolveFlagModal
+      <FlagDetailModal
         flag={selectedFlag}
-        isOpen={!!selectedFlag}
+        property={selectedProperty}
+        loadingProperty={propertyLoading}
         onClose={() => setSelectedFlag(null)}
+        onResolve={() => {
+          setResolveFlagTarget(selectedFlag);
+          setSelectedFlag(null);
+        }}
+      />
+
+      <ResolveFlagConfirmModal
+        flag={resolveFlagTarget}
+        isOpen={!!resolveFlagTarget}
+        onClose={() => setResolveFlagTarget(null)}
         onSuccess={handleResolveSuccess}
       />
     </>

@@ -9,8 +9,12 @@ const propertyFlagsApi = {
     return api.get(`/properties/${propertyId}/flags/count`).then((res) => res.data);
   },
 
+  getAllFlags(params = {}) {
+    return api.get(`/flags`, { params }).then((res) => res.data);
+  },
+
   getAllActiveFlags() {
-    return api.get(`/flags`).then((res) => res.data);
+    return api.get(`/flags`, { params: { status: 'ACTIVE' } }).then((res) => res.data);
   },
 
   resolveFlag(flagId, data) {

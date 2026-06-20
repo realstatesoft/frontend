@@ -756,20 +756,27 @@ export default function ShowProperty() {
             <div className="d-flex justify-content-center py-4">
               <Spinner animation="border" variant="primary" />
             </div>
-          ) : recentError ? (
-            <Alert variant="warning" className="mb-3">
-              {recentError}
-            </Alert>
-          ) : recentProperties?.length > 0 ? (
-            <Row className="g-3 mx-0">
-              {recentProperties.map((recent) => (
-                <Col key={recent.id} xs={6} sm={4} lg={2}>
-                  <PropertySummaryCard property={recent} />
-                </Col>
-              ))}
-            </Row>
           ) : (
-            <p className="text-muted">Aún no hay propiedades recientes para mostrar.</p>
+            <>
+              {recentError && (
+                <Alert variant="warning" className="mb-3">
+                  {recentError}
+                </Alert>
+              )}
+              {recentProperties?.length > 0 ? (
+              <Row className="g-3 mx-0">
+                {recentProperties
+                  .filter((recent) => String(recent.id) !== String(property.id))
+                  .map((recent) => (
+                  <Col key={recent.id} xs={6} sm={4} lg={2}>
+                    <PropertySummaryCard property={recent} />
+                  </Col>
+                ))}
+              </Row>
+              ) : (
+                <p className="text-muted">Aún no hay propiedades recientes para mostrar.</p>
+              )}
+            </>
           )}
 
           <h5 className="property__section-title mt-5 mb-3">

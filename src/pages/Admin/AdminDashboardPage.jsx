@@ -115,6 +115,10 @@ export default function AdminDashboardPage() {
                 <div className={styles.quickList}>
                   {(overview.quickActions ?? []).map((action) => {
                     const Icon = QUICK_ICONS[action.iconKey] || FiFileText;
+                    const resolvedPath =
+                      action.title === 'Ver reportes'
+                        ? ADMIN_ROUTES.FLAGS
+                        : action.path;
                     const inner = (
                       <>
                         <span className={styles.quickRow__icon}>
@@ -126,9 +130,9 @@ export default function AdminDashboardPage() {
                         </span>
                       </>
                     );
-                    if (action.path) {
+                    if (resolvedPath) {
                       return (
-                        <Link key={action.title} to={action.path} className={styles.quickRow}>
+                        <Link key={action.title} to={resolvedPath} className={styles.quickRow}>
                           {inner}
                         </Link>
                       );
